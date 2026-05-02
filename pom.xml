@@ -30,6 +30,8 @@
         <java.version>25</java.version>
         <spring-ai.version>2.0.0-M5</spring-ai.version>
         <langchain4j.version>1.14.0</langchain4j.version>
+        <langchain4j-beta.version>1.14.0-beta24</langchain4j-beta.version>
+
     </properties>
     <dependencies>
         <dependency>
@@ -91,6 +93,18 @@
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
             <version>${langchain4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-neo4j</artifactId>
+            <version>${langchain4j-beta.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-neo4j-retriever</artifactId>
+            <version>${langchain4j-beta.version}</version>
         </dependency>
 
         <dependency>
