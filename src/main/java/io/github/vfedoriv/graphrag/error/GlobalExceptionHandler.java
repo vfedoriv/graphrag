@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,6 +57,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnhandled(Exception ex, HttpServletRequest request) {
         return baseProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", request.getRequestURI());
+    }
+
+    @ExceptionHandler(SchemaValidationException.class)
+    public ProblemDetail handleSchemaValidation(SchemaValidationException ex, HttpServletRequest request) {
+        ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Schema validation failed", request.getRequestURI());
+        detail.setProperty("errors", ex.getErrors());
+        return detail;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        return baseProblem(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflict(ConflictException ex, HttpServletRequest request) {
+        return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     private ProblemDetail baseProblem(HttpStatus status, String title, String instancePath) {
