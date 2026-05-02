@@ -447,7 +447,10 @@ After that foundation is stable, add:
 
 ## Open Questions Before Coding
 
-- Which OpenAI-compatible provider and embedding dimensions should be the default?
+- Default provider: OpenAI API-compatible.
+- Default embedding model: `text-embedding-3-small`.
+- Default chat model: `gpt-5-mini`.
+- Default embedding dimensions: `1536`.
 
 Resolved MVP decisions:
 
