@@ -18,10 +18,11 @@ Notes:
   b) vectors created after I generate embeddings for this document
   c) graph nodes and relations that correspond to document context 
  Think what optimal way to store all this data
-- we should have unit and integration tests that cover application functionality
+- we should have unit (Jupiter) and integration (Testcontainers) tests that cover application functionality
 
 At this moment we don't need any user authentication or authorization
 
 Application stack:
 Java 25, Spring Boot 4.0.6, LangChain and Langchain extensions (versions 1.14.0 and 1.14.0-beta24), Apache Tika,
-Neo4J 5.26.25 database, Docker compose; OpenAI compatible LLM models;
+Neo4J 5.26.25 database, Docker compose; OpenAI API compatible LLM models;
+Assume that all apps/libraries versions mentioned here exist and are ready to use.
