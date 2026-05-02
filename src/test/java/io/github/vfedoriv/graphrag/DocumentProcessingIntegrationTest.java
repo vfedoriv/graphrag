@@ -3,9 +3,13 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -42,10 +46,33 @@ class DocumentProcessingIntegrationTest {
     private DocumentChunkRepository documentChunkRepository;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private SchemaRegistryService schemaRegistryService;
 
     @Test
     void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        String schemaYaml = """
+            name: contracts
+            version: 1
+            nodes:
+              - label: Contract
+                key: contractId
+                properties:
+                  - name: contractId
+                    type: string
+              - label: Party
+                key: name
+                properties:
+                  - name: name
+                    type: string
+            relationships:
+              - type: HAS_PARTY
+                from: Contract
+                to: Party
+            """;
+        var schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-1", schema.getId());
 
         MockMultipartFile file = new MockMultipartFile(
             "file",
@@ -55,8 +82,10 @@ class DocumentProcessingIntegrationTest {
         );
         var uploaded = documentUploadService.upload("kb-1", file);
         var processed = documentProcessingService.process(uploaded.getId());
+        var processedAgain = documentProcessingService.process(uploaded.getId());
 
         assertThat(processed.getStatus().name()).isEqualTo("COMPLETED");
+        assertThat(processedAgain.getStatus().name()).isEqualTo("COMPLETED");
         var chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(uploaded.getId());
         assertThat(chunks).isNotEmpty();
         assertThat(chunks).extracting("chunkIndex").isSorted();
@@ -79,6 +108,40 @@ class DocumentProcessingIntegrationTest {
             .bind(vectorOf(0.11)).to("queryVector")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(hitCount).isGreaterThan(0L);
+
+        Long anyContract = neo4jClient.query("MATCH (n:Contract) RETURN count(n) AS c")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long anyParty = neo4jClient.query("MATCH (n:Party) RETURN count(n) AS c")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long relCount = neo4jClient.query("MATCH (:Contract)-[r:HAS_PARTY]->(:Party) RETURN count(r) AS c")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(anyContract).isEqualTo(1L);
+        assertThat(anyParty).isEqualTo(1L);
+        assertThat(relCount).isEqualTo(1L);
+
+        Long provenanceOnNode = neo4jClient.query("""
+            MATCH (n:Contract)
+            WHERE n.sourceDocumentId = $documentId AND n.schemaId IS NOT NULL AND n.extractionRunId IS NOT NULL
+            RETURN count(n) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long provenanceOnRel = neo4jClient.query("""
+            MATCH (:Contract)-[r:HAS_PARTY]->(:Party)
+            WHERE r.sourceDocumentId = $documentId AND r.schemaId IS NOT NULL AND r.extractionRunId IS NOT NULL
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long extractionRuns = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun)
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(provenanceOnNode).isEqualTo(1L);
+        assertThat(provenanceOnRel).isEqualTo(1L);
+        assertThat(extractionRuns).isEqualTo(2L);
     }
 
     @TestConfiguration
@@ -93,6 +156,35 @@ class DocumentProcessingIntegrationTest {
                 return out;
             };
         }
+
+        @Bean
+        GraphExtractionClient graphExtractionClient() {
+            return (schema, chunkText) -> new GraphExtractionResult(
+                List.of(
+                    new GraphExtractionResult.ExtractedNode(
+                        "Contract",
+                        java.util.Map.of("contractId", "C-1"),
+                        0.95
+                    ),
+                    new GraphExtractionResult.ExtractedNode(
+                        "Party",
+                        java.util.Map.of("name", "Acme"),
+                        0.90
+                    )
+                ),
+                List.of(
+                    new GraphExtractionResult.ExtractedRelationship(
+                        "HAS_PARTY",
+                        "Contract",
+                        java.util.Map.of("contractId", "C-1"),
+                        "Party",
+                        java.util.Map.of("name", "Acme"),
+                        java.util.Map.of("role", "Supplier"),
+                        0.88
+                    )
+                )
+            );
+        }
     }
 
     private static List<Double> vectorOf(double base) {
@@ -102,4 +194,5 @@ class DocumentProcessingIntegrationTest {
         }
         return vector;
     }
+
 }
