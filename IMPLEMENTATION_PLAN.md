@@ -203,7 +203,7 @@ Recommended schema storage:
 
 1. REST client uploads a multipart document.
 2. `DocumentUploadService` calculates SHA-256, stores bytes through `BinaryStorageService`, and creates `DocumentUpload`.
-3. If the same hash already exists in the same knowledge base, return the existing document record or create a new upload record linked to the same content URI, depending on desired audit behavior.
+3. If the same hash already exists in the same knowledge base, skip upload and return the existing document record.
 4. `DocumentParsingService` uses Apache Tika / LangChain4j Tika parser to extract text and metadata.
 5. `ChunkingService` splits text into chunks with stable chunk indexes and source offsets where possible.
 6. `EmbeddingService` generates embeddings through an OpenAI-compatible embedding model.
@@ -211,6 +211,11 @@ Recommended schema storage:
 8. `GraphExtractionService` asks the LLM to extract schema-compliant entities and relationships from chunks.
 9. `GraphWriteService` validates extracted payloads against the active schema and writes/upserts graph nodes and relationships.
 10. Upload status transitions through `UPLOADED`, `PARSING`, `EMBEDDING`, `EXTRACTING_GRAPH`, `COMPLETED`, or `FAILED`.
+
+MVP constraints:
+
+- Supported document formats: PDF, TXT, DOCX.
+- Document processing is synchronous for the first implementation.
 
 ## Query Flow
 
@@ -223,7 +228,7 @@ Recommended schema storage:
    - labels, relationship types, and properties are allowed by the active schema;
    - query uses parameters instead of interpolated user input where applicable;
    - configurable row/time limits are present or injected.
-5. Client can inspect generated query before execution.
+5. Generated Cypher must pass validation before execution.
 6. `CypherExecutionService` executes validated query and returns tabular JSON results.
 
 For the first version, reject mutating Cypher keywords such as `CREATE`, `MERGE`, `SET`, `DELETE`, `DETACH`, `REMOVE`, `DROP`, `LOAD CSV`, and procedure calls unless explicitly allowlisted.
@@ -279,12 +284,15 @@ POST   /api/v1/knowledge-bases/{knowledgeBaseId}/queries/ask
 - Pin Docker Compose Neo4j image to `neo4j:5.26.25`.
 - Add shared error handling with RFC 7807-style problem responses.
 - Add base DTOs and validation annotations.
+- Add unit tests for configuration binding and validation.
+- Add a lightweight Spring context test.
 
 Acceptance criteria:
 
 - Application starts locally.
 - `/actuator/health` works.
 - Configuration properties bind and have tests.
+- `./mvnw test` passes for the phase.
 
 ### Phase 2: Schema Registry
 
@@ -294,12 +302,15 @@ Acceptance criteria:
 - Persist schemas as `SchemaDefinition` nodes.
 - Implement schema REST endpoints.
 - Add schema activation per knowledge base.
+- Add unit tests for schema parsing, validation, immutability rules, and generated validation errors.
+- Add integration tests with Testcontainers Neo4j for schema persistence and activation.
 
 Acceptance criteria:
 
 - Predefined schema can be loaded and activated.
 - Invalid schema is rejected with clear validation errors.
 - Schema versions are immutable.
+- `./mvnw test` passes for the phase.
 
 ### Phase 3: Document Upload and Metadata
 
@@ -308,12 +319,15 @@ Acceptance criteria:
 - Compute SHA-256.
 - Persist document metadata in Neo4j.
 - Add status transitions and failure tracking.
+- Add unit tests for hash calculation, content URI generation, duplicate detection, and status transitions.
+- Add integration tests with Testcontainers Neo4j for document metadata persistence and duplicate-hash skip behavior.
 
 Acceptance criteria:
 
 - Uploading a document creates a `DocumentUpload` record with name, size, type, hash, content URI, and upload date.
-- Duplicate hash behavior is deterministic and tested.
+- Uploading a document with an existing hash in the same knowledge base skips storing a duplicate and returns the existing document.
 - Original bytes can be resolved from `contentUri` by service code.
+- `./mvnw test` passes for the phase.
 
 ### Phase 4: Parsing, Chunking, and Embeddings
 
@@ -322,13 +336,16 @@ Acceptance criteria:
 - Integrate OpenAI-compatible embedding model.
 - Store `DocumentChunk` nodes with text, metadata, and embedding vectors.
 - Create Neo4j vector index for chunks.
+- Add unit tests for PDF/TXT/DOCX parser routing, chunking boundaries, and embedding-service orchestration with a fake embedding client.
+- Add integration tests with Testcontainers Neo4j for chunk persistence, vector index creation, and vector search.
 
 Acceptance criteria:
 
-- Supported document types parse to text.
+- PDF, TXT, and DOCX documents parse to text.
 - Chunk records are persisted in order.
 - Embeddings are stored and searchable through Neo4j vector index.
 - Unit tests cover chunking; integration tests cover Neo4j persistence.
+- `./mvnw test` passes for the phase.
 
 ### Phase 5: Graph Extraction
 
@@ -337,12 +354,15 @@ Acceptance criteria:
 - Validate extracted nodes and relationships against active schema.
 - Upsert domain graph nodes and relationships with provenance properties.
 - Link extracted graph data back to source document/chunks and extraction run.
+- Add unit tests for extraction payload validation, schema rule enforcement, provenance mapping, and idempotent upsert planning.
+- Add integration tests with Testcontainers Neo4j for writing extracted nodes/relationships and reprocessing without uncontrolled duplicates.
 
 Acceptance criteria:
 
 - Uploaded document can produce graph nodes and relationships.
 - Invalid labels, relationship types, and properties are rejected before write.
 - Reprocessing the same document does not create uncontrolled duplicates.
+- `./mvnw test` passes for the phase.
 
 ### Phase 6: Query Generation and Validation
 
@@ -352,6 +372,8 @@ Acceptance criteria:
 - Enforce read-only query policy.
 - Validate labels, relationship types, and properties against active schema.
 - Add max rows and timeout controls.
+- Add unit tests for read-only policy, unsafe keyword rejection, schema-reference validation, limit injection, and generated-query DTO mapping.
+- Add integration tests with Testcontainers Neo4j for `EXPLAIN` validation against real Neo4j.
 
 Acceptance criteria:
 
@@ -359,6 +381,8 @@ Acceptance criteria:
 - Invalid or unsafe Cypher is rejected.
 - Schema-invalid labels and relationships are rejected.
 - Validation can be tested without executing the query.
+- Generated Cypher is never executed unless validation succeeds.
+- `./mvnw test` passes for the phase.
 
 ### Phase 7: Query Execution and Answering
 
@@ -366,17 +390,21 @@ Acceptance criteria:
 - Return tabular JSON result data and metadata.
 - Add combined `/ask` endpoint.
 - Optionally add vector-assisted retrieval context before Cypher generation.
+- Add unit tests for execution request validation, result mapping, and `/ask` orchestration with fake LLM/query services.
+- Add integration tests with Testcontainers Neo4j for executing validated read-only queries and rejecting invalid generated queries before execution.
 
 Acceptance criteria:
 
 - Valid read-only Cypher returns results.
 - Generated query can be executed through the full flow.
 - Errors are returned consistently.
+- Generated Cypher is validated before execution in both `/queries/execute` and `/queries/ask`.
+- `./mvnw test` passes for the phase.
 
 ### Phase 8: Testing and Hardening
 
-- Unit tests with JUnit Jupiter for schema validation, chunking, query policy, DTO validation, and service orchestration.
-- Integration tests with Testcontainers Neo4j for repositories, indexes, document persistence, vector storage, and query validation.
+- Review and fill test gaps from earlier phases.
+- Add broader end-to-end integration tests for the complete synchronous MVP flow.
 - Mock LLM clients in tests to keep CI deterministic.
 - Add test fixtures for schemas and sample documents.
 - Add Docker Compose smoke-test instructions.
@@ -419,8 +447,11 @@ After that foundation is stable, add:
 
 ## Open Questions Before Coding
 
-- Should duplicate document hash uploads create a second upload audit record or return the existing document?
-- Which document types are required in the first release: PDF, DOCX, TXT, HTML, PPTX?
-- Should document processing be synchronous for MVP or queued/background from the beginning?
 - Which OpenAI-compatible provider and embedding dimensions should be the default?
-- Should generated Cypher be executed automatically by `/ask`, or should production use require a validate/approve/execute sequence?
+
+Resolved MVP decisions:
+
+- Duplicate document hash uploads in the same knowledge base are skipped and return the existing document.
+- First supported document formats are PDF, TXT, and DOCX.
+- Document processing is synchronous for MVP.
+- Generated Cypher must be validated before execution.
