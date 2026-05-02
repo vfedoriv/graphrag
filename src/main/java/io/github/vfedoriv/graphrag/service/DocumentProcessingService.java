@@ -31,6 +31,7 @@ public class DocumentProcessingService {
     private final Neo4jClient neo4jClient;
     private final AppProperties appProperties;
     private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
+    private final GraphExtractionService graphExtractionService;
 
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
@@ -40,7 +41,8 @@ public class DocumentProcessingService {
         ChunkingService chunkingService,
         Neo4jClient neo4jClient,
         AppProperties appProperties,
-        ObjectProvider<EmbeddingClient> embeddingClientProvider
+        ObjectProvider<EmbeddingClient> embeddingClientProvider,
+        GraphExtractionService graphExtractionService
     ) {
         this.documentUploadRepository = documentUploadRepository;
         this.documentChunkRepository = documentChunkRepository;
@@ -50,6 +52,7 @@ public class DocumentProcessingService {
         this.neo4jClient = neo4jClient;
         this.appProperties = appProperties;
         this.embeddingClientProvider = embeddingClientProvider;
+        this.graphExtractionService = graphExtractionService;
     }
 
     public DocumentUploadNode process(String documentId) {
@@ -84,6 +87,9 @@ public class DocumentProcessingService {
                 documentChunkRepository.save(chunk);
                 createChunkRelationship(documentId, chunk.getId());
             }
+            setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
+            List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+            graphExtractionService.extract(document, persistedChunks);
 
             document.setProcessedAt(Instant.now());
             return setStatus(document, DocumentStatus.COMPLETED, null);

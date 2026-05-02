@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
@@ -40,6 +41,8 @@ class DocumentProcessingServiceTest {
     private Neo4jClient neo4jClient;
     @Mock
     private ObjectProvider<EmbeddingClient> embeddingClientProvider;
+    @Mock
+    private GraphExtractionService graphExtractionService;
 
     @Test
     void orchestratesParsingChunkingAndEmbedding() throws Exception {
@@ -59,6 +62,8 @@ class DocumentProcessingServiceTest {
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
             .thenReturn("abcdefghij01234567");
         when(embeddingClientProvider.getIfAvailable()).thenReturn(embeddingClient);
+        when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
+            .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         DocumentProcessingService service = new DocumentProcessingService(
             documentUploadRepository,
@@ -68,7 +73,8 @@ class DocumentProcessingServiceTest {
             chunkingService,
             neo4jClient,
             props(),
-            embeddingClientProvider
+            embeddingClientProvider,
+            graphExtractionService
         );
         DocumentUploadNode processed = service.process("doc-1");
 

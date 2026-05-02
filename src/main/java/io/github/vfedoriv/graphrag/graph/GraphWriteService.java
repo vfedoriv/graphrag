@@ -1,0 +1,137 @@
+package io.github.vfedoriv.graphrag.graph;
+
+import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GraphWriteService {
+
+    private final Neo4jClient neo4jClient;
+
+    public GraphWriteService(Neo4jClient neo4jClient) {
+        this.neo4jClient = neo4jClient;
+    }
+
+    public void write(
+        String extractionRunId,
+        String schemaId,
+        String documentId,
+        String chunkId,
+        SchemaDocument schema,
+        GraphExtractionResult result
+    ) {
+        Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
+        for (var def : schema.nodes()) {
+            nodeDefs.put(def.label(), def);
+        }
+        if (result.nodes() != null) {
+            for (var node : result.nodes()) {
+                upsertNode(extractionRunId, schemaId, documentId, chunkId, nodeDefs.get(node.label()), node);
+            }
+        }
+        if (result.relationships() != null) {
+            for (var rel : result.relationships()) {
+                upsertRelationship(extractionRunId, schemaId, documentId, chunkId, nodeDefs, rel);
+            }
+        }
+    }
+
+    private void upsertNode(
+        String extractionRunId,
+        String schemaId,
+        String documentId,
+        String chunkId,
+        SchemaDocument.NodeDefinition nodeDef,
+        GraphExtractionResult.ExtractedNode node
+    ) {
+        String keyName = nodeDef.key();
+        String keyValue = String.valueOf(node.properties().get(keyName));
+        String entityId = stableId(schemaId, node.label(), keyName, keyValue);
+        String label = safeToken(node.label());
+        Map<String, Object> props = new HashMap<>(node.properties());
+        props.put("id", entityId);
+        props.put("sourceDocumentId", documentId);
+        props.put("sourceChunkIds", java.util.List.of(chunkId));
+        props.put("schemaId", schemaId);
+        props.put("extractionRunId", extractionRunId);
+        props.put("confidence", node.confidence());
+        props.put("createdAt", Instant.now().toString());
+
+        neo4jClient.query("""
+            MERGE (n:%s {id: $id})
+            SET n += $props
+            """.formatted(label))
+            .bind(entityId).to("id")
+            .bind(props).to("props")
+            .run();
+
+        neo4jClient.query("""
+            MATCH (r:ExtractionRun {id: $runId}), (n:%s {id: $id})
+            MERGE (r)-[:CREATED_NODE]->(n)
+            MERGE (c:DocumentChunk {id: $chunkId})-[:MENTIONS]->(n)
+            """.formatted(label))
+            .bind(extractionRunId).to("runId")
+            .bind(entityId).to("id")
+            .bind(chunkId).to("chunkId")
+            .run();
+    }
+
+    private void upsertRelationship(
+        String extractionRunId,
+        String schemaId,
+        String documentId,
+        String chunkId,
+        Map<String, SchemaDocument.NodeDefinition> nodeDefs,
+        GraphExtractionResult.ExtractedRelationship rel
+    ) {
+        String fromLabel = safeToken(rel.fromLabel());
+        String toLabel = safeToken(rel.toLabel());
+        String type = safeToken(rel.type());
+        String fromKeyName = nodeDefs.get(rel.fromLabel()).key();
+        String toKeyName = nodeDefs.get(rel.toLabel()).key();
+        String fromKeyValue = String.valueOf(rel.fromKey().get(fromKeyName));
+        String toKeyValue = String.valueOf(rel.toKey().get(toKeyName));
+        String fromId = stableId(schemaId, rel.fromLabel(), fromKeyName, fromKeyValue);
+        String toId = stableId(schemaId, rel.toLabel(), toKeyName, toKeyValue);
+        String relId = stableId(schemaId, rel.type(), "endpoints", fromId + "->" + toId);
+
+        Map<String, Object> props = new HashMap<>();
+        if (rel.properties() != null) {
+            props.putAll(rel.properties());
+        }
+        props.put("id", relId);
+        props.put("sourceDocumentId", documentId);
+        props.put("sourceChunkIds", java.util.List.of(chunkId));
+        props.put("schemaId", schemaId);
+        props.put("extractionRunId", extractionRunId);
+        props.put("confidence", rel.confidence());
+        props.put("createdAt", Instant.now().toString());
+
+        neo4jClient.query("""
+            MATCH (from:%s {id: $fromId}), (to:%s {id: $toId})
+            MERGE (from)-[r:%s {id: $relId}]->(to)
+            SET r += $props
+            """.formatted(fromLabel, toLabel, type))
+            .bind(fromId).to("fromId")
+            .bind(toId).to("toId")
+            .bind(relId).to("relId")
+            .bind(props).to("props")
+            .run();
+    }
+
+    private String stableId(String schemaId, String kind, String key, String value) {
+        return schemaId + "|" + kind + "|" + key + "|" + value;
+    }
+
+    private String safeToken(String value) {
+        if (value == null || !value.matches("[A-Za-z][A-Za-z0-9_]*")) {
+            throw new IllegalArgumentException("Unsafe schema token: " + value);
+        }
+        return value;
+    }
+}
