@@ -1,8 +1,7 @@
 services:
   neo4j:
-    image: 'neo4j:latest'
+    image: 'neo4j:5.26.25'
     environment:
       - 'NEO4J_AUTH=neo4j/notverysecret'
     ports:
       - '7687'
-
