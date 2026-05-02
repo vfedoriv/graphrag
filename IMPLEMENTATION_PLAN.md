@@ -6,6 +6,20 @@ Build a Java 25 / Spring Boot 4 application that exposes a REST API for uploadin
 
 Authentication and authorization are intentionally out of scope for the first implementation.
 
+## Runtime Profiles
+
+- Default profile keeps AI model autoconfiguration disabled so the app can boot without external model credentials.
+- `openai` profile re-enables Spring AI OpenAI + Neo4j vector store autoconfiguration and uses:
+  - base URL: `https://api.openai.com/v1`
+  - embedding model: `text-embedding-3-small`
+  - main model: `gpt-5-mini`
+  - API key: `OPENAI_API_KEY`
+- `lm_studio` profile re-enables Spring AI OpenAI-compatible autoconfiguration and uses:
+  - base URL: `http://10.235.1.241:1234/v1`
+  - embedding model: `nomic-ai/nomic-embed-text-v1.5`
+  - main model: `qwen/qwen3.6-35b-a3b`
+  - API key variable: `LM_STUDIO_API_KEY` (defaults to `lm-studio`)
+
 ## Main Architecture
 
 Use a typical Java enterprise structure:
