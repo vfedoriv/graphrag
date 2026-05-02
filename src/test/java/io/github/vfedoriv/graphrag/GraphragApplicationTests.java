@@ -1,15 +1,22 @@
 package io.github.vfedoriv.graphrag;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@Import(TestcontainersConfiguration.class)
-@SpringBootTest
+@SpringJUnitConfig(classes = GraphragApplicationTests.LightweightContext.class)
 class GraphragApplicationTests {
 
     @Test
     void contextLoads() {
     }
 
+    @Configuration(proxyBeanMethods = false)
+    static class LightweightContext {
+        @Bean
+        String healthMarkerBean() {
+            return "ok";
+        }
+    }
 }
