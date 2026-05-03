@@ -205,6 +205,13 @@ Domain-specific nodes/relationships are dynamic and schema-driven. Extracted gra
   - `app.model.chat-model=qwen/qwen3.6-35b-a3b`
   - `LM_STUDIO_API_KEY` (default: `lm-studio`)
 
+## OpenAPI / Swagger
+
+After starting the application, API documentation and interactive request execution are available at:
+
+- Swagger UI: `/swagger-ui/index.html`
+- OpenAPI JSON: `/v3/api-docs`
+
 ## Configuration
 
 Main app config is in `src/main/resources/application.properties`; profile overrides are in:
