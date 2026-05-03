@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +71,10 @@ public class DocumentUploadService {
         try (var stream = binaryStorageService.read(URI.create(contentUri))) {
             return stream.readAllBytes();
         }
+    }
+
+    public List<DocumentUploadNode> listByKnowledgeBase(String knowledgeBaseId) {
+        return documentUploadRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
     }
 
     private byte[] readBytes(MultipartFile file) {
