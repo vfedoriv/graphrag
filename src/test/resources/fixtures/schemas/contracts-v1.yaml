@@ -1,0 +1,25 @@
+name: contracts
+version: 1
+description: Fixture schema for end-to-end integration flow
+nodes:
+  - label: Contract
+    key: contractId
+    properties:
+      - name: contractId
+        type: string
+        required: true
+      - name: title
+        type: string
+  - label: Party
+    key: name
+    properties:
+      - name: name
+        type: string
+        required: true
+relationships:
+  - type: HAS_PARTY
+    from: Contract
+    to: Party
+    properties:
+      - name: role
+        type: string
