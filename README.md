@@ -326,7 +326,7 @@ Base path: `/api/v1`
 - `POST /schemas`
 - `GET /schemas`
 - `GET /schemas/{schemaId}`
-- `POST /schemas/{schemaId}/validate`
+- `POST /schemas/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`
 
 ### Documents
@@ -346,7 +346,7 @@ Base path: `/api/v1`
 
 - `POST /schemas`
   - body: `{"content":"<yaml>", "sourceType":"PREDEFINED|GENERATED"}`
-- `POST /schemas/{schemaId}/validate`
+- `POST /schemas/validate`
   - body: `{"content":"<yaml>"}`
 - `POST /knowledge-bases/{knowledgeBaseId}/documents`
   - multipart: part `file`
