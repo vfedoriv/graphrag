@@ -14,12 +14,16 @@ import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GraphExtractionService {
+
+    private static final Logger log = LoggerFactory.getLogger(GraphExtractionService.class);
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final SchemaDefinitionRepository schemaDefinitionRepository;
@@ -51,6 +55,12 @@ public class GraphExtractionService {
     }
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks) {
+        log.info(
+            "Graph extraction starting: documentId={}, knowledgeBaseId={}, chunks={}",
+            document.getId(),
+            document.getKnowledgeBaseId(),
+            chunks.size()
+        );
         var kb = knowledgeBaseRepository.findById(document.getKnowledgeBaseId())
             .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + document.getKnowledgeBaseId()));
         if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
@@ -62,8 +72,10 @@ public class GraphExtractionService {
 
         GraphExtractionClient client = graphExtractionClientProvider.getIfAvailable();
         if (client == null) {
+            log.error("Graph extraction client is missing: documentId={}", document.getId());
             throw new IllegalStateException("Graph extraction model is not configured for this profile");
         }
+        log.info("Graph extraction client resolved: class={}", client.getClass().getName());
 
         ExtractionRunNode run = new ExtractionRunNode();
         run.setId(UUID.randomUUID().toString());
@@ -73,21 +85,46 @@ public class GraphExtractionService {
         run.setStatus("RUNNING");
         run.setStartedAt(Instant.now());
         extractionRunRepository.save(run);
+        log.info("Extraction run created: runId={}, schemaId={}, model={}", run.getId(), run.getSchemaId(), run.getModel());
         linkRunToDocument(run.getId(), document.getId());
         try {
-            for (var chunk : chunks) {
+            for (int i = 0; i < chunks.size(); i++) {
+                var chunk = chunks.get(i);
+                log.info(
+                    "Extracting chunk: runId={}, chunkId={}, chunkIndex={}/{} textLength={}",
+                    run.getId(),
+                    chunk.getId(),
+                    i + 1,
+                    chunks.size(),
+                    chunk.getText() == null ? 0 : chunk.getText().length()
+                );
                 var result = client.extract(schema, chunk.getText());
-                validationService.validate(result, schema);
-                graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, result);
+                log.info(
+                    "Chunk extraction returned payload: runId={}, chunkId={}, nodes={}, relationships={}",
+                    run.getId(),
+                    chunk.getId(),
+                    result.nodes() == null ? 0 : result.nodes().size(),
+                    result.relationships() == null ? 0 : result.relationships().size()
+                );
+                var validatedResult = validationService.validate(result, schema);
+                graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, validatedResult);
             }
             run.setStatus("COMPLETED");
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
+            log.info("Graph extraction completed: runId={}, documentId={}", run.getId(), document.getId());
         } catch (Exception ex) {
             run.setStatus("FAILED");
             run.setErrorMessage(ex.getMessage());
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
+            log.error(
+                "Graph extraction failed: runId={}, documentId={}, message={}",
+                run.getId(),
+                document.getId(),
+                ex.getMessage(),
+                ex
+            );
             throw ex;
         }
     }

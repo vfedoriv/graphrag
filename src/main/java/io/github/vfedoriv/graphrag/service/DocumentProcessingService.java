@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class DocumentProcessingService {
 
     public static final String CHUNK_EMBEDDING_INDEX = "document_chunk_embedding";
+    private static final Logger log = LoggerFactory.getLogger(DocumentProcessingService.class);
 
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentChunkRepository documentChunkRepository;
@@ -58,17 +61,39 @@ public class DocumentProcessingService {
     public DocumentUploadNode process(String documentId) {
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+        log.info(
+            "Starting document processing: documentId={}, knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
+            document.getId(),
+            document.getKnowledgeBaseId(),
+            document.getOriginalFilename(),
+            document.getContentType(),
+            document.getSizeBytes()
+        );
         try {
             setStatus(document, DocumentStatus.PARSING, null);
             String text = parseDocument(document);
             List<String> chunks = chunkingService.split(text);
+            log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
             setStatus(document, DocumentStatus.EMBEDDING, null);
 
             EmbeddingClient embeddingClient = embeddingClientProvider.getIfAvailable();
             if (embeddingClient == null) {
+                log.error(
+                    "Embedding client is missing: documentId={}, profile model config baseUrl={}, embeddingModel={}, embeddingDimensions={}",
+                    documentId,
+                    appProperties.model().baseUrl(),
+                    appProperties.model().embeddingModel(),
+                    appProperties.model().embeddingDimensions()
+                );
                 throw new IllegalStateException("Embedding model is not configured for this profile");
             }
+            log.info(
+                "Embedding client resolved: documentId={}, embeddingClientClass={}",
+                documentId,
+                embeddingClient.getClass().getName()
+            );
             List<List<Double>> embeddings = embeddingClient.embed(chunks);
+            log.info("Embedding request completed: documentId={}, vectors={}", documentId, embeddings.size());
             if (embeddings.size() != chunks.size()) {
                 throw new IllegalStateException("Embedding response size mismatch");
             }
@@ -89,17 +114,21 @@ public class DocumentProcessingService {
             }
             setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
             List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+            log.info("Starting graph extraction: documentId={}, persistedChunks={}", documentId, persistedChunks.size());
             graphExtractionService.extract(document, persistedChunks);
 
             document.setProcessedAt(Instant.now());
+            log.info("Document processing completed successfully: documentId={}", documentId);
             return setStatus(document, DocumentStatus.COMPLETED, null);
         } catch (Exception ex) {
+            log.error("Document processing failed: documentId={}, message={}", documentId, ex.getMessage(), ex);
             return setStatus(document, DocumentStatus.FAILED, ex.getMessage());
         }
     }
 
     private String parseDocument(DocumentUploadNode document) throws IOException {
         byte[] bytes = documentUploadService.readContent(document.getContentUri());
+        log.info("Loaded document bytes from storage: documentId={}, bytes={}", document.getId(), bytes.length);
         return documentParsingService.parse(document.getOriginalFilename(), document.getContentType(), bytes);
     }
 
