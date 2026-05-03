@@ -1,0 +1,72 @@
+package io.github.vfedoriv.graphrag;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.service.CypherValidationService;
+import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.neo4j.core.Neo4jClient;
+
+@SpringBootTest
+@Import(TestcontainersConfiguration.class)
+@org.springframework.test.context.TestPropertySource(properties = {
+    "spring.autoconfigure.exclude="
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
+        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
+        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
+        + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
+        + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+})
+class CypherValidationIntegrationTest {
+
+    @Autowired
+    private Neo4jClient neo4jClient;
+    @Autowired
+    private SchemaRegistryService schemaRegistryService;
+    @Autowired
+    private CypherValidationService cypherValidationService;
+
+    @Test
+    void validatesWithExplainAgainstNeo4j() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        var schema = schemaRegistryService.createSchema("""
+            name: contracts
+            version: 1
+            nodes:
+              - label: Contract
+                key: contractId
+                properties:
+                  - name: contractId
+                    type: string
+            relationships: []
+            """, SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-validate", schema.getId());
+
+        neo4jClient.query("CREATE (:Contract {contractId: 'C-1'})").run();
+
+        var valid = cypherValidationService.validate(
+            "kb-validate",
+            "MATCH (c:Contract) RETURN c.contractId",
+            Map.of()
+        );
+        var invalid = cypherValidationService.validate(
+            "kb-validate",
+            "MATCH (c:Contract RETURN c.contractId",
+            Map.of()
+        );
+
+        assertThat(valid.valid()).isTrue();
+        assertThat(invalid.valid()).isFalse();
+        assertThat(invalid.errors()).anyMatch(e -> e.contains("planner validation failed"));
+    }
+}
