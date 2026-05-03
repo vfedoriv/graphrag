@@ -1,0 +1,4 @@
+Master Supply Agreement
+Contract ID: C-100
+Supplier: Acme Corp
+This agreement defines supply obligations and pricing.

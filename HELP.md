@@ -40,7 +40,7 @@ The following guides illustrate how to use some features concretely:
 This project contains a Docker Compose file named `compose.yaml`.
 In this file, the following services have been defined:
 
-* neo4j: [`neo4j:latest`](https://hub.docker.com/_/neo4j)
+* neo4j: [`neo4j:5.26.25`](https://hub.docker.com/_/neo4j)
 
 
 Please review the tags of the used images and set them to the same as you're running in production.
@@ -52,10 +52,22 @@ uses [Testcontainers at development time](https://docs.spring.io/spring-boot/4.0
 
 Testcontainers has been configured to use the following Docker images:
 
-* [`neo4j:latest`](https://hub.docker.com/_/neo4j)
+* [`neo4j:5.26.25`](https://hub.docker.com/_/neo4j)
 
 
 Please review the tags of the used images and set them to the same as you're running in production.
+
+### Docker Compose smoke test
+
+Use these commands to run a quick local smoke test against Neo4j from `compose.yaml`:
+
+1. `docker compose up -d neo4j`
+2. `./mvnw test`
+3. `docker compose down -v`
+
+Optional focused run for the synchronous end-to-end MVP flow test:
+
+`./mvnw -Dtest=EndToEndMvpFlowIntegrationTest test`
 
 ### Maven Parent overrides
 
@@ -64,4 +76,3 @@ While most of the inheritance is fine, it also inherits unwanted elements like `
 parent.
 To prevent this, the project POM contains empty overrides for these elements.
 If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
-
