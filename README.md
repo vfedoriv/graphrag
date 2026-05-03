@@ -89,6 +89,59 @@ Primary runtime services:
 - `CypherValidationService`: blocked keyword checks, schema checks, `EXPLAIN`, limit enforcement.
 - `CypherExecutionService`: executes only validated Cypher.
 
+## Process Flows
+
+### Schema lifecycle
+
+```mermaid
+flowchart TD
+    A[Schema YAML input] --> B[SchemaRegistryService.parseAndValidate]
+    B --> C{Valid schema?}
+    C -- No --> D[Reject with ProblemDetail]
+    C -- Yes --> E[Persist immutable SchemaDefinition version]
+    E --> F[Activate schema for KnowledgeBase]
+    F --> G[KnowledgeBase.activeSchemaId updated]
+    G --> H[Used by extraction + query generation + query validation]
+```
+
+### Document ingestion and processing
+
+```mermaid
+flowchart TD
+    A[Multipart upload] --> B[DocumentUploadService]
+    B --> C[Compute SHA-256]
+    C --> D{Duplicate in KnowledgeBase?}
+    D -- Yes --> E[Return existing metadata]
+    D -- No --> F[Store binary on filesystem]
+    F --> G[Persist DocumentUpload metadata]
+    G --> H[DocumentProcessingService]
+    H --> I[Parse text TXT/PDF/DOCX]
+    I --> J[Chunk text]
+    J --> K[Generate embeddings]
+    K --> L[Persist DocumentChunk + vector index]
+    L --> M[GraphExtractionService]
+    M --> N[LLM extraction constrained by active schema]
+    N --> O[Validate extracted nodes/relationships]
+    O --> P[Write domain graph + provenance]
+```
+
+### Q&A (`/ask`) execution flow
+
+```mermaid
+flowchart TD
+    A[User question] --> B[CypherGenerationService]
+    B --> C[LLM generates Cypher from active schema]
+    C --> D[CypherValidationService]
+    D --> E{Blocked keyword?}
+    E -- Yes --> F[Reject request]
+    E -- No --> G[Schema-aware checks]
+    G --> H[EXPLAIN validation]
+    H --> I[Enforce LIMIT if required]
+    I --> J[CypherExecutionService]
+    J --> K[Execute read-only query]
+    K --> L[Return rows + metadata]
+```
+
 ## Tech Stack
 
 - Java 25
