@@ -6,6 +6,13 @@ import io.github.vfedoriv.graphrag.dto.DocumentUploadResponse;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "Documents", description = "Document upload, processing, and chunk retrieval.")
 public class DocumentController {
 
     private final DocumentUploadService documentUploadService;
@@ -35,17 +43,55 @@ public class DocumentController {
     }
 
     @PostMapping(path = "/knowledge-bases/{knowledgeBaseId}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public DocumentUploadResponse uploadDocument(@PathVariable String knowledgeBaseId, @RequestPart("file") MultipartFile file) {
+    @Operation(summary = "Upload document", description = "Uploads a document into a knowledge base for later processing.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Document uploaded",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = DocumentUploadResponse.class),
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"status\":\"UPLOADED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":null,\"errorMessage\":null}"
+                )
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid multipart payload", content = @Content(schema = @Schema()))
+    })
+    public DocumentUploadResponse uploadDocument(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Document file to upload") @RequestPart("file") MultipartFile file
+    ) {
         return toResponse(documentUploadService.upload(knowledgeBaseId, file));
     }
 
     @PostMapping("/documents/{documentId}/process")
-    public DocumentUploadResponse processDocument(@PathVariable String documentId) {
+    @Operation(summary = "Process document", description = "Parses, chunks, embeds, and extracts graph data from a previously uploaded document.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Document processed",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = DocumentUploadResponse.class),
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"status\":\"PROCESSED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":\"2026-05-03T10:16:02Z\",\"errorMessage\":null}"
+                )
+            )
+        ),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentUploadResponse processDocument(@Parameter(description = "Document identifier") @PathVariable String documentId) {
         return toResponse(documentProcessingService.process(documentId));
     }
 
     @GetMapping("/documents/{documentId}/chunks")
-    public List<DocumentChunkResponse> getDocumentChunks(@PathVariable String documentId) {
+    @Operation(summary = "List document chunks", description = "Returns chunks generated during processing, ordered by chunk index.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Chunks retrieved"),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public List<DocumentChunkResponse> getDocumentChunks(@Parameter(description = "Document identifier") @PathVariable String documentId) {
         return documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId).stream()
             .map(chunk -> new DocumentChunkResponse(
                 chunk.getId(),
