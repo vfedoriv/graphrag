@@ -71,7 +71,7 @@ public class SchemaController {
         return toResponse(schemaRegistryService.getSchema(schemaId));
     }
 
-    @PostMapping("/schemas/{schemaId}/validate")
+    @PostMapping("/schemas/validate")
     @Operation(summary = "Validate schema YAML", description = "Validates YAML payload against schema format rules.")
     @ApiResponse(
         responseCode = "200",
@@ -85,7 +85,6 @@ public class SchemaController {
         )
     )
     public SchemaValidationResponse validateSchema(
-        @Parameter(description = "Schema identifier used for context") @PathVariable String schemaId,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Schema YAML to validate.",
             required = true,
