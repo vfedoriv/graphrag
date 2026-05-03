@@ -329,6 +329,17 @@ Base path: `/api/v1`
 - `POST /schemas/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`
 
+`knowledgeBaseId` is a client-defined identifier (not server-generated).  
+When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`, the service creates that knowledge base if it does not exist yet, then marks the schema as active for it.
+
+### Knowledge Bases
+
+- `POST /knowledge-bases`
+- `GET /knowledge-bases`
+- `GET /knowledge-bases/{knowledgeBaseId}`
+- `PUT /knowledge-bases/{knowledgeBaseId}`
+- `DELETE /knowledge-bases/{knowledgeBaseId}`
+
 ### Documents
 
 - `POST /knowledge-bases/{knowledgeBaseId}/documents` (multipart form, part name: `file`)
@@ -348,6 +359,10 @@ Base path: `/api/v1`
   - body: `{"content":"<yaml>", "sourceType":"PREDEFINED|GENERATED"}`
 - `POST /schemas/validate`
   - body: `{"content":"<yaml>"}`
+- `POST /knowledge-bases`
+  - body: `{"id":"kb-demo", "name":"Demo knowledge base"}`
+- `PUT /knowledge-bases/{knowledgeBaseId}`
+  - body: `{"name":"Updated knowledge base name"}`
 - `POST /knowledge-bases/{knowledgeBaseId}/documents`
   - multipart: part `file`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/generate`
@@ -372,6 +387,11 @@ curl http://localhost:8080/api/v1/schemas
 ```bash
 curl -X POST http://localhost:8080/api/v1/knowledge-bases/kb-demo/schemas/<schemaId>/activate
 ```
+
+How `knowledgeBaseId` works:
+- Pick any stable string you want to use as your tenant/project KB key (example: `kb-demo`, `acme-contracts-prod`).
+- Use that same value in all KB-scoped endpoints (`/documents`, `/queries/*`, schema activation).
+- There is no separate "create knowledge base" endpoint in this MVP; first activation creates it.
 
 3. Upload document:
 
