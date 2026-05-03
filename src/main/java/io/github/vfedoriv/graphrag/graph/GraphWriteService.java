@@ -71,9 +71,11 @@ public class GraphWriteService {
             .run();
 
         neo4jClient.query("""
-            MATCH (r:ExtractionRun {id: $runId}), (n:%s {id: $id})
+            MATCH (r:ExtractionRun {id: $runId})
+            MATCH (n:%s {id: $id})
+            MATCH (c:DocumentChunk {id: $chunkId})
             MERGE (r)-[:CREATED_NODE]->(n)
-            MERGE (c:DocumentChunk {id: $chunkId})-[:MENTIONS]->(n)
+            MERGE (c)-[:MENTIONS]->(n)
             """.formatted(label))
             .bind(extractionRunId).to("runId")
             .bind(entityId).to("id")
@@ -113,7 +115,8 @@ public class GraphWriteService {
         props.put("createdAt", Instant.now().toString());
 
         neo4jClient.query("""
-            MATCH (from:%s {id: $fromId}), (to:%s {id: $toId})
+            MATCH (from:%s {id: $fromId})
+            MATCH (to:%s {id: $toId})
             MERGE (from)-[r:%s {id: $relId}]->(to)
             SET r += $props
             """.formatted(fromLabel, toLabel, type))
