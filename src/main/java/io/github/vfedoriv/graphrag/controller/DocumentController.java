@@ -3,7 +3,6 @@ package io.github.vfedoriv.graphrag.controller;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.dto.DocumentChunkResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentUploadResponse;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,16 +29,13 @@ public class DocumentController {
 
     private final DocumentUploadService documentUploadService;
     private final DocumentProcessingService documentProcessingService;
-    private final DocumentChunkRepository documentChunkRepository;
 
     public DocumentController(
         DocumentUploadService documentUploadService,
-        DocumentProcessingService documentProcessingService,
-        DocumentChunkRepository documentChunkRepository
+        DocumentProcessingService documentProcessingService
     ) {
         this.documentUploadService = documentUploadService;
         this.documentProcessingService = documentProcessingService;
-        this.documentChunkRepository = documentChunkRepository;
     }
 
     @PostMapping(path = "/knowledge-bases/{knowledgeBaseId}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -63,6 +59,19 @@ public class DocumentController {
         @Parameter(description = "Document file to upload") @RequestPart("file") MultipartFile file
     ) {
         return toResponse(documentUploadService.upload(knowledgeBaseId, file));
+    }
+
+    @GetMapping("/knowledge-bases/{knowledgeBaseId}/documents")
+    @Operation(summary = "List knowledge base documents", description = "Returns documents uploaded for a specific knowledge base.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Documents retrieved")
+    })
+    public List<DocumentUploadResponse> listKnowledgeBaseDocuments(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId
+    ) {
+        return documentUploadService.listByKnowledgeBase(knowledgeBaseId).stream()
+            .map(this::toResponse)
+            .toList();
     }
 
     @PostMapping("/documents/{documentId}/process")
@@ -92,7 +101,7 @@ public class DocumentController {
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
     public List<DocumentChunkResponse> getDocumentChunks(@Parameter(description = "Document identifier") @PathVariable String documentId) {
-        return documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId).stream()
+        return documentProcessingService.getDocumentChunks(documentId).stream()
             .map(chunk -> new DocumentChunkResponse(
                 chunk.getId(),
                 chunk.getDocumentId(),
