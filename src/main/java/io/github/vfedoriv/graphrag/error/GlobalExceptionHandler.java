@@ -76,6 +76,13 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(QueryRejectedException.class)
+    public ProblemDetail handleQueryRejected(QueryRejectedException ex, HttpServletRequest request) {
+        ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+        detail.setProperty("errors", ex.getErrors());
+        return detail;
+    }
+
     private ProblemDetail baseProblem(HttpStatus status, String title, String instancePath) {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, title);
         detail.setTitle(title);

@@ -1,10 +1,15 @@
 package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
+import io.github.vfedoriv.graphrag.dto.QueryExecuteRequest;
+import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
+import io.github.vfedoriv.graphrag.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
 import jakarta.validation.Valid;
@@ -21,15 +26,18 @@ public class QueryController {
     private final AppProperties appProperties;
     private final CypherGenerationService cypherGenerationService;
     private final CypherValidationService cypherValidationService;
+    private final CypherExecutionService cypherExecutionService;
 
     public QueryController(
         AppProperties appProperties,
         CypherGenerationService cypherGenerationService,
-        CypherValidationService cypherValidationService
+        CypherValidationService cypherValidationService,
+        CypherExecutionService cypherExecutionService
     ) {
         this.appProperties = appProperties;
         this.cypherGenerationService = cypherGenerationService;
         this.cypherValidationService = cypherValidationService;
+        this.cypherExecutionService = cypherExecutionService;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/generate")
@@ -54,5 +62,30 @@ public class QueryController {
             appProperties.query().maxRows(),
             appProperties.query().timeoutSeconds()
         );
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/execute")
+    public QueryExecutionResponse execute(
+        @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody QueryExecuteRequest request
+    ) {
+        return cypherExecutionService.execute(knowledgeBaseId, request.cypher(), request.parameters());
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/ask")
+    public QueryAskResponse ask(
+        @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody QueryGenerateRequest request
+    ) {
+        GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, request.prompt());
+        if (!generated.validation().valid()) {
+            throw new QueryRejectedException(generated.validation().errors());
+        }
+        QueryExecutionResponse execution = cypherExecutionService.execute(
+            knowledgeBaseId,
+            generated.validation().cypher(),
+            generated.validation().parameters()
+        );
+        return new QueryAskResponse(generated, execution);
     }
 }
