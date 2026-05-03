@@ -126,6 +126,10 @@ public class DocumentProcessingService {
         }
     }
 
+    public List<DocumentChunkNode> getDocumentChunks(String documentId) {
+        return documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+    }
+
     private String parseDocument(DocumentUploadNode document) throws IOException {
         byte[] bytes = documentUploadService.readContent(document.getContentUri());
         log.info("Loaded document bytes from storage: documentId={}, bytes={}", document.getId(), bytes.length);
