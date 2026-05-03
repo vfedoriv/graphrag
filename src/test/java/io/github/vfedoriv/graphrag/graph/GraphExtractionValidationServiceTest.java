@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
@@ -55,6 +56,9 @@ class GraphExtractionValidationServiceTest {
             )
         );
         assertThatCode(() -> validationService.validate(result, schema())).doesNotThrowAnyException();
+        GraphExtractionResult validated = validationService.validate(result, schema());
+        assertThat(validated.nodes()).hasSize(2);
+        assertThat(validated.relationships()).hasSize(1);
     }
 
     private SchemaDocument schema() {
