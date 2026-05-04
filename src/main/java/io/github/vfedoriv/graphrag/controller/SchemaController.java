@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
+import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,14 +18,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,10 +39,16 @@ public class SchemaController {
 
     private final SchemaRegistryService schemaRegistryService;
     private final SchemaGenerationService schemaGenerationService;
+    private final DocumentParsingService documentParsingService;
 
-    public SchemaController(SchemaRegistryService schemaRegistryService, SchemaGenerationService schemaGenerationService) {
+    public SchemaController(
+        SchemaRegistryService schemaRegistryService,
+        SchemaGenerationService schemaGenerationService,
+        DocumentParsingService documentParsingService
+    ) {
         this.schemaRegistryService = schemaRegistryService;
         this.schemaGenerationService = schemaGenerationService;
+        this.documentParsingService = documentParsingService;
     }
 
     @PostMapping("/schemas")
@@ -73,11 +85,29 @@ public class SchemaController {
             request.description(),
             request.text()
         );
-        if (Boolean.TRUE.equals(request.save())) {
-            SchemaDefinitionNode saved = schemaRegistryService.createSchema(yaml, SchemaSourceType.GENERATED);
-            return new GenerateSchemaResponse(yaml, saved.getId());
-        }
-        return new GenerateSchemaResponse(yaml, null);
+        return maybeSaveGeneratedSchema(yaml, Boolean.TRUE.equals(request.save()));
+    }
+
+    @PostMapping(path = "/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+        summary = "Generate schema YAML from uploaded file",
+        description = "Parses an uploaded file (PDF/TXT/DOCX) and generates a graph schema YAML from extracted text."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema YAML generated"),
+        @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
+    })
+    public GenerateSchemaResponse generateSchemaFromFile(
+        @Parameter(description = "Schema logical name") @RequestParam String name,
+        @Parameter(description = "Schema version") @RequestParam int version,
+        @Parameter(description = "Schema description") @RequestParam(required = false) String description,
+        @Parameter(description = "When true, saves generated schema in registry")
+        @RequestParam(required = false, defaultValue = "false") boolean save,
+        @Parameter(description = "Source file used for schema generation") @RequestPart("file") MultipartFile file
+    ) {
+        String text = parseUploadedText(file);
+        String yaml = schemaGenerationService.generateYaml(name, version, description, text);
+        return maybeSaveGeneratedSchema(yaml, save);
     }
 
     @GetMapping("/schemas")
@@ -152,5 +182,21 @@ public class SchemaController {
             node.getStatus(),
             node.getCreatedAt()
         );
+    }
+
+    private GenerateSchemaResponse maybeSaveGeneratedSchema(String yaml, boolean save) {
+        if (save) {
+            SchemaDefinitionNode saved = schemaRegistryService.createSchema(yaml, SchemaSourceType.GENERATED);
+            return new GenerateSchemaResponse(yaml, saved.getId());
+        }
+        return new GenerateSchemaResponse(yaml, null);
+    }
+
+    private String parseUploadedText(MultipartFile file) {
+        try {
+            return documentParsingService.parse(file.getOriginalFilename(), file.getContentType(), file.getBytes());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to read uploaded file", e);
+        }
     }
 }
