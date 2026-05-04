@@ -28,19 +28,22 @@ Out of scope (current implementation):
 - authentication and authorization,
 - asynchronous/background processing orchestration.
 
-## Implemented Scope (Phases 1-8)
+## Implemented Scope
 
 - Spring Boot 4.0.6 application foundation with validated config and test coverage.
 - Schema registry:
   - YAML schema parsing/validation,
   - immutable versioning,
   - Neo4j persistence,
-  - activation per knowledge base.
+  - activation per knowledge base,
+  - schema generation from free text and uploaded files (optional save to registry).
 - Document ingestion:
   - multipart upload,
+  - upload size limit: 100 MB,
   - SHA-256 deduplication within a knowledge base,
   - local filesystem binary storage,
-  - metadata persistence in Neo4j.
+  - metadata persistence in Neo4j,
+  - list documents by knowledge base.
 - Processing pipeline:
   - parse document text (TXT/PDF/DOCX),
   - chunk text,
@@ -324,13 +327,15 @@ Base path: `/api/v1`
 ### Schemas
 
 - `POST /schemas`
+- `POST /schemas/generate`
+- `POST /schemas/generate/from-file` (multipart form, part name: `file`)
 - `GET /schemas`
 - `GET /schemas/{schemaId}`
 - `POST /schemas/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`
 
 `knowledgeBaseId` is a client-defined identifier (not server-generated).  
-When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`, the service creates that knowledge base if it does not exist yet, then marks the schema as active for it.
+When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`, the service marks the schema as active for that knowledge base; if the knowledge base does not exist yet, it is created lazily.
 
 ### Knowledge Bases
 
@@ -343,6 +348,7 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 ### Documents
 
 - `POST /knowledge-bases/{knowledgeBaseId}/documents` (multipart form, part name: `file`)
+- `GET /knowledge-bases/{knowledgeBaseId}/documents`
 - `POST /documents/{documentId}/process`
 - `GET /documents/{documentId}/chunks`
 
@@ -357,6 +363,10 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 
 - `POST /schemas`
   - body: `{"content":"<yaml>", "sourceType":"PREDEFINED|GENERATED"}`
+- `POST /schemas/generate`
+  - body: `{"name":"generated-legal-schema", "version":1, "description":"optional", "text":"<unstructured text>", "save":false}`
+- `POST /schemas/generate/from-file`
+  - multipart fields: `name` (string), `version` (int), `description` (optional string), `save` (optional boolean), part `file` (PDF/TXT/DOCX)
 - `POST /schemas/validate`
   - body: `{"content":"<yaml>"}`
 - `POST /knowledge-bases`
@@ -365,6 +375,8 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - body: `{"name":"Updated knowledge base name"}`
 - `POST /knowledge-bases/{knowledgeBaseId}/documents`
   - multipart: part `file`
+- `GET /knowledge-bases/{knowledgeBaseId}/documents`
+  - returns: document metadata list for the knowledge base
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/generate`
   - body: `{"prompt":"..."}`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/validate`
@@ -382,7 +394,15 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 curl http://localhost:8080/api/v1/schemas
 ```
 
-2. Activate schema for a knowledge base (creates KB lazily if missing):
+2. Create a knowledge base:
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/knowledge-bases" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"kb-demo","name":"Demo KB"}'
+```
+
+3. Activate schema for the knowledge base:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/knowledge-bases/kb-demo/schemas/<schemaId>/activate
@@ -391,22 +411,22 @@ curl -X POST http://localhost:8080/api/v1/knowledge-bases/kb-demo/schemas/<schem
 How `knowledgeBaseId` works:
 - Pick any stable string you want to use as your tenant/project KB key (example: `kb-demo`, `acme-contracts-prod`).
 - Use that same value in all KB-scoped endpoints (`/documents`, `/queries/*`, schema activation).
-- There is no separate "create knowledge base" endpoint in this MVP; first activation creates it.
+- You can create a knowledge base explicitly via `POST /knowledge-bases`; activation also supports lazy creation for backward compatibility.
 
-3. Upload document:
+4. Upload document:
 
 ```bash
 curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/documents" \
   -F "file=@/absolute/path/to/document.pdf"
 ```
 
-4. Process document:
+5. Process document:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/documents/<documentId>/process
 ```
 
-5. Ask question:
+6. Ask question:
 
 ```bash
 curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/ask" \
