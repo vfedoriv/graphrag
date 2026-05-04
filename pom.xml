@@ -105,6 +105,11 @@
             <artifactId>langchain4j-document-parser-apache-tika</artifactId>
             <version>${langchain4j-beta.version}</version>
         </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-llm-graph-transformer</artifactId>
+            <version>${langchain4j-beta.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

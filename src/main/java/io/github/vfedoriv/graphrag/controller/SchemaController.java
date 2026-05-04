@@ -1,10 +1,14 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.CreateSchemaRequest;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SchemaController {
 
     private final SchemaRegistryService schemaRegistryService;
+    private final SchemaGenerationService schemaGenerationService;
 
-    public SchemaController(SchemaRegistryService schemaRegistryService) {
+    public SchemaController(SchemaRegistryService schemaRegistryService, SchemaGenerationService schemaGenerationService) {
         this.schemaRegistryService = schemaRegistryService;
+        this.schemaGenerationService = schemaGenerationService;
     }
 
     @PostMapping("/schemas")
@@ -52,6 +58,26 @@ public class SchemaController {
     })
     public SchemaResponse createSchema(@Valid @RequestBody CreateSchemaRequest request) {
         return toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType()));
+    }
+
+    @PostMapping("/schemas/generate")
+    @Operation(summary = "Generate schema YAML", description = "Generates a new graph schema YAML from unstructured text.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema YAML generated"),
+        @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
+    })
+    public GenerateSchemaResponse generateSchema(@Valid @RequestBody GenerateSchemaRequest request) {
+        String yaml = schemaGenerationService.generateYaml(
+            request.name(),
+            request.version(),
+            request.description(),
+            request.text()
+        );
+        if (Boolean.TRUE.equals(request.save())) {
+            SchemaDefinitionNode saved = schemaRegistryService.createSchema(yaml, SchemaSourceType.GENERATED);
+            return new GenerateSchemaResponse(yaml, saved.getId());
+        }
+        return new GenerateSchemaResponse(yaml, null);
     }
 
     @GetMapping("/schemas")
