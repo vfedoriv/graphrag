@@ -18,10 +18,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
+@Validated
 @Tag(name = "Schemas", description = "Schema lifecycle operations: create, list, validate, and activate.")
 public class SchemaController {
 
@@ -98,8 +102,8 @@ public class SchemaController {
         @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
     })
     public GenerateSchemaResponse generateSchemaFromFile(
-        @Parameter(description = "Schema logical name") @RequestParam String name,
-        @Parameter(description = "Schema version") @RequestParam int version,
+        @Parameter(description = "Schema logical name") @RequestParam @NotBlank String name,
+        @Parameter(description = "Schema version") @RequestParam @Positive int version,
         @Parameter(description = "Schema description") @RequestParam(required = false) String description,
         @Parameter(description = "When true, saves generated schema in registry")
         @RequestParam(required = false, defaultValue = "false") boolean save,
