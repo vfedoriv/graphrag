@@ -1,0 +1,58 @@
+# PR Review Summary — Latest 3 Commits
+
+**Date:** 2026-05-05 12:24:54
+**Scope:** SchemaController.java, SchemaControllerTest.java, README.md, CLAUDE.md
+**Commits:** 43a96bc, c84296b, 514fa23
+**Agents:** code-reviewer, pr-test-analyzer
+
+---
+
+## Critical Issues (2 found)
+
+- [code-reviewer] `IllegalArgumentException` thrown by `parseUploadedText` and `RoutedDocumentParser` (for unsupported file types) falls through to the catch-all handler and returns HTTP 500 instead of 400. Both are client errors. Register `IllegalArgumentException` in `GlobalExceptionHandler`, or introduce a dedicated `UnsupportedDocumentTypeException` already handled there. [SchemaController.java:195–201]
+
+- [code-reviewer] No input validation on `generateSchemaFromFile` params: `name` can be blank, `version` can be <= 0. The parallel `GenerateSchemaRequest` DTO uses `@NotBlank`/`@Min(1)` enforced via `@Valid`. Add `@NotBlank`/`@Positive` to `@RequestParam` args and add `@Validated` on the controller class (or use a DTO). [SchemaController.java:100–113]
+
+---
+
+## Important Issues (4 found)
+
+- [pr-test-analyzer] Missing `save=false` test for `generateSchemaFromFile`. The default path returns `schemaId=null` and must not call `registryService.createSchema` — neither is asserted anywhere. The text-based endpoint has paired tests (`generateSchemaReturnsYamlContent` + `generateSchemaSavesWhenFlagIsTrue`); the file endpoint should match. [SchemaControllerTest.java]
+
+- [pr-test-analyzer] No test for `IOException` from `file.getBytes()`. The `catch (IOException e)` in `parseUploadedText` is the only explicit error-handling branch in the new code and has zero coverage. Use `Mockito.mock(MultipartFile.class)` configured to throw on `getBytes()`. [SchemaControllerTest.java]
+
+- [pr-test-analyzer] No assertion on `schemaId` being `null` when `save=false` in any test across the entire class. The response contract (null vs. absent) is never verified.
+
+- [code-reviewer] `file.getOriginalFilename()` and `file.getContentType()` are nullable per the Spring contract and passed directly to the parser without a null guard. When both are null, the result is an HTTP 500 for a client mistake. Acceptable once Critical Issue #1 is fixed, but the null path should be tested. [SchemaController.java:197]
+
+---
+
+## Suggestions (4 found)
+
+- [code-reviewer] Add `@ApiResponse(responseCode = "415", ...)` to `@ApiResponses` on `generateSchemaFromFile` — Spring returns 415 before the method is invoked if the client sends JSON. The other endpoints don't need this, but the `consumes = MULTIPART_FORM_DATA_VALUE` constraint makes it relevant here.
+
+- [code-reviewer] Import ordering: `import java.io.IOException` is placed between `io.swagger` and `jakarta.validation` imports, breaking the `io.*` -> `jakarta.*` -> `java.*` -> `org.*` grouping used elsewhere. [SchemaController.java:21]
+
+- [pr-test-analyzer] In the new test, `rawBytes` is allocated separately from the `MockMultipartFile` constructor call (`"raw bytes".getBytes()` appears twice). Construct the file from `rawBytes` directly to avoid the dual-allocation confusion: `new MockMultipartFile("file", "sample.txt", "text/plain", rawBytes)`. [SchemaControllerTest.java:74–75]
+
+- [pr-test-analyzer] Trailing `verify(parsingService).parse(...)` is redundant — if the stub wasn't matched, the `assertThat(response.content()).isEqualTo(yaml)` would already fail. Replace with `verifyNoMoreInteractions(registryService)` in the future `save=false` test instead.
+
+---
+
+## Strengths
+
+- `maybeSaveGeneratedSchema` is a clean DRY extraction — removes the pre-existing inline duplication from both generate callers correctly.
+- Constructor injection of `DocumentParsingService` is consistent with the rest of the codebase.
+- `consumes = MediaType.MULTIPART_FORM_DATA_VALUE` is correctly declared, preventing JSON body binding.
+- `argThat(bytes -> Arrays.equals(bytes, rawBytes))` correctly handles byte-array value comparison (instead of reference equality with `eq(rawBytes)`).
+- Unit test style (direct constructor, no MockMvc overhead) is consistent with the existing test class.
+- OpenAPI annotations (`@Operation`, `@ApiResponses`, `@Parameter`) follow the established pattern.
+
+---
+
+## Recommended Action
+
+1. Fix HTTP 500 -> 400 mapping for `IllegalArgumentException` / unsupported document type in `GlobalExceptionHandler`
+2. Add `@Validated` + `@NotBlank`/`@Positive` to `generateSchemaFromFile` params
+3. Add missing tests: `save=false` path, `IOException` on `getBytes()`, null filename/content-type
+4. Minor cleanup: import ordering, redundant `rawBytes` allocation, `verify` -> `verifyNoMoreInteractions`
