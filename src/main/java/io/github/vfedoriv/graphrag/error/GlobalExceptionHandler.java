@@ -60,6 +60,11 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.PAYLOAD_TOO_LARGE, "Maximum upload size exceeded", request.getRequestURI());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnhandled(Exception ex, HttpServletRequest request) {
         return baseProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", request.getRequestURI());
