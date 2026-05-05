@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw -v)",
+      "Bash(./mvnw help:describe -Dplugin=org.springframework.boot:spring-boot-maven-plugin)",
+      "Bash(./mvnw compile *)",
+      "Bash(./mvnw test *)",
+      "Bash(./mvnw spring-boot:run *)",
+      "Bash(docker compose up -d neo4j)"
+    ]
+  },
+  "project": {
+    "primaryBuildTool": "maven-wrapper",
+    "testFramework": "junit",
+    "database": "neo4j"
+  }
+}
