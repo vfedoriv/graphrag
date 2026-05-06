@@ -158,7 +158,8 @@ public class DocumentProcessingService {
 
     private void createChunkRelationship(String documentId, String chunkId) {
         neo4jClient.query("""
-            MATCH (d:DocumentUpload {id: $documentId}), (c:DocumentChunk {id: $chunkId})
+            MATCH (d:DocumentUpload {id: $documentId})
+            MATCH (c:DocumentChunk {id: $chunkId})
             MERGE (d)-[:HAS_CHUNK]->(c)
             """)
             .bind(documentId).to("documentId")
