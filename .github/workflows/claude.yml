@@ -40,7 +40,8 @@ jobs:
           settings: |
             {
               "env": {
-                "ANTHROPIC_BASE_URL": "${{ vars.ANTHROPIC_BASE_URL }}"
+                "ANTHROPIC_BASE_URL": "${{ vars.ANTHROPIC_BASE_URL }}",
+                "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
               }
             }
           # Optional: Customize the trigger phrase (default: @claude)
