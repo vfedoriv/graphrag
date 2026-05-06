@@ -70,11 +70,11 @@ public class DocumentProcessingService {
             document.getSizeBytes()
         );
         try {
-            setStatus(document, DocumentStatus.PARSING, null);
+            document = setStatus(document, DocumentStatus.PARSING, null);
             String text = parseDocument(document);
             List<String> chunks = chunkingService.split(text);
             log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
-            setStatus(document, DocumentStatus.EMBEDDING, null);
+            document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
             EmbeddingClient embeddingClient = embeddingClientProvider.getIfAvailable();
             if (embeddingClient == null) {
@@ -112,7 +112,7 @@ public class DocumentProcessingService {
                 documentChunkRepository.save(chunk);
                 createChunkRelationship(documentId, chunk.getId());
             }
-            setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
+            document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
             List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
             log.info("Starting graph extraction: documentId={}, persistedChunks={}", documentId, persistedChunks.size());
             graphExtractionService.extract(document, persistedChunks);

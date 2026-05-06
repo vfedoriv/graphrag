@@ -18,13 +18,16 @@ import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentProcessingServiceTest {
@@ -81,6 +84,72 @@ class DocumentProcessingServiceTest {
         assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
         assertThat(processed.getProcessedAt()).isNotNull();
         verify(documentChunkRepository, times(2)).save(any());
+    }
+
+    @Test
+    void keepsLatestSavedEntityAcrossStatusTransitions() throws Exception {
+        ChunkingService chunkingService = new ChunkingService(props());
+        EmbeddingClient embeddingClient = texts -> List.of(
+            List.of(0.1, 0.2, 0.3),
+            List.of(0.4, 0.5, 0.6)
+        );
+        DocumentUploadNode doc = new DocumentUploadNode();
+        doc.setId("doc-1");
+        doc.setOriginalFilename("a.txt");
+        doc.setContentType("text/plain");
+        doc.setContentUri("file:///tmp/a.txt");
+
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
+        when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
+            .thenReturn("abcdefghij01234567");
+        when(embeddingClientProvider.getIfAvailable()).thenReturn(embeddingClient);
+        when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
+            .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
+
+        AtomicLong persistedVersion = new AtomicLong(-1);
+        when(documentUploadRepository.save(any(DocumentUploadNode.class))).thenAnswer(invocation -> {
+            DocumentUploadNode in = invocation.getArgument(0);
+            long expected = persistedVersion.get();
+            long actual = in.getVersion() == null ? -1 : in.getVersion();
+            if (actual != expected) {
+                throw new OptimisticLockingFailureException(
+                    "stale version: expected=%d actual=%d".formatted(expected, actual)
+                );
+            }
+            long next = expected + 1;
+            persistedVersion.set(next);
+            DocumentUploadNode saved = new DocumentUploadNode();
+            saved.setId(in.getId());
+            ReflectionTestUtils.setField(saved, "version", next);
+            saved.setKnowledgeBaseId(in.getKnowledgeBaseId());
+            saved.setOriginalFilename(in.getOriginalFilename());
+            saved.setContentType(in.getContentType());
+            saved.setSizeBytes(in.getSizeBytes());
+            saved.setSha256(in.getSha256());
+            saved.setContentUri(in.getContentUri());
+            saved.setStatus(in.getStatus());
+            saved.setUploadedAt(in.getUploadedAt());
+            saved.setProcessedAt(in.getProcessedAt());
+            saved.setErrorMessage(in.getErrorMessage());
+            return saved;
+        });
+
+        DocumentProcessingService service = new DocumentProcessingService(
+            documentUploadRepository,
+            documentChunkRepository,
+            documentUploadService,
+            documentParsingService,
+            chunkingService,
+            neo4jClient,
+            props(),
+            embeddingClientProvider,
+            graphExtractionService
+        );
+
+        DocumentUploadNode processed = service.process("doc-1");
+        assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
+        assertThat(processed.getProcessedAt()).isNotNull();
     }
 
     private AppProperties props() {

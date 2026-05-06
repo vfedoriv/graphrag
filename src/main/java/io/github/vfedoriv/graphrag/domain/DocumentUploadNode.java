@@ -35,10 +35,6 @@ public class DocumentUploadNode {
         return version;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
     public String getKnowledgeBaseId() {
         return knowledgeBaseId;
     }
