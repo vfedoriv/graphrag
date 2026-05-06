@@ -131,7 +131,8 @@ public class GraphExtractionService {
 
     private void linkRunToDocument(String runId, String documentId) {
         neo4jClient.query("""
-            MATCH (d:DocumentUpload {id: $documentId}), (r:ExtractionRun {id: $runId})
+            MATCH (d:DocumentUpload {id: $documentId})
+            MATCH (r:ExtractionRun {id: $runId})
             MERGE (d)-[:HAS_EXTRACTION_RUN]->(r)
             """)
             .bind(documentId).to("documentId")
