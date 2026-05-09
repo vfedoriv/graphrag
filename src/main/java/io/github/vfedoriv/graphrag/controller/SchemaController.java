@@ -1,8 +1,9 @@
 package io.github.vfedoriv.graphrag.controller;
 
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.CreateSchemaRequest;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
@@ -87,9 +88,10 @@ public class SchemaController {
             request.name(),
             request.version(),
             request.description(),
-            request.text()
+            request.text(),
+            request.example()
         );
-        return maybeSaveGeneratedSchema(yaml, Boolean.TRUE.equals(request.save()));
+        return new GenerateSchemaResponse(yaml);
     }
 
     @PostMapping(path = "/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -105,13 +107,46 @@ public class SchemaController {
         @Parameter(description = "Schema logical name") @RequestParam @NotBlank String name,
         @Parameter(description = "Schema version") @RequestParam @Positive int version,
         @Parameter(description = "Schema description") @RequestParam(required = false) String description,
-        @Parameter(description = "When true, saves generated schema in registry")
-        @RequestParam(required = false, defaultValue = "false") boolean save,
+        @Parameter(description = "Example entities and relationships used to guide schema generation")
+        @RequestParam @NotBlank String example,
         @Parameter(description = "Source file used for schema generation") @RequestPart("file") MultipartFile file
     ) {
         String text = parseUploadedText(file);
-        String yaml = schemaGenerationService.generateYaml(name, version, description, text);
-        return maybeSaveGeneratedSchema(yaml, save);
+        String yaml = schemaGenerationService.generateYaml(name, version, description, text, example);
+        return new GenerateSchemaResponse(yaml);
+    }
+
+    @PostMapping("/schemas/generate/example")
+    @Operation(
+        summary = "Generate schema example from text",
+        description = "Generates representative entities and relationships from text to guide schema generation."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema example generated"),
+        @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
+    })
+    public GenerateSchemaExampleResponse generateSchemaExample(@Valid @RequestBody GenerateSchemaExampleRequest request) {
+        String example = schemaGenerationService.generateExample(request.text(), request.userPrompt());
+        return new GenerateSchemaExampleResponse(example);
+    }
+
+    @PostMapping(path = "/schemas/generate/example/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+        summary = "Generate schema example from uploaded file",
+        description = "Parses an uploaded file (PDF/TXT/DOCX) and generates representative entities and relationships to guide schema generation."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema example generated"),
+        @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
+    })
+    public GenerateSchemaExampleResponse generateSchemaExampleFromFile(
+        @Parameter(description = "Optional guidance for domain/entities/relationships/properties")
+        @RequestParam(required = false) String userPrompt,
+        @Parameter(description = "Source file used for example generation") @RequestPart("file") MultipartFile file
+    ) {
+        String text = parseUploadedText(file);
+        String example = schemaGenerationService.generateExample(text, userPrompt);
+        return new GenerateSchemaExampleResponse(example);
     }
 
     @GetMapping("/schemas")
@@ -186,14 +221,6 @@ public class SchemaController {
             node.getStatus(),
             node.getCreatedAt()
         );
-    }
-
-    private GenerateSchemaResponse maybeSaveGeneratedSchema(String yaml, boolean save) {
-        if (save) {
-            SchemaDefinitionNode saved = schemaRegistryService.createSchema(yaml, SchemaSourceType.GENERATED);
-            return new GenerateSchemaResponse(yaml, saved.getId());
-        }
-        return new GenerateSchemaResponse(yaml, null);
     }
 
     private String parseUploadedText(MultipartFile file) {

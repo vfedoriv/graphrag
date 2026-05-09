@@ -7,8 +7,6 @@ public record GenerateSchemaResponse(
         description = "Generated schema in YAML format.",
         example = "name: generated-legal-schema\nversion: 1\nnodes:\n  - label: Party\n    key: id\nrelationships: []"
     )
-    String content,
-    @Schema(description = "Saved schema identifier when save=true; null otherwise.", example = "schema-01")
-    String schemaId
+    String content
 ) {
 }

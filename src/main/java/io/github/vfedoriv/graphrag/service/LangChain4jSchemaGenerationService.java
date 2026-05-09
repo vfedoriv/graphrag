@@ -9,8 +9,12 @@ import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.community.data.document.transformer.graph.GraphTransformer;
 import dev.langchain4j.community.data.document.transformer.graph.LLMGraphTransformer;
 import dev.langchain4j.data.document.Document;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.response.ChatResponse;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,26 +24,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LangChain4jSchemaGenerationService implements SchemaGenerationService {
 
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
-    private final AppProperties appProperties;
+    private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
 
-    public LangChain4jSchemaGenerationService(AppProperties appProperties) {
-        this.appProperties = appProperties;
+    public LangChain4jSchemaGenerationService(ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider) {
+        this.springChatModelProvider = springChatModelProvider;
     }
 
     @Override
-    public String generateYaml(String name, int version, String description, String text) {
+    public String generateYaml(String name, int version, String description, String text, String example) {
         GraphTransformer transformer = LLMGraphTransformer.builder()
-            .model(OpenAiChatModel.builder()
-                .apiKey(appProperties.model().apiKey())
-                .baseUrl(appProperties.model().baseUrl())
-                .modelName(appProperties.model().chatModel())
-                .build())
+            .model(new SpringAiLangChainChatModelAdapter(requireSpringChatModel()))
+            .examples(example)
             .build();
         GraphDocument graphDocument = transformer.transform(Document.from(text));
         SchemaDocument schema = inferSchema(name, version, description, graphDocument);
@@ -48,6 +51,23 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to serialize generated schema to YAML", e);
         }
+    }
+
+    @Override
+    public String generateExample(String text, String userPrompt) {
+        String userInstruction = (userPrompt == null || userPrompt.isBlank()) ? "" : "\nAdditional guidance:\n" + userPrompt;
+        String prompt = """
+            You generate examples for graph extraction.
+            Return only a JSON array where each object has keys 'head', 'head_type', 'relation', 'tail', and 'tail_type'.
+            No markdown and no explanations.
+
+            Generate representative entity-relationship examples from this text so they can guide schema extraction.
+            %s
+
+            Text:
+            %s
+            """.formatted(userInstruction, text);
+        return requireSpringChatModel().call(new Prompt(prompt)).getResult().getOutput().getText();
     }
 
     private SchemaDocument inferSchema(String name, int version, String description, GraphDocument graphDocument) {
@@ -108,5 +128,43 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         String cleaned = raw.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_");
         cleaned = cleaned.replaceAll("^_+|_+$", "");
         return cleaned.isBlank() ? "RELATED_TO" : cleaned;
+    }
+
+    private org.springframework.ai.chat.model.ChatModel requireSpringChatModel() {
+        org.springframework.ai.chat.model.ChatModel model = springChatModelProvider.getIfAvailable();
+        if (model == null) {
+            throw new IllegalStateException("No Spring AI ChatModel bean is configured");
+        }
+        return model;
+    }
+
+    private static final class SpringAiLangChainChatModelAdapter implements dev.langchain4j.model.chat.ChatModel {
+
+        private final org.springframework.ai.chat.model.ChatModel springChatModel;
+
+        private SpringAiLangChainChatModelAdapter(org.springframework.ai.chat.model.ChatModel springChatModel) {
+            this.springChatModel = springChatModel;
+        }
+
+        @Override
+        public ChatResponse doChat(ChatRequest chatRequest) {
+            String promptText = toPrompt(chatRequest.messages());
+            String outputText = springChatModel.call(new Prompt(promptText)).getResult().getOutput().getText();
+            return ChatResponse.builder()
+                .aiMessage(AiMessage.from(outputText))
+                .build();
+        }
+
+        private String toPrompt(List<ChatMessage> messages) {
+            StringBuilder builder = new StringBuilder();
+            for (ChatMessage message : messages) {
+                if (message instanceof SystemMessage systemMessage) {
+                    builder.append("System:\n").append(systemMessage.text()).append("\n\n");
+                } else if (message instanceof UserMessage userMessage && userMessage.hasSingleText()) {
+                    builder.append("User:\n").append(userMessage.singleText()).append("\n\n");
+                }
+            }
+            return builder.toString();
+        }
     }
 }

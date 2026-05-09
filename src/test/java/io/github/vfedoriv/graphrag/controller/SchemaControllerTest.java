@@ -6,14 +6,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.Arrays;
-import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,48 +23,21 @@ class SchemaControllerTest {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
         DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
-        when(generationService.generateYaml("generated-legal-schema", 1, "from text", "raw input text"))
+        when(generationService.generateYaml("generated-legal-schema", 1, "from text", "raw input text", "example json"))
             .thenReturn("name: generated-legal-schema\nversion: 1\nnodes: []\nrelationships: []\n");
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         var response = controller.generateSchema(
-            new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", false)
+            new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", "example json")
         );
 
         assertThat(response.content()).contains("name: generated-legal-schema");
         assertThat(response.content()).contains("nodes:");
         assertThat(response.content()).contains("relationships:");
-        assertThat(response.schemaId()).isNull();
     }
 
     @Test
-    void generateSchemaSavesWhenFlagIsTrue() {
-        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
-        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
-        String yaml = "name: generated-legal-schema\nversion: 1\nnodes: []\nrelationships: []\n";
-        when(generationService.generateYaml("generated-legal-schema", 1, "from text", "raw input text"))
-            .thenReturn(yaml);
-        SchemaDefinitionNode saved = new SchemaDefinitionNode();
-        saved.setId("schema-123");
-        saved.setName("generated-legal-schema");
-        saved.setVersion(1);
-        saved.setSourceType(SchemaSourceType.GENERATED);
-        saved.setCreatedAt(Instant.now());
-        when(registryService.createSchema(eq(yaml), eq(SchemaSourceType.GENERATED))).thenReturn(saved);
-
-        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchema(
-            new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", true)
-        );
-
-        assertThat(response.content()).isEqualTo(yaml);
-        assertThat(response.schemaId()).isEqualTo("schema-123");
-        verify(registryService).createSchema(eq(yaml), eq(SchemaSourceType.GENERATED));
-    }
-
-    @Test
-    void generateSchemaFromFileParsesAndSavesWhenRequested() {
+    void generateSchemaFromFileParsesAndGeneratesWithoutSaving() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
         DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
@@ -76,16 +47,48 @@ class SchemaControllerTest {
         when(parsingService.parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes))))
             .thenReturn("parsed text");
         String yaml = "name: generated-legal-schema\nversion: 2\nnodes: []\nrelationships: []\n";
-        when(generationService.generateYaml("generated-legal-schema", 2, "from file", "parsed text")).thenReturn(yaml);
-        SchemaDefinitionNode saved = new SchemaDefinitionNode();
-        saved.setId("schema-456");
-        when(registryService.createSchema(eq(yaml), eq(SchemaSourceType.GENERATED))).thenReturn(saved);
+        when(generationService.generateYaml("generated-legal-schema", 2, "from file", "parsed text", "example json"))
+            .thenReturn(yaml);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchemaFromFile("generated-legal-schema", 2, "from file", true, file);
+        var response = controller.generateSchemaFromFile("generated-legal-schema", 2, "from file", "example json", file);
 
         assertThat(response.content()).isEqualTo(yaml);
-        assertThat(response.schemaId()).isEqualTo("schema-456");
         verify(parsingService).parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes)));
+        verify(generationService).generateYaml("generated-legal-schema", 2, "from file", "parsed text", "example json");
+    }
+
+    @Test
+    void generateSchemaExampleUsesTextAndPrompt() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        when(generationService.generateExample("raw input text", "focus on contracts")).thenReturn("[{\"head\":\"Acme\"}]");
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        var response = controller.generateSchemaExample(new GenerateSchemaExampleRequest("raw input text", "focus on contracts"));
+
+        assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
+        verify(generationService).generateExample("raw input text", "focus on contracts");
+    }
+
+    @Test
+    void generateSchemaExampleFromFileParsesAndUsesOptionalPrompt() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        MockMultipartFile file = new MockMultipartFile("file", "sample.txt", "text/plain", "raw bytes".getBytes());
+        byte[] rawBytes = "raw bytes".getBytes();
+        when(parsingService.parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes))))
+            .thenReturn("parsed text");
+        when(generationService.generateExample("parsed text", null)).thenReturn("[{\"head\":\"Acme\"}]");
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        var response = controller.generateSchemaExampleFromFile(null, file);
+
+        assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
+        verify(generationService).generateExample("parsed text", null);
     }
 }

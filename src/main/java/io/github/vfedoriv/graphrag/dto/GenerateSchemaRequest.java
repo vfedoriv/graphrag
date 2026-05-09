@@ -16,7 +16,10 @@ public record GenerateSchemaRequest(
         example = "Acme signed contract C-101 with Beta Corp on 2025-01-11 for software maintenance."
     )
     @NotBlank String text,
-    @Schema(description = "When true, saves generated schema in registry.", example = "false")
-    Boolean save
+    @Schema(
+        description = "Example entities and relationships for the target domain used to guide extraction.",
+        example = "[{\"head\":\"Acme\",\"head_type\":\"Party\",\"relation\":\"SIGNED\",\"tail\":\"Contract C-101\",\"tail_type\":\"Contract\"}]"
+    )
+    @NotBlank String example
 ) {
 }
