@@ -6,16 +6,19 @@ import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,12 +65,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        log.warn("Illegal argument at {}: {}", request.getRequestURI(), ex.getMessage());
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    public ProblemDetail handleHttpMessageConversion(HttpMessageConversionException ex, HttpServletRequest request) {
+        String detailMessage = ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null
+            ? ex.getMostSpecificCause().getMessage()
+            : ex.getMessage();
+        log.warn("Request conversion error at {}: {}", request.getRequestURI(), detailMessage);
+        return baseProblem(
+            HttpStatus.BAD_REQUEST,
+            "Invalid request payload: " + detailMessage,
+            request.getRequestURI()
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnhandled(Exception ex, HttpServletRequest request) {
-        return baseProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", request.getRequestURI());
+        log.error("Unhandled error at {}", request.getRequestURI(), ex);
+        String message = ex.getMessage() == null || ex.getMessage().isBlank() ? "Unexpected error" : ex.getMessage();
+        return baseProblem(HttpStatus.INTERNAL_SERVER_ERROR, message, request.getRequestURI());
     }
 
     @ExceptionHandler(SchemaValidationException.class)

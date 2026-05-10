@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
@@ -17,6 +19,7 @@ import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 
 class SchemaControllerTest {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Test
     void generateSchemaReturnsYamlContent() {
@@ -51,7 +54,10 @@ class SchemaControllerTest {
             .thenReturn(yaml);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchemaFromFile("generated-legal-schema", 2, "from file", "example json", file);
+        var response = controller.generateSchemaFromFile(
+            new GenerateSchemaFromFileRequest("generated-legal-schema", 2, "from file", readJson("\"example json\"")),
+            file
+        );
 
         assertThat(response.content()).isEqualTo(yaml);
         verify(parsingService).parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes)));
@@ -90,5 +96,13 @@ class SchemaControllerTest {
 
         assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("parsed text", null);
+    }
+
+    private static com.fasterxml.jackson.databind.JsonNode readJson(String json) {
+        try {
+            return OBJECT_MAPPER.readTree(json);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
