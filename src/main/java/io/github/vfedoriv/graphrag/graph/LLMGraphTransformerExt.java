@@ -15,6 +15,7 @@ import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.internal.RetryUtils;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.input.PromptTemplate;
@@ -24,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -212,22 +214,25 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
     }
 
     private List<Map<String, Object>> getJsonResult(List<ChatMessage> messages) {
-        RuntimeException lastFailure = null;
-        for (int attempt = 0; attempt < maxAttempts; attempt++) {
-            try {
-                ChatResponse chat = chatModel.chat(messages);
-                String rawText = chat.aiMessage().text();
-                log.info("LLM graph transformer raw response attempt {}: {}", attempt + 1, rawText);
-                String backtickText = getBacktickText(rawText);
-                List<Map<String, Object>> parsed = OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
-                log.info("LLM graph transformer parsed response attempt {}: {}", attempt + 1, summarizeParsedResponse(parsed));
-                return parsed;
-            } catch (Exception e) {
-                lastFailure = (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
-                log.warn("LLM graph transformer failed to parse response attempt {}", attempt + 1, e);
-            }
-        }
-        throw lastFailure == null ? new IllegalStateException("Failed to parse graph transformer response") : lastFailure;
+        AtomicInteger attemptCounter = new AtomicInteger(0);
+        return RetryUtils.withRetry(
+            () -> {
+                int attempt = attemptCounter.incrementAndGet();
+                try {
+                    ChatResponse chat = chatModel.chat(messages);
+                    String rawText = chat.aiMessage().text();
+                    log.info("LLM graph transformer raw response attempt {}: {}", attempt, rawText);
+                    String backtickText = getBacktickText(rawText);
+                    List<Map<String, Object>> parsed = OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
+                    log.info("LLM graph transformer parsed response attempt {}: {}", attempt, summarizeParsedResponse(parsed));
+                    return parsed;
+                } catch (Exception e) {
+                    log.warn("LLM graph transformer failed to parse response attempt {}", attempt, e);
+                    throw (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
+                }
+            },
+            maxAttempts
+        );
     }
 
     private static List<Map<String, Object>> summarizeParsedResponse(List<Map<String, Object>> parsed) {
