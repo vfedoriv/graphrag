@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import static dev.langchain4j.internal.Utils.getOrDefault;
+import static dev.langchain4j.internal.Utils.isNullOrBlank;
+import static dev.langchain4j.internal.Utils.isNullOrEmpty;
 import static dev.langchain4j.internal.ValidationUtils.ensureNotNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -117,12 +119,12 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
 
     @Override
     public List<ChatMessage> createUnstructuredPrompt(String text) {
-        if (prompt != null && !prompt.isEmpty()) {
+        if (!isNullOrEmpty(prompt)) {
             return prompt;
         }
 
-        boolean withAllowedNodes = allowedNodes != null && !allowedNodes.isEmpty();
-        boolean withAllowedRels = allowedRelationships != null && !allowedRelationships.isEmpty();
+        boolean withAllowedNodes = !isNullOrEmpty(allowedNodes);
+        boolean withAllowedRels = !isNullOrEmpty(allowedRelationships);
 
         SystemMessage systemMessage = SYSTEM_TEMPLATE
             .apply(Map.of(
@@ -149,7 +151,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         Set<GraphNode> nodes = new HashSet<>();
         Set<GraphEdge> relationships = new HashSet<>();
         List<Map<String, Object>> parsedJson = getJsonResult(messages);
-        if (parsedJson == null || parsedJson.isEmpty()) {
+        if (isNullOrEmpty(parsedJson)) {
             return null;
         }
 
@@ -158,7 +160,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             String head = asText(rel.get("head"));
             String tail = asText(rel.get("tail"));
             String relation = asText(rel.get("relation"));
-            if (isBlank(head) || isBlank(tail) || isBlank(relation)) {
+            if (isNullOrBlank(head) || isNullOrBlank(tail) || isNullOrBlank(relation)) {
                 continue;
             }
 
@@ -178,13 +180,13 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             nodes.add(targetNode);
 
             Map<String, String> relationProperties = extractProperties(rel.get("relation_properties"));
-            if (relationProperties.isEmpty()) {
+            if (isNullOrEmpty(relationProperties)) {
                 relationProperties = extractProperties(rel.get("properties"));
             }
             relationships.add(GraphEdge.from(sourceNode, targetNode, relation, relationProperties));
         }
 
-        if (nodes.isEmpty()) {
+        if (isNullOrEmpty(nodes)) {
             return null;
         }
         return new GraphDocument(nodes, relationships, document);
@@ -196,7 +198,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         String type,
         @Nullable Object rawProperties
     ) {
-        String normalizedType = isBlank(type) ? DEFAULT_NODE_TYPE : type;
+        String normalizedType = isNullOrBlank(type) ? DEFAULT_NODE_TYPE : type;
         String key = id + "|" + normalizedType;
         Map<String, String> mergedProperties = new HashMap<>();
         GraphNode existing = byCompositeKey.get(key);
@@ -246,7 +248,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         Map<String, String> properties = extractProperties(rawProperties);
         return Map.of(
             "nonEmpty", !properties.isEmpty(),
-            "hasDescription", !isBlank(properties.get("description")),
+            "hasDescription", !isNullOrBlank(properties.get("description")),
             "keys", properties.keySet());
     }
 
@@ -279,7 +281,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         }
         Map<String, String> normalized = new LinkedHashMap<>();
         for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
-            if (!(entry.getKey() instanceof String key) || key.isBlank()) {
+            if (!(entry.getKey() instanceof String key) || isNullOrBlank(key)) {
                 continue;
             }
             Object normalizedValue = normalizePropertyValue(entry.getValue());
@@ -319,7 +321,4 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         return String.valueOf(value);
     }
 
-    private static boolean isBlank(@Nullable String value) {
-        return value == null || value.isBlank();
-    }
 }
