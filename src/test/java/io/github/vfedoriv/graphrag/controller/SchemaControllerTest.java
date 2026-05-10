@@ -50,7 +50,7 @@ class SchemaControllerTest {
         when(parsingService.parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes))))
             .thenReturn("parsed text");
         String yaml = "name: generated-legal-schema\nversion: 2\nnodes: []\nrelationships: []\n";
-        when(generationService.generateYaml("generated-legal-schema", 2, "from file", "parsed text", "example json"))
+        when(generationService.generateYaml("generated-legal-schema", 2, "from file", "parsed text", "\"example json\""))
             .thenReturn(yaml);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
@@ -61,7 +61,7 @@ class SchemaControllerTest {
 
         assertThat(response.content()).isEqualTo(yaml);
         verify(parsingService).parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes)));
-        verify(generationService).generateYaml("generated-legal-schema", 2, "from file", "parsed text", "example json");
+        verify(generationService).generateYaml("generated-legal-schema", 2, "from file", "parsed text", "\"example json\"");
     }
 
     @Test

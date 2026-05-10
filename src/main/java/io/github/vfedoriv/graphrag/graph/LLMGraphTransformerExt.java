@@ -11,8 +11,11 @@ import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.community.data.document.transformer.graph.LLMGraphTransformer;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.input.PromptTemplate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -21,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
 /**
@@ -34,13 +38,62 @@ import org.springframework.lang.Nullable;
  *   <li>All property values are converted to strings to fit GraphNode/GraphEdge map signature.</li>
  * </ul>
  */
+@Slf4j
 public class LLMGraphTransformerExt extends LLMGraphTransformer {
 
     private static final String DEFAULT_NODE_TYPE = "Node";
     private static final Pattern BACKTICKS_PATTERN = Pattern.compile("```(.*?)```", Pattern.MULTILINE | Pattern.DOTALL);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final PromptTemplate SYSTEM_TEMPLATE = PromptTemplate.from(
+        """
+        You are a top-tier algorithm designed for extracting information in structured formats to build a knowledge graph schema.
+        Your task is to identify entities and relations from a given text and generate output in JSON format.
+        Each object must have keys: 'head', 'head_type', 'head_properties', 'relation', 'relation_properties', 'tail', 'tail_type', and 'tail_properties'.
+        'head_properties', 'tail_properties', and 'relation_properties' must be JSON objects.
+        Every node and relationship properties object must include a non-empty 'description' property with a concise schema-level description.
+        Add useful domain properties that should exist on each node or relationship type, using concrete values from the text when available.
+        If a useful property is not directly stated but is important for the inferred schema, include a representative value that matches the expected type.
+        Use property names in lower camelCase.
+        {{nodes}}
+        {{rels}}
+        IMPORTANT NOTES:
+        - Return only a JSON array.
+        - Don't add any explanation or extra text.
+        {{additional}}
+        """);
+    private static final PromptTemplate USER_TEMPLATE = PromptTemplate.from(
+        """
+        Based on the following example, extract entities, relations, and useful schema properties from the provided text.
+        {{nodes}}
+        {{rels}}
+        Required output shape:
+        [
+          {
+            "head": "...",
+            "head_type": "...",
+            "head_properties": {"description": ["..."], "usefulProperty": ["..."]},
+            "relation": "...",
+            "relation_properties": {"description": ["..."], "usefulProperty": ["..."]},
+            "tail": "...",
+            "tail_type": "...",
+            "tail_properties": {"description": ["..."], "usefulProperty": ["..."]}
+          }
+        ]
+
+        Below are examples of text and their extracted entities and relationships.
+        {{examples}}
+        {{additional}}
+        For the following text, extract entities and relations as in the provided example.
+        Also infer useful node and relationship properties plus non-empty descriptions for schema generation.
+        Text: {{input}}
+        """);
 
     private final ChatModel chatModel;
+    private final List<String> allowedNodes;
+    private final List<String> allowedRelationships;
+    private final List<ChatMessage> prompt;
+    private final String additionalInstructions;
+    private final String examples;
     private final Integer maxAttempts;
 
     public LLMGraphTransformerExt(
@@ -54,7 +107,39 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
     ) {
         super(chatModel, allowedNodes, allowedRelationships, prompt, additionalInstructions, examples, maxAttempts);
         this.chatModel = ensureNotNull(chatModel, "chatModel");
+        this.allowedNodes = getOrDefault(allowedNodes, List.of());
+        this.allowedRelationships = getOrDefault(allowedRelationships, List.of());
+        this.prompt = prompt;
+        this.additionalInstructions = getOrDefault(additionalInstructions, "");
+        this.examples = ensureNotNull(examples, "examples");
         this.maxAttempts = getOrDefault(maxAttempts, 1);
+    }
+
+    @Override
+    public List<ChatMessage> createUnstructuredPrompt(String text) {
+        if (prompt != null && !prompt.isEmpty()) {
+            return prompt;
+        }
+
+        boolean withAllowedNodes = allowedNodes != null && !allowedNodes.isEmpty();
+        boolean withAllowedRels = allowedRelationships != null && !allowedRelationships.isEmpty();
+
+        SystemMessage systemMessage = SYSTEM_TEMPLATE
+            .apply(Map.of(
+                "nodes", withAllowedNodes ? "The 'head_type' and 'tail_type' must be one of: " + allowedNodes : "",
+                "rels", withAllowedRels ? "The 'relation' must be one of: " + allowedRelationships : "",
+                "additional", additionalInstructions))
+            .toSystemMessage();
+        UserMessage userMessage = USER_TEMPLATE
+            .apply(Map.of(
+                "nodes", withAllowedNodes ? "# ENTITY TYPES:\n" + allowedNodes : "",
+                "rels", withAllowedRels ? "# RELATION TYPES:\n" + allowedRelationships : "",
+                "examples", examples,
+                "additional", additionalInstructions,
+                "input", text))
+            .toUserMessage();
+
+        return List.of(systemMessage, userMessage);
     }
 
     @Override
@@ -130,13 +215,39 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             try {
                 ChatResponse chat = chatModel.chat(messages);
                 String rawText = chat.aiMessage().text();
+                log.info("LLM graph transformer raw response attempt {}: {}", attempt + 1, rawText);
                 String backtickText = getBacktickText(rawText);
-                return OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
+                List<Map<String, Object>> parsed = OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
+                log.info("LLM graph transformer parsed response attempt {}: {}", attempt + 1, summarizeParsedResponse(parsed));
+                return parsed;
             } catch (Exception e) {
                 lastFailure = (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
+                log.warn("LLM graph transformer failed to parse response attempt {}", attempt + 1, e);
             }
         }
         throw lastFailure == null ? new IllegalStateException("Failed to parse graph transformer response") : lastFailure;
+    }
+
+    private static List<Map<String, Object>> summarizeParsedResponse(List<Map<String, Object>> parsed) {
+        return parsed.stream()
+            .map(rel -> Map.<String, Object>of(
+                "head", asText(rel.get("head")),
+                "headType", asText(rel.get("head_type")),
+                "headProperties", propertySummary(rel.get("head_properties")),
+                "relation", asText(rel.get("relation")),
+                "relationProperties", propertySummary(rel.get("relation_properties")),
+                "tail", asText(rel.get("tail")),
+                "tailType", asText(rel.get("tail_type")),
+                "tailProperties", propertySummary(rel.get("tail_properties"))))
+            .toList();
+    }
+
+    private static Map<String, Object> propertySummary(@Nullable Object rawProperties) {
+        Map<String, String> properties = extractProperties(rawProperties);
+        return Map.of(
+            "nonEmpty", !properties.isEmpty(),
+            "hasDescription", !isBlank(properties.get("description")),
+            "keys", properties.keySet());
     }
 
     private static String getBacktickText(String text) {
