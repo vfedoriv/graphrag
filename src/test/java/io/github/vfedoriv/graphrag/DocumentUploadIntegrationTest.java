@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +25,8 @@ import org.springframework.mock.web.MockMultipartFile;
         + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
         + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
         + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+    "app.storage.documents-root=./target/test-documents"
 })
 class DocumentUploadIntegrationTest {
 
@@ -34,6 +36,11 @@ class DocumentUploadIntegrationTest {
     private DocumentUploadRepository documentUploadRepository;
     @Autowired
     private Neo4jClient neo4jClient;
+
+    @AfterEach
+    void cleanDocumentStorage() throws Exception {
+        TestDocumentStorage.clean();
+    }
 
     @Test
     void persistsMetadataAndSkipsDuplicateHashWithinKnowledgeBase() {

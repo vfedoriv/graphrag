@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
         + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
         + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
         + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+    "app.storage.documents-root=./target/test-documents"
 })
 class DocumentControllerIntegrationTest {
 
@@ -37,6 +39,11 @@ class DocumentControllerIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private Neo4jClient neo4jClient;
+
+    @AfterEach
+    void cleanDocumentStorage() throws Exception {
+        TestDocumentStorage.clean();
+    }
 
     @Test
     void listsOnlyDocumentsFromRequestedKnowledgeBase() throws Exception {

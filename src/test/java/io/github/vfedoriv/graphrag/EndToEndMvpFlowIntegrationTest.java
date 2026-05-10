@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +42,8 @@ import org.springframework.test.context.TestPropertySource;
         + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
         + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
         + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+    "app.storage.documents-root=./target/test-documents"
 })
 class EndToEndMvpFlowIntegrationTest {
 
@@ -57,6 +59,11 @@ class EndToEndMvpFlowIntegrationTest {
     private CypherExecutionService cypherExecutionService;
     @Autowired
     private Neo4jClient neo4jClient;
+
+    @AfterEach
+    void cleanDocumentStorage() throws Exception {
+        TestDocumentStorage.clean();
+    }
 
     @Test
     void completesSynchronousFlowFromSchemaToAsk() throws Exception {

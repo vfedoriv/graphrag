@@ -12,6 +12,7 @@ import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +35,8 @@ import org.springframework.mock.web.MockMultipartFile;
         + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
         + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
         + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+    "app.storage.documents-root=./target/test-documents"
 })
 class DocumentProcessingIntegrationTest {
 
@@ -48,6 +50,11 @@ class DocumentProcessingIntegrationTest {
     private Neo4jClient neo4jClient;
     @Autowired
     private SchemaRegistryService schemaRegistryService;
+
+    @AfterEach
+    void cleanDocumentStorage() throws Exception {
+        TestDocumentStorage.clean();
+    }
 
     @Test
     void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
