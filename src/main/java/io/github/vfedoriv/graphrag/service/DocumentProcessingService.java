@@ -12,12 +12,15 @@ import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,6 +37,8 @@ public class DocumentProcessingService {
     private final Neo4jClient neo4jClient;
     private final AppProperties appProperties;
     private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
+    private final ObjectProvider<EmbeddingModel> embeddingModelProvider;
+    private final Environment environment;
     private final GraphExtractionService graphExtractionService;
 
     public DocumentProcessingService(
@@ -45,6 +50,8 @@ public class DocumentProcessingService {
         Neo4jClient neo4jClient,
         AppProperties appProperties,
         ObjectProvider<EmbeddingClient> embeddingClientProvider,
+        ObjectProvider<EmbeddingModel> embeddingModelProvider,
+        Environment environment,
         GraphExtractionService graphExtractionService
     ) {
         this.documentUploadRepository = documentUploadRepository;
@@ -55,6 +62,8 @@ public class DocumentProcessingService {
         this.neo4jClient = neo4jClient;
         this.appProperties = appProperties;
         this.embeddingClientProvider = embeddingClientProvider;
+        this.embeddingModelProvider = embeddingModelProvider;
+        this.environment = environment;
         this.graphExtractionService = graphExtractionService;
     }
 
@@ -76,11 +85,17 @@ public class DocumentProcessingService {
             log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
             document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
-            EmbeddingClient embeddingClient = embeddingClientProvider.getIfAvailable();
+            EmbeddingClient embeddingClient = resolveEmbeddingClient();
             if (embeddingClient == null) {
+                List<String> embeddingModelBeans = embeddingModelProvider.stream()
+                    .map(model -> model.getClass().getName())
+                    .toList();
                 log.error(
-                    "Embedding client is missing: documentId={}, profile model config baseUrl={}, embeddingModel={}, embeddingDimensions={}",
+                    "Embedding client is missing: documentId={}, activeProfiles={}, spring.ai.model.embedding={}, modelBeans={}, profile model config baseUrl={}, embeddingModel={}, embeddingDimensions={}",
                     documentId,
+                    Arrays.toString(environment.getActiveProfiles()),
+                    environment.getProperty("spring.ai.model.embedding"),
+                    embeddingModelBeans,
                     appProperties.model().baseUrl(),
                     appProperties.model().embeddingModel(),
                     appProperties.model().embeddingDimensions()
@@ -172,5 +187,19 @@ public class DocumentProcessingService {
             return "";
         }
         return input.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private EmbeddingClient resolveEmbeddingClient() {
+        List<EmbeddingClient> clients = embeddingClientProvider.orderedStream().toList();
+        if (clients.isEmpty()) {
+            return null;
+        }
+        if (clients.size() == 1) {
+            return clients.getFirst();
+        }
+        return clients.stream()
+            .filter(client -> !client.getClass().getName().contains("SpringAi"))
+            .findFirst()
+            .orElse(clients.getFirst());
     }
 }

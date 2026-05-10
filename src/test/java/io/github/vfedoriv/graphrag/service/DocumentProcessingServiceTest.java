@@ -18,6 +18,7 @@ import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +26,10 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +47,10 @@ class DocumentProcessingServiceTest {
     private Neo4jClient neo4jClient;
     @Mock
     private ObjectProvider<EmbeddingClient> embeddingClientProvider;
+    @Mock
+    private ObjectProvider<EmbeddingModel> embeddingModelProvider;
+    @Mock
+    private Environment environment;
     @Mock
     private GraphExtractionService graphExtractionService;
 
@@ -64,7 +71,7 @@ class DocumentProcessingServiceTest {
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
             .thenReturn("abcdefghij01234567");
-        when(embeddingClientProvider.getIfAvailable()).thenReturn(embeddingClient);
+        when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -77,6 +84,8 @@ class DocumentProcessingServiceTest {
             neo4jClient,
             props(),
             embeddingClientProvider,
+            embeddingModelProvider,
+            environment,
             graphExtractionService
         );
         DocumentUploadNode processed = service.process("doc-1");
@@ -103,7 +112,7 @@ class DocumentProcessingServiceTest {
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
             .thenReturn("abcdefghij01234567");
-        when(embeddingClientProvider.getIfAvailable()).thenReturn(embeddingClient);
+        when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
 
@@ -144,6 +153,8 @@ class DocumentProcessingServiceTest {
             neo4jClient,
             props(),
             embeddingClientProvider,
+            embeddingModelProvider,
+            environment,
             graphExtractionService
         );
 

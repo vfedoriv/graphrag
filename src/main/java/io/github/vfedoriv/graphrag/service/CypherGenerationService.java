@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class CypherGenerationService {
             .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
         var schema = schemaParser.parse(schemaNode.getContent());
 
-        CypherGenerationClient client = cypherGenerationClientProvider.getIfAvailable();
+        CypherGenerationClient client = resolveCypherGenerationClient();
         if (client == null) {
             throw new IllegalStateException("Cypher generation model is not configured for this profile");
         }
@@ -72,5 +73,19 @@ public class CypherGenerationService {
             appProperties.query().maxRows(),
             appProperties.query().timeoutSeconds()
         );
+    }
+
+    private CypherGenerationClient resolveCypherGenerationClient() {
+        List<CypherGenerationClient> clients = cypherGenerationClientProvider.orderedStream().toList();
+        if (clients.isEmpty()) {
+            return null;
+        }
+        if (clients.size() == 1) {
+            return clients.getFirst();
+        }
+        return clients.stream()
+            .filter(client -> !client.getClass().getName().contains("SpringAi"))
+            .findFirst()
+            .orElse(clients.getFirst());
     }
 }

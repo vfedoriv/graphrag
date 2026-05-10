@@ -70,7 +70,7 @@ public class GraphExtractionService {
             .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
         var schema = schemaParser.parse(schemaNode.getContent());
 
-        GraphExtractionClient client = graphExtractionClientProvider.getIfAvailable();
+        GraphExtractionClient client = resolveGraphExtractionClient();
         if (client == null) {
             log.error("Graph extraction client is missing: documentId={}", document.getId());
             throw new IllegalStateException("Graph extraction model is not configured for this profile");
@@ -138,5 +138,19 @@ public class GraphExtractionService {
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
             .run();
+    }
+
+    private GraphExtractionClient resolveGraphExtractionClient() {
+        List<GraphExtractionClient> clients = graphExtractionClientProvider.orderedStream().toList();
+        if (clients.isEmpty()) {
+            return null;
+        }
+        if (clients.size() == 1) {
+            return clients.getFirst();
+        }
+        return clients.stream()
+            .filter(client -> !client.getClass().getName().contains("SpringAi"))
+            .findFirst()
+            .orElse(clients.getFirst());
     }
 }

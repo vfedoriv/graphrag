@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.ObjectProvider;
@@ -52,6 +53,16 @@ class CypherGenerationServiceTest {
             @Override
             public CypherGenerationClient getObject() {
                 return generationClient;
+            }
+
+            @Override
+            public Stream<CypherGenerationClient> stream() {
+                return Stream.of(generationClient);
+            }
+
+            @Override
+            public Stream<CypherGenerationClient> orderedStream() {
+                return Stream.of(generationClient);
             }
         };
 

@@ -3,20 +3,19 @@ package io.github.vfedoriv.graphrag.query;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.Map;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnBean(ChatModel.class)
 public class SpringAiCypherGenerationClient implements CypherGenerationClient {
 
-    private final ChatModel chatModel;
+    private final ObjectProvider<ChatModel> chatModelProvider;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SpringAiCypherGenerationClient(ChatModel chatModel) {
-        this.chatModel = chatModel;
+    public SpringAiCypherGenerationClient(ObjectProvider<ChatModel> chatModelProvider) {
+        this.chatModelProvider = chatModelProvider;
     }
 
     @Override
@@ -37,6 +36,10 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
             %s
             """.formatted(toJson(schema), maxRows, prompt);
         try {
+            ChatModel chatModel = chatModelProvider.getIfAvailable();
+            if (chatModel == null) {
+                throw new IllegalStateException("ChatModel bean is not available in application context");
+            }
             String content = chatModel.call(new Prompt(request)).getResult().getOutput().getText();
             Payload payload = objectMapper.readValue(content, Payload.class);
             return new GeneratedCypher(payload.cypher(), payload.explanation(), payload.parameters() == null ? Map.of() : payload.parameters());
