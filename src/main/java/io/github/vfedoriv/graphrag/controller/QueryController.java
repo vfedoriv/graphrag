@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "Queries", description = "Natural-language to Cypher workflow: generate, validate, execute, and ask.")
+@Slf4j
 public class QueryController {
 
     private final AppProperties appProperties;
@@ -79,7 +82,21 @@ public class QueryController {
         )
         @Valid @RequestBody QueryGenerateRequest request
     ) {
-        return cypherGenerationService.generate(knowledgeBaseId, request.prompt());
+        log.info(
+            "Generate query request: knowledgeBaseId={}, promptLength={}, promptPreview={}",
+            knowledgeBaseId,
+            LogSanitizer.length(request.prompt()),
+            LogSanitizer.preview(request.prompt())
+        );
+        GeneratedQueryResponse response = cypherGenerationService.generate(knowledgeBaseId, request.prompt());
+        log.info(
+            "Generate query completed: knowledgeBaseId={}, valid={}, errorCount={}, cypherLength={}",
+            knowledgeBaseId,
+            response.validation().valid(),
+            response.validation().errors().size(),
+            LogSanitizer.length(response.cypher())
+        );
+        return response;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/validate")
@@ -110,8 +127,14 @@ public class QueryController {
         )
         @Valid @RequestBody QueryValidateRequest request
     ) {
+        log.info(
+            "Validate query request: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
+            knowledgeBaseId,
+            LogSanitizer.length(request.cypher()),
+            request.parameters() == null ? 0 : request.parameters().size()
+        );
         var result = cypherValidationService.validate(knowledgeBaseId, request.cypher(), request.parameters());
-        return new QueryValidationResponse(
+        QueryValidationResponse response = new QueryValidationResponse(
             result.valid(),
             result.cypher(),
             result.parameters(),
@@ -119,6 +142,13 @@ public class QueryController {
             appProperties.query().maxRows(),
             appProperties.query().timeoutSeconds()
         );
+        log.info(
+            "Validate query completed: knowledgeBaseId={}, valid={}, errorCount={}",
+            knowledgeBaseId,
+            response.valid(),
+            response.errors().size()
+        );
+        return response;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/execute")
@@ -142,7 +172,20 @@ public class QueryController {
         )
         @Valid @RequestBody QueryExecuteRequest request
     ) {
-        return cypherExecutionService.execute(knowledgeBaseId, request.cypher(), request.parameters());
+        log.info(
+            "Execute query request: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
+            knowledgeBaseId,
+            LogSanitizer.length(request.cypher()),
+            request.parameters() == null ? 0 : request.parameters().size()
+        );
+        QueryExecutionResponse response = cypherExecutionService.execute(knowledgeBaseId, request.cypher(), request.parameters());
+        log.info(
+            "Execute query completed: knowledgeBaseId={}, rowCount={}, executionTimeMs={}",
+            knowledgeBaseId,
+            response.rowCount(),
+            response.executionTimeMs()
+        );
+        return response;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/ask")
@@ -166,14 +209,31 @@ public class QueryController {
         )
         @Valid @RequestBody QueryGenerateRequest request
     ) {
+        log.info(
+            "Ask query request: knowledgeBaseId={}, promptLength={}, promptPreview={}",
+            knowledgeBaseId,
+            LogSanitizer.length(request.prompt()),
+            LogSanitizer.preview(request.prompt())
+        );
         GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, request.prompt());
         if (!generated.validation().valid()) {
+            log.info(
+                "Ask query generated invalid Cypher: knowledgeBaseId={}, errorCount={}",
+                knowledgeBaseId,
+                generated.validation().errors().size()
+            );
             throw new QueryRejectedException(generated.validation().errors());
         }
         QueryExecutionResponse execution = cypherExecutionService.execute(
             knowledgeBaseId,
             generated.validation().cypher(),
             generated.validation().parameters()
+        );
+        log.info(
+            "Ask query completed: knowledgeBaseId={}, rowCount={}, executionTimeMs={}",
+            knowledgeBaseId,
+            execution.rowCount(),
+            execution.executionTimeMs()
         );
         return new QueryAskResponse(generated, execution);
     }

@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.graph;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,14 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GraphExtractionValidationService {
-
-    private static final Logger log = LoggerFactory.getLogger(GraphExtractionValidationService.class);
 
     private final AppProperties appProperties;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -30,6 +29,12 @@ public class GraphExtractionValidationService {
         if (result == null) {
             throw new IllegalArgumentException("Extraction payload must not be null");
         }
+        log.info(
+            "Validating graph extraction payload: schemaName={}, nodes={}, relationships={}",
+            schema.name(),
+            result.nodes() == null ? 0 : result.nodes().size(),
+            result.relationships() == null ? 0 : result.relationships().size()
+        );
         logPayload(result);
         Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
         for (var node : schema.nodes()) {
@@ -78,6 +83,12 @@ public class GraphExtractionValidationService {
                 }
             }
         }
+        log.info(
+            "Graph extraction payload validated: schemaName={}, nodes={}, relationships={}",
+            schema.name(),
+            normalized.nodes() == null ? 0 : normalized.nodes().size(),
+            normalized.relationships() == null ? 0 : normalized.relationships().size()
+        );
         return normalized;
     }
 
@@ -191,9 +202,13 @@ public class GraphExtractionValidationService {
 
     private void logPayload(GraphExtractionResult result) {
         try {
-            log.info("Graph extraction payload before validation: {}", objectMapper.writeValueAsString(result));
+            String payload = objectMapper.writeValueAsString(result);
+            log.info("Graph extraction payload before validation: length={}, preview={}", payload.length(), LogSanitizer.preview(payload));
+            if (log.isDebugEnabled()) {
+                log.debug("Graph extraction payload before validation: {}", payload);
+            }
         } catch (Exception ex) {
-            log.warn("Failed to serialize graph extraction payload for logging: {}", ex.getMessage());
+            log.error("Failed to serialize graph extraction payload for logging: {}", ex.getMessage(), ex);
         }
     }
 }

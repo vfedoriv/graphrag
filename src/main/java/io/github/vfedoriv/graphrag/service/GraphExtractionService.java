@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
@@ -14,16 +15,14 @@ import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GraphExtractionService {
-
-    private static final Logger log = LoggerFactory.getLogger(GraphExtractionService.class);
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final SchemaDefinitionRepository schemaDefinitionRepository;
@@ -55,6 +54,7 @@ public class GraphExtractionService {
     }
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks) {
+        long startNanos = System.nanoTime();
         log.info(
             "Graph extraction starting: documentId={}, knowledgeBaseId={}, chunks={}",
             document.getId(),
@@ -112,16 +112,23 @@ public class GraphExtractionService {
             run.setStatus("COMPLETED");
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
-            log.info("Graph extraction completed: runId={}, documentId={}", run.getId(), document.getId());
+            log.info(
+                "Graph extraction completed: runId={}, documentId={}, chunks={}, elapsedMs={}",
+                run.getId(),
+                document.getId(),
+                chunks.size(),
+                LogSanitizer.elapsedMillis(startNanos)
+            );
         } catch (Exception ex) {
             run.setStatus("FAILED");
             run.setErrorMessage(ex.getMessage());
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
             log.error(
-                "Graph extraction failed: runId={}, documentId={}, message={}",
+                "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, message={}",
                 run.getId(),
                 document.getId(),
+                LogSanitizer.elapsedMillis(startNanos),
                 ex.getMessage(),
                 ex
             );
@@ -130,6 +137,7 @@ public class GraphExtractionService {
     }
 
     private void linkRunToDocument(String runId, String documentId) {
+        log.info("Linking extraction run to document: runId={}, documentId={}", runId, documentId);
         neo4jClient.query("""
             MATCH (d:DocumentUpload {id: $documentId})
             MATCH (r:ExtractionRun {id: $runId})
@@ -138,6 +146,7 @@ public class GraphExtractionService {
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
             .run();
+        log.info("Extraction run linked to document: runId={}, documentId={}", runId, documentId);
     }
 
     private GraphExtractionClient resolveGraphExtractionClient() {

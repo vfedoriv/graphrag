@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "Knowledge Bases", description = "Knowledge base lifecycle operations.")
+@Slf4j
 public class KnowledgeBaseController {
 
     private final KnowledgeBaseService knowledgeBaseService;
@@ -41,14 +43,20 @@ public class KnowledgeBaseController {
         @ApiResponse(responseCode = "409", description = "Knowledge base already exists", content = @Content(schema = @Schema()))
     })
     public KnowledgeBaseResponse createKnowledgeBase(@Valid @RequestBody CreateKnowledgeBaseRequest request) {
-        return toResponse(knowledgeBaseService.create(request.id(), request.name()));
+        log.info("Create knowledge base request: knowledgeBaseId={}", request.id());
+        KnowledgeBaseResponse response = toResponse(knowledgeBaseService.create(request.id(), request.name()));
+        log.info("Create knowledge base completed: knowledgeBaseId={}", response.id());
+        return response;
     }
 
     @GetMapping("/knowledge-bases")
     @Operation(summary = "List knowledge bases", description = "Returns all knowledge bases.")
     @ApiResponse(responseCode = "200", description = "Knowledge bases retrieved")
     public List<KnowledgeBaseResponse> listKnowledgeBases() {
-        return knowledgeBaseService.list().stream().map(this::toResponse).toList();
+        log.info("List knowledge bases request");
+        List<KnowledgeBaseResponse> response = knowledgeBaseService.list().stream().map(this::toResponse).toList();
+        log.info("List knowledge bases completed: count={}", response.size());
+        return response;
     }
 
     @GetMapping("/knowledge-bases/{knowledgeBaseId}")
@@ -60,7 +68,10 @@ public class KnowledgeBaseController {
     public KnowledgeBaseResponse getKnowledgeBase(
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId
     ) {
-        return toResponse(knowledgeBaseService.get(knowledgeBaseId));
+        log.info("Get knowledge base request: knowledgeBaseId={}", knowledgeBaseId);
+        KnowledgeBaseResponse response = toResponse(knowledgeBaseService.get(knowledgeBaseId));
+        log.info("Get knowledge base completed: knowledgeBaseId={}, activeSchemaId={}", response.id(), response.activeSchemaId());
+        return response;
     }
 
     @PutMapping("/knowledge-bases/{knowledgeBaseId}")
@@ -73,7 +84,10 @@ public class KnowledgeBaseController {
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
         @Valid @RequestBody UpdateKnowledgeBaseRequest request
     ) {
-        return toResponse(knowledgeBaseService.update(knowledgeBaseId, request.name()));
+        log.info("Update knowledge base request: knowledgeBaseId={}", knowledgeBaseId);
+        KnowledgeBaseResponse response = toResponse(knowledgeBaseService.update(knowledgeBaseId, request.name()));
+        log.info("Update knowledge base completed: knowledgeBaseId={}", response.id());
+        return response;
     }
 
     @DeleteMapping("/knowledge-bases/{knowledgeBaseId}")
@@ -85,7 +99,9 @@ public class KnowledgeBaseController {
     public void deleteKnowledgeBase(
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId
     ) {
+        log.info("Delete knowledge base request: knowledgeBaseId={}", knowledgeBaseId);
         knowledgeBaseService.delete(knowledgeBaseId);
+        log.info("Delete knowledge base completed: knowledgeBaseId={}", knowledgeBaseId);
     }
 
     private KnowledgeBaseResponse toResponse(KnowledgeBaseNode node) {

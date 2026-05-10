@@ -5,16 +5,19 @@ import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CypherGenerationService {
 
     private final AppProperties appProperties;
@@ -41,6 +44,13 @@ public class CypherGenerationService {
     }
 
     public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt) {
+        long startNanos = System.nanoTime();
+        log.info(
+            "Generating Cypher: knowledgeBaseId={}, promptLength={}, promptPreview={}",
+            knowledgeBaseId,
+            LogSanitizer.length(prompt),
+            LogSanitizer.preview(prompt)
+        );
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
             .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
         if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
@@ -52,16 +62,27 @@ public class CypherGenerationService {
 
         CypherGenerationClient client = resolveCypherGenerationClient();
         if (client == null) {
+            log.error("Cypher generation client is missing: knowledgeBaseId={}", knowledgeBaseId);
             throw new IllegalStateException("Cypher generation model is not configured for this profile");
         }
+        log.info("Cypher generation client resolved: knowledgeBaseId={}, clientClass={}", knowledgeBaseId, client.getClass().getName());
         var generated = client.generate(schema, prompt, appProperties.query().maxRows());
         QueryValidationResult validation = cypherValidationService.validate(schema, generated.cypher(), generated.parameters());
-        return new GeneratedQueryResponse(
+        GeneratedQueryResponse response = new GeneratedQueryResponse(
             generated.cypher(),
             generated.explanation(),
             generated.parameters(),
             toValidationResponse(validation)
         );
+        log.info(
+            "Cypher generated: knowledgeBaseId={}, valid={}, errorCount={}, cypherLength={}, elapsedMs={}",
+            knowledgeBaseId,
+            validation.valid(),
+            validation.errors().size(),
+            LogSanitizer.length(generated.cypher()),
+            LogSanitizer.elapsedMillis(startNanos)
+        );
+        return response;
     }
 
     QueryValidationResponse toValidationResponse(QueryValidationResult result) {

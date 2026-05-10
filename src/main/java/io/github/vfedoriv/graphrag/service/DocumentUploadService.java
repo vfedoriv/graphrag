@@ -12,11 +12,13 @@ import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 public class DocumentUploadService {
 
     private final BinaryStorageService binaryStorageService;
@@ -29,11 +31,24 @@ public class DocumentUploadService {
 
     @Transactional
     public DocumentUploadNode upload(String knowledgeBaseId, MultipartFile file) {
+        log.info(
+            "Uploading document: knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
+            knowledgeBaseId,
+            file.getOriginalFilename(),
+            file.getContentType(),
+            file.getSize()
+        );
         byte[] bytes = readBytes(file);
         String sha256 = sha256(bytes);
 
         var existing = documentUploadRepository.findByKnowledgeBaseIdAndSha256(knowledgeBaseId, sha256);
         if (existing.isPresent()) {
+            log.info(
+                "Document upload deduplicated: knowledgeBaseId={}, existingDocumentId={}, sha256={}",
+                knowledgeBaseId,
+                existing.get().getId(),
+                sha256
+            );
             return existing.get();
         }
 
@@ -50,8 +65,18 @@ public class DocumentUploadService {
         try {
             URI contentUri = binaryStorageService.store(knowledgeBaseId, node.getId(), file.getOriginalFilename(), bytes);
             node.setContentUri(contentUri.toString());
-            return documentUploadRepository.save(node);
+            DocumentUploadNode saved = documentUploadRepository.save(node);
+            log.info("Document uploaded: knowledgeBaseId={}, documentId={}, bytes={}", knowledgeBaseId, saved.getId(), bytes.length);
+            return saved;
         } catch (IOException ex) {
+            log.error(
+                "Binary storage failed during document upload: knowledgeBaseId={}, documentId={}, filename={}, message={}",
+                knowledgeBaseId,
+                node.getId(),
+                file.getOriginalFilename(),
+                ex.getMessage(),
+                ex
+            );
             node.setStatus(DocumentStatus.FAILED);
             node.setErrorMessage("Binary storage failed: " + ex.getMessage());
             return documentUploadRepository.save(node);
@@ -63,24 +88,32 @@ public class DocumentUploadService {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             return HexFormat.of().formatHex(digest.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
+            log.error("SHA-256 digest algorithm is unavailable", e);
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }
 
     public byte[] readContent(String contentUri) throws IOException {
+        log.info("Reading document content from storage: contentUri={}", contentUri);
         try (var stream = binaryStorageService.read(URI.create(contentUri))) {
-            return stream.readAllBytes();
+            byte[] bytes = stream.readAllBytes();
+            log.info("Document content read from storage: contentUri={}, bytes={}", contentUri, bytes.length);
+            return bytes;
         }
     }
 
     public List<DocumentUploadNode> listByKnowledgeBase(String knowledgeBaseId) {
-        return documentUploadRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
+        log.info("Listing uploaded documents: knowledgeBaseId={}", knowledgeBaseId);
+        List<DocumentUploadNode> documents = documentUploadRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
+        log.info("Uploaded documents listed: knowledgeBaseId={}, count={}", knowledgeBaseId, documents.size());
+        return documents;
     }
 
     private byte[] readBytes(MultipartFile file) {
         try {
             return file.getBytes();
         } catch (IOException e) {
+            log.error("Failed to read uploaded file bytes: filename={}, message={}", file.getOriginalFilename(), e.getMessage(), e);
             throw new IllegalArgumentException("Cannot read uploaded file bytes", e);
         }
     }

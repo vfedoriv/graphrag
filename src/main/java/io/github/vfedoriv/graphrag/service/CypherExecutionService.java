@@ -4,11 +4,13 @@ import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.Value;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Path;
@@ -17,6 +19,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CypherExecutionService {
 
     private final AppProperties appProperties;
@@ -34,8 +37,19 @@ public class CypherExecutionService {
     }
 
     public QueryExecutionResponse execute(String knowledgeBaseId, String cypher, Map<String, Object> parameters) {
+        log.info(
+            "Executing Cypher: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
+            knowledgeBaseId,
+            LogSanitizer.length(cypher),
+            parameters == null ? 0 : parameters.size()
+        );
         var validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters);
         if (!validation.valid()) {
+            log.info(
+                "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}",
+                knowledgeBaseId,
+                validation.errors().size()
+            );
             throw new QueryRejectedException(validation.errors());
         }
         long start = System.nanoTime();
@@ -51,7 +65,7 @@ public class CypherExecutionService {
             .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new))
             .stream()
             .toList();
-        return new QueryExecutionResponse(
+        QueryExecutionResponse response = new QueryExecutionResponse(
             validation.cypher(),
             validation.parameters(),
             toValidationResponse(validation),
@@ -60,6 +74,14 @@ public class CypherExecutionService {
             rows.size(),
             executionTimeMs
         );
+        log.info(
+            "Cypher executed: knowledgeBaseId={}, rowCount={}, columnCount={}, executionTimeMs={}",
+            knowledgeBaseId,
+            response.rowCount(),
+            response.columns().size(),
+            response.executionTimeMs()
+        );
+        return response;
     }
 
     QueryValidationResponse toValidationResponse(io.github.vfedoriv.graphrag.query.QueryValidationResult validation) {

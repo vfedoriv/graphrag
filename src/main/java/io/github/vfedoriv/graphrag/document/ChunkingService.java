@@ -3,9 +3,11 @@ package io.github.vfedoriv.graphrag.document;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ChunkingService {
 
     private final AppProperties appProperties;
@@ -17,6 +19,7 @@ public class ChunkingService {
     public List<String> split(String text) {
         String normalized = text == null ? "" : text.strip();
         if (normalized.isEmpty()) {
+            log.info("Chunking skipped: inputLength=0");
             return List.of();
         }
         int maxChars = appProperties.chunking().maxCharacters();
@@ -31,6 +34,13 @@ public class ChunkingService {
                 break;
             }
         }
+        log.info(
+            "Text chunked: inputLength={}, chunks={}, maxChars={}, overlap={}",
+            normalized.length(),
+            chunks.size(),
+            maxChars,
+            overlap
+        );
         return chunks;
     }
 

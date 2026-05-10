@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.io.IOException;
@@ -15,8 +16,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -24,10 +24,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class DocumentProcessingService {
 
     public static final String CHUNK_EMBEDDING_INDEX = "document_chunk_embedding";
-    private static final Logger log = LoggerFactory.getLogger(DocumentProcessingService.class);
 
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentChunkRepository documentChunkRepository;
@@ -68,6 +68,7 @@ public class DocumentProcessingService {
     }
 
     public DocumentUploadNode process(String documentId) {
+        long startNanos = System.nanoTime();
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
         log.info(
@@ -133,16 +134,29 @@ public class DocumentProcessingService {
             graphExtractionService.extract(document, persistedChunks);
 
             document.setProcessedAt(Instant.now());
-            log.info("Document processing completed successfully: documentId={}", documentId);
+            log.info(
+                "Document processing completed successfully: documentId={}, elapsedMs={}",
+                documentId,
+                LogSanitizer.elapsedMillis(startNanos)
+            );
             return setStatus(document, DocumentStatus.COMPLETED, null);
         } catch (Exception ex) {
-            log.error("Document processing failed: documentId={}, message={}", documentId, ex.getMessage(), ex);
+            log.error(
+                "Document processing failed: documentId={}, elapsedMs={}, message={}",
+                documentId,
+                LogSanitizer.elapsedMillis(startNanos),
+                ex.getMessage(),
+                ex
+            );
             return setStatus(document, DocumentStatus.FAILED, ex.getMessage());
         }
     }
 
     public List<DocumentChunkNode> getDocumentChunks(String documentId) {
-        return documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+        log.info("Loading document chunks: documentId={}", documentId);
+        List<DocumentChunkNode> chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+        log.info("Document chunks loaded: documentId={}, count={}", documentId, chunks.size());
+        return chunks;
     }
 
     private String parseDocument(DocumentUploadNode document) throws IOException {
@@ -152,12 +166,14 @@ public class DocumentProcessingService {
     }
 
     private DocumentUploadNode setStatus(DocumentUploadNode document, DocumentStatus status, String errorMessage) {
+        log.info("Updating document status: documentId={}, status={}", document.getId(), status);
         document.setStatus(status);
         document.setErrorMessage(errorMessage);
         return documentUploadRepository.save(document);
     }
 
     private void ensureVectorIndex() {
+        log.info("Ensuring vector index exists: index={}, dimensions={}", CHUNK_EMBEDDING_INDEX, appProperties.model().embeddingDimensions());
         neo4jClient.query("""
             CREATE VECTOR INDEX %s IF NOT EXISTS
             FOR (c:DocumentChunk)
@@ -169,6 +185,7 @@ public class DocumentProcessingService {
             """.formatted(CHUNK_EMBEDDING_INDEX))
             .bind(appProperties.model().embeddingDimensions()).to("dimensions")
             .run();
+        log.info("Vector index ensured: index={}", CHUNK_EMBEDDING_INDEX);
     }
 
     private void createChunkRelationship(String documentId, String chunkId) {

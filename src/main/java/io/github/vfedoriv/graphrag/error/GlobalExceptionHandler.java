@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
         MethodArgumentNotValidException ex,
         HttpServletRequest request
     ) {
+        log.error("Validation failed at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Validation failed", request.getRequestURI());
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -37,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     public ProblemDetail handleBindException(BindException ex, HttpServletRequest request) {
+        log.error("Bind error at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Invalid request", request.getRequestURI());
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -48,6 +50,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
+        log.error("Constraint violation at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Constraint violation", request.getRequestURI());
         detail.setProperty(
             "errors",
@@ -60,12 +63,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        log.error("Maximum upload size exceeded at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         return baseProblem(HttpStatus.PAYLOAD_TOO_LARGE, "Maximum upload size exceeded", request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
-        log.warn("Illegal argument at {}: {}", request.getRequestURI(), ex.getMessage());
+        log.error("Illegal argument at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
@@ -74,7 +78,7 @@ public class GlobalExceptionHandler {
         String detailMessage = ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null
             ? ex.getMostSpecificCause().getMessage()
             : ex.getMessage();
-        log.warn("Request conversion error at {}: {}", request.getRequestURI(), detailMessage);
+        log.error("Request conversion error at {}: {}", request.getRequestURI(), detailMessage, ex);
         return baseProblem(
             HttpStatus.BAD_REQUEST,
             "Invalid request payload: " + detailMessage,
@@ -91,6 +95,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SchemaValidationException.class)
     public ProblemDetail handleSchemaValidation(SchemaValidationException ex, HttpServletRequest request) {
+        log.error("Schema validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Schema validation failed", request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());
         return detail;
@@ -98,16 +103,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        log.error("Resource not found at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         return baseProblem(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex, HttpServletRequest request) {
+        log.error("Conflict at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(QueryRejectedException.class)
     public ProblemDetail handleQueryRejected(QueryRejectedException ex, HttpServletRequest request) {
+        log.error("Query rejected at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());
         return detail;

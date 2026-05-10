@@ -20,11 +20,13 @@ import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class SchemaRegistryService {
 
     private final SchemaParser schemaParser;
@@ -49,9 +51,11 @@ public class SchemaRegistryService {
 
     @Transactional
     public SchemaDefinitionNode createSchema(String yaml, SchemaSourceType sourceType) {
+        log.info("Creating schema: sourceType={}, contentLength={}", sourceType, yaml == null ? 0 : yaml.length());
         SchemaDocument doc = schemaParser.parse(yaml);
         List<String> errors = schemaValidator.validate(doc);
         if (!errors.isEmpty()) {
+            log.info("Schema validation failed before create: name={}, version={}, errorCount={}", doc.name(), doc.version(), errors.size());
             throw new SchemaValidationException(errors);
         }
 
@@ -71,27 +75,39 @@ public class SchemaRegistryService {
         node.setContentHash(sha256(yaml));
         node.setStatus(SchemaStatus.INACTIVE);
         node.setCreatedAt(Instant.now());
-        return schemaRepository.save(node);
+        SchemaDefinitionNode saved = schemaRepository.save(node);
+        log.info("Schema created: schemaId={}, name={}, version={}, sourceType={}", saved.getId(), saved.getName(), saved.getVersion(), saved.getSourceType());
+        return saved;
     }
 
     @Transactional(readOnly = true)
     public List<SchemaDefinitionNode> listSchemas() {
-        return schemaRepository.findAll();
+        log.info("Listing schemas");
+        List<SchemaDefinitionNode> schemas = schemaRepository.findAll();
+        log.info("Schemas listed: count={}", schemas.size());
+        return schemas;
     }
 
     @Transactional(readOnly = true)
     public SchemaDefinitionNode getSchema(String schemaId) {
-        return schemaRepository.findById(schemaId).orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
+        log.info("Loading schema: schemaId={}", schemaId);
+        SchemaDefinitionNode schema = schemaRepository.findById(schemaId).orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
+        log.info("Schema loaded: schemaId={}, name={}, version={}", schema.getId(), schema.getName(), schema.getVersion());
+        return schema;
     }
 
     @Transactional(readOnly = true)
     public List<String> validateYaml(String yaml) {
+        log.info("Validating schema YAML: contentLength={}", yaml == null ? 0 : yaml.length());
         SchemaDocument doc = schemaParser.parse(yaml);
-        return schemaValidator.validate(doc);
+        List<String> errors = schemaValidator.validate(doc);
+        log.info("Schema YAML validation completed: name={}, version={}, valid={}, errorCount={}", doc.name(), doc.version(), errors.isEmpty(), errors.size());
+        return errors;
     }
 
     @Transactional
     public void activateSchema(String knowledgeBaseId, String schemaId) {
+        log.info("Activating schema: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         SchemaDefinitionNode schema = getSchema(schemaId);
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
             .orElseGet(() -> {
@@ -114,6 +130,7 @@ public class SchemaRegistryService {
             .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(schemaId).to("schemaId")
             .run();
+        log.info("Schema activated: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
     }
 
     private String sha256(String value) {
@@ -122,6 +139,7 @@ public class SchemaRegistryService {
             byte[] hash = digest.digest(value.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {
+            log.error("SHA-256 digest algorithm is unavailable", e);
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }

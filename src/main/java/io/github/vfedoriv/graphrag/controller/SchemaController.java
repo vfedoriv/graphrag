@@ -13,6 +13,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,7 +80,20 @@ public class SchemaController {
         @ApiResponse(responseCode = "400", description = "Invalid schema payload", content = @Content(schema = @Schema()))
     })
     public SchemaResponse createSchema(@Valid @RequestBody CreateSchemaRequest request) {
-        return toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType()));
+        log.info(
+            "Create schema request: sourceType={}, contentLength={}",
+            request.sourceType(),
+            LogSanitizer.length(request.content())
+        );
+        SchemaResponse response = toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType()));
+        log.info(
+            "Create schema completed: schemaId={}, name={}, version={}, status={}",
+            response.id(),
+            response.name(),
+            response.version(),
+            response.status()
+        );
+        return response;
     }
 
     @PostMapping("/schemas/generate")
@@ -89,6 +103,14 @@ public class SchemaController {
         @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
     })
     public GenerateSchemaResponse generateSchema(@Valid @RequestBody GenerateSchemaRequest request) {
+        log.info(
+            "Generate schema request: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}",
+            request.name(),
+            request.version(),
+            request.description() != null && !request.description().isBlank(),
+            LogSanitizer.length(request.text()),
+            LogSanitizer.length(request.example())
+        );
         String yaml = schemaGenerationService.generateYaml(
             request.name(),
             request.version(),
@@ -96,6 +118,7 @@ public class SchemaController {
             request.text(),
             request.example()
         );
+        log.info("Generate schema completed: name={}, version={}, yamlLength={}", request.name(), request.version(), yaml.length());
         return new GenerateSchemaResponse(yaml);
     }
 
@@ -134,6 +157,7 @@ public class SchemaController {
             file.getSize()
         );
         String text = parseUploadedText(file);
+        log.info("Generate schema from file parsed text: fileName='{}', textLength={}", file.getOriginalFilename(), text.length());
         String yaml = schemaGenerationService.generateYaml(
             request.name(),
             request.version(),
@@ -141,6 +165,7 @@ public class SchemaController {
             text,
             normalizeExample(request.example())
         );
+        log.info("Generate schema from file completed: name={}, version={}, yamlLength={}", request.name(), request.version(), yaml.length());
         return new GenerateSchemaResponse(yaml);
     }
 
@@ -151,6 +176,7 @@ public class SchemaController {
         try {
             return OBJECT_MAPPER.writeValueAsString(exampleValue);
         } catch (JsonProcessingException e) {
+            log.error("Failed to normalize schema generation example: message={}", e.getMessage(), e);
             throw new IllegalArgumentException("request.example: invalid JSON", e);
         }
     }
@@ -165,7 +191,13 @@ public class SchemaController {
         @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
     })
     public GenerateSchemaExampleResponse generateSchemaExample(@Valid @RequestBody GenerateSchemaExampleRequest request) {
+        log.info(
+            "Generate schema example request: textLength={}, userPromptLength={}",
+            LogSanitizer.length(request.text()),
+            LogSanitizer.length(request.userPrompt())
+        );
         String example = schemaGenerationService.generateExample(request.text(), request.userPrompt());
+        log.info("Generate schema example completed: exampleLength={}", example.length());
         return new GenerateSchemaExampleResponse(example);
     }
 
@@ -183,8 +215,17 @@ public class SchemaController {
         @RequestParam(required = false) String userPrompt,
         @Parameter(description = "Source file used for example generation") @RequestPart("file") MultipartFile file
     ) {
+        log.info(
+            "Generate schema example from file request: userPromptLength={}, fileName='{}', fileContentType='{}', fileSize={}",
+            LogSanitizer.length(userPrompt),
+            file.getOriginalFilename(),
+            file.getContentType(),
+            file.getSize()
+        );
         String text = parseUploadedText(file);
+        log.info("Generate schema example from file parsed text: fileName='{}', textLength={}", file.getOriginalFilename(), text.length());
         String example = schemaGenerationService.generateExample(text, userPrompt);
+        log.info("Generate schema example from file completed: fileName='{}', exampleLength={}", file.getOriginalFilename(), example.length());
         return new GenerateSchemaExampleResponse(example);
     }
 
@@ -192,7 +233,10 @@ public class SchemaController {
     @Operation(summary = "List schemas", description = "Returns all known schema versions.")
     @ApiResponse(responseCode = "200", description = "Schemas retrieved")
     public List<SchemaResponse> listSchemas() {
-        return schemaRegistryService.listSchemas().stream().map(this::toResponse).toList();
+        log.info("List schemas request");
+        List<SchemaResponse> response = schemaRegistryService.listSchemas().stream().map(this::toResponse).toList();
+        log.info("List schemas completed: count={}", response.size());
+        return response;
     }
 
     @GetMapping("/schemas/{schemaId}")
@@ -202,7 +246,10 @@ public class SchemaController {
         @ApiResponse(responseCode = "404", description = "Schema not found", content = @Content(schema = @Schema()))
     })
     public SchemaResponse getSchema(@Parameter(description = "Schema identifier") @PathVariable String schemaId) {
-        return toResponse(schemaRegistryService.getSchema(schemaId));
+        log.info("Get schema request: schemaId={}", schemaId);
+        SchemaResponse response = toResponse(schemaRegistryService.getSchema(schemaId));
+        log.info("Get schema completed: schemaId={}, name={}, version={}", response.id(), response.name(), response.version());
+        return response;
     }
 
     @PostMapping("/schemas/validate")
@@ -232,7 +279,9 @@ public class SchemaController {
         )
         @Valid @RequestBody ValidateSchemaRequest request
     ) {
+        log.info("Validate schema request: contentLength={}", LogSanitizer.length(request.content()));
         List<String> errors = schemaRegistryService.validateYaml(request.content());
+        log.info("Validate schema completed: valid={}, errors={}", errors.isEmpty(), errors.size());
         return new SchemaValidationResponse(errors.isEmpty(), errors);
     }
 
@@ -246,7 +295,9 @@ public class SchemaController {
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
         @Parameter(description = "Schema identifier to activate") @PathVariable String schemaId
     ) {
+        log.info("Activate schema request: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         schemaRegistryService.activateSchema(knowledgeBaseId, schemaId);
+        log.info("Activate schema completed: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
     }
 
     private SchemaResponse toResponse(SchemaDefinitionNode node) {
@@ -266,6 +317,7 @@ public class SchemaController {
         try {
             return documentParsingService.parse(file.getOriginalFilename(), file.getContentType(), file.getBytes());
         } catch (IOException e) {
+            log.error("Failed to read uploaded file: filename={}, message={}", file.getOriginalFilename(), e.getMessage(), e);
             throw new IllegalArgumentException("Failed to read uploaded file", e);
         }
     }

@@ -8,6 +8,7 @@ import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.data.document.Document;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
@@ -36,6 +37,20 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
     @Override
     public String generateYaml(String name, int version, String description, String text, String example) {
+        long startNanos = System.nanoTime();
+        log.info(
+            "Schema YAML generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textPreview={}",
+            name,
+            version,
+            description != null && !description.isBlank(),
+            LogSanitizer.length(text),
+            LogSanitizer.length(example),
+            LogSanitizer.preview(text)
+        );
+        if (log.isDebugEnabled()) {
+            log.debug("Schema YAML generation source text: {}", text);
+            log.debug("Schema YAML generation example: {}", example);
+        }
         LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
             new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel()),
             List.of(),
@@ -48,14 +63,29 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         GraphDocument graphDocument = transformer.transform(Document.from(text));
         SchemaDocument schema = inferSchema(name, version, description, graphDocument);
         try {
-            return YAML_MAPPER.writeValueAsString(schema);
+            String yaml = YAML_MAPPER.writeValueAsString(schema);
+            log.info(
+                "Schema YAML generation completed: name={}, version={}, nodes={}, relationships={}, yamlLength={}, elapsedMs={}",
+                name,
+                version,
+                schema.nodes().size(),
+                schema.relationships().size(),
+                yaml.length(),
+                LogSanitizer.elapsedMillis(startNanos)
+            );
+            if (log.isDebugEnabled()) {
+                log.debug("Generated schema YAML: {}", yaml);
+            }
+            return yaml;
         } catch (JsonProcessingException e) {
+            log.error("Failed to serialize generated schema to YAML: name={}, version={}, message={}", name, version, e.getMessage(), e);
             throw new IllegalStateException("Failed to serialize generated schema to YAML", e);
         }
     }
 
     @Override
     public String generateExample(String text, String userPrompt) {
+        long startNanos = System.nanoTime();
         String userInstruction = (userPrompt == null || userPrompt.isBlank()) ? "" : "\nAdditional guidance:\n" + userPrompt;
         String prompt = """
             You generate examples for graph extraction.
@@ -68,7 +98,26 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             Text:
             %s
             """.formatted(userInstruction, text);
-        return requireSpringChatModel().call(new Prompt(prompt)).getResult().getOutput().getText();
+        log.info(
+            "Schema example generation started: textLength={}, userPromptLength={}, promptPreview={}",
+            LogSanitizer.length(text),
+            LogSanitizer.length(userPrompt),
+            LogSanitizer.preview(prompt)
+        );
+        if (log.isDebugEnabled()) {
+            log.debug("Schema example generation prompt: {}", prompt);
+        }
+        String response = requireSpringChatModel().call(new Prompt(prompt)).getResult().getOutput().getText();
+        log.info(
+            "Schema example generation completed: responseLength={}, responsePreview={}, elapsedMs={}",
+            LogSanitizer.length(response),
+            LogSanitizer.preview(response),
+            LogSanitizer.elapsedMillis(startNanos)
+        );
+        if (log.isDebugEnabled()) {
+            log.debug("Schema example generation response: {}", response);
+        }
+        return response;
     }
 
     SchemaDocument inferSchema(String name, int version, String description, GraphDocument graphDocument) {
@@ -238,8 +287,10 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     private org.springframework.ai.chat.model.ChatModel requireSpringChatModel() {
         org.springframework.ai.chat.model.ChatModel model = springChatModelProvider.getIfAvailable();
         if (model == null) {
+            log.error("Spring AI ChatModel bean is missing for schema generation");
             throw new IllegalStateException("No Spring AI ChatModel bean is configured");
         }
+        log.info("Schema generation resolved chatModelClass={}", model.getClass().getName());
         return model;
     }
 

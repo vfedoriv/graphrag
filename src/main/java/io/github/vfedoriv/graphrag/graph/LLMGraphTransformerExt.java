@@ -19,6 +19,7 @@ import dev.langchain4j.internal.RetryUtils;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.input.PromptTemplate;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -221,13 +222,21 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
                 try {
                     ChatResponse chat = chatModel.chat(messages);
                     String rawText = chat.aiMessage().text();
-                    log.info("LLM graph transformer raw response attempt {}: {}", attempt, rawText);
+                    log.info(
+                        "LLM graph transformer raw response attempt {}: responseLength={}, responsePreview={}",
+                        attempt,
+                        LogSanitizer.length(rawText),
+                        LogSanitizer.preview(rawText)
+                    );
+                    if (log.isDebugEnabled()) {
+                        log.debug("LLM graph transformer raw response attempt {}: {}", attempt, rawText);
+                    }
                     String backtickText = getBacktickText(rawText);
                     List<Map<String, Object>> parsed = OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
                     log.info("LLM graph transformer parsed response attempt {}: {}", attempt, summarizeParsedResponse(parsed));
                     return parsed;
                 } catch (Exception e) {
-                    log.warn("LLM graph transformer failed to parse response attempt {}", attempt, e);
+                    log.error("LLM graph transformer failed to parse response attempt {}", attempt, e);
                     throw (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
                 }
             },
@@ -319,7 +328,8 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         if (value instanceof List<?> || value instanceof Map<?, ?>) {
             try {
                 return OBJECT_MAPPER.writeValueAsString(value);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                log.error("Failed to serialize LLM graph transformer value to JSON: valueClass={}", value.getClass().getName(), e);
                 return String.valueOf(value);
             }
         }

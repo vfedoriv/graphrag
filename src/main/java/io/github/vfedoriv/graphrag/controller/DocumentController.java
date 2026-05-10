@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "Documents", description = "Document upload, processing, and chunk retrieval.")
+@Slf4j
 public class DocumentController {
 
     private final DocumentUploadService documentUploadService;
@@ -58,7 +60,21 @@ public class DocumentController {
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
         @Parameter(description = "Document file to upload") @RequestPart("file") MultipartFile file
     ) {
-        return toResponse(documentUploadService.upload(knowledgeBaseId, file));
+        log.info(
+            "Upload document request: knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
+            knowledgeBaseId,
+            file.getOriginalFilename(),
+            file.getContentType(),
+            file.getSize()
+        );
+        DocumentUploadResponse response = toResponse(documentUploadService.upload(knowledgeBaseId, file));
+        log.info(
+            "Upload document completed: knowledgeBaseId={}, documentId={}, status={}",
+            knowledgeBaseId,
+            response.id(),
+            response.status()
+        );
+        return response;
     }
 
     @GetMapping("/knowledge-bases/{knowledgeBaseId}/documents")
@@ -69,9 +85,12 @@ public class DocumentController {
     public List<DocumentUploadResponse> listKnowledgeBaseDocuments(
         @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId
     ) {
-        return documentUploadService.listByKnowledgeBase(knowledgeBaseId).stream()
+        log.info("List documents request: knowledgeBaseId={}", knowledgeBaseId);
+        List<DocumentUploadResponse> response = documentUploadService.listByKnowledgeBase(knowledgeBaseId).stream()
             .map(this::toResponse)
             .toList();
+        log.info("List documents completed: knowledgeBaseId={}, count={}", knowledgeBaseId, response.size());
+        return response;
     }
 
     @PostMapping("/documents/{documentId}/process")
@@ -91,7 +110,10 @@ public class DocumentController {
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
     public DocumentUploadResponse processDocument(@Parameter(description = "Document identifier") @PathVariable String documentId) {
-        return toResponse(documentProcessingService.process(documentId));
+        log.info("Process document request: documentId={}", documentId);
+        DocumentUploadResponse response = toResponse(documentProcessingService.process(documentId));
+        log.info("Process document completed: documentId={}, status={}", documentId, response.status());
+        return response;
     }
 
     @GetMapping("/documents/{documentId}/chunks")
@@ -101,7 +123,8 @@ public class DocumentController {
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
     public List<DocumentChunkResponse> getDocumentChunks(@Parameter(description = "Document identifier") @PathVariable String documentId) {
-        return documentProcessingService.getDocumentChunks(documentId).stream()
+        log.info("Get document chunks request: documentId={}", documentId);
+        List<DocumentChunkResponse> response = documentProcessingService.getDocumentChunks(documentId).stream()
             .map(chunk -> new DocumentChunkResponse(
                 chunk.getId(),
                 chunk.getDocumentId(),
@@ -111,6 +134,8 @@ public class DocumentController {
                 chunk.getMetadata()
             ))
             .toList();
+        log.info("Get document chunks completed: documentId={}, count={}", documentId, response.size());
+        return response;
     }
 
     private DocumentUploadResponse toResponse(DocumentUploadNode node) {

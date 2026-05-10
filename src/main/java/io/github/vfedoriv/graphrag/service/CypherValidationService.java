@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
@@ -17,10 +18,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CypherValidationService {
 
     private static final Pattern LABEL_PATTERN = Pattern.compile(":[`]?([A-Za-z_][A-Za-z0-9_]*)[`]?");
@@ -51,6 +54,12 @@ public class CypherValidationService {
     }
 
     public QueryValidationResult validate(String knowledgeBaseId, String cypher, Map<String, Object> parameters) {
+        log.info(
+            "Validating Cypher for knowledge base: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
+            knowledgeBaseId,
+            LogSanitizer.length(cypher),
+            parameters == null ? 0 : parameters.size()
+        );
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
             .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
         if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
@@ -58,10 +67,18 @@ public class CypherValidationService {
         }
         var schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
             .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
-        return validate(schemaParser.parse(schemaNode.getContent()), cypher, parameters);
+        QueryValidationResult result = validate(schemaParser.parse(schemaNode.getContent()), cypher, parameters);
+        log.info(
+            "Cypher validation completed for knowledge base: knowledgeBaseId={}, valid={}, errorCount={}",
+            knowledgeBaseId,
+            result.valid(),
+            result.errors().size()
+        );
+        return result;
     }
 
     QueryValidationResult validate(SchemaDocument schema, String cypher, Map<String, Object> parameters) {
+        long startNanos = System.nanoTime();
         List<String> errors = new ArrayList<>();
         String normalizedCypher = cypher == null ? "" : cypher.trim();
         Map<String, Object> normalizedParameters = new LinkedHashMap<>(parameters == null ? Map.of() : parameters);
@@ -78,7 +95,16 @@ public class CypherValidationService {
             explain(normalizedCypher, normalizedParameters, errors);
         }
 
-        return new QueryValidationResult(errors.isEmpty(), normalizedCypher, Map.copyOf(normalizedParameters), List.copyOf(errors));
+        QueryValidationResult result = new QueryValidationResult(errors.isEmpty(), normalizedCypher, Map.copyOf(normalizedParameters), List.copyOf(errors));
+        log.info(
+            "Cypher validation completed: schemaName={}, valid={}, errorCount={}, cypherLength={}, elapsedMs={}",
+            schema.name(),
+            result.valid(),
+            result.errors().size(),
+            LogSanitizer.length(result.cypher()),
+            LogSanitizer.elapsedMillis(startNanos)
+        );
+        return result;
     }
 
     private void rejectBlockedKeywords(String cypher, List<String> errors) {
@@ -137,6 +163,7 @@ public class CypherValidationService {
         try {
             neo4jClient.query("EXPLAIN " + cypher).bindAll(params).fetch().all();
         } catch (Exception ex) {
+            log.error("Cypher EXPLAIN failed: cypherLength={}, parameterCount={}, message={}", cypher.length(), params.size(), ex.getMessage(), ex);
             errors.add("Cypher syntax or planner validation failed: " + ex.getMessage());
         }
     }

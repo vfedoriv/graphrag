@@ -4,11 +4,12 @@ import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GraphWriteService {
 
     private final Neo4jClient neo4jClient;
@@ -25,6 +26,16 @@ public class GraphWriteService {
         SchemaDocument schema,
         GraphExtractionResult result
     ) {
+        int nodeCount = result.nodes() == null ? 0 : result.nodes().size();
+        int relationshipCount = result.relationships() == null ? 0 : result.relationships().size();
+        log.info(
+            "Writing graph extraction result: runId={}, documentId={}, chunkId={}, nodes={}, relationships={}",
+            extractionRunId,
+            documentId,
+            chunkId,
+            nodeCount,
+            relationshipCount
+        );
         Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
         for (var def : schema.nodes()) {
             nodeDefs.put(def.label(), def);
@@ -39,6 +50,14 @@ public class GraphWriteService {
                 upsertRelationship(extractionRunId, schemaId, documentId, chunkId, nodeDefs, rel);
             }
         }
+        log.info(
+            "Graph extraction result written: runId={}, documentId={}, chunkId={}, nodes={}, relationships={}",
+            extractionRunId,
+            documentId,
+            chunkId,
+            nodeCount,
+            relationshipCount
+        );
     }
 
     private void upsertNode(
