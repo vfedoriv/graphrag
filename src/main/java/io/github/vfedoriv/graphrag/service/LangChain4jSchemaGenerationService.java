@@ -6,23 +6,24 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
-import dev.langchain4j.community.data.document.transformer.graph.GraphTransformer;
-import dev.langchain4j.community.data.document.transformer.graph.LLMGraphTransformer;
 import dev.langchain4j.data.document.Document;
+import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class LangChain4jSchemaGenerationService implements SchemaGenerationService {
 
@@ -35,10 +36,15 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
     @Override
     public String generateYaml(String name, int version, String description, String text, String example) {
-        GraphTransformer transformer = LLMGraphTransformer.builder()
-            .model(new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel()))
-            .examples(example)
-            .build();
+        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+            new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel()),
+            List.of(),
+            List.of(),
+            null,
+            "",
+            example,
+            1
+        );
         GraphDocument graphDocument = transformer.transform(Document.from(text));
         SchemaDocument schema = inferSchema(name, version, description, graphDocument);
         try {
@@ -65,29 +71,36 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         return requireSpringChatModel().call(new Prompt(prompt)).getResult().getOutput().getText();
     }
 
-    private SchemaDocument inferSchema(String name, int version, String description, GraphDocument graphDocument) {
-        Set<SchemaDocument.NodeDefinition> nodes = new LinkedHashSet<>();
+    SchemaDocument inferSchema(String name, int version, String description, GraphDocument graphDocument) {
+        Map<String, NodeAccumulator> nodes = new LinkedHashMap<>();
         Map<String, String> labelByNodeName = new LinkedHashMap<>();
 
         for (GraphNode node : graphDocument.nodes()) {
+            log.info("Processing node {}", node.toString());
             String label = sanitizeLabel(node.type(), "Entity");
             String key = "id";
-            nodes.add(new SchemaDocument.NodeDefinition(label, null, key, List.of()));
+            NodeAccumulator accumulator = nodes.computeIfAbsent(label, ignored -> new NodeAccumulator(label, key));
+            accumulator.mergeFrom(node);
             labelByNodeName.put(node.id(), label);
         }
 
-        Set<SchemaDocument.RelationshipDefinition> relationships = new LinkedHashSet<>();
+        Map<String, RelationshipAccumulator> relationships = new LinkedHashMap<>();
         for (GraphEdge edge : graphDocument.relationships()) {
+            log.info("Processing edge {}", edge.toString());
             String fromLabel = labelByNodeName.getOrDefault(edge.sourceNode().id(), "Entity");
             String toLabel = labelByNodeName.getOrDefault(edge.targetNode().id(), "Entity");
             String type = sanitizeRelation(edge.type());
-            relationships.add(new SchemaDocument.RelationshipDefinition(type, fromLabel, toLabel, null, List.of()));
+            String key = type + "|" + fromLabel + "|" + toLabel;
+            RelationshipAccumulator accumulator = relationships.computeIfAbsent(
+                key, ignored -> new RelationshipAccumulator(type, fromLabel, toLabel));
+            accumulator.mergeFrom(edge);
         }
 
-        List<SchemaDocument.NodeDefinition> sortedNodes = new ArrayList<>(nodes);
+        List<SchemaDocument.NodeDefinition> sortedNodes = new ArrayList<>(nodes.values().stream().map(NodeAccumulator::toDefinition).toList());
         sortedNodes.sort(Comparator.comparing(SchemaDocument.NodeDefinition::label));
 
-        List<SchemaDocument.RelationshipDefinition> sortedRelationships = new ArrayList<>(relationships);
+        List<SchemaDocument.RelationshipDefinition> sortedRelationships = new ArrayList<>(
+            relationships.values().stream().map(RelationshipAccumulator::toDefinition).toList());
         sortedRelationships.sort(Comparator
             .comparing(SchemaDocument.RelationshipDefinition::type)
             .thenComparing(SchemaDocument.RelationshipDefinition::from)
@@ -123,6 +136,103 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         String cleaned = raw.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_");
         cleaned = cleaned.replaceAll("^_+|_+$", "");
         return cleaned.isBlank() ? "RELATED_TO" : cleaned;
+    }
+
+    private static String firstNonBlank(String left, String right) {
+        if (left != null && !left.isBlank()) {
+            return left;
+        }
+        return (right == null || right.isBlank()) ? null : right;
+    }
+
+    private static String inferPropertyType(String value) {
+        if (value == null || value.isBlank()) {
+            return "string";
+        }
+        String normalized = value.trim();
+        if (normalized.matches("(?i)true|false")) {
+            return "boolean";
+        }
+        if (normalized.matches("[+-]?\\d+")) {
+            return "integer";
+        }
+        if (normalized.matches("[+-]?\\d*\\.\\d+")) {
+            return "number";
+        }
+        if (normalized.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return "date";
+        }
+        if (normalized.matches("\\d{4}-\\d{2}-\\d{2}[Tt ][0-2]\\d:[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:[Zz]|[+-][0-2]\\d:[0-5]\\d)?")) {
+            return "datetime";
+        }
+        return "string";
+    }
+
+    private static final class NodeAccumulator {
+        private final String label;
+        private final String key;
+        private String description;
+        private final Map<String, SchemaDocument.PropertyDefinition> properties = new LinkedHashMap<>();
+
+        private NodeAccumulator(String label, String key) {
+            this.label = label;
+            this.key = key;
+        }
+
+        private void mergeFrom(GraphNode node) {
+            Map<String, String> rawProperties = node.properties() == null ? Map.of() : node.properties();
+            description = firstNonBlank(description, rawProperties.get("description"));
+
+            rawProperties.entrySet().stream()
+                .filter(entry -> entry.getKey() != null && !entry.getKey().isBlank())
+                .filter(entry -> !entry.getKey().equalsIgnoreCase("description"))
+                .forEach(entry -> properties.putIfAbsent(
+                    entry.getKey(),
+                    new SchemaDocument.PropertyDefinition(entry.getKey(), inferPropertyType(entry.getValue()), Boolean.FALSE)
+                ));
+        }
+
+        private SchemaDocument.NodeDefinition toDefinition() {
+            List<SchemaDocument.PropertyDefinition> sortedProperties = properties.values().stream()
+                .sorted(Comparator.comparing(SchemaDocument.PropertyDefinition::name))
+                .toList();
+            return new SchemaDocument.NodeDefinition(label, description, key, sortedProperties);
+        }
+    }
+
+    private static final class RelationshipAccumulator {
+        private final String type;
+        private final String from;
+        private final String to;
+        private String description;
+        private final Map<String, SchemaDocument.PropertyDefinition> properties = new LinkedHashMap<>();
+
+        private RelationshipAccumulator(String type, String from, String to) {
+            this.type = type;
+            this.from = from;
+            this.to = to;
+        }
+
+        private void mergeFrom(GraphEdge edge) {
+            Map<String, String> rawProperties = edge.properties() == null ? Map.of() : edge.properties();
+            description = firstNonBlank(description, rawProperties.get("description"));
+
+            rawProperties.entrySet().stream()
+                .filter(entry -> entry.getKey() != null && !entry.getKey().isBlank())
+                .filter(entry -> !entry.getKey().equalsIgnoreCase("description"))
+                .forEach(entry -> properties.putIfAbsent(
+                    entry.getKey(),
+                    new SchemaDocument.PropertyDefinition(entry.getKey(), inferPropertyType(entry.getValue()), Boolean.FALSE)
+                ));
+        }
+
+        private SchemaDocument.RelationshipDefinition toDefinition() {
+            List<SchemaDocument.PropertyDefinition> sortedProperties = properties.values().stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(SchemaDocument.PropertyDefinition::name))
+                .toList();
+            return new SchemaDocument.RelationshipDefinition(type, from, to, description, sortedProperties);
+        }
     }
 
     private org.springframework.ai.chat.model.ChatModel requireSpringChatModel() {

@@ -43,3 +43,48 @@ The system SHALL NOT save generated schema YAML from schema generation endpoints
 - **THEN** the system does not use it to persist the generated YAML
 - **AND** clients must use the schema creation endpoint to save reviewed YAML
 
+### Requirement: Preserve inferred graph metadata in generated schema YAML
+The system SHALL preserve metadata inferred by the graph transformer when constructing generated schema YAML, including node descriptions, node properties, and edge descriptions.
+
+#### Scenario: Text-based schema generation keeps node descriptions and properties
+- **WHEN** `/api/v1/schemas/generate` produces inferred graph nodes with non-blank descriptions and properties
+- **THEN** the generated YAML contains those node descriptions
+- **AND** the generated YAML contains node properties with names and valid schema property types
+
+#### Scenario: Text-based schema generation keeps edge descriptions
+- **WHEN** `/api/v1/schemas/generate` produces inferred graph edges with non-blank descriptions
+- **THEN** the generated YAML contains those edge descriptions for corresponding relationships
+
+#### Scenario: File-based schema generation keeps inferred metadata
+- **WHEN** `/api/v1/schemas/generate/from-file` produces inferred graph nodes and edges with descriptions and node properties
+- **THEN** the generated YAML contains node descriptions, node properties, and edge descriptions for corresponding schema elements
+
+#### Scenario: Missing optional metadata does not break generation
+- **WHEN** inferred nodes or edges omit descriptions or properties
+- **THEN** schema generation still succeeds
+- **AND** only available metadata is included in the generated YAML
+
+### Requirement: Transformer extension preserves inferred node and edge properties
+The system SHALL use a transformer implementation for schema generation that preserves node and edge `properties` extracted from model output when such properties are present.
+
+#### Scenario: Node properties are preserved from transformer output
+- **WHEN** schema generation processes model output containing node property maps
+- **THEN** the graph document used by schema inference contains non-empty `GraphNode.properties` entries for corresponding nodes
+
+#### Scenario: Edge properties are preserved from transformer output
+- **WHEN** schema generation processes model output containing edge property maps
+- **THEN** the graph document used by schema inference contains non-empty `GraphEdge.properties` entries for corresponding relationships
+
+#### Scenario: Missing properties do not break transformation
+- **WHEN** model output omits node or edge properties
+- **THEN** transformation succeeds without error
+- **AND** the resulting node or edge properties remain empty rather than causing invalid graph output
+
+### Requirement: Transformer extension behavior is regression tested
+The system SHALL include automated tests for transformer extension behavior to ensure node and edge property extraction remains stable.
+
+#### Scenario: Unit tests validate node and edge property extraction
+- **WHEN** transformer extension tests run with representative model output fixtures
+- **THEN** tests verify that node and edge properties are parsed and populated as expected
+- **AND** tests fail if properties are dropped unexpectedly
+
