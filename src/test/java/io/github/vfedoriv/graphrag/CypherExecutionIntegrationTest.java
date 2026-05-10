@@ -66,6 +66,43 @@ class CypherExecutionIntegrationTest {
     }
 
     @Test
+    void returnsNodeDataAsSerializableMapWhenReturningNodeVariable() {
+        neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
+        var schema = schemaRegistryService.createSchema("""
+            name: execute-contracts-node
+            version: 103
+            nodes:
+              - label: Contract
+                key: contractId
+                properties:
+                  - name: contractId
+                    type: string
+                  - name: title
+                    type: string
+            relationships: []
+            """, SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-execute-node", schema.getId());
+        neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-2', title: 'Node Payload'})").run();
+
+        var response = cypherExecutionService.execute(
+            "kb-execute-node",
+            "MATCH (c:Contract) RETURN c",
+            Map.of()
+        );
+
+        assertThat(response.validation().valid()).isTrue();
+        assertThat(response.rows()).hasSize(1);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nodeValue = (Map<String, Object>) response.rows().getFirst().get("c");
+        assertThat(nodeValue.get("_type")).isEqualTo("node");
+        assertThat(nodeValue).containsKeys("id", "elementId", "labels", "properties");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) nodeValue.get("properties");
+        assertThat(properties).containsEntry("contractId", "C-2");
+        assertThat(properties).containsEntry("title", "Node Payload");
+    }
+
+    @Test
     void rejectsInvalidQueryBeforeExecution() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
         var schema = schemaRegistryService.createSchema("""
