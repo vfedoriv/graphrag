@@ -119,3 +119,4 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 - **Schema-driven extraction:** LLM is explicitly constrained to only extract node labels and relationship types defined in the active schema.
 - **Provider-agnostic AI:** storage, embedding, generation, and extraction are all behind interfaces to allow swapping providers or using mocks.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
+- **No Java `var`:** declare concrete variable types explicitly instead of using the `var` keyword.

@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ class AiModelProfilePropertiesTest {
 
     private Properties load(String path) throws IOException {
         Properties properties = new Properties();
-        try (var reader = Files.newBufferedReader(Path.of(path))) {
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(path))) {
             properties.load(reader);
         }
         return properties;

@@ -37,16 +37,16 @@ public class GraphWriteService {
             relationshipCount
         );
         Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
-        for (var def : schema.nodes()) {
+        for (SchemaDocument.NodeDefinition def : schema.nodes()) {
             nodeDefs.put(def.label(), def);
         }
         if (result.nodes() != null) {
-            for (var node : result.nodes()) {
+            for (GraphExtractionResult.ExtractedNode node : result.nodes()) {
                 upsertNode(extractionRunId, schemaId, documentId, chunkId, nodeDefs.get(node.label()), node);
             }
         }
         if (result.relationships() != null) {
-            for (var rel : result.relationships()) {
+            for (GraphExtractionResult.ExtractedRelationship rel : result.relationships()) {
                 upsertRelationship(extractionRunId, schemaId, documentId, chunkId, nodeDefs, rel);
             }
         }

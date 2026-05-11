@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
@@ -58,7 +59,7 @@ class QueryControllerTest {
             Mockito.mock(CypherValidationService.class),
             executionService
         );
-        var response = controller.ask("kb-1", new QueryGenerateRequest("list contracts"));
+        QueryAskResponse response = controller.ask("kb-1", new QueryGenerateRequest("list contracts"));
 
         assertThat(response.generatedQuery().validation().valid()).isTrue();
         assertThat(response.execution().rows()).containsExactly(Map.of("contractId", "C-1"));

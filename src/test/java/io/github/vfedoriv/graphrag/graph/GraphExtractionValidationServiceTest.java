@@ -28,7 +28,7 @@ class GraphExtractionValidationServiceTest {
 
     @Test
     void rejectsUnknownLabel() {
-        var result = new GraphExtractionResult(
+        GraphExtractionResult result = new GraphExtractionResult(
             List.of(new GraphExtractionResult.ExtractedNode("Unknown", Map.of("id", "1"), 0.9)),
             List.of()
         );
@@ -39,7 +39,7 @@ class GraphExtractionValidationServiceTest {
 
     @Test
     void acceptsValidPayload() {
-        var result = new GraphExtractionResult(
+        GraphExtractionResult result = new GraphExtractionResult(
             List.of(
                 new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-1"), 0.9),
                 new GraphExtractionResult.ExtractedNode("Party", Map.of("name", "Acme"), 0.8)

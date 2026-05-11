@@ -2,7 +2,9 @@ package io.github.vfedoriv.graphrag.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class GenerateSchemaFromFileRequestValidationTest {
@@ -12,7 +14,8 @@ class GenerateSchemaFromFileRequestValidationTest {
 
     @Test
     void validatesNullExample() {
-        var violations = validator.validate(new GenerateSchemaFromFileRequest("schema", 1, "desc", null));
+        Set<ConstraintViolation<GenerateSchemaFromFileRequest>> violations =
+            validator.validate(new GenerateSchemaFromFileRequest("schema", 1, "desc", null));
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getPropertyPath().toString()).isEqualTo("example");

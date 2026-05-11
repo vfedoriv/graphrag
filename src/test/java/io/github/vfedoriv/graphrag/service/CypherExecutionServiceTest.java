@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import java.nio.file.Path;
@@ -36,7 +37,7 @@ class CypherExecutionServiceTest {
             .thenReturn(List.of(Map.of("contractId", "C-1")));
 
         CypherExecutionService service = new CypherExecutionService(props(), validationService, neo4jClient);
-        var response = service.execute("kb-1", "MATCH (c:Contract) RETURN c.contractId AS contractId", Map.of());
+        QueryExecutionResponse response = service.execute("kb-1", "MATCH (c:Contract) RETURN c.contractId AS contractId", Map.of());
 
         assertThat(response.validation().valid()).isTrue();
         assertThat(response.columns()).containsExactly("contractId");

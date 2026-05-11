@@ -3,8 +3,10 @@ package io.github.vfedoriv.graphrag.embedding;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.ai.embedding.Embedding;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +29,9 @@ public class SpringAiEmbeddingClient implements EmbeddingClient {
         }
         log.info("Embedding client resolved embeddingModelClass={}", embeddingModel.getClass().getName());
         log.info("Embedding requested: chunks={}", texts.size());
-        var response = embeddingModel.embedForResponse(texts);
+        EmbeddingResponse response = embeddingModel.embedForResponse(texts);
         List<List<Double>> result = new ArrayList<>(response.getResults().size());
-        for (var output : response.getResults()) {
+        for (Embedding output : response.getResults()) {
             float[] vector = output.getOutput();
             List<Double> item = new ArrayList<>(vector.length);
             for (float v : vector) {

@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
@@ -133,7 +134,7 @@ public class QueryController {
             LogSanitizer.length(request.cypher()),
             request.parameters() == null ? 0 : request.parameters().size()
         );
-        var result = cypherValidationService.validate(knowledgeBaseId, request.cypher(), request.parameters());
+        QueryValidationResult result = cypherValidationService.validate(knowledgeBaseId, request.cypher(), request.parameters());
         QueryValidationResponse response = new QueryValidationResponse(
             result.valid(),
             result.cypher(),

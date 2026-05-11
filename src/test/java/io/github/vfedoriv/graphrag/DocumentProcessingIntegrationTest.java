@@ -2,10 +2,13 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
@@ -78,7 +81,7 @@ class DocumentProcessingIntegrationTest {
                 from: Contract
                 to: Party
             """;
-        var schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-1", schema.getId());
 
         MockMultipartFile file = new MockMultipartFile(
@@ -87,13 +90,13 @@ class DocumentProcessingIntegrationTest {
             "text/plain",
             "first chunk sentence. second chunk sentence.".getBytes()
         );
-        var uploaded = documentUploadService.upload("kb-1", file);
-        var processed = documentProcessingService.process(uploaded.getId());
-        var processedAgain = documentProcessingService.process(uploaded.getId());
+        DocumentUploadNode uploaded = documentUploadService.upload("kb-1", file);
+        DocumentUploadNode processed = documentProcessingService.process(uploaded.getId());
+        DocumentUploadNode processedAgain = documentProcessingService.process(uploaded.getId());
 
         assertThat(processed.getStatus().name()).isEqualTo("COMPLETED");
         assertThat(processedAgain.getStatus().name()).isEqualTo("COMPLETED");
-        var chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(uploaded.getId());
+        List<DocumentChunkNode> chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(uploaded.getId());
         assertThat(chunks).isNotEmpty();
         assertThat(chunks).extracting("chunkIndex").isSorted();
         assertThat(chunks.get(0).getEmbedding()).hasSize(1536);

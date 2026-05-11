@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
+import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
@@ -30,7 +32,7 @@ class SchemaControllerTest {
             .thenReturn("name: generated-legal-schema\nversion: 1\nnodes: []\nrelationships: []\n");
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchema(
+        GenerateSchemaResponse response = controller.generateSchema(
             new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", "example json")
         );
 
@@ -54,7 +56,7 @@ class SchemaControllerTest {
             .thenReturn(yaml);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchemaFromFile(
+        GenerateSchemaResponse response = controller.generateSchemaFromFile(
             new GenerateSchemaFromFileRequest("generated-legal-schema", 2, "from file", readJson("\"example json\"")),
             file
         );
@@ -73,7 +75,8 @@ class SchemaControllerTest {
         when(generationService.generateExample("raw input text", "focus on contracts")).thenReturn("[{\"head\":\"Acme\"}]");
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchemaExample(new GenerateSchemaExampleRequest("raw input text", "focus on contracts"));
+        GenerateSchemaExampleResponse response =
+            controller.generateSchemaExample(new GenerateSchemaExampleRequest("raw input text", "focus on contracts"));
 
         assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("raw input text", "focus on contracts");
@@ -92,7 +95,7 @@ class SchemaControllerTest {
         when(generationService.generateExample("parsed text", null)).thenReturn("[{\"head\":\"Acme\"}]");
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
-        var response = controller.generateSchemaExampleFromFile(null, file);
+        GenerateSchemaExampleResponse response = controller.generateSchemaExampleFromFile(null, file);
 
         assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("parsed text", null);

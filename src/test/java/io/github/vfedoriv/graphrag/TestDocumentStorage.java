@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 final class TestDocumentStorage {
 
@@ -16,7 +17,7 @@ final class TestDocumentStorage {
         if (!Files.exists(ROOT)) {
             return;
         }
-        try (var paths = Files.walk(ROOT)) {
+        try (Stream<Path> paths = Files.walk(ROOT)) {
             for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
                 Files.deleteIfExists(path);
             }

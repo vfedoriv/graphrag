@@ -3,10 +3,13 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import java.util.Collection;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,7 @@ class CypherExecutionIntegrationTest {
     @Test
     void executesValidatedReadOnlyQuery() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
-        var schema = schemaRegistryService.createSchema("""
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             name: execute-contracts
             version: 101
             nodes:
@@ -55,7 +58,7 @@ class CypherExecutionIntegrationTest {
         schemaRegistryService.activateSchema("kb-execute", schema.getId());
         neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-1'})").run();
 
-        var response = cypherExecutionService.execute(
+        QueryExecutionResponse response = cypherExecutionService.execute(
             "kb-execute",
             "MATCH (c:Contract) RETURN c.contractId AS contractId",
             Map.of()
@@ -68,7 +71,7 @@ class CypherExecutionIntegrationTest {
     @Test
     void returnsNodeDataAsSerializableMapWhenReturningNodeVariable() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
-        var schema = schemaRegistryService.createSchema("""
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             name: execute-contracts-node
             version: 103
             nodes:
@@ -84,7 +87,7 @@ class CypherExecutionIntegrationTest {
         schemaRegistryService.activateSchema("kb-execute-node", schema.getId());
         neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-2', title: 'Node Payload'})").run();
 
-        var response = cypherExecutionService.execute(
+        QueryExecutionResponse response = cypherExecutionService.execute(
             "kb-execute-node",
             "MATCH (c:Contract) RETURN c",
             Map.of()
@@ -105,7 +108,7 @@ class CypherExecutionIntegrationTest {
     @Test
     void rejectsInvalidQueryBeforeExecution() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
-        var schema = schemaRegistryService.createSchema("""
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             name: reject-contracts
             version: 102
             nodes:
@@ -125,7 +128,7 @@ class CypherExecutionIntegrationTest {
             Map.of()
         )).isInstanceOf(QueryRejectedException.class);
 
-        var count = neo4jClient.query("MATCH (c:Contract) RETURN count(c) AS cnt").fetch().all();
+        Collection<Map<String, Object>> count = neo4jClient.query("MATCH (c:Contract) RETURN count(c) AS cnt").fetch().all();
         assertThat(count).containsExactly(Map.of("cnt", 1L));
     }
 }

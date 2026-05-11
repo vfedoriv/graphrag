@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class LangChain4jProviderModelUsageTest {
@@ -12,8 +14,8 @@ class LangChain4jProviderModelUsageTest {
     @Test
     void productionCodeDoesNotImportLangChain4jProviderModels() throws IOException {
         Path sourceRoot = Path.of("src/main/java");
-        try (var files = Files.walk(sourceRoot)) {
-            var violations = files
+        try (Stream<Path> files = Files.walk(sourceRoot)) {
+            List<Path> violations = files
                 .filter(path -> path.toString().endsWith(".java"))
                 .filter(path -> containsProviderModelImport(path))
                 .map(sourceRoot::relativize)

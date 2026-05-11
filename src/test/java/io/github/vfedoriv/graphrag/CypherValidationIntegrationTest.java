@@ -2,7 +2,9 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.Map;
@@ -39,7 +41,7 @@ class CypherValidationIntegrationTest {
     @Test
     void validatesWithExplainAgainstNeo4j() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        var schema = schemaRegistryService.createSchema("""
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             name: contracts
             version: 1
             nodes:
@@ -54,12 +56,12 @@ class CypherValidationIntegrationTest {
 
         neo4jClient.query("CREATE (:Contract {contractId: 'C-1'})").run();
 
-        var valid = cypherValidationService.validate(
+        QueryValidationResult valid = cypherValidationService.validate(
             "kb-validate",
             "MATCH (c:Contract) RETURN c.contractId",
             Map.of()
         );
-        var invalid = cypherValidationService.validate(
+        QueryValidationResult invalid = cypherValidationService.validate(
             "kb-validate",
             "MATCH (c:Contract RETURN c.contractId",
             Map.of()

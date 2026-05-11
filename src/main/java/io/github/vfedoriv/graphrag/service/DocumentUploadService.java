@@ -5,12 +5,14 @@ import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.storage.BinaryStorageService;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,7 @@ public class DocumentUploadService {
         byte[] bytes = readBytes(file);
         String sha256 = sha256(bytes);
 
-        var existing = documentUploadRepository.findByKnowledgeBaseIdAndSha256(knowledgeBaseId, sha256);
+        Optional<DocumentUploadNode> existing = documentUploadRepository.findByKnowledgeBaseIdAndSha256(knowledgeBaseId, sha256);
         if (existing.isPresent()) {
             log.info(
                 "Document upload deduplicated: knowledgeBaseId={}, existingDocumentId={}, sha256={}",
@@ -95,7 +97,7 @@ public class DocumentUploadService {
 
     public byte[] readContent(String contentUri) throws IOException {
         log.info("Reading document content from storage: contentUri={}", contentUri);
-        try (var stream = binaryStorageService.read(URI.create(contentUri))) {
+        try (InputStream stream = binaryStorageService.read(URI.create(contentUri))) {
             byte[] bytes = stream.readAllBytes();
             log.info("Document content read from storage: contentUri={}, bytes={}", contentUri, bytes.length);
             return bytes;

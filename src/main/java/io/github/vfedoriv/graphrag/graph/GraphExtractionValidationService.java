@@ -38,11 +38,11 @@ public class GraphExtractionValidationService {
         );
         logPayload(result);
         Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
-        for (var node : schema.nodes()) {
+        for (SchemaDocument.NodeDefinition node : schema.nodes()) {
             nodeDefs.put(node.label(), node);
         }
         Set<String> relDefs = new HashSet<>();
-        for (var rel : schema.relationships()) {
+        for (SchemaDocument.RelationshipDefinition rel : schema.relationships()) {
             relDefs.add(rel.type() + "|" + rel.from() + "|" + rel.to());
         }
 
@@ -60,7 +60,7 @@ public class GraphExtractionValidationService {
         GraphExtractionResult normalized = new GraphExtractionResult(normalizedNodes, normalizedRelationships);
 
         if (normalized.nodes() != null) {
-            for (var extracted : normalized.nodes()) {
+            for (GraphExtractionResult.ExtractedNode extracted : normalized.nodes()) {
                 SchemaDocument.NodeDefinition nodeDef = nodeDefs.get(extracted.label());
                 if (nodeDef == null) {
                     throw new GraphExtractionValidationException("Unknown node label: " + extracted.label());
@@ -73,7 +73,7 @@ public class GraphExtractionValidationService {
         }
 
         if (normalized.relationships() != null) {
-            for (var extracted : normalized.relationships()) {
+            for (GraphExtractionResult.ExtractedRelationship extracted : normalized.relationships()) {
                 String ruleKey = extracted.type() + "|" + extracted.fromLabel() + "|" + extracted.toLabel();
                 if (!relDefs.contains(ruleKey)) {
                     throw new GraphExtractionValidationException("Unknown relationship rule: " + ruleKey);
@@ -101,7 +101,7 @@ public class GraphExtractionValidationService {
             return null;
         }
         List<GraphExtractionResult.ExtractedNode> normalized = new ArrayList<>(nodes.size());
-        for (var node : nodes) {
+        for (GraphExtractionResult.ExtractedNode node : nodes) {
             Map<String, Object> props = new HashMap<>(node.properties() == null ? Map.of() : node.properties());
             SchemaDocument.NodeDefinition def = nodeDefs.get(node.label());
             if (def != null) {
@@ -126,7 +126,7 @@ public class GraphExtractionValidationService {
             return null;
         }
         List<GraphExtractionResult.ExtractedRelationship> normalized = new ArrayList<>(relationships.size());
-        for (var rel : relationships) {
+        for (GraphExtractionResult.ExtractedRelationship rel : relationships) {
             Map<String, Object> fromKey = new HashMap<>(rel.fromKey() == null ? Map.of() : rel.fromKey());
             Map<String, Object> toKey = new HashMap<>(rel.toKey() == null ? Map.of() : rel.toKey());
 

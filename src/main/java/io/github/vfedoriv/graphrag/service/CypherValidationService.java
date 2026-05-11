@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
@@ -65,7 +66,7 @@ public class CypherValidationService {
         if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
             throw new IllegalStateException("No active schema for knowledge base: " + knowledgeBaseId);
         }
-        var schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
+        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
             .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
         QueryValidationResult result = validate(schemaParser.parse(schemaNode.getContent()), cypher, parameters);
         log.info(
@@ -118,23 +119,23 @@ public class CypherValidationService {
 
     private void validateSchemaReferences(SchemaDocument schema, String cypher, List<String> errors) {
         Set<String> allowedLabels = new HashSet<>(INFRA_LABELS);
-        for (var node : schema.nodes()) {
+        for (SchemaDocument.NodeDefinition node : schema.nodes()) {
             allowedLabels.add(node.label());
         }
         Set<String> allowedRelationshipTypes = new HashSet<>();
-        for (var relationship : schema.relationships()) {
+        for (SchemaDocument.RelationshipDefinition relationship : schema.relationships()) {
             allowedRelationshipTypes.add(relationship.type());
         }
         Set<String> allowedProperties = new HashSet<>(Set.of(
             "id", "sourceDocumentId", "sourceChunkIds", "schemaId", "extractionRunId", "confidence", "createdAt"
         ));
-        for (var node : schema.nodes()) {
-            for (var property : node.properties()) {
+        for (SchemaDocument.NodeDefinition node : schema.nodes()) {
+            for (SchemaDocument.PropertyDefinition property : node.properties()) {
                 allowedProperties.add(property.name());
             }
         }
-        for (var relationship : schema.relationships()) {
-            for (var property : relationship.properties()) {
+        for (SchemaDocument.RelationshipDefinition relationship : schema.relationships()) {
+            for (SchemaDocument.PropertyDefinition property : relationship.properties()) {
                 allowedProperties.add(property.name());
             }
         }

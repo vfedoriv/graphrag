@@ -3,6 +3,8 @@ package io.github.vfedoriv.graphrag.storage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -24,12 +26,12 @@ class LocalFilesystemBinaryStorageServiceTest {
         );
         LocalFilesystemBinaryStorageService storage = new LocalFilesystemBinaryStorageService(props);
 
-        var uri = storage.store("kb-1", "doc-1", "my doc.txt", "abc".getBytes());
+        URI uri = storage.store("kb-1", "doc-1", "my doc.txt", "abc".getBytes());
         assertThat(uri.toString()).startsWith("file:");
         assertThat(storage.resolvePath(uri)).exists();
         assertThat(Files.readString(storage.resolvePath(uri))).isEqualTo("abc");
 
-        try (var stream = storage.read(uri)) {
+        try (InputStream stream = storage.read(uri)) {
             assertThat(new String(stream.readAllBytes())).isEqualTo("abc");
         }
     }

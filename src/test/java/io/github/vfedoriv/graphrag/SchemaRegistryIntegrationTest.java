@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,7 +58,7 @@ class SchemaRegistryIntegrationTest {
                 to: Party
             """;
 
-        var schema = schemaRegistryService.createSchema(yaml, SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(yaml, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-1", schema.getId());
 
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-1").orElseThrow();
@@ -94,7 +96,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void bootstrapsPredefinedSchemasFromResources() {
-        var schemas = schemaRegistryService.listSchemas();
+        List<SchemaDefinitionNode> schemas = schemaRegistryService.listSchemas();
         assertThat(schemas).extracting("name").contains("legal-contracts", "cmms");
     }
 }

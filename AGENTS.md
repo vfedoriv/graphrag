@@ -82,3 +82,4 @@ Key services:
 - Schema versions are immutable (`name + version` cannot be updated after save)
 - Extraction must stay constrained to active schema labels/relationship types
 - Query execution is read-only and validated before run
+- Do not use the Java `var` keyword; declare the concrete variable type explicitly.

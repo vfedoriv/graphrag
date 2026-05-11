@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import org.junit.jupiter.api.AfterEach;
@@ -49,8 +50,8 @@ class DocumentUploadIntegrationTest {
         MockMultipartFile one = new MockMultipartFile("file", "contract.txt", "text/plain", "same-content".getBytes());
         MockMultipartFile two = new MockMultipartFile("file", "contract-copy.txt", "text/plain", "same-content".getBytes());
 
-        var first = documentUploadService.upload("kb-1", one);
-        var second = documentUploadService.upload("kb-1", two);
+        DocumentUploadNode first = documentUploadService.upload("kb-1", one);
+        DocumentUploadNode second = documentUploadService.upload("kb-1", two);
 
         assertThat(first.getId()).isEqualTo(second.getId());
         assertThat(first.getSha256()).isEqualTo(second.getSha256());

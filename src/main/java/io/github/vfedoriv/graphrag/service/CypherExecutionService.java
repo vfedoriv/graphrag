@@ -5,6 +5,7 @@ import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,7 +44,7 @@ public class CypherExecutionService {
             LogSanitizer.length(cypher),
             parameters == null ? 0 : parameters.size()
         );
-        var validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters);
+        QueryValidationResult validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters);
         if (!validation.valid()) {
             log.info(
                 "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}",

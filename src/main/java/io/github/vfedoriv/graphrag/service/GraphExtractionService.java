@@ -3,14 +3,18 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
 import java.util.List;
@@ -61,14 +65,14 @@ public class GraphExtractionService {
             document.getKnowledgeBaseId(),
             chunks.size()
         );
-        var kb = knowledgeBaseRepository.findById(document.getKnowledgeBaseId())
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById(document.getKnowledgeBaseId())
             .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + document.getKnowledgeBaseId()));
         if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
             throw new IllegalStateException("No active schema for knowledge base: " + kb.getId());
         }
-        var schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
+        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
             .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
-        var schema = schemaParser.parse(schemaNode.getContent());
+        SchemaDocument schema = schemaParser.parse(schemaNode.getContent());
 
         GraphExtractionClient client = resolveGraphExtractionClient();
         if (client == null) {
@@ -89,7 +93,7 @@ public class GraphExtractionService {
         linkRunToDocument(run.getId(), document.getId());
         try {
             for (int i = 0; i < chunks.size(); i++) {
-                var chunk = chunks.get(i);
+                DocumentChunkNode chunk = chunks.get(i);
                 log.info(
                     "Extracting chunk: runId={}, chunkId={}, chunkIndex={}/{} textLength={}",
                     run.getId(),
@@ -98,7 +102,7 @@ public class GraphExtractionService {
                     chunks.size(),
                     chunk.getText() == null ? 0 : chunk.getText().length()
                 );
-                var result = client.extract(schema, chunk.getText());
+                GraphExtractionResult result = client.extract(schema, chunk.getText());
                 log.info(
                     "Chunk extraction returned payload: runId={}, chunkId={}, nodes={}, relationships={}",
                     run.getId(),
@@ -106,7 +110,7 @@ public class GraphExtractionService {
                     result.nodes() == null ? 0 : result.nodes().size(),
                     result.relationships() == null ? 0 : result.relationships().size()
                 );
-                var validatedResult = validationService.validate(result, schema);
+                GraphExtractionResult validatedResult = validationService.validate(result, schema);
                 graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, validatedResult);
             }
             run.setStatus("COMPLETED");

@@ -2,7 +2,11 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
@@ -74,7 +78,7 @@ class EndToEndMvpFlowIntegrationTest {
         byte[] documentBytes = new ClassPathResource("fixtures/documents/contract-sample.txt")
             .getContentAsByteArray();
 
-        var schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-e2e", schema.getId());
 
         MockMultipartFile file = new MockMultipartFile(
@@ -83,17 +87,17 @@ class EndToEndMvpFlowIntegrationTest {
             "text/plain",
             documentBytes
         );
-        var uploaded = documentUploadService.upload("kb-e2e", file);
+        DocumentUploadNode uploaded = documentUploadService.upload("kb-e2e", file);
         assertThat(uploaded.getStatus().name()).isEqualTo("UPLOADED");
 
-        var processed = documentProcessingService.process(uploaded.getId());
+        DocumentUploadNode processed = documentProcessingService.process(uploaded.getId());
         assertThat(processed.getStatus().name()).isEqualTo("COMPLETED");
 
-        var generated = cypherGenerationService.generate("kb-e2e", "List contract ids");
+        GeneratedQueryResponse generated = cypherGenerationService.generate("kb-e2e", "List contract ids");
         assertThat(generated.validation().valid()).isTrue();
         assertThat(generated.cypher()).contains("MATCH (c:Contract)");
 
-        var execution = cypherExecutionService.execute(
+        QueryExecutionResponse execution = cypherExecutionService.execute(
             "kb-e2e",
             generated.validation().cypher(),
             generated.validation().parameters()

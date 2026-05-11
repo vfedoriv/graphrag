@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ class CypherValidationServiceTest {
     @Test
     void rejectsUnsafeKeyword() {
         CypherValidationService service = service();
-        var result = service.validate(schema(), "MATCH (n:Contract) DELETE n", Map.of());
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) DELETE n", Map.of());
         assertThat(result.valid()).isFalse();
         assertThat(result.errors()).anyMatch(e -> e.contains("Blocked keyword"));
     }
@@ -34,7 +35,7 @@ class CypherValidationServiceTest {
     @Test
     void rejectsUnknownSchemaReferences() {
         CypherValidationService service = service();
-        var result = service.validate(schema(), "MATCH (n:Unknown)-[:BAD]->(m:Contract) RETURN n.foo", Map.of());
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Unknown)-[:BAD]->(m:Contract) RETURN n.foo", Map.of());
         assertThat(result.valid()).isFalse();
         assertThat(result.errors()).anyMatch(e -> e.contains("Unknown label"));
         assertThat(result.errors()).anyMatch(e -> e.contains("Unknown relationship type"));
@@ -46,7 +47,7 @@ class CypherValidationServiceTest {
         when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
             .thenReturn(List.of());
         CypherValidationService service = service();
-        var result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
         assertThat(result.cypher()).contains("LIMIT $__limit");
         assertThat(result.parameters()).containsEntry("__limit", 200);
         assertThat(result.valid()).isTrue();
@@ -57,7 +58,7 @@ class CypherValidationServiceTest {
         when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
             .thenReturn(List.of());
         CypherValidationService service = service();
-        var result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT 5", Map.of());
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT 5", Map.of());
         assertThat(result.cypher()).doesNotContain("$__limit");
     }
 
@@ -66,7 +67,7 @@ class CypherValidationServiceTest {
         doThrow(new IllegalArgumentException("Invalid input"))
             .when(neo4jClient).query(org.mockito.ArgumentMatchers.startsWith("EXPLAIN "));
         CypherValidationService service = service();
-        var result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
         assertThat(result.valid()).isFalse();
         assertThat(result.errors()).anyMatch(e -> e.contains("planner validation failed"));
     }
