@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.graph;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class GraphExtractionValidationService {
 
     public GraphExtractionResult validate(GraphExtractionResult result, SchemaDocument schema) {
         if (result == null) {
-            throw new IllegalArgumentException("Extraction payload must not be null");
+            throw new GraphExtractionValidationException("Extraction payload must not be null");
         }
         log.info(
             "Validating graph extraction payload: schemaName={}, nodes={}, relationships={}",
@@ -46,11 +47,11 @@ public class GraphExtractionValidationService {
         }
 
         if (result.nodes() != null && result.nodes().size() > appProperties.extraction().maxEntitiesPerChunk()) {
-            throw new IllegalArgumentException("Too many extracted entities for chunk");
+            throw new GraphExtractionValidationException("Too many extracted entities for chunk");
         }
         if (result.relationships() != null
             && result.relationships().size() > appProperties.extraction().maxRelationshipsPerChunk()) {
-            throw new IllegalArgumentException("Too many extracted relationships for chunk");
+            throw new GraphExtractionValidationException("Too many extracted relationships for chunk");
         }
 
         List<GraphExtractionResult.ExtractedNode> normalizedNodes = normalizeNodes(result.nodes(), nodeDefs);
@@ -62,11 +63,11 @@ public class GraphExtractionValidationService {
             for (var extracted : normalized.nodes()) {
                 SchemaDocument.NodeDefinition nodeDef = nodeDefs.get(extracted.label());
                 if (nodeDef == null) {
-                    throw new IllegalArgumentException("Unknown node label: " + extracted.label());
+                    throw new GraphExtractionValidationException("Unknown node label: " + extracted.label());
                 }
                 Object keyValue = extracted.properties() == null ? null : extracted.properties().get(nodeDef.key());
                 if (keyValue == null || keyValue.toString().isBlank()) {
-                    throw new IllegalArgumentException("Node key is missing: " + extracted.label() + "." + nodeDef.key());
+                    throw new GraphExtractionValidationException("Node key is missing: " + extracted.label() + "." + nodeDef.key());
                 }
             }
         }
@@ -75,11 +76,11 @@ public class GraphExtractionValidationService {
             for (var extracted : normalized.relationships()) {
                 String ruleKey = extracted.type() + "|" + extracted.fromLabel() + "|" + extracted.toLabel();
                 if (!relDefs.contains(ruleKey)) {
-                    throw new IllegalArgumentException("Unknown relationship rule: " + ruleKey);
+                    throw new GraphExtractionValidationException("Unknown relationship rule: " + ruleKey);
                 }
                 if (extracted.fromKey() == null || extracted.fromKey().isEmpty()
                     || extracted.toKey() == null || extracted.toKey().isEmpty()) {
-                    throw new IllegalArgumentException("Relationship endpoint keys must not be empty");
+                    throw new GraphExtractionValidationException("Relationship endpoint keys must not be empty");
                 }
             }
         }

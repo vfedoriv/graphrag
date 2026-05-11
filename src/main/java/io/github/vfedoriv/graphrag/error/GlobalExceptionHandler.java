@@ -64,12 +64,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex, HttpServletRequest request) {
         log.error("Maximum upload size exceeded at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
-        return baseProblem(HttpStatus.PAYLOAD_TOO_LARGE, "Maximum upload size exceeded", request.getRequestURI());
+        return baseProblem(HttpStatus.CONTENT_TOO_LARGE, "Maximum upload size exceeded", request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         log.error("Illegal argument at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(GraphExtractionValidationException.class)
+    public ProblemDetail handleGraphExtractionValidation(
+        GraphExtractionValidationException ex,
+        HttpServletRequest request
+    ) {
+        log.error("Graph extraction validation failed at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 

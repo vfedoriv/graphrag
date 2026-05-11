@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.nio.file.Path;
 import java.util.List;
@@ -32,7 +33,7 @@ class GraphExtractionValidationServiceTest {
             List.of()
         );
         assertThatThrownBy(() -> validationService.validate(result, schema()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(GraphExtractionValidationException.class)
             .hasMessageContaining("Unknown node label");
     }
 
