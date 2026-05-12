@@ -1,0 +1,32 @@
+Score summary:
+
+  ┌─────────────────────────────────────────────────────────────────┬───────┐
+  │                              Issue                              │ Score │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ log.error for expected 4xx exceptions in GlobalExceptionHandler │ 78    │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ TestDocumentStorage relative path / dead surefire config        │ 78    │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ log.error for retry attempts in LLMGraphTransformerExt          │ 75    │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ Null @Version backfill (pre-existing)                           │ 60    │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ SHA-256 hash in dedup log                                       │ 25    │
+  ├─────────────────────────────────────────────────────────────────┼───────┤
+  │ LogSanitizer partial protection                                 │ 25    │
+  └─────────────────────────────────────────────────────────────────┴───────┘
+
+  No issues crossed the 80 confidence threshold, so per the review criteria, no PR comment is warranted. The two commits
+  aren't associated with any open PR either.
+
+  Notable near-misses (scored 75–78):
+  1. GlobalExceptionHandler logs all 4xx responses at ERROR level (score 78) — previously NotFoundException,
+  ConflictException, SchemaValidationException, and the validation exceptions either had no logging or WARN. The commit
+  uniformly upgrades everything to log.error(..., ex) with full stack traces. Operational concern: monitoring systems
+  treating ERROR as an alert trigger will fire on every client mistake.
+  2. TestDocumentStorage.ROOT uses a relative path while pom.xml surefire config uses an absolute one (score 78) — the
+  annotation-level @SpringBootTest(properties=...) in all five test classes overrides the surefire system property, making
+  the pom.xml entry dead configuration. Works fine when Maven runs from project root but silently misbehaves from IDE if CWD
+  differs.
+  3. LLMGraphTransformerExt retry catch logs at ERROR instead of WARN (score 75) — transient parse failures inside a retry
+  loop that ultimately succeeds will still emit ERROR log entries.
