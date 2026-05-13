@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
@@ -245,9 +246,9 @@ public class SchemaController {
         @ApiResponse(responseCode = "200", description = "Schema found"),
         @ApiResponse(responseCode = "404", description = "Schema not found", content = @Content(schema = @Schema()))
     })
-    public SchemaResponse getSchema(@Parameter(description = "Schema identifier") @PathVariable String schemaId) {
+    public SchemaDetailsResponse getSchema(@Parameter(description = "Schema identifier") @PathVariable String schemaId) {
         log.info("Get schema request: schemaId={}", schemaId);
-        SchemaResponse response = toResponse(schemaRegistryService.getSchema(schemaId));
+        SchemaDetailsResponse response = toDetailsResponse(schemaRegistryService.getSchema(schemaId));
         log.info("Get schema completed: schemaId={}, name={}, version={}", response.id(), response.name(), response.version());
         return response;
     }
@@ -307,6 +308,20 @@ public class SchemaController {
             node.getVersion(),
             node.getSourceType(),
             node.getFormat(),
+            node.getContentHash(),
+            node.getStatus(),
+            node.getCreatedAt()
+        );
+    }
+
+    private SchemaDetailsResponse toDetailsResponse(SchemaDefinitionNode node) {
+        return new SchemaDetailsResponse(
+            node.getId(),
+            node.getName(),
+            node.getVersion(),
+            node.getSourceType(),
+            node.getFormat(),
+            node.getContent(),
             node.getContentHash(),
             node.getStatus(),
             node.getCreatedAt()

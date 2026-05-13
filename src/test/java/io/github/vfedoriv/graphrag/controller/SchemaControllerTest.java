@@ -12,13 +12,23 @@ import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaFormat;
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.error.NotFoundException;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SchemaControllerTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -99,6 +109,85 @@ class SchemaControllerTest {
 
         assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("parsed text", null);
+    }
+
+    @Test
+    void getSchemaReturnsPersistedSchemaContent() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        SchemaDefinitionNode schema = new SchemaDefinitionNode();
+        schema.setId("schema-01");
+        schema.setName("legal-contracts");
+        schema.setVersion(1);
+        schema.setSourceType(SchemaSourceType.PREDEFINED);
+        schema.setFormat(SchemaFormat.YAML);
+        schema.setContent("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        schema.setContentHash("hash-01");
+        schema.setStatus(SchemaStatus.ACTIVE);
+        schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
+
+        when(registryService.getSchema("schema-01")).thenReturn(schema);
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        SchemaDetailsResponse response = controller.getSchema("schema-01");
+
+        assertThat(response.id()).isEqualTo("schema-01");
+        assertThat(response.content()).isEqualTo("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        assertThat(response.contentHash()).isEqualTo("hash-01");
+        verify(registryService).getSchema("schema-01");
+    }
+
+    @Test
+    void getSchemaNotFoundPropagatesException() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        when(registryService.getSchema("missing-schema")).thenThrow(new NotFoundException("Schema not found: missing-schema"));
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+
+        assertThatThrownBy(() -> controller.getSchema("missing-schema"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Schema not found: missing-schema");
+    }
+
+    @Test
+    void createAndListSchemasUseSummaryResponseWithoutContentField() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        SchemaDefinitionNode schema = new SchemaDefinitionNode();
+        schema.setId("schema-01");
+        schema.setName("legal-contracts");
+        schema.setVersion(1);
+        schema.setSourceType(SchemaSourceType.PREDEFINED);
+        schema.setFormat(SchemaFormat.YAML);
+        schema.setContent("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        schema.setContentHash("hash-01");
+        schema.setStatus(SchemaStatus.ACTIVE);
+        schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
+
+        when(registryService.createSchema(Mockito.anyString(), Mockito.any())).thenReturn(schema);
+        when(registryService.listSchemas()).thenReturn(List.of(schema));
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        SchemaResponse created = controller.createSchema(
+            new io.github.vfedoriv.graphrag.dto.CreateSchemaRequest(
+                "name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n",
+                SchemaSourceType.PREDEFINED
+            )
+        );
+        List<SchemaResponse> listed = controller.listSchemas();
+
+        assertThat(created).isInstanceOf(SchemaResponse.class);
+        assertThat(listed).hasSize(1);
+        assertThat(listed.getFirst()).isInstanceOf(SchemaResponse.class);
+        assertThat(Arrays.stream(SchemaResponse.class.getDeclaredMethods()).map(method -> method.getName()))
+            .doesNotContain("content");
     }
 
     private static com.fasterxml.jackson.databind.JsonNode readJson(String json) {
