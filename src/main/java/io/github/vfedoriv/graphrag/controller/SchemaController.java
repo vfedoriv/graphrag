@@ -74,7 +74,7 @@ public class SchemaController {
                 schema = @Schema(implementation = SchemaResponse.class),
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
                     name = "Created schema",
-                    value = "{\"id\":\"schema-01\",\"name\":\"legal-contracts\",\"version\":1,\"sourceType\":\"USER_DEFINED\",\"format\":\"YAML\",\"contentHash\":\"a74f9f7fbb\",\"status\":\"ACTIVE\",\"createdAt\":\"2026-05-03T10:12:00Z\"}"
+                    value = "{\"id\":\"schema-01\",\"name\":\"legal-contracts\",\"version\":1,\"sourceType\":\"GENERATED\",\"format\":\"YAML\",\"contentHash\":\"a74f9f7fbb\",\"status\":\"ACTIVE\",\"createdAt\":\"2026-05-03T10:12:00Z\"}"
                 )
             )
         ),

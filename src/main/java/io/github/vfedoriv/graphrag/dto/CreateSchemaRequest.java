@@ -10,7 +10,7 @@ public record CreateSchemaRequest(
         example = "name: legal-contracts\nversion: 1\nnodes:\n  - label: Contract\n    key: contractId\nrelationships: []"
     )
     @NotBlank String content,
-    @Schema(description = "Schema source classification.", example = "USER_DEFINED")
+    @Schema(description = "Schema source classification.", example = "GENERATED")
     SchemaSourceType sourceType
 ) {
 }

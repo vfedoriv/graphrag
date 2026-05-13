@@ -13,7 +13,7 @@ public record SchemaResponse(
     String name,
     @Schema(description = "Schema version number.", example = "1")
     int version,
-    @Schema(description = "Schema source classification.", example = "USER_DEFINED")
+    @Schema(description = "Schema source classification.", example = "GENERATED")
     SchemaSourceType sourceType,
     @Schema(description = "Schema document format.", example = "YAML")
     SchemaFormat format,
