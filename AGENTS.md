@@ -77,6 +77,14 @@ Key services:
 - AI clients are mocked for deterministic tests
 - Canonical full-flow integration test: `EndToEndMvpFlowIntegrationTest`
 
+## OpenSpec Workflow
+
+OpenSpec artifacts are the source of historical product decisions. Archived changes under `openspec/changes/archive` document completed implementation work. For new behavior or contract changes, add or update OpenSpec specs before implementation when the change is non-trivial.
+
+## Commit & Pull Request Guidelines
+
+Use short imperative commit messages such as `add schema activation panel`. Keep commits focused and reviewable. Do not mention in commit messages "openspec" unless the user explicitly asks about it.
+
 ## Design Constraints
 
 - Schema versions are immutable (`name + version` cannot be updated after save)
