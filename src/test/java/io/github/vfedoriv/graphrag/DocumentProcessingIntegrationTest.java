@@ -62,26 +62,28 @@ class DocumentProcessingIntegrationTest {
     @Test
     void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        String schemaYaml = """
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-              - label: Party
-                key: name
-                properties:
-                  - name: name
-                    type: string
-            relationships:
-              - type: HAS_PARTY
-                from: Contract
-                to: Party
+        String schemaJson = """
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                },
+                {
+                  "label": "Party",
+                  "key": "name",
+                  "properties": [{"name": "name", "type": "string"}]
+                }
+              ],
+              "relationships": [
+                {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+              ]
+            }
             """;
-        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaYaml, SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-1", schema.getId());
 
         MockMultipartFile file = new MockMultipartFile(

@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record GenerateSchemaResponse(
     @Schema(
-        description = "Generated schema in YAML format.",
-        example = "name: generated-legal-schema\nversion: 1\nnodes:\n  - label: Party\n    key: id\nrelationships: []"
+        description = "Generated schema in JSON format.",
+        example = "{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[{\"label\":\"Party\",\"key\":\"id\"}],\"relationships\":[]}"
     )
     String content
 ) {

@@ -52,7 +52,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 
 | Controller | Responsibility |
 |---|---|
-| `SchemaController` | CRUD, generation, validation, and activation of YAML schemas |
+| `SchemaController` | CRUD, generation, validation, and activation of JSON schemas |
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
@@ -66,7 +66,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`CypherGenerationService`** — LLM prompt-to-Cypher using active schema as context.
 - **`CypherValidationService`** — multi-stage safety: blocked keywords → schema label/rel/property check → Neo4j `EXPLAIN` → auto-inject `LIMIT`.
 - **`CypherExecutionService`** — read-only Cypher execution.
-- **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.yaml` on startup.
+- **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
 
 ### Document Ingestion Pipeline
 
@@ -102,7 +102,7 @@ Question → LLM Cypher generation → Multi-stage validation → Read-only exec
 Key config files:
 - `src/main/resources/application.properties` — base settings (Neo4j URI, storage path, chunking params, query safety rules, extraction limits)
 - `src/main/resources/application-openai.properties` / `application-lm_studio.properties` — profile overrides
-- `src/main/resources/schemas/*.yaml` — predefined bootstrap schemas (`legal-contracts-v1`, `cmms-v1`)
+- `src/main/resources/schemas/*.json` — predefined bootstrap schemas (`legal-contracts-v1`, `cmms-v1`)
 - `compose.yaml` — Neo4j via Docker Compose
 
 All application config is bound to `AppProperties` (validated `@ConfigurationProperties` record).

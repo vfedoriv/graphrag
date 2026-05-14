@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ValidateSchemaRequest(
     @Schema(
-        description = "Schema YAML content to validate.",
-        example = "name: legal-contracts\nversion: 1\nnodes:\n  - label: Party\n    key: partyId\nrelationships: []"
+        description = "Schema JSON content to validate.",
+        example = "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[{\"label\":\"Party\",\"key\":\"partyId\"}],\"relationships\":[]}"
     )
     @NotBlank String content
 ) {

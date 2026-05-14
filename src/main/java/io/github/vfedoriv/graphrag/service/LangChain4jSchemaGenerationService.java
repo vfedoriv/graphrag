@@ -2,7 +2,6 @@ package io.github.vfedoriv.graphrag.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
@@ -28,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LangChain4jSchemaGenerationService implements SchemaGenerationService {
 
-    private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
 
     public LangChain4jSchemaGenerationService(ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider) {
@@ -36,10 +35,10 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     }
 
     @Override
-    public String generateYaml(String name, int version, String description, String text, String example) {
+    public String generateJson(String name, int version, String description, String text, String example) {
         long startNanos = System.nanoTime();
         log.info(
-            "Schema YAML generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textPreview={}",
+            "Schema JSON generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textPreview={}",
             name,
             version,
             description != null && !description.isBlank(),
@@ -48,8 +47,8 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             LogSanitizer.preview(text)
         );
         if (log.isDebugEnabled()) {
-            log.debug("Schema YAML generation source text: {}", text);
-            log.debug("Schema YAML generation example: {}", example);
+            log.debug("Schema JSON generation source text: {}", text);
+            log.debug("Schema JSON generation example: {}", example);
         }
         LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
             new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel()),
@@ -63,23 +62,23 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         GraphDocument graphDocument = transformer.transform(Document.from(text));
         SchemaDocument schema = inferSchema(name, version, description, graphDocument);
         try {
-            String yaml = YAML_MAPPER.writeValueAsString(schema);
+            String json = JSON_MAPPER.writeValueAsString(schema);
             log.info(
-                "Schema YAML generation completed: name={}, version={}, nodes={}, relationships={}, yamlLength={}, elapsedMs={}",
+                "Schema JSON generation completed: name={}, version={}, nodes={}, relationships={}, jsonLength={}, elapsedMs={}",
                 name,
                 version,
                 schema.nodes().size(),
                 schema.relationships().size(),
-                yaml.length(),
+                json.length(),
                 LogSanitizer.elapsedMillis(startNanos)
             );
             if (log.isDebugEnabled()) {
-                log.debug("Generated schema YAML: {}", yaml);
+                log.debug("Generated schema JSON: {}", json);
             }
-            return yaml;
+            return json;
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize generated schema to YAML: name={}, version={}, message={}", name, version, e.getMessage(), e);
-            throw new IllegalStateException("Failed to serialize generated schema to YAML", e);
+            log.error("Failed to serialize generated schema to JSON: name={}, version={}, message={}", name, version, e.getMessage(), e);
+            throw new IllegalStateException("Failed to serialize generated schema to JSON", e);
         }
     }
 

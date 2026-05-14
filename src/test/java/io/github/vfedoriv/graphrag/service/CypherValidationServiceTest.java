@@ -90,25 +90,32 @@ class CypherValidationServiceTest {
     }
 
     private SchemaDocument schema() {
-        String yaml = """
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-                  - name: title
-                    type: string
-            relationships:
-              - type: HAS_PARTY
-                from: Contract
-                to: Contract
-                properties:
-                  - name: role
-                    type: string
+        String json = """
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [
+                    {"name": "contractId", "type": "string"},
+                    {"name": "title", "type": "string"}
+                  ]
+                }
+              ],
+              "relationships": [
+                {
+                  "type": "HAS_PARTY",
+                  "from": "Contract",
+                  "to": "Contract",
+                  "properties": [
+                    {"name": "role", "type": "string"}
+                  ]
+                }
+              ]
+            }
             """;
-        return new SchemaParser().parse(yaml);
+        return new SchemaParser().parse(json);
     }
 }

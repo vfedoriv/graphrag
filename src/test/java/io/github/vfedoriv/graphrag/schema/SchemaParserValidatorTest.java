@@ -12,19 +12,20 @@ class SchemaParserValidatorTest {
 
     @Test
     void parsesAndValidatesSchema() {
-        String yaml = """
-            name: sample
-            version: 1
-            nodes:
-              - label: Company
-                key: id
-            relationships:
-              - type: OWNS
-                from: Company
-                to: Company
+        String json = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Company", "key": "id"}
+              ],
+              "relationships": [
+                {"type": "OWNS", "from": "Company", "to": "Company"}
+              ]
+            }
             """;
 
-        SchemaDocument doc = parser.parse(yaml);
+        SchemaDocument doc = parser.parse(json);
         List<String> errors = validator.validate(doc);
 
         assertThat(doc.name()).isEqualTo("sample");
@@ -33,27 +34,24 @@ class SchemaParserValidatorTest {
 
     @Test
     void reportsValidationErrors() {
-        String yaml = """
-            name: sample
-            version: 0
-            nodes:
-              - label: Company
-                key: id
-              - label: Company
-                key: id2
-            relationships:
-              - type: OWNS
-                from: Unknown
-                to: Company
-            vectorIndexes:
-              - name: x
-                label: DocumentChunk
-                property: embedding
-                dimensions: 0
-                similarity: weird
+        String json = """
+            {
+              "name": "sample",
+              "version": 0,
+              "nodes": [
+                {"label": "Company", "key": "id"},
+                {"label": "Company", "key": "id2"}
+              ],
+              "relationships": [
+                {"type": "OWNS", "from": "Unknown", "to": "Company"}
+              ],
+              "vectorIndexes": [
+                {"name": "x", "label": "DocumentChunk", "property": "embedding", "dimensions": 0, "similarity": "weird"}
+              ]
+            }
             """;
 
-        List<String> errors = validator.validate(parser.parse(yaml));
+        List<String> errors = validator.validate(parser.parse(json));
         assertThat(errors).anyMatch(it -> it.contains("version"));
         assertThat(errors).anyMatch(it -> it.contains("duplicate label"));
         assertThat(errors).anyMatch(it -> it.contains("unknown node label"));

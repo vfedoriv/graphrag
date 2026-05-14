@@ -15,7 +15,7 @@ public record SchemaResponse(
     int version,
     @Schema(description = "Schema source classification.", example = "GENERATED")
     SchemaSourceType sourceType,
-    @Schema(description = "Schema document format.", example = "YAML")
+    @Schema(description = "Schema document format.", example = "JSON")
     SchemaFormat format,
     @Schema(description = "Hash of schema content.", example = "a74f9f7fbb...")
     String contentHash,

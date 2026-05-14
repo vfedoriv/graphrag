@@ -15,9 +15,9 @@ public record SchemaDetailsResponse(
     int version,
     @Schema(description = "Schema source classification.", example = "PREDEFINED")
     SchemaSourceType sourceType,
-    @Schema(description = "Schema document format.", example = "YAML")
+    @Schema(description = "Schema document format.", example = "JSON")
     SchemaFormat format,
-    @Schema(description = "Schema definition content.", example = "name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []")
+    @Schema(description = "Schema definition content.", example = "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}")
     String content,
     @Schema(description = "Hash of schema content.", example = "a74f9f7fbb...")
     String contentHash,

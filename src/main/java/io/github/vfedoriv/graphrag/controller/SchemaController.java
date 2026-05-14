@@ -64,7 +64,7 @@ public class SchemaController {
     }
 
     @PostMapping("/schemas")
-    @Operation(summary = "Create schema", description = "Registers a new immutable schema version from YAML content.")
+    @Operation(summary = "Create schema", description = "Registers a new immutable schema version from JSON content.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
@@ -74,7 +74,7 @@ public class SchemaController {
                 schema = @Schema(implementation = SchemaResponse.class),
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
                     name = "Created schema",
-                    value = "{\"id\":\"schema-01\",\"name\":\"legal-contracts\",\"version\":1,\"sourceType\":\"GENERATED\",\"format\":\"YAML\",\"contentHash\":\"a74f9f7fbb\",\"status\":\"ACTIVE\",\"createdAt\":\"2026-05-03T10:12:00Z\"}"
+                    value = "{\"id\":\"schema-01\",\"name\":\"legal-contracts\",\"version\":1,\"sourceType\":\"GENERATED\",\"format\":\"JSON\",\"contentHash\":\"a74f9f7fbb\",\"status\":\"ACTIVE\",\"createdAt\":\"2026-05-03T10:12:00Z\"}"
                 )
             )
         ),
@@ -98,9 +98,9 @@ public class SchemaController {
     }
 
     @PostMapping("/schemas/generate")
-    @Operation(summary = "Generate schema YAML", description = "Generates a new graph schema YAML from unstructured text.")
+    @Operation(summary = "Generate schema JSON", description = "Generates a new graph schema JSON from unstructured text.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Schema YAML generated"),
+        @ApiResponse(responseCode = "200", description = "Schema JSON generated"),
         @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
     })
     public GenerateSchemaResponse generateSchema(@Valid @RequestBody GenerateSchemaRequest request) {
@@ -112,21 +112,21 @@ public class SchemaController {
             LogSanitizer.length(request.text()),
             LogSanitizer.length(request.example())
         );
-        String yaml = schemaGenerationService.generateYaml(
+        String json = schemaGenerationService.generateJson(
             request.name(),
             request.version(),
             request.description(),
             request.text(),
             request.example()
         );
-        log.info("Generate schema completed: name={}, version={}, yamlLength={}", request.name(), request.version(), yaml.length());
-        return new GenerateSchemaResponse(yaml);
+        log.info("Generate schema completed: name={}, version={}, jsonLength={}", request.name(), request.version(), json.length());
+        return new GenerateSchemaResponse(json);
     }
 
     @PostMapping(path = "/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-        summary = "Generate schema YAML from uploaded file",
-        description = "Parses an uploaded file (PDF/TXT/DOCX) and generates a graph schema YAML from extracted text."
+        summary = "Generate schema JSON from uploaded file",
+        description = "Parses an uploaded file (PDF/TXT/DOCX) and generates a graph schema JSON from extracted text."
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
         required = true,
@@ -139,7 +139,7 @@ public class SchemaController {
         )
     )
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Schema YAML generated"),
+        @ApiResponse(responseCode = "200", description = "Schema JSON generated"),
         @ApiResponse(responseCode = "400", description = "Invalid generation request", content = @Content(schema = @Schema()))
     })
     public GenerateSchemaResponse generateSchemaFromFile(
@@ -159,15 +159,15 @@ public class SchemaController {
         );
         String text = parseUploadedText(file);
         log.info("Generate schema from file parsed text: fileName='{}', textLength={}", file.getOriginalFilename(), text.length());
-        String yaml = schemaGenerationService.generateYaml(
+        String json = schemaGenerationService.generateJson(
             request.name(),
             request.version(),
             request.description(),
             text,
             normalizeExample(request.example())
         );
-        log.info("Generate schema from file completed: name={}, version={}, yamlLength={}", request.name(), request.version(), yaml.length());
-        return new GenerateSchemaResponse(yaml);
+        log.info("Generate schema from file completed: name={}, version={}, jsonLength={}", request.name(), request.version(), json.length());
+        return new GenerateSchemaResponse(json);
     }
 
     private String normalizeExample(Object exampleValue) {
@@ -254,7 +254,7 @@ public class SchemaController {
     }
 
     @PostMapping("/schemas/validate")
-    @Operation(summary = "Validate schema YAML", description = "Validates YAML payload against schema format rules.")
+    @Operation(summary = "Validate schema JSON", description = "Validates JSON payload against schema format rules.")
     @ApiResponse(
         responseCode = "200",
         description = "Validation result returned",
@@ -268,20 +268,20 @@ public class SchemaController {
     )
     public SchemaValidationResponse validateSchema(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "Schema YAML to validate.",
+            description = "Schema JSON to validate.",
             required = true,
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ValidateSchemaRequest.class),
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                    value = "{\"content\":\"name: legal-contracts\\nversion: 1\\nnodes:\\n  - label: Contract\\n    key: contractId\\nrelationships: []\"}"
+                    value = "{\"content\":\"{\\\"name\\\":\\\"legal-contracts\\\",\\\"version\\\":1,\\\"nodes\\\":[{\\\"label\\\":\\\"Contract\\\",\\\"key\\\":\\\"contractId\\\"}],\\\"relationships\\\":[]}\"}"
                 )
             )
         )
         @Valid @RequestBody ValidateSchemaRequest request
     ) {
         log.info("Validate schema request: contentLength={}", LogSanitizer.length(request.content()));
-        List<String> errors = schemaRegistryService.validateYaml(request.content());
+        List<String> errors = schemaRegistryService.validateJson(request.content());
         log.info("Validate schema completed: valid={}, errors={}", errors.isEmpty(), errors.size());
         return new SchemaValidationResponse(errors.isEmpty(), errors);
     }

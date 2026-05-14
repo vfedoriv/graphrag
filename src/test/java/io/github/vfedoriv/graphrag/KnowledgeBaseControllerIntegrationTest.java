@@ -120,7 +120,7 @@ class KnowledgeBaseControllerIntegrationTest {
                 .contentType("application/json")
                 .content("""
                     {
-                      "content": "name: contracts\\nversion: 1\\nnodes:\\n  - label: Contract\\n    key: contractId\\nrelationships: []",
+                      "content": "{\\"name\\":\\"contracts\\",\\"version\\":1,\\"nodes\\":[{\\"label\\":\\"Contract\\",\\"key\\":\\"contractId\\"}],\\"relationships\\":[]}",
                       "sourceType": "PREDEFINED"
                     }
                     """))

@@ -1,7 +1,6 @@
 package io.github.vfedoriv.graphrag.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SchemaParser {
 
-    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    public SchemaDocument parse(String yamlContent) {
+    public SchemaDocument parse(String jsonContent) {
         try {
-            return mapper.readValue(yamlContent, SchemaDocument.class);
+            return mapper.readValue(jsonContent, SchemaDocument.class);
         } catch (IOException e) {
-            log.error("Invalid schema YAML: contentLength={}, message={}", yamlContent == null ? 0 : yamlContent.length(), e.getMessage(), e);
-            throw new IllegalArgumentException("Invalid schema YAML", e);
+            log.error("Invalid schema JSON: contentLength={}, message={}", jsonContent == null ? 0 : jsonContent.length(), e.getMessage(), e);
+            throw new IllegalArgumentException("Invalid schema JSON", e);
         }
     }
 }

@@ -45,15 +45,18 @@ class CypherExecutionIntegrationTest {
     void executesValidatedReadOnlyQuery() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
-            name: execute-contracts
-            version: 101
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-            relationships: []
+            {
+              "name": "execute-contracts",
+              "version": 101,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                }
+              ],
+              "relationships": []
+            }
             """, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-execute", schema.getId());
         neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-1'})").run();
@@ -72,17 +75,21 @@ class CypherExecutionIntegrationTest {
     void returnsNodeDataAsSerializableMapWhenReturningNodeVariable() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
-            name: execute-contracts-node
-            version: 103
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-                  - name: title
-                    type: string
-            relationships: []
+            {
+              "name": "execute-contracts-node",
+              "version": 103,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [
+                    {"name": "contractId", "type": "string"},
+                    {"name": "title", "type": "string"}
+                  ]
+                }
+              ],
+              "relationships": []
+            }
             """, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-execute-node", schema.getId());
         neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-2', title: 'Node Payload'})").run();
@@ -109,15 +116,18 @@ class CypherExecutionIntegrationTest {
     void rejectsInvalidQueryBeforeExecution() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
-            name: reject-contracts
-            version: 102
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-            relationships: []
+            {
+              "name": "reject-contracts",
+              "version": 102,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                }
+              ],
+              "relationships": []
+            }
             """, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-reject", schema.getId());
         neo4jClient.query("CREATE (:Contract:ExecutionTestData {contractId: 'C-1'})").run();

@@ -44,21 +44,21 @@ class SchemaRegistryIntegrationTest {
     void persistsAndActivatesSchema() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 
-        String yaml = """
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-              - label: Party
-                key: name
-            relationships:
-              - type: HAS_PARTY
-                from: Contract
-                to: Party
+        String json = """
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {"label": "Contract", "key": "contractId"},
+                {"label": "Party", "key": "name"}
+              ],
+              "relationships": [
+                {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+              ]
+            }
             """;
 
-        SchemaDefinitionNode schema = schemaRegistryService.createSchema(yaml, SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(json, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-1", schema.getId());
 
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-1").orElseThrow();
@@ -80,17 +80,19 @@ class SchemaRegistryIntegrationTest {
     void schemaVersionIsImmutable() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 
-        String yaml = """
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-            relationships: []
+        String json = """
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {"label": "Contract", "key": "contractId"}
+              ],
+              "relationships": []
+            }
             """;
-        schemaRegistryService.createSchema(yaml, SchemaSourceType.PREDEFINED);
+        schemaRegistryService.createSchema(json, SchemaSourceType.PREDEFINED);
 
-        assertThatThrownBy(() -> schemaRegistryService.createSchema(yaml, SchemaSourceType.GENERATED))
+        assertThatThrownBy(() -> schemaRegistryService.createSchema(json, SchemaSourceType.GENERATED))
             .isInstanceOf(ConflictException.class);
     }
 

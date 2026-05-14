@@ -68,7 +68,7 @@ Key services:
 - `src/main/resources/application.properties`
 - `src/main/resources/application-openai.properties`
 - `src/main/resources/application-lm_studio.properties`
-- `src/main/resources/schemas/*.yaml`
+- `src/main/resources/schemas/*.json`
 - `compose.yaml`
 
 ## Testing

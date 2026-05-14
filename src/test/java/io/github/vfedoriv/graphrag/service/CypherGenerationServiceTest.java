@@ -72,15 +72,18 @@ class CypherGenerationServiceTest {
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-1");
         schema.setContent("""
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-            relationships: []
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                }
+              ],
+              "relationships": []
+            }
             """);
         when(kbRepo.findById("kb-1")).thenReturn(Optional.of(kb));
         when(schemaRepo.findById("schema-1")).thenReturn(Optional.of(schema));

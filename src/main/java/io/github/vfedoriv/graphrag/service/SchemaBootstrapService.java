@@ -15,7 +15,7 @@ public class SchemaBootstrapService {
 
     public SchemaBootstrapService(SchemaRegistryService schemaRegistryService) throws IOException {
         Resource[] resources = new PathMatchingResourcePatternResolver()
-            .getResources("classpath:/schemas/*.yaml");
+            .getResources("classpath:/schemas/*.json");
         log.info("Bootstrapping schemas: resourceCount={}", resources.length);
         for (Resource resource : resources) {
             String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

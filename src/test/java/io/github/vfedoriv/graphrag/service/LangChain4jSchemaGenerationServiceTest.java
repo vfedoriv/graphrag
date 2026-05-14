@@ -82,7 +82,7 @@ class LangChain4jSchemaGenerationServiceTest {
     }
 
     @Test
-    void generateYaml_usesTransformedPropertiesInSchemaOutput() {
+    void generateJson_usesTransformedPropertiesInSchemaOutput() {
         String modelJson = """
             [
               {
@@ -113,7 +113,7 @@ class LangChain4jSchemaGenerationServiceTest {
         };
 
         LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
-        String yaml = service.generateYaml("generated", 1, "desc", "source text", "[]");
+        String yaml = service.generateJson("generated", 1, "desc", "source text", "[]");
 
         SchemaDocument schema = new SchemaParser().parse(yaml);
         SchemaDocument.NodeDefinition contract = schema.nodes().stream()

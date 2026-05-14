@@ -34,21 +34,21 @@ class SchemaControllerTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Test
-    void generateSchemaReturnsYamlContent() {
+    void generateSchemaReturnsJsonContent() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
         DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
-        when(generationService.generateYaml("generated-legal-schema", 1, "from text", "raw input text", "example json"))
-            .thenReturn("name: generated-legal-schema\nversion: 1\nnodes: []\nrelationships: []\n");
+        when(generationService.generateJson("generated-legal-schema", 1, "from text", "raw input text", "example json"))
+            .thenReturn("{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}");
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         GenerateSchemaResponse response = controller.generateSchema(
             new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", "example json")
         );
 
-        assertThat(response.content()).contains("name: generated-legal-schema");
-        assertThat(response.content()).contains("nodes:");
-        assertThat(response.content()).contains("relationships:");
+        assertThat(response.content()).contains("\"name\":\"generated-legal-schema\"");
+        assertThat(response.content()).contains("\"nodes\"");
+        assertThat(response.content()).contains("\"relationships\"");
     }
 
     @Test
@@ -61,9 +61,9 @@ class SchemaControllerTest {
         byte[] rawBytes = "raw bytes".getBytes();
         when(parsingService.parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes))))
             .thenReturn("parsed text");
-        String yaml = "name: generated-legal-schema\nversion: 2\nnodes: []\nrelationships: []\n";
-        when(generationService.generateYaml("generated-legal-schema", 2, "from file", "parsed text", "\"example json\""))
-            .thenReturn(yaml);
+        String json = "{\"name\":\"generated-legal-schema\",\"version\":2,\"nodes\":[],\"relationships\":[]}";
+        when(generationService.generateJson("generated-legal-schema", 2, "from file", "parsed text", "\"example json\""))
+            .thenReturn(json);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         GenerateSchemaResponse response = controller.generateSchemaFromFile(
@@ -71,9 +71,9 @@ class SchemaControllerTest {
             file
         );
 
-        assertThat(response.content()).isEqualTo(yaml);
+        assertThat(response.content()).isEqualTo(json);
         verify(parsingService).parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes)));
-        verify(generationService).generateYaml("generated-legal-schema", 2, "from file", "parsed text", "\"example json\"");
+        verify(generationService).generateJson("generated-legal-schema", 2, "from file", "parsed text", "\"example json\"");
     }
 
     @Test
@@ -122,8 +122,8 @@ class SchemaControllerTest {
         schema.setName("legal-contracts");
         schema.setVersion(1);
         schema.setSourceType(SchemaSourceType.PREDEFINED);
-        schema.setFormat(SchemaFormat.YAML);
-        schema.setContent("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        schema.setFormat(SchemaFormat.JSON);
+        schema.setContent("{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}");
         schema.setContentHash("hash-01");
         schema.setStatus(SchemaStatus.ACTIVE);
         schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
@@ -134,7 +134,7 @@ class SchemaControllerTest {
         SchemaDetailsResponse response = controller.getSchema("schema-01");
 
         assertThat(response.id()).isEqualTo("schema-01");
-        assertThat(response.content()).isEqualTo("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        assertThat(response.content()).isEqualTo("{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}");
         assertThat(response.contentHash()).isEqualTo("hash-01");
         verify(registryService).getSchema("schema-01");
     }
@@ -165,8 +165,8 @@ class SchemaControllerTest {
         schema.setName("legal-contracts");
         schema.setVersion(1);
         schema.setSourceType(SchemaSourceType.PREDEFINED);
-        schema.setFormat(SchemaFormat.YAML);
-        schema.setContent("name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n");
+        schema.setFormat(SchemaFormat.JSON);
+        schema.setContent("{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}");
         schema.setContentHash("hash-01");
         schema.setStatus(SchemaStatus.ACTIVE);
         schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
@@ -177,7 +177,7 @@ class SchemaControllerTest {
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         SchemaResponse created = controller.createSchema(
             new io.github.vfedoriv.graphrag.dto.CreateSchemaRequest(
-                "name: legal-contracts\nversion: 1\nnodes: []\nrelationships: []\n",
+                "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
                 SchemaSourceType.PREDEFINED
             )
         );

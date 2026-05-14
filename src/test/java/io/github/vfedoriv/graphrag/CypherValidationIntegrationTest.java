@@ -42,15 +42,18 @@ class CypherValidationIntegrationTest {
     void validatesWithExplainAgainstNeo4j() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
-            name: contracts
-            version: 1
-            nodes:
-              - label: Contract
-                key: contractId
-                properties:
-                  - name: contractId
-                    type: string
-            relationships: []
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                }
+              ],
+              "relationships": []
+            }
             """, SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-validate", schema.getId());
 

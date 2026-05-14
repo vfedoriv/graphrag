@@ -73,7 +73,7 @@ class EndToEndMvpFlowIntegrationTest {
     void completesSynchronousFlowFromSchemaToAsk() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 
-        String schemaYaml = new ClassPathResource("fixtures/schemas/contracts-v1.yaml")
+        String schemaYaml = new ClassPathResource("fixtures/schemas/contracts-v1.json")
             .getContentAsString(StandardCharsets.UTF_8);
         byte[] documentBytes = new ClassPathResource("fixtures/documents/contract-sample.txt")
             .getContentAsByteArray();

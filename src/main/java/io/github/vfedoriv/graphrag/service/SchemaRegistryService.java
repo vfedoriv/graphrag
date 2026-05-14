@@ -50,9 +50,9 @@ public class SchemaRegistryService {
     }
 
     @Transactional
-    public SchemaDefinitionNode createSchema(String yaml, SchemaSourceType sourceType) {
-        log.info("Creating schema: sourceType={}, contentLength={}", sourceType, yaml == null ? 0 : yaml.length());
-        SchemaDocument doc = schemaParser.parse(yaml);
+    public SchemaDefinitionNode createSchema(String json, SchemaSourceType sourceType) {
+        log.info("Creating schema: sourceType={}, contentLength={}", sourceType, json == null ? 0 : json.length());
+        SchemaDocument doc = schemaParser.parse(json);
         List<String> errors = schemaValidator.validate(doc);
         if (!errors.isEmpty()) {
             log.info("Schema validation failed before create: name={}, version={}, errorCount={}", doc.name(), doc.version(), errors.size());
@@ -70,9 +70,9 @@ public class SchemaRegistryService {
         node.setName(doc.name());
         node.setVersion(doc.version());
         node.setSourceType(sourceType == null ? SchemaSourceType.PREDEFINED : sourceType);
-        node.setFormat(SchemaFormat.YAML);
-        node.setContent(yaml);
-        node.setContentHash(sha256(yaml));
+        node.setFormat(SchemaFormat.JSON);
+        node.setContent(json);
+        node.setContentHash(sha256(json));
         node.setStatus(SchemaStatus.INACTIVE);
         node.setCreatedAt(Instant.now());
         SchemaDefinitionNode saved = schemaRepository.save(node);
@@ -97,11 +97,11 @@ public class SchemaRegistryService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> validateYaml(String yaml) {
-        log.info("Validating schema YAML: contentLength={}", yaml == null ? 0 : yaml.length());
-        SchemaDocument doc = schemaParser.parse(yaml);
+    public List<String> validateJson(String json) {
+        log.info("Validating schema JSON: contentLength={}", json == null ? 0 : json.length());
+        SchemaDocument doc = schemaParser.parse(json);
         List<String> errors = schemaValidator.validate(doc);
-        log.info("Schema YAML validation completed: name={}, version={}, valid={}, errorCount={}", doc.name(), doc.version(), errors.isEmpty(), errors.size());
+        log.info("Schema JSON validation completed: name={}, version={}, valid={}, errorCount={}", doc.name(), doc.version(), errors.isEmpty(), errors.size());
         return errors;
     }
 

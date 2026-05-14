@@ -14,8 +14,8 @@ The project is intentionally API-first, synchronous, and focused on deterministi
 
 GraphRAG supports two schema strategies:
 
-- predefined domain schemas (bootstrapped from YAML files),
-- runtime-created schemas (validated YAML persisted in Neo4j).
+- predefined domain schemas (bootstrapped from JSON files),
+- runtime-created schemas (validated JSON persisted in Neo4j).
 
 For uploaded documents, the system stores:
 
@@ -32,7 +32,7 @@ Out of scope (current implementation):
 
 - Spring Boot 4.0.6 application foundation with validated config and test coverage.
 - Schema registry:
-  - YAML schema parsing/validation,
+  - JSON schema parsing/validation,
   - immutable versioning,
   - Neo4j persistence,
   - activation per knowledge base,
@@ -98,7 +98,7 @@ Primary runtime services:
 
 ```mermaid
 flowchart TD
-    A[Schema YAML input] --> B[SchemaRegistryService.parseAndValidate]
+    A[Schema JSON input] --> B[SchemaRegistryService.parseAndValidate]
     B --> C{Valid schema?}
     C -- No --> D[Reject with ProblemDetail]
     C -- Yes --> E[Persist immutable SchemaDefinition version]
@@ -247,37 +247,41 @@ Key app properties:
 
 ## Schema Format
 
-Schemas are authored in YAML, parsed to Java records, validated, then stored as immutable versions in Neo4j.
+Schemas are authored in JSON, parsed to Java records, validated, then stored as immutable versions in Neo4j.
 
 Example:
 
-```yaml
-name: legal-contracts
-version: 1
-description: Schema for contract analysis
-nodes:
-  - label: Contract
-    key: contractId
-    properties:
-      - name: contractId
-        type: string
-        required: true
-      - name: title
-        type: string
-relationships:
-  - type: HAS_PARTY
-    from: Contract
-    to: Party
-indexes:
-  - label: Contract
-    properties: [contractId]
-    unique: true
-vectorIndexes:
-  - name: document_chunk_embedding
-    label: DocumentChunk
-    property: embedding
-    dimensions: 1536
-    similarity: cosine
+```json
+{
+  "name": "legal-contracts",
+  "version": 1,
+  "description": "Schema for contract analysis",
+  "nodes": [
+    {
+      "label": "Contract",
+      "key": "contractId",
+      "properties": [
+        {"name": "contractId", "type": "string", "required": true},
+        {"name": "title", "type": "string"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+  ],
+  "indexes": [
+    {"label": "Contract", "properties": ["contractId"], "unique": true}
+  ],
+  "vectorIndexes": [
+    {
+      "name": "document_chunk_embedding",
+      "label": "DocumentChunk",
+      "property": "embedding",
+      "dimensions": 1536,
+      "similarity": "cosine"
+    }
+  ]
+}
 ```
 
 Schema rules:
@@ -318,7 +322,18 @@ curl http://localhost:8080/actuator/health
 
 ## Schema Bootstrap
 
-On startup, predefined schemas from `src/main/resources/schemas/*.yaml` are loaded into Neo4j (idempotent by schema name+version).
+On startup, predefined schemas from `src/main/resources/schemas/*.json` are loaded into Neo4j (idempotent by schema name+version).
+
+## Breaking Migration Note (YAML to JSON)
+
+This version removes YAML schema support completely (`SchemaFormat.YAML` is removed).
+Before upgrading, remove previously persisted YAML schema records from Neo4j.
+
+Example cleanup command:
+
+```cypher
+MATCH (s:SchemaDefinition) WHERE s.format = 'YAML' DETACH DELETE s;
+```
 
 ## REST API
 
@@ -362,13 +377,13 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 ## Request Contracts (Core)
 
 - `POST /schemas`
-  - body: `{"content":"<yaml>", "sourceType":"PREDEFINED|GENERATED"}`
+  - body: `{"content":"<json>", "sourceType":"PREDEFINED|GENERATED"}`
 - `POST /schemas/generate`
   - body: `{"name":"generated-legal-schema", "version":1, "description":"optional", "text":"<unstructured text>", "save":false}`
 - `POST /schemas/generate/from-file`
   - multipart fields: `name` (string), `version` (int), `description` (optional string), `save` (optional boolean), part `file` (PDF/TXT/DOCX)
 - `POST /schemas/validate`
-  - body: `{"content":"<yaml>"}`
+  - body: `{"content":"<json>"}`
 - `POST /knowledge-bases`
   - body: `{"id":"kb-demo", "name":"Demo knowledge base"}`
 - `PUT /knowledge-bases/{knowledgeBaseId}`
@@ -513,7 +528,7 @@ Optional focused E2E test:
 ## Design Decisions
 
 - Keep infrastructure labels explicit in code; keep domain graph schema external and versioned.
-- Use YAML for authoring and Java validation for runtime safety.
+- Use JSON for authoring and Java validation for runtime safety.
 - Use Neo4j for both graph and vector data in MVP.
 - Keep all model interactions behind interfaces for deterministic tests and provider portability.
 - Validate all model-generated data before graph write or query execution.
