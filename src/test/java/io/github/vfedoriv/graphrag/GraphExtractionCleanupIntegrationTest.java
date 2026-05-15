@@ -70,9 +70,16 @@ class GraphExtractionCleanupIntegrationTest {
                   "label": "Contract",
                   "key": "contractId",
                   "properties": [{"name": "contractId", "type": "string"}]
+                },
+                {
+                  "label": "Party",
+                  "key": "partyId",
+                  "properties": [{"name": "partyId", "type": "string"}]
                 }
               ],
-              "relationships": []
+              "relationships": [
+                {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+              ]
             }
             """;
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson, SchemaSourceType.PREDEFINED);
@@ -122,12 +129,24 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(c) AS c
             """)
             .fetchAs(Long.class).one().orElse(0L);
+        Long failedOnlyRelatedNodeCount = neo4jClient.query("""
+            MATCH (p:Party {partyId: 'P-FAILED-ONLY'})
+            RETURN count(p) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long failedOnlyRelationshipCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-FAILED-ONLY'})-[r:HAS_PARTY]->(:Party {partyId: 'P-FAILED-ONLY'})
+            RETURN count(r) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
 
         assertThat(runCount).isEqualTo(1L);
         assertThat(failedRunCount).isEqualTo(0L);
         assertThat(completedRunCount).isEqualTo(1L);
         assertThat(sharedNodeCount).isEqualTo(1L);
         assertThat(failedOnlyNodeCount).isEqualTo(0L);
+        assertThat(failedOnlyRelatedNodeCount).isEqualTo(0L);
+        assertThat(failedOnlyRelationshipCount).isEqualTo(0L);
     }
 
     @TestConfiguration
@@ -155,9 +174,20 @@ class GraphExtractionCleanupIntegrationTest {
                     return new GraphExtractionResult(
                         List.of(
                             new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-SHARED"), 0.95),
-                            new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-FAILED-ONLY"), 0.90)
+                            new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-FAILED-ONLY"), 0.90),
+                            new GraphExtractionResult.ExtractedNode("Party", Map.of("partyId", "P-FAILED-ONLY"), 0.90)
                         ),
-                        List.of()
+                        List.of(
+                            new GraphExtractionResult.ExtractedRelationship(
+                                "HAS_PARTY",
+                                "Contract",
+                                Map.of("contractId", "C-FAILED-ONLY"),
+                                "Party",
+                                Map.of("partyId", "P-FAILED-ONLY"),
+                                Map.of(),
+                                0.90
+                            )
+                        )
                     );
                 }
                 return new GraphExtractionResult(

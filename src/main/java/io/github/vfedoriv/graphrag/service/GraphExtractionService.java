@@ -188,28 +188,27 @@ public class GraphExtractionService {
                 [run IN failedRunsRaw WHERE run IS NOT NULL] AS failedRuns,
                 [run IN completedRunsRaw WHERE run IS NOT NULL] AS completedRuns
             WITH failedRuns + completedRuns AS runsToDelete
-            UNWIND runsToDelete AS runToDelete
+            WITH runsToDelete, [run IN runsToDelete | run.id] AS runIds
+            OPTIONAL MATCH ()-[graphRel]-()
+            WHERE graphRel.sourceDocumentId = $documentId AND graphRel.extractionRunId IN runIds
+            WITH runsToDelete, runIds, collect(DISTINCT graphRel) AS graphRelationships
+            FOREACH (graphRel IN graphRelationships | DELETE graphRel)
+            WITH runsToDelete, runIds, size(graphRelationships) AS deletedGraphRelationshipCount
             OPTIONAL MATCH (runToDelete)-[runRel]-()
-            OPTIONAL MATCH (runToDelete)-[:CREATED_NODE]->(candidateNode)
-            WITH
-                collect(DISTINCT runToDelete) AS runsToDeleteRaw,
-                count(DISTINCT runRel) AS deletedRelationshipCount,
-                collect(DISTINCT candidateNode) AS candidateNodesRaw
-            WITH
-                [run IN runsToDeleteRaw WHERE run IS NOT NULL] AS runsToDelete,
-                deletedRelationshipCount,
-                [node IN candidateNodesRaw WHERE node IS NOT NULL] AS candidateNodes
+            WHERE runToDelete IN runsToDelete
+            WITH runsToDelete, runIds, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
             FOREACH (run IN runsToDelete | DETACH DELETE run)
-            WITH size(runsToDelete) AS deletedRuns, deletedRelationshipCount, candidateNodes
-            UNWIND candidateNodes AS candidateNode
-            WITH deletedRuns, deletedRelationshipCount, candidateNode
-            WHERE NOT (candidateNode)--()
-            WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT candidateNode) AS orphanNodes
-            FOREACH (orphanNode IN orphanNodes | DETACH DELETE orphanNode)
+            WITH size(runsToDelete) AS deletedRuns, deletedGraphRelationshipCount + deletedRunRelationshipCount AS deletedRelationshipCount
+            OPTIONAL MATCH (obsoleteNode)
+            WHERE deletedRuns > 0
+                AND obsoleteNode.sourceDocumentId = $documentId
+                AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
+            WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
+            FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
             RETURN
                 deletedRuns AS deletedRuns,
                 deletedRelationshipCount AS deletedRelationships,
-                size(orphanNodes) AS deletedOrphanNodes
+                size(obsoleteNodes) AS deletedOrphanNodes
             """)
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
