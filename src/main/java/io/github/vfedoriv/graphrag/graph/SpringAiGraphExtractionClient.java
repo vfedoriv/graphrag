@@ -1,9 +1,14 @@
 package io.github.vfedoriv.graphrag.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.chat.model.ChatModel;
@@ -13,8 +18,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SpringAiGraphExtractionClient implements GraphExtractionClient {
+    private static final Set<String> NODE_FIELDS = Set.of("label", "properties", "confidence");
+    private static final Set<String> RELATIONSHIP_FIELDS =
+        Set.of("type", "fromLabel", "fromKey", "toLabel", "toKey", "properties", "confidence");
     private final ObjectProvider<ChatModel> chatModelProvider;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper tolerantObjectMapper =
+        new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public SpringAiGraphExtractionClient(ObjectProvider<ChatModel> chatModelProvider) {
         this.chatModelProvider = chatModelProvider;
@@ -61,7 +71,9 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             if (log.isDebugEnabled()) {
                 log.debug("Graph extraction model response: {}", content);
             }
-            GraphExtractionResult result = objectMapper.readValue(normalizedContent, GraphExtractionResult.class);
+            JsonNode responseJson = objectMapper.readTree(normalizedContent);
+            logUnknownExtractionFields(schema, chunkLength, responseJson);
+            GraphExtractionResult result = tolerantObjectMapper.treeToValue(responseJson, GraphExtractionResult.class);
             log.info(
                 "Graph extraction model response parsed: nodes={}, relationships={}, elapsedMs={}",
                 result.nodes() == null ? 0 : result.nodes().size(),
@@ -115,5 +127,44 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             log.error("Failed to serialize schema for graph extraction prompt: schemaName={}, message={}", schema.name(), e.getMessage(), e);
             return "{\"name\":\"unknown\",\"nodes\":[],\"relationships\":[]}";
         }
+    }
+
+    private void logUnknownExtractionFields(SchemaDocument schema, int chunkLength, JsonNode root) throws JsonProcessingException {
+        if (root == null || !root.isObject()) {
+            return;
+        }
+        Set<String> unknownNodeFields = collectUnknownFields(root.get("nodes"), NODE_FIELDS);
+        Set<String> unknownRelationshipFields = collectUnknownFields(root.get("relationships"), RELATIONSHIP_FIELDS);
+        if (unknownNodeFields.isEmpty() && unknownRelationshipFields.isEmpty()) {
+            return;
+        }
+        log.warn(
+            "Graph extraction response contains unknown fields that will be ignored: schemaName={}, chunkLength={}, unknownNodeFields={}, unknownRelationshipFields={}",
+            schema.name(),
+            chunkLength,
+            unknownNodeFields,
+            unknownRelationshipFields
+        );
+        if (log.isDebugEnabled()) {
+            log.debug("Graph extraction response unknown field payload: {}", objectMapper.writeValueAsString(root));
+        }
+    }
+
+    private Set<String> collectUnknownFields(JsonNode entries, Set<String> allowedFields) {
+        Set<String> unknownFields = new HashSet<>();
+        if (entries == null || !entries.isArray()) {
+            return unknownFields;
+        }
+        for (JsonNode entry : entries) {
+            if (!entry.isObject()) {
+                continue;
+            }
+            entry.fieldNames().forEachRemaining(fieldName -> {
+                if (!allowedFields.contains(fieldName)) {
+                    unknownFields.add(fieldName);
+                }
+            });
+        }
+        return unknownFields;
     }
 }
