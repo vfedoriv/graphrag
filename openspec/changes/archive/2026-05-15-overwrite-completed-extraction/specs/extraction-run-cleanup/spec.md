@@ -1,21 +1,15 @@
-# extraction-run-cleanup Specification
+## MODIFIED Requirements
 
-## Purpose
-Define cleanup behavior for extraction runs so stale runs and artifacts are removed safely after successful processing.
-## Requirements
-### Requirement: Failed extraction runs are cleaned after a successful run
-The system SHALL delete prior failed extraction run nodes for the same document after a new extraction run completes successfully.
+### Requirement: Cleanup executes only after successful run persistence
+The system MUST execute extraction-run cleanup only when the current extraction run has been persisted as successful.
 
-#### Scenario: Successful retry after failure
-- **WHEN** a document has at least one existing failed extraction run and a later extraction run for that document finishes with `COMPLETED` status
-- **THEN** prior failed extraction run nodes for that document are deleted
+#### Scenario: Current run fails
+- **WHEN** the current extraction run ends in failure
+- **THEN** extraction-run cleanup is not executed
 
-### Requirement: Relationships of deleted failed runs are removed
-The system SHALL remove relationships attached to failed extraction run nodes that are deleted during cleanup.
-
-#### Scenario: Failed run has linked entities
-- **WHEN** failed extraction run nodes are deleted
-- **THEN** all relationships attached to those failed run nodes are removed as part of the same cleanup operation
+#### Scenario: Current run succeeds
+- **WHEN** the current extraction run is persisted with `COMPLETED` status
+- **THEN** extraction-run cleanup is executed according to configured cleanup rules
 
 ### Requirement: Orphaned nodes created by cleanup are removed
 The system SHALL delete nodes that become orphaned (no remaining relationships) as a direct result of extraction-run cleanup.
@@ -28,16 +22,7 @@ The system SHALL delete nodes that become orphaned (no remaining relationships) 
 - **WHEN** a node is linked to both a deleted run and a retained run
 - **THEN** that node is not deleted
 
-### Requirement: Cleanup executes only after successful run persistence
-The system MUST execute extraction-run cleanup only when the current extraction run has been persisted as successful.
-
-#### Scenario: Current run fails
-- **WHEN** the current extraction run ends in failure
-- **THEN** extraction-run cleanup is not executed
-
-#### Scenario: Current run succeeds
-- **WHEN** the current extraction run is persisted with `COMPLETED` status
-- **THEN** extraction-run cleanup is executed according to configured cleanup rules
+## ADDED Requirements
 
 ### Requirement: Overwrite requires explicit confirmation when completed run exists
 The system SHALL reject starting a new extraction for a document that already has a `COMPLETED` extraction run unless the request explicitly sets `allowOverwrite=true`.
@@ -67,4 +52,3 @@ The system SHALL remove relationships attached to completed extraction run nodes
 #### Scenario: Deleted completed run has linked nodes
 - **WHEN** completed extraction run nodes are deleted after successful overwrite
 - **THEN** all relationships attached to those deleted run nodes are removed as part of the same cleanup operation
-

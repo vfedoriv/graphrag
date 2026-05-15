@@ -109,6 +109,12 @@ class EndToEndMvpFlowMvcIntegrationTest {
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("COMPLETED"));
+        mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
+            .andExpect(status().isConflict());
+        mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId)
+                .param("allowOverwrite", "true"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("COMPLETED"));
 
         mockMvc.perform(post("/api/v1/knowledge-bases/{knowledgeBaseId}/queries/ask", "kb-e2e-mvc")
                 .contentType("application/json")

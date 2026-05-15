@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,11 +108,16 @@ public class DocumentController {
                 )
             )
         ),
+        @ApiResponse(responseCode = "409", description = "Completed extraction already exists and overwrite not allowed", content = @Content(schema = @Schema())),
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
-    public DocumentUploadResponse processDocument(@Parameter(description = "Document identifier") @PathVariable String documentId) {
-        log.info("Process document request: documentId={}", documentId);
-        DocumentUploadResponse response = toResponse(documentProcessingService.process(documentId));
+    public DocumentUploadResponse processDocument(
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @Parameter(description = "Allow replacing existing completed extraction for this document")
+        @RequestParam(defaultValue = "false") boolean allowOverwrite
+    ) {
+        log.info("Process document request: documentId={}, allowOverwrite={}", documentId, allowOverwrite);
+        DocumentUploadResponse response = toResponse(documentProcessingService.process(documentId, allowOverwrite));
         log.info("Process document completed: documentId={}, status={}", documentId, response.status());
         return response;
     }

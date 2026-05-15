@@ -364,7 +364,7 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 
 - `POST /knowledge-bases/{knowledgeBaseId}/documents` (multipart form, part name: `file`)
 - `GET /knowledge-bases/{knowledgeBaseId}/documents`
-- `POST /documents/{documentId}/process`
+- `POST /documents/{documentId}/process?allowOverwrite=false|true`
 - `GET /documents/{documentId}/chunks`
 
 ### Queries
@@ -392,6 +392,9 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - multipart: part `file`
 - `GET /knowledge-bases/{knowledgeBaseId}/documents`
   - returns: document metadata list for the knowledge base
+- `POST /documents/{documentId}/process`
+  - query param: `allowOverwrite` (optional boolean, default `false`)
+  - returns `409 Conflict` when a completed extraction already exists and overwrite is not allowed
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/generate`
   - body: `{"prompt":"..."}`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/validate`
@@ -439,6 +442,12 @@ curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/documents" \
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/documents/<documentId>/process
+```
+
+If a completed extraction already exists, repeat processing requires explicit overwrite confirmation:
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/documents/<documentId>/process?allowOverwrite=true"
 ```
 
 6. Ask question:

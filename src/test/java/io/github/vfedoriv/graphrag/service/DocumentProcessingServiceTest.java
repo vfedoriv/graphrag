@@ -13,6 +13,7 @@ import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.nio.file.Path;
@@ -39,6 +40,8 @@ class DocumentProcessingServiceTest {
     private DocumentUploadRepository documentUploadRepository;
     @Mock
     private DocumentChunkRepository documentChunkRepository;
+    @Mock
+    private ExtractionRunRepository extractionRunRepository;
     @Mock
     private DocumentUploadService documentUploadService;
     @Mock
@@ -68,6 +71,7 @@ class DocumentProcessingServiceTest {
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
             .thenReturn("abcdefghij01234567");
@@ -78,6 +82,7 @@ class DocumentProcessingServiceTest {
         DocumentProcessingService service = new DocumentProcessingService(
             documentUploadRepository,
             documentChunkRepository,
+            extractionRunRepository,
             documentUploadService,
             documentParsingService,
             chunkingService,
@@ -109,6 +114,7 @@ class DocumentProcessingServiceTest {
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
             .thenReturn("abcdefghij01234567");
@@ -147,6 +153,7 @@ class DocumentProcessingServiceTest {
         DocumentProcessingService service = new DocumentProcessingService(
             documentUploadRepository,
             documentChunkRepository,
+            extractionRunRepository,
             documentUploadService,
             documentParsingService,
             chunkingService,

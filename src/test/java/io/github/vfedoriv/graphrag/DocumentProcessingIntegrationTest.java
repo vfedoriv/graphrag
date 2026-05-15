@@ -1,12 +1,14 @@
 package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
@@ -94,9 +96,11 @@ class DocumentProcessingIntegrationTest {
         );
         DocumentUploadNode uploaded = documentUploadService.upload("kb-1", file);
         DocumentUploadNode processed = documentProcessingService.process(uploaded.getId());
-        DocumentUploadNode processedAgain = documentProcessingService.process(uploaded.getId());
+        Throwable secondAttempt = catchThrowable(() -> documentProcessingService.process(uploaded.getId()));
+        DocumentUploadNode processedAgain = documentProcessingService.process(uploaded.getId(), true);
 
         assertThat(processed.getStatus().name()).isEqualTo("COMPLETED");
+        assertThat(secondAttempt).isInstanceOf(ConflictException.class);
         assertThat(processedAgain.getStatus().name()).isEqualTo("COMPLETED");
         List<DocumentChunkNode> chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(uploaded.getId());
         assertThat(chunks).isNotEmpty();
@@ -153,7 +157,7 @@ class DocumentProcessingIntegrationTest {
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(provenanceOnNode).isEqualTo(1L);
         assertThat(provenanceOnRel).isEqualTo(1L);
-        assertThat(extractionRuns).isEqualTo(2L);
+        assertThat(extractionRuns).isEqualTo(1L);
     }
 
     @TestConfiguration

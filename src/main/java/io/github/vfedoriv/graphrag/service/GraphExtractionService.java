@@ -58,7 +58,7 @@ public class GraphExtractionService {
         this.neo4jClient = neo4jClient;
     }
 
-    public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks) {
+    public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks, boolean allowOverwrite) {
         long startNanos = System.nanoTime();
         log.info(
             "Graph extraction starting: documentId={}, knowledgeBaseId={}, chunks={}",
@@ -117,16 +117,17 @@ public class GraphExtractionService {
             run.setStatus("COMPLETED");
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
-            Map<String, Object> cleanupRow = cleanupFailedRunsAfterCompletion(document.getId(), run.getId());
-            long deletedFailedRuns = toLong(cleanupRow.get("deletedRuns"));
+            Map<String, Object> cleanupRow = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
+            long deletedRuns = toLong(cleanupRow.get("deletedRuns"));
             long deletedRelationships = toLong(cleanupRow.get("deletedRelationships"));
             long deletedOrphanNodes = toLong(cleanupRow.get("deletedOrphanNodes"));
             log.info(
-                "Graph extraction completed: runId={}, documentId={}, chunks={}, deletedFailedRuns={}, deletedRelationships={}, deletedOrphanNodes={}, elapsedMs={}",
+                "Graph extraction completed: runId={}, documentId={}, chunks={}, allowOverwrite={}, deletedRuns={}, deletedRelationships={}, deletedOrphanNodes={}, elapsedMs={}",
                 run.getId(),
                 document.getId(),
                 chunks.size(),
-                deletedFailedRuns,
+                allowOverwrite,
+                deletedRuns,
                 deletedRelationships,
                 deletedOrphanNodes,
                 LogSanitizer.elapsedMillis(startNanos)
@@ -175,35 +176,44 @@ public class GraphExtractionService {
             .orElse(clients.getFirst());
     }
 
-    private Map<String, Object> cleanupFailedRunsAfterCompletion(String documentId, String runId) {
+    private Map<String, Object> cleanupRunsAfterCompletion(String documentId, String runId, boolean allowOverwrite) {
         return neo4jClient.query("""
             MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
             OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
             WHERE failed.id <> current.id
-            OPTIONAL MATCH (failed)-[failedRel]-()
-            OPTIONAL MATCH (failed)-[:CREATED_NODE]->(candidateNode)
-            WITH
-                collect(DISTINCT failed) AS failedRunsRaw,
-                count(DISTINCT failedRel) AS failedRelationshipCount,
-                collect(DISTINCT candidateNode) AS candidateNodesRaw
+            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(completed:ExtractionRun {status: 'COMPLETED'})
+            WHERE $allowOverwrite = true AND completed.id <> current.id
+            WITH current, collect(DISTINCT failed) AS failedRunsRaw, collect(DISTINCT completed) AS completedRunsRaw
             WITH
                 [run IN failedRunsRaw WHERE run IS NOT NULL] AS failedRuns,
-                failedRelationshipCount,
+                [run IN completedRunsRaw WHERE run IS NOT NULL] AS completedRuns
+            WITH failedRuns + completedRuns AS runsToDelete
+            UNWIND runsToDelete AS runToDelete
+            OPTIONAL MATCH (runToDelete)-[runRel]-()
+            OPTIONAL MATCH (runToDelete)-[:CREATED_NODE]->(candidateNode)
+            WITH
+                collect(DISTINCT runToDelete) AS runsToDeleteRaw,
+                count(DISTINCT runRel) AS deletedRelationshipCount,
+                collect(DISTINCT candidateNode) AS candidateNodesRaw
+            WITH
+                [run IN runsToDeleteRaw WHERE run IS NOT NULL] AS runsToDelete,
+                deletedRelationshipCount,
                 [node IN candidateNodesRaw WHERE node IS NOT NULL] AS candidateNodes
-            FOREACH (run IN failedRuns | DETACH DELETE run)
-            WITH size(failedRuns) AS deletedRuns, failedRelationshipCount, candidateNodes
+            FOREACH (run IN runsToDelete | DETACH DELETE run)
+            WITH size(runsToDelete) AS deletedRuns, deletedRelationshipCount, candidateNodes
             UNWIND candidateNodes AS candidateNode
-            WITH deletedRuns, failedRelationshipCount, candidateNode
+            WITH deletedRuns, deletedRelationshipCount, candidateNode
             WHERE NOT (candidateNode)--()
-            WITH deletedRuns, failedRelationshipCount, collect(DISTINCT candidateNode) AS orphanNodes
+            WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT candidateNode) AS orphanNodes
             FOREACH (orphanNode IN orphanNodes | DETACH DELETE orphanNode)
             RETURN
                 deletedRuns AS deletedRuns,
-                failedRelationshipCount AS deletedRelationships,
+                deletedRelationshipCount AS deletedRelationships,
                 size(orphanNodes) AS deletedOrphanNodes
             """)
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
+            .bind(allowOverwrite).to("allowOverwrite")
             .fetch()
             .one()
             .orElse(Map.of());

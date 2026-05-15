@@ -7,10 +7,12 @@ import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -31,6 +33,7 @@ public class DocumentProcessingService {
 
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentChunkRepository documentChunkRepository;
+    private final ExtractionRunRepository extractionRunRepository;
     private final DocumentUploadService documentUploadService;
     private final DocumentParsingService documentParsingService;
     private final ChunkingService chunkingService;
@@ -44,6 +47,7 @@ public class DocumentProcessingService {
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
         DocumentChunkRepository documentChunkRepository,
+        ExtractionRunRepository extractionRunRepository,
         DocumentUploadService documentUploadService,
         DocumentParsingService documentParsingService,
         ChunkingService chunkingService,
@@ -56,6 +60,7 @@ public class DocumentProcessingService {
     ) {
         this.documentUploadRepository = documentUploadRepository;
         this.documentChunkRepository = documentChunkRepository;
+        this.extractionRunRepository = extractionRunRepository;
         this.documentUploadService = documentUploadService;
         this.documentParsingService = documentParsingService;
         this.chunkingService = chunkingService;
@@ -68,16 +73,26 @@ public class DocumentProcessingService {
     }
 
     public DocumentUploadNode process(String documentId) {
+        return process(documentId, false);
+    }
+
+    public DocumentUploadNode process(String documentId, boolean allowOverwrite) {
         long startNanos = System.nanoTime();
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+        if (!allowOverwrite && extractionRunRepository.hasCompletedRun(documentId)) {
+            throw new ConflictException(
+                "Document already has a completed extraction run. Set allowOverwrite=true to replace it."
+            );
+        }
         log.info(
-            "Starting document processing: documentId={}, knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
+            "Starting document processing: documentId={}, knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}, allowOverwrite={}",
             document.getId(),
             document.getKnowledgeBaseId(),
             document.getOriginalFilename(),
             document.getContentType(),
-            document.getSizeBytes()
+            document.getSizeBytes(),
+            allowOverwrite
         );
         try {
             document = setStatus(document, DocumentStatus.PARSING, null);
@@ -131,7 +146,7 @@ public class DocumentProcessingService {
             document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
             List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
             log.info("Starting graph extraction: documentId={}, persistedChunks={}", documentId, persistedChunks.size());
-            graphExtractionService.extract(document, persistedChunks);
+            graphExtractionService.extract(document, persistedChunks, allowOverwrite);
 
             document.setProcessedAt(Instant.now());
             log.info(
