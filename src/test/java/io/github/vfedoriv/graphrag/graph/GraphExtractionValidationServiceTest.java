@@ -62,6 +62,41 @@ class GraphExtractionValidationServiceTest {
         assertThat(validated.relationships()).hasSize(1);
     }
 
+    @Test
+    void dropsInvalidRelationshipTriplesAndKeepsValidOnes() {
+        GraphExtractionResult result = new GraphExtractionResult(
+            List.of(
+                new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-1"), 0.9),
+                new GraphExtractionResult.ExtractedNode("Party", Map.of("name", "Acme"), 0.8),
+                new GraphExtractionResult.ExtractedNode("Address", Map.of("id", "A-1"), 0.7)
+            ),
+            List.of(
+                new GraphExtractionResult.ExtractedRelationship(
+                    "HAS_PARTY",
+                    "Contract",
+                    Map.of("contractId", "C-1"),
+                    "Party",
+                    Map.of("name", "Acme"),
+                    Map.of("role", "Supplier"),
+                    0.7
+                ),
+                new GraphExtractionResult.ExtractedRelationship(
+                    "HAS_WEBSITE",
+                    "Contract",
+                    Map.of("contractId", "C-1"),
+                    "Address",
+                    Map.of("id", "A-1"),
+                    Map.of(),
+                    0.6
+                )
+            )
+        );
+
+        GraphExtractionResult validated = validationService.validate(result, schema());
+        assertThat(validated.relationships()).hasSize(1);
+        assertThat(validated.relationships().getFirst().type()).isEqualTo("HAS_PARTY");
+    }
+
     private SchemaDocument schema() {
         return new SchemaDocument(
             "contracts",
@@ -69,7 +104,8 @@ class GraphExtractionValidationServiceTest {
             "test",
             List.of(
                 new SchemaDocument.NodeDefinition("Contract", "", "contractId", List.of()),
-                new SchemaDocument.NodeDefinition("Party", "", "name", List.of())
+                new SchemaDocument.NodeDefinition("Party", "", "name", List.of()),
+                new SchemaDocument.NodeDefinition("Address", "", "id", List.of())
             ),
             List.of(new SchemaDocument.RelationshipDefinition("HAS_PARTY", "Contract", "Party", "", List.of())),
             List.of(),

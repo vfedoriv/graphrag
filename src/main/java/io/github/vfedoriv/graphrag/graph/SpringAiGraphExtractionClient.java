@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.chat.model.ChatModel;
@@ -40,12 +41,17 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             Use ONLY labels, relationship types, and properties from this schema:
             %s
 
+            Allowed relationship triples (type|fromLabel|toLabel):
+            %s
+
+            If no listed relationship triple applies, omit the relationship.
+
             Return only JSON with this shape:
             {"nodes":[{"label":"...","properties":{},"confidence":0.0}],"relationships":[{"type":"...","fromLabel":"...","fromKey":{},"toLabel":"...","toKey":{},"properties":{},"confidence":0.0}]}
 
             Text chunk:
             %s
-            """.formatted(schemaToCompactJson(schema), chunkText);
+            """.formatted(schemaToCompactJson(schema), allowedRelationshipTriples(schema), chunkText);
         log.info(
             "Graph extraction model request prepared: schemaName={}, promptLength={}, promptPreview={}",
             schema.name(),
@@ -127,6 +133,15 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             log.error("Failed to serialize schema for graph extraction prompt: schemaName={}, message={}", schema.name(), e.getMessage(), e);
             return "{\"name\":\"unknown\",\"nodes\":[],\"relationships\":[]}";
         }
+    }
+
+    private String allowedRelationshipTriples(SchemaDocument schema) {
+        if (schema.relationships() == null || schema.relationships().isEmpty()) {
+            return "NONE";
+        }
+        return schema.relationships().stream()
+            .map(rel -> rel.type() + "|" + rel.from() + "|" + rel.to())
+            .collect(Collectors.joining(", "));
     }
 
     private void logUnknownExtractionFields(SchemaDocument schema, int chunkLength, JsonNode root) throws JsonProcessingException {

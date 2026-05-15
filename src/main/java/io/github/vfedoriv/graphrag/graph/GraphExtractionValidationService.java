@@ -73,16 +73,25 @@ public class GraphExtractionValidationService {
         }
 
         if (normalized.relationships() != null) {
+            List<GraphExtractionResult.ExtractedRelationship> filteredRelationships =
+                new ArrayList<>(normalized.relationships().size());
             for (GraphExtractionResult.ExtractedRelationship extracted : normalized.relationships()) {
                 String ruleKey = extracted.type() + "|" + extracted.fromLabel() + "|" + extracted.toLabel();
                 if (!relDefs.contains(ruleKey)) {
-                    throw new GraphExtractionValidationException("Unknown relationship rule: " + ruleKey);
+                    log.warn(
+                        "Dropped schema-invalid relationship triple: schemaName={}, triple={}",
+                        schema.name(),
+                        ruleKey
+                    );
+                    continue;
                 }
                 if (extracted.fromKey() == null || extracted.fromKey().isEmpty()
                     || extracted.toKey() == null || extracted.toKey().isEmpty()) {
                     throw new GraphExtractionValidationException("Relationship endpoint keys must not be empty");
                 }
+                filteredRelationships.add(extracted);
             }
+            normalized = new GraphExtractionResult(normalized.nodes(), filteredRelationships);
         }
         log.info(
             "Graph extraction payload validated: schemaName={}, nodes={}, relationships={}",

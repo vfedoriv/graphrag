@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -95,6 +96,26 @@ class SpringAiGraphExtractionClientTest {
             .hasMessageContaining("Unknown node label");
     }
 
+    @Test
+    void extract_promptContainsAllowedRelationshipTriplesAndOmitRule() {
+        String modelJson = "{\"nodes\":[],\"relationships\":[]}";
+        AtomicReference<String> capturedPrompt = new AtomicReference<>();
+        ChatModel model = new ChatModel() {
+            @Override
+            public ChatResponse call(Prompt prompt) {
+                capturedPrompt.set(extractPromptText(prompt));
+                return new ChatResponse(List.of(new Generation(new AssistantMessage(modelJson))));
+            }
+        };
+
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(model));
+        client.extract(schema(), "source text");
+
+        assertThat(capturedPrompt.get()).contains("Allowed relationship triples (type|fromLabel|toLabel):");
+        assertThat(capturedPrompt.get()).contains("HAS_PARTY|Contract|Party");
+        assertThat(capturedPrompt.get()).contains("If no listed relationship triple applies, omit the relationship.");
+    }
+
     private ObjectProvider<ChatModel> provider(ChatModel model) {
         return new ObjectProvider<>() {
             @Override
@@ -126,5 +147,21 @@ class SpringAiGraphExtractionClientTest {
             List.of(),
             List.of()
         );
+    }
+
+    private String extractPromptText(Prompt prompt) {
+        try {
+            Object contents = Prompt.class.getMethod("getContents").invoke(prompt);
+            if (contents instanceof List<?> list && !list.isEmpty()) {
+                Object first = list.getFirst();
+                Object text = first.getClass().getMethod("getText").invoke(first);
+                if (text instanceof String value) {
+                    return value;
+                }
+            }
+        } catch (Exception ignored) {
+            // Fallback to Prompt.toString() when internals change.
+        }
+        return prompt.toString();
     }
 }

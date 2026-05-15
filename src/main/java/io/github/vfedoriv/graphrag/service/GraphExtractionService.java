@@ -18,6 +18,7 @@ import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -116,11 +117,18 @@ public class GraphExtractionService {
             run.setStatus("COMPLETED");
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
+            Map<String, Object> cleanupRow = cleanupFailedRunsAfterCompletion(document.getId(), run.getId());
+            long deletedFailedRuns = toLong(cleanupRow.get("deletedRuns"));
+            long deletedRelationships = toLong(cleanupRow.get("deletedRelationships"));
+            long deletedOrphanNodes = toLong(cleanupRow.get("deletedOrphanNodes"));
             log.info(
-                "Graph extraction completed: runId={}, documentId={}, chunks={}, elapsedMs={}",
+                "Graph extraction completed: runId={}, documentId={}, chunks={}, deletedFailedRuns={}, deletedRelationships={}, deletedOrphanNodes={}, elapsedMs={}",
                 run.getId(),
                 document.getId(),
                 chunks.size(),
+                deletedFailedRuns,
+                deletedRelationships,
+                deletedOrphanNodes,
                 LogSanitizer.elapsedMillis(startNanos)
             );
         } catch (Exception ex) {
@@ -165,5 +173,46 @@ public class GraphExtractionService {
             .filter(client -> !client.getClass().getName().contains("SpringAi"))
             .findFirst()
             .orElse(clients.getFirst());
+    }
+
+    private Map<String, Object> cleanupFailedRunsAfterCompletion(String documentId, String runId) {
+        return neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
+            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
+            WHERE failed.id <> current.id
+            OPTIONAL MATCH (failed)-[failedRel]-()
+            OPTIONAL MATCH (failed)-[:CREATED_NODE]->(candidateNode)
+            WITH
+                collect(DISTINCT failed) AS failedRunsRaw,
+                count(DISTINCT failedRel) AS failedRelationshipCount,
+                collect(DISTINCT candidateNode) AS candidateNodesRaw
+            WITH
+                [run IN failedRunsRaw WHERE run IS NOT NULL] AS failedRuns,
+                failedRelationshipCount,
+                [node IN candidateNodesRaw WHERE node IS NOT NULL] AS candidateNodes
+            FOREACH (run IN failedRuns | DETACH DELETE run)
+            WITH size(failedRuns) AS deletedRuns, failedRelationshipCount, candidateNodes
+            UNWIND candidateNodes AS candidateNode
+            WITH deletedRuns, failedRelationshipCount, candidateNode
+            WHERE NOT (candidateNode)--()
+            WITH deletedRuns, failedRelationshipCount, collect(DISTINCT candidateNode) AS orphanNodes
+            FOREACH (orphanNode IN orphanNodes | DETACH DELETE orphanNode)
+            RETURN
+                deletedRuns AS deletedRuns,
+                failedRelationshipCount AS deletedRelationships,
+                size(orphanNodes) AS deletedOrphanNodes
+            """)
+            .bind(documentId).to("documentId")
+            .bind(runId).to("runId")
+            .fetch()
+            .one()
+            .orElse(Map.of());
+    }
+
+    private long toLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        return 0L;
     }
 }
