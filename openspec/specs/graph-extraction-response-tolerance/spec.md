@@ -1,4 +1,9 @@
-## MODIFIED Requirements
+# graph-extraction-response-tolerance Specification
+
+## Purpose
+Define tolerance, schema enforcement, and observability behavior for graph extraction responses that contain unknown JSON fields or schema-invalid relationship triples.
+
+## Requirements
 
 ### Requirement: Unknown-field tolerance does not weaken schema enforcement
 The system MUST continue enforcing schema constraints for labels, relationship types, and allowed properties after deserialization. The system MUST drop relationships with schema-invalid triples and continue processing the remaining valid payload.
@@ -25,8 +30,6 @@ The system SHALL emit warning logs when unknown fields are ignored during extrac
 #### Scenario: Invalid relationship dropped
 - **WHEN** validation detects a relationship triple that is not in the active schema
 - **THEN** the system logs a warning including extraction context and the dropped triple
-
-## ADDED Requirements
 
 ### Requirement: Extraction prompt constrains relationship triples explicitly
 The extraction prompt SHALL include an explicit list of allowed relationship triples derived from the active schema and SHALL instruct the model to omit relationships that do not match one of those triples.

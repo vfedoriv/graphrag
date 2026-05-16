@@ -43,9 +43,103 @@ class CypherValidationServiceTest {
     }
 
     @Test
+    void acceptsRelationshipUnionWithoutTreatingTypesAsLabels() {
+        stubExplain();
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(schema(), """
+            MATCH (c:Component)-[r:HAS_GREASE_RECOMMENDATION|REQUIRES_GREASE]->(m:Material)
+            RETURN c.id AS componentId,
+                   m.composition AS greaseComposition,
+                   m.miscibilityNote AS miscibilityNote,
+                   type(r) AS recommendationType
+            LIMIT 200
+            """, Map.of());
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).noneMatch(e -> e.contains("Unknown label: HAS_GREASE_RECOMMENDATION"));
+        assertThat(result.errors()).noneMatch(e -> e.contains("Unknown label: REQUIRES_GREASE"));
+    }
+
+    @Test
+    void rejectsUnknownRelationshipUnionMembersOnlyAsRelationships() {
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(
+            schema(),
+            "MATCH (c:Component)-[r:HAS_GREASE_RECOMMENDATION|UNKNOWN_GREASE]->(m:Material) RETURN type(r)",
+            Map.of()
+        );
+
+        assertThat(result.valid()).isFalse();
+        assertThat(result.errors()).contains("Unknown relationship type: UNKNOWN_GREASE");
+        assertThat(result.errors()).noneMatch(e -> e.contains("Unknown label: HAS_GREASE_RECOMMENDATION"));
+        assertThat(result.errors()).noneMatch(e -> e.contains("Unknown label: UNKNOWN_GREASE"));
+    }
+
+    @Test
+    void acceptsAliasedRelationshipUnion() {
+        stubExplain();
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(
+            schema(),
+            "MATCH (c:Component)<-[r:HAS_GREASE_RECOMMENDATION|REQUIRES_GREASE]-(m:Material) RETURN type(r) LIMIT 10",
+            Map.of()
+        );
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).isEmpty();
+    }
+
+    @Test
+    void validatesBacktickQuotedNodeLabels() {
+        stubExplain();
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:`Contract`) RETURN n.contractId LIMIT 10", Map.of());
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).isEmpty();
+    }
+
+    @Test
+    void rejectsUnknownBacktickQuotedNodeLabel() {
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:`Unknown`) RETURN n.contractId LIMIT 10", Map.of());
+
+        assertThat(result.valid()).isFalse();
+        assertThat(result.errors()).contains("Unknown label: Unknown");
+    }
+
+    @Test
+    void acceptsValidQualifiedPropertiesAndRejectsUnknownOnes() {
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(
+            schema(),
+            "MATCH (c:Contract) RETURN c.contractId, c.unexpectedProperty LIMIT 10",
+            Map.of()
+        );
+
+        assertThat(result.valid()).isFalse();
+        assertThat(result.errors()).contains("Unknown property: unexpectedProperty");
+        assertThat(result.errors()).noneMatch(e -> e.contains("Unknown property: contractId"));
+    }
+
+    @Test
+    void validatesMixedQueryShapes() {
+        stubExplain();
+        CypherValidationService service = service();
+        QueryValidationResult result = service.validate(schema(), """
+            MATCH (c:Component {id: $componentId})<-[r:REQUIRES_GREASE]-(m:Material)
+            MATCH (contract:Contract)-[party:HAS_PARTY]->(other:Contract)
+            RETURN c.id, m.composition, contract.title, type(party), type(r)
+            LIMIT 20
+            """, Map.of("componentId", "C-1"));
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).isEmpty();
+    }
+
+    @Test
     void injectsLimitWhenMissing() {
-        when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
-            .thenReturn(List.of());
+        stubExplain();
         CypherValidationService service = service();
         QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
         assertThat(result.cypher()).contains("LIMIT $__limit");
@@ -55,8 +149,7 @@ class CypherValidationServiceTest {
 
     @Test
     void keepsLimitWhenAlreadyPresent() {
-        when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
-            .thenReturn(List.of());
+        stubExplain();
         CypherValidationService service = service();
         QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT 5", Map.of());
         assertThat(result.cypher()).doesNotContain("$__limit");
@@ -89,6 +182,11 @@ class CypherValidationServiceTest {
         );
     }
 
+    private void stubExplain() {
+        when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
+            .thenReturn(List.of());
+    }
+
     private SchemaDocument schema() {
         String json = """
             {
@@ -102,6 +200,22 @@ class CypherValidationServiceTest {
                     {"name": "contractId", "type": "string"},
                     {"name": "title", "type": "string"}
                   ]
+                },
+                {
+                  "label": "Component",
+                  "key": "id",
+                  "properties": [
+                    {"name": "id", "type": "string"}
+                  ]
+                },
+                {
+                  "label": "Material",
+                  "key": "id",
+                  "properties": [
+                    {"name": "id", "type": "string"},
+                    {"name": "composition", "type": "string"},
+                    {"name": "miscibilityNote", "type": "string"}
+                  ]
                 }
               ],
               "relationships": [
@@ -112,6 +226,18 @@ class CypherValidationServiceTest {
                   "properties": [
                     {"name": "role", "type": "string"}
                   ]
+                },
+                {
+                  "type": "HAS_GREASE_RECOMMENDATION",
+                  "from": "Component",
+                  "to": "Material",
+                  "properties": []
+                },
+                {
+                  "type": "REQUIRES_GREASE",
+                  "from": "Component",
+                  "to": "Material",
+                  "properties": []
                 }
               ]
             }

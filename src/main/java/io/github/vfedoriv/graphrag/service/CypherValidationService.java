@@ -27,8 +27,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherValidationService {
 
+    private static final Pattern NODE_PATTERN = Pattern.compile("\\(([^\\[\\]]*?)\\)");
+    private static final Pattern RELATIONSHIP_PATTERN = Pattern.compile("\\[([^\\]]*?)\\]");
     private static final Pattern LABEL_PATTERN = Pattern.compile(":[`]?([A-Za-z_][A-Za-z0-9_]*)[`]?");
-    private static final Pattern REL_PATTERN = Pattern.compile("\\[:[`]?([A-Za-z_][A-Za-z0-9_]*)[`]?");
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\.([A-Za-z_][A-Za-z0-9_]*)\\b");
     private static final Pattern LIMIT_PATTERN = Pattern.compile("\\bLIMIT\\b", Pattern.CASE_INSENSITIVE);
     private static final Set<String> INFRA_LABELS = Set.of(
@@ -140,15 +141,72 @@ public class CypherValidationService {
             }
         }
 
-        matchCaptures(LABEL_PATTERN, cypher).stream()
+        extractNodeLabels(cypher).stream()
             .filter(label -> !allowedLabels.contains(label))
             .forEach(label -> errors.add("Unknown label: " + label));
-        matchCaptures(REL_PATTERN, cypher).stream()
+        extractRelationshipTypes(cypher).stream()
             .filter(type -> !allowedRelationshipTypes.contains(type))
             .forEach(type -> errors.add("Unknown relationship type: " + type));
         matchCaptures(PROPERTY_PATTERN, cypher).stream()
             .filter(property -> !allowedProperties.contains(property))
             .forEach(property -> errors.add("Unknown property: " + property));
+    }
+
+    private List<String> extractNodeLabels(String cypher) {
+        Matcher matcher = NODE_PATTERN.matcher(cypher);
+        List<String> labels = new ArrayList<>();
+        while (matcher.find()) {
+            String nodePattern = beforePropertyMap(matcher.group(1));
+            labels.addAll(matchCaptures(LABEL_PATTERN, nodePattern));
+        }
+        return labels;
+    }
+
+    private List<String> extractRelationshipTypes(String cypher) {
+        Matcher matcher = RELATIONSHIP_PATTERN.matcher(cypher);
+        List<String> relationshipTypes = new ArrayList<>();
+        while (matcher.find()) {
+            String relationshipPattern = beforePropertyMap(matcher.group(1));
+            int typePrefixIndex = relationshipPattern.indexOf(':');
+            if (typePrefixIndex < 0) {
+                continue;
+            }
+            String typeExpression = relationshipPattern.substring(typePrefixIndex + 1).trim();
+            int typeExpressionEnd = findTypeExpressionEnd(typeExpression);
+            String typeSegment = typeExpression.substring(0, typeExpressionEnd);
+            for (String rawType : typeSegment.split("\\|")) {
+                String relationshipType = trimBackticks(rawType.trim());
+                if (!relationshipType.isBlank()) {
+                    relationshipTypes.add(relationshipType);
+                }
+            }
+        }
+        return relationshipTypes;
+    }
+
+    private String beforePropertyMap(String patternContent) {
+        int propertyMapIndex = patternContent.indexOf('{');
+        if (propertyMapIndex < 0) {
+            return patternContent;
+        }
+        return patternContent.substring(0, propertyMapIndex);
+    }
+
+    private int findTypeExpressionEnd(String typeExpression) {
+        for (int i = 0; i < typeExpression.length(); i++) {
+            char ch = typeExpression.charAt(i);
+            if (Character.isWhitespace(ch) || ch == '*') {
+                return i;
+            }
+        }
+        return typeExpression.length();
+    }
+
+    private String trimBackticks(String value) {
+        if (value.length() >= 2 && value.startsWith("`") && value.endsWith("`")) {
+            return value.substring(1, value.length() - 1);
+        }
+        return value;
     }
 
     private List<String> matchCaptures(Pattern pattern, String cypher) {
