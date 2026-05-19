@@ -17,7 +17,11 @@ class SchemaParserValidatorTest {
               "name": "sample",
               "version": 1,
               "nodes": [
-                {"label": "Company", "key": "id"}
+                {
+                  "label": "Company",
+                  "key": "id",
+                  "properties": [{"name": "id", "type": "string"}]
+                }
               ],
               "relationships": [
                 {"type": "OWNS", "from": "Company", "to": "Company"}
@@ -57,5 +61,47 @@ class SchemaParserValidatorTest {
         assertThat(errors).anyMatch(it -> it.contains("unknown node label"));
         assertThat(errors).anyMatch(it -> it.contains("dimensions"));
         assertThat(errors).anyMatch(it -> it.contains("unsupported value"));
+    }
+
+    @Test
+    void validatesNodeKeyDeclaredInProperties() {
+        String validJson = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Company", "key": "id", "properties": [{"name": "id", "type": "string"}]}
+              ],
+              "relationships": []
+            }
+            """;
+        String missingKeyPropertyJson = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Company", "key": "id", "properties": [{"name": "name", "type": "string"}]}
+              ],
+              "relationships": []
+            }
+            """;
+        String emptyPropertiesJson = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Company", "key": "id", "properties": []}
+              ],
+              "relationships": []
+            }
+            """;
+
+        List<String> validErrors = validator.validate(parser.parse(validJson));
+        List<String> missingKeyErrors = validator.validate(parser.parse(missingKeyPropertyJson));
+        List<String> emptyPropertyErrors = validator.validate(parser.parse(emptyPropertiesJson));
+
+        assertThat(validErrors).isEmpty();
+        assertThat(missingKeyErrors).anyMatch(it -> it.contains("missing from declared properties"));
+        assertThat(emptyPropertyErrors).anyMatch(it -> it.contains("must be declared as a property"));
     }
 }

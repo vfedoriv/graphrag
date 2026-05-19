@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
@@ -87,7 +88,7 @@ public class GraphExtractionService {
         run.setDocumentId(document.getId());
         run.setSchemaId(schemaNode.getId());
         run.setModel("chat:" + schemaNode.getName());
-        run.setStatus("RUNNING");
+        run.setStatus(ExtractionRunStatus.RUNNING);
         run.setStartedAt(Instant.now());
         extractionRunRepository.save(run);
         log.info("Extraction run created: runId={}, schemaId={}, model={}", run.getId(), run.getSchemaId(), run.getModel());
@@ -108,33 +109,41 @@ public class GraphExtractionService {
                     "Chunk extraction returned payload: runId={}, chunkId={}, nodes={}, relationships={}",
                     run.getId(),
                     chunk.getId(),
-                    result.nodes() == null ? 0 : result.nodes().size(),
-                    result.relationships() == null ? 0 : result.relationships().size()
+                    result.nodes().size(),
+                    result.relationships().size()
                 );
                 GraphExtractionResult validatedResult = validationService.validate(result, schema);
                 graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, validatedResult);
             }
-            run.setStatus("COMPLETED");
+            run.setStatus(ExtractionRunStatus.COMPLETED);
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
-            Map<String, Object> cleanupRow = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
-            long deletedRuns = toLong(cleanupRow.get("deletedRuns"));
-            long deletedRelationships = toLong(cleanupRow.get("deletedRelationships"));
-            long deletedOrphanNodes = toLong(cleanupRow.get("deletedOrphanNodes"));
+            CleanupResult cleanupResult = CleanupResult.zero();
+            try {
+                cleanupResult = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
+            } catch (Exception cleanupEx) {
+                log.error(
+                    "Cleanup failed after successful extraction: runId={}, documentId={}, message={}",
+                    run.getId(),
+                    document.getId(),
+                    cleanupEx.getMessage(),
+                    cleanupEx
+                );
+            }
             log.info(
-                "Graph extraction completed: runId={}, documentId={}, chunks={}, allowOverwrite={}, deletedRuns={}, deletedRelationships={}, deletedOrphanNodes={}, elapsedMs={}",
+                "Graph extraction completed: runId={}, documentId={}, chunks={}, allowOverwrite={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}, elapsedMs={}",
                 run.getId(),
                 document.getId(),
                 chunks.size(),
                 allowOverwrite,
-                deletedRuns,
-                deletedRelationships,
-                deletedOrphanNodes,
+                cleanupResult.deletedRuns(),
+                cleanupResult.deletedRelationships(),
+                cleanupResult.deletedObsoleteExtractedNodes(),
                 LogSanitizer.elapsedMillis(startNanos)
             );
         } catch (Exception ex) {
-            run.setStatus("FAILED");
-            run.setErrorMessage(ex.getMessage());
+            run.setStatus(ExtractionRunStatus.FAILED);
+            run.setErrorMessage(toNonBlankErrorMessage(ex));
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
             log.error(
@@ -176,17 +185,15 @@ public class GraphExtractionService {
             .orElse(clients.getFirst());
     }
 
-    private Map<String, Object> cleanupRunsAfterCompletion(String documentId, String runId, boolean allowOverwrite) {
-        return neo4jClient.query("""
+    private CleanupResult cleanupRunsAfterCompletion(String documentId, String runId, boolean allowOverwrite) {
+        Map<String, Object> cleanupRow = neo4jClient.query("""
             MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
             OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
             WHERE failed.id <> current.id
             OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(completed:ExtractionRun {status: 'COMPLETED'})
             WHERE $allowOverwrite = true AND completed.id <> current.id
-            WITH current, collect(DISTINCT failed) AS failedRunsRaw, collect(DISTINCT completed) AS completedRunsRaw
-            WITH
-                [run IN failedRunsRaw WHERE run IS NOT NULL] AS failedRuns,
-                [run IN completedRunsRaw WHERE run IS NOT NULL] AS completedRuns
+            WITH [run IN collect(DISTINCT failed) WHERE run IS NOT NULL] AS failedRuns,
+                 [run IN collect(DISTINCT completed) WHERE run IS NOT NULL] AS completedRuns
             WITH failedRuns + completedRuns AS runsToDelete
             WITH runsToDelete, [run IN runsToDelete | run.id] AS runIds
             OPTIONAL MATCH ()-[graphRel]-()
@@ -194,28 +201,42 @@ public class GraphExtractionService {
             WITH runsToDelete, runIds, collect(DISTINCT graphRel) AS graphRelationships
             FOREACH (graphRel IN graphRelationships | DELETE graphRel)
             WITH runsToDelete, runIds, size(graphRelationships) AS deletedGraphRelationshipCount
+            UNWIND CASE WHEN size(runsToDelete) = 0 THEN [null] ELSE runsToDelete END AS runToDelete
             OPTIONAL MATCH (runToDelete)-[runRel]-()
-            WHERE runToDelete IN runsToDelete
             WITH runsToDelete, runIds, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
             FOREACH (run IN runsToDelete | DETACH DELETE run)
             WITH size(runsToDelete) AS deletedRuns, deletedGraphRelationshipCount + deletedRunRelationshipCount AS deletedRelationshipCount
             OPTIONAL MATCH (obsoleteNode)
             WHERE deletedRuns > 0
                 AND obsoleteNode.sourceDocumentId = $documentId
+                AND NOT obsoleteNode:ExtractionRun
+                AND NOT obsoleteNode:DocumentUpload
+                AND NOT obsoleteNode:DocumentChunk
+                AND NOT obsoleteNode:KnowledgeBase
+                AND NOT obsoleteNode:SchemaDefinition
                 AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
             WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
             FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
             RETURN
                 deletedRuns AS deletedRuns,
                 deletedRelationshipCount AS deletedRelationships,
-                size(obsoleteNodes) AS deletedOrphanNodes
+                size(obsoleteNodes) AS deletedObsoleteExtractedNodes
             """)
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
             .bind(allowOverwrite).to("allowOverwrite")
             .fetch()
             .one()
-            .orElse(Map.of());
+            .orElse(null);
+        if (cleanupRow == null) {
+            log.warn("Cleanup returned no row: runId={}, documentId={}", runId, documentId);
+            return CleanupResult.zero();
+        }
+        return new CleanupResult(
+            toLong(cleanupRow.get("deletedRuns")),
+            toLong(cleanupRow.get("deletedRelationships")),
+            toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
+        );
     }
 
     private long toLong(Object value) {
@@ -223,5 +244,22 @@ public class GraphExtractionService {
             return number.longValue();
         }
         return 0L;
+    }
+
+    private String toNonBlankErrorMessage(Exception ex) {
+        if (ex.getMessage() == null || ex.getMessage().isBlank()) {
+            return ex.getClass().getSimpleName();
+        }
+        return ex.getMessage();
+    }
+
+    private record CleanupResult(
+        long deletedRuns,
+        long deletedRelationships,
+        long deletedObsoleteExtractedNodes
+    ) {
+        private static CleanupResult zero() {
+            return new CleanupResult(0L, 0L, 0L);
+        }
     }
 }

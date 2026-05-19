@@ -49,8 +49,8 @@ class SchemaRegistryIntegrationTest {
               "name": "contracts",
               "version": 1,
               "nodes": [
-                {"label": "Contract", "key": "contractId"},
-                {"label": "Party", "key": "name"}
+                {"label": "Contract", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]},
+                {"label": "Party", "key": "name", "properties": [{"name": "name", "type": "string"}]}
               ],
               "relationships": [
                 {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
@@ -85,7 +85,7 @@ class SchemaRegistryIntegrationTest {
               "name": "contracts",
               "version": 1,
               "nodes": [
-                {"label": "Contract", "key": "contractId"}
+                {"label": "Contract", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]}
               ],
               "relationships": []
             }

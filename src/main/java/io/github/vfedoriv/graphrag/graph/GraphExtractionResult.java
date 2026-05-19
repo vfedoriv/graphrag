@@ -7,6 +7,10 @@ public record GraphExtractionResult(
     List<ExtractedNode> nodes,
     List<ExtractedRelationship> relationships
 ) {
+    public GraphExtractionResult {
+        nodes = nodes == null ? List.of() : List.copyOf(nodes);
+        relationships = relationships == null ? List.of() : List.copyOf(relationships);
+    }
 
     public record ExtractedNode(
         String label,

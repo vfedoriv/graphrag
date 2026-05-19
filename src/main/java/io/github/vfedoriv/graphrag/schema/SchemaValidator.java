@@ -43,6 +43,22 @@ public class SchemaValidator {
                 }
                 if (isBlank(node.key())) {
                     errors.add(path + ".key: must not be blank");
+                    continue;
+                }
+                List<SchemaDocument.PropertyDefinition> properties = node.properties();
+                if (properties == null || properties.isEmpty()) {
+                    errors.add(path + ".properties: key '" + node.key() + "' must be declared as a property");
+                    continue;
+                }
+                boolean keyDeclared = false;
+                for (SchemaDocument.PropertyDefinition property : properties) {
+                    if (property != null && node.key().equals(property.name())) {
+                        keyDeclared = true;
+                        break;
+                    }
+                }
+                if (!keyDeclared) {
+                    errors.add(path + ".key: '" + node.key() + "' is missing from declared properties");
                 }
             }
         }

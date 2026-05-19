@@ -24,10 +24,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @Import({TestcontainersConfiguration.class, GraphExtractionCleanupIntegrationTest.RetryFailureThenSuccessConfig.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {
     "spring.autoconfigure.exclude="
         + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
@@ -139,6 +141,18 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(r) AS c
             """)
             .fetchAs(Long.class).one().orElse(0L);
+        Long retainedRelationshipCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-SHARED'})-[r:HAS_PARTY]->(:Party {partyId: 'P-SHARED'})
+            RETURN count(r) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long retainedProvenanceCount = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
+            MATCH (r)-[:CREATED_NODE]->(:Contract {contractId: 'C-SHARED'})
+            RETURN count(*) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
 
         assertThat(runCount).isEqualTo(1L);
         assertThat(failedRunCount).isEqualTo(0L);
@@ -147,6 +161,163 @@ class GraphExtractionCleanupIntegrationTest {
         assertThat(failedOnlyNodeCount).isEqualTo(0L);
         assertThat(failedOnlyRelatedNodeCount).isEqualTo(0L);
         assertThat(failedOnlyRelationshipCount).isEqualTo(0L);
+        assertThat(retainedRelationshipCount).isEqualTo(1L);
+        assertThat(retainedProvenanceCount).isEqualTo(1L);
+    }
+
+    @Test
+    void removesMultipleFailedRunsAfterLaterSuccessfulRetry() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
+
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "multi-fail.txt",
+            "text/plain",
+            "MULTI_FAIL scenario".getBytes()
+        );
+        DocumentUploadNode uploaded = documentUploadService.upload("kb-cleanup", file);
+
+        DocumentUploadNode firstAttempt = documentProcessingService.process(uploaded.getId());
+        DocumentUploadNode secondAttempt = documentProcessingService.process(uploaded.getId());
+        DocumentUploadNode thirdAttempt = documentProcessingService.process(uploaded.getId());
+
+        assertThat(firstAttempt.getStatus().name()).isEqualTo("FAILED");
+        assertThat(secondAttempt.getStatus().name()).isEqualTo("FAILED");
+        assertThat(thirdAttempt.getStatus().name()).isEqualTo("COMPLETED");
+
+        Long runCount = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun)
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long failedRunCount = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'FAILED'})
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long completedRunCount = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+
+        assertThat(runCount).isEqualTo(1L);
+        assertThat(failedRunCount).isEqualTo(0L);
+        assertThat(completedRunCount).isEqualTo(1L);
+    }
+
+    @Test
+    void overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
+
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "overwrite.txt",
+            "text/plain",
+            "OVERWRITE scenario".getBytes()
+        );
+        DocumentUploadNode uploaded = documentUploadService.upload("kb-cleanup", file);
+
+        DocumentUploadNode initial = documentProcessingService.process(uploaded.getId());
+        assertThat(initial.getStatus().name()).isEqualTo("COMPLETED");
+
+        String staleRunId = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
+            RETURN r.id AS runId
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(String.class).one().orElseThrow();
+
+        Long staleRelationshipBefore = neo4jClient.query("""
+            MATCH ()-[r:HAS_PARTY]->()
+            WHERE r.extractionRunId = $runId
+            RETURN count(r) AS c
+            """)
+            .bind(staleRunId).to("runId")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(staleRelationshipBefore).isGreaterThan(0L);
+
+        DocumentUploadNode overwritten = documentProcessingService.process(uploaded.getId(), true);
+        assertThat(overwritten.getStatus().name()).isEqualTo("COMPLETED");
+
+        Long staleRunCount = neo4jClient.query("""
+            MATCH (r:ExtractionRun {id: $runId})
+            RETURN count(r) AS c
+            """)
+            .bind(staleRunId).to("runId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long staleRelationshipAfter = neo4jClient.query("""
+            MATCH ()-[r:HAS_PARTY]->()
+            WHERE r.extractionRunId = $runId
+            RETURN count(r) AS c
+            """)
+            .bind(staleRunId).to("runId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long staleNodeCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-STALE'})
+            RETURN count(*) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long staleEdgeCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-STALE'})-[r:HAS_PARTY]->(:Party {partyId: 'P-STALE'})
+            RETURN count(r) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long freshNodeCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-FRESH'})
+            RETURN count(*) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long freshEdgeCount = neo4jClient.query("""
+            MATCH (:Contract {contractId: 'C-FRESH'})-[r:HAS_PARTY]->(:Party {partyId: 'P-FRESH'})
+            RETURN count(r) AS c
+            """)
+            .fetchAs(Long.class).one().orElse(0L);
+        Long completedRunCount = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
+            RETURN count(r) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+
+        assertThat(staleRunCount).isEqualTo(0L);
+        assertThat(staleRelationshipAfter).isEqualTo(0L);
+        assertThat(staleNodeCount).isEqualTo(0L);
+        assertThat(staleEdgeCount).isEqualTo(0L);
+        assertThat(freshNodeCount).isEqualTo(1L);
+        assertThat(freshEdgeCount).isEqualTo(1L);
+        assertThat(completedRunCount).isEqualTo(1L);
+    }
+
+    private String schemaJson() {
+        return """
+            {
+              "name": "contracts-cleanup",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                },
+                {
+                  "label": "Party",
+                  "key": "partyId",
+                  "properties": [{"name": "partyId", "type": "string"}]
+                }
+              ],
+              "relationships": [
+                {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+              ]
+            }
+            """;
     }
 
     @TestConfiguration
@@ -164,9 +335,60 @@ class GraphExtractionCleanupIntegrationTest {
 
         @Bean
         GraphExtractionClient graphExtractionClient() {
-            AtomicInteger callCount = new AtomicInteger();
+            AtomicInteger defaultCallCount = new AtomicInteger();
+            AtomicInteger multiFailCallCount = new AtomicInteger();
+            AtomicInteger overwriteCallCount = new AtomicInteger();
             return (schema, chunkText) -> {
-                int call = callCount.incrementAndGet();
+                if (chunkText.contains("MULTI_FAIL")) {
+                    int multiFailCall = multiFailCallCount.incrementAndGet();
+                    if (multiFailCall <= 2) {
+                        throw new IllegalStateException("Synthetic extraction failure for multi-fail retry path");
+                    }
+                    return new GraphExtractionResult(
+                        List.of(new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-MULTI-SHARED"), 0.99)),
+                        List.of()
+                    );
+                }
+                if (chunkText.contains("OVERWRITE")) {
+                    int overwriteCall = overwriteCallCount.incrementAndGet();
+                    if (overwriteCall == 1) {
+                        return new GraphExtractionResult(
+                            List.of(
+                                new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-STALE"), 0.95),
+                                new GraphExtractionResult.ExtractedNode("Party", Map.of("partyId", "P-STALE"), 0.95)
+                            ),
+                            List.of(
+                                new GraphExtractionResult.ExtractedRelationship(
+                                    "HAS_PARTY",
+                                    "Contract",
+                                    Map.of("contractId", "C-STALE"),
+                                    "Party",
+                                    Map.of("partyId", "P-STALE"),
+                                    Map.of(),
+                                    0.95
+                                )
+                            )
+                        );
+                    }
+                    return new GraphExtractionResult(
+                        List.of(
+                            new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-FRESH"), 0.99),
+                            new GraphExtractionResult.ExtractedNode("Party", Map.of("partyId", "P-FRESH"), 0.99)
+                        ),
+                        List.of(
+                            new GraphExtractionResult.ExtractedRelationship(
+                                "HAS_PARTY",
+                                "Contract",
+                                Map.of("contractId", "C-FRESH"),
+                                "Party",
+                                Map.of("partyId", "P-FRESH"),
+                                Map.of(),
+                                0.95
+                            )
+                        )
+                    );
+                }
+                int call = defaultCallCount.incrementAndGet();
                 if (call == 2) {
                     throw new IllegalStateException("Synthetic extraction failure for retry path");
                 }
@@ -191,8 +413,21 @@ class GraphExtractionCleanupIntegrationTest {
                     );
                 }
                 return new GraphExtractionResult(
-                    List.of(new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-SHARED"), 0.99)),
-                    List.of()
+                    List.of(
+                        new GraphExtractionResult.ExtractedNode("Contract", Map.of("contractId", "C-SHARED"), 0.99),
+                        new GraphExtractionResult.ExtractedNode("Party", Map.of("partyId", "P-SHARED"), 0.99)
+                    ),
+                    List.of(
+                        new GraphExtractionResult.ExtractedRelationship(
+                            "HAS_PARTY",
+                            "Contract",
+                            Map.of("contractId", "C-SHARED"),
+                            "Party",
+                            Map.of("partyId", "P-SHARED"),
+                            Map.of(),
+                            0.95
+                        )
+                    )
                 );
             };
         }

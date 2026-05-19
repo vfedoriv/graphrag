@@ -33,8 +33,8 @@ public class GraphExtractionValidationService {
         log.info(
             "Validating graph extraction payload: schemaName={}, nodes={}, relationships={}",
             schema.name(),
-            result.nodes() == null ? 0 : result.nodes().size(),
-            result.relationships() == null ? 0 : result.relationships().size()
+            result.nodes().size(),
+            result.relationships().size()
         );
         logPayload(result);
         Map<String, SchemaDocument.NodeDefinition> nodeDefs = new HashMap<>();
@@ -46,11 +46,10 @@ public class GraphExtractionValidationService {
             relDefs.add(rel.type() + "|" + rel.from() + "|" + rel.to());
         }
 
-        if (result.nodes() != null && result.nodes().size() > appProperties.extraction().maxEntitiesPerChunk()) {
+        if (result.nodes().size() > appProperties.extraction().maxEntitiesPerChunk()) {
             throw new GraphExtractionValidationException("Too many extracted entities for chunk");
         }
-        if (result.relationships() != null
-            && result.relationships().size() > appProperties.extraction().maxRelationshipsPerChunk()) {
+        if (result.relationships().size() > appProperties.extraction().maxRelationshipsPerChunk()) {
             throw new GraphExtractionValidationException("Too many extracted relationships for chunk");
         }
 
@@ -59,45 +58,41 @@ public class GraphExtractionValidationService {
             normalizeRelationships(result.relationships(), nodeDefs, normalizedNodes);
         GraphExtractionResult normalized = new GraphExtractionResult(normalizedNodes, normalizedRelationships);
 
-        if (normalized.nodes() != null) {
-            for (GraphExtractionResult.ExtractedNode extracted : normalized.nodes()) {
-                SchemaDocument.NodeDefinition nodeDef = nodeDefs.get(extracted.label());
-                if (nodeDef == null) {
-                    throw new GraphExtractionValidationException("Unknown node label: " + extracted.label());
-                }
-                Object keyValue = extracted.properties() == null ? null : extracted.properties().get(nodeDef.key());
-                if (keyValue == null || keyValue.toString().isBlank()) {
-                    throw new GraphExtractionValidationException("Node key is missing: " + extracted.label() + "." + nodeDef.key());
-                }
+        for (GraphExtractionResult.ExtractedNode extracted : normalized.nodes()) {
+            SchemaDocument.NodeDefinition nodeDef = nodeDefs.get(extracted.label());
+            if (nodeDef == null) {
+                throw new GraphExtractionValidationException("Unknown node label: " + extracted.label());
+            }
+            Object keyValue = extracted.properties() == null ? null : extracted.properties().get(nodeDef.key());
+            if (keyValue == null || keyValue.toString().isBlank()) {
+                throw new GraphExtractionValidationException("Node key is missing: " + extracted.label() + "." + nodeDef.key());
             }
         }
 
-        if (normalized.relationships() != null) {
-            List<GraphExtractionResult.ExtractedRelationship> filteredRelationships =
-                new ArrayList<>(normalized.relationships().size());
-            for (GraphExtractionResult.ExtractedRelationship extracted : normalized.relationships()) {
-                String ruleKey = extracted.type() + "|" + extracted.fromLabel() + "|" + extracted.toLabel();
-                if (!relDefs.contains(ruleKey)) {
-                    log.warn(
-                        "Dropped schema-invalid relationship triple: schemaName={}, triple={}",
-                        schema.name(),
-                        ruleKey
-                    );
-                    continue;
-                }
-                if (extracted.fromKey() == null || extracted.fromKey().isEmpty()
-                    || extracted.toKey() == null || extracted.toKey().isEmpty()) {
-                    throw new GraphExtractionValidationException("Relationship endpoint keys must not be empty");
-                }
-                filteredRelationships.add(extracted);
+        List<GraphExtractionResult.ExtractedRelationship> filteredRelationships =
+            new ArrayList<>(normalized.relationships().size());
+        for (GraphExtractionResult.ExtractedRelationship extracted : normalized.relationships()) {
+            String ruleKey = extracted.type() + "|" + extracted.fromLabel() + "|" + extracted.toLabel();
+            if (!relDefs.contains(ruleKey)) {
+                log.warn(
+                    "Dropped schema-invalid relationship triple: schemaName={}, triple={}",
+                    schema.name(),
+                    ruleKey
+                );
+                continue;
             }
-            normalized = new GraphExtractionResult(normalized.nodes(), filteredRelationships);
+            if (extracted.fromKey() == null || extracted.fromKey().isEmpty()
+                || extracted.toKey() == null || extracted.toKey().isEmpty()) {
+                throw new GraphExtractionValidationException("Relationship endpoint keys must not be empty");
+            }
+            filteredRelationships.add(extracted);
         }
+        normalized = new GraphExtractionResult(normalized.nodes(), filteredRelationships);
         log.info(
             "Graph extraction payload validated: schemaName={}, nodes={}, relationships={}",
             schema.name(),
-            normalized.nodes() == null ? 0 : normalized.nodes().size(),
-            normalized.relationships() == null ? 0 : normalized.relationships().size()
+            normalized.nodes().size(),
+            normalized.relationships().size()
         );
         return normalized;
     }
@@ -106,9 +101,6 @@ public class GraphExtractionValidationService {
         List<GraphExtractionResult.ExtractedNode> nodes,
         Map<String, SchemaDocument.NodeDefinition> nodeDefs
     ) {
-        if (nodes == null) {
-            return null;
-        }
         List<GraphExtractionResult.ExtractedNode> normalized = new ArrayList<>(nodes.size());
         for (GraphExtractionResult.ExtractedNode node : nodes) {
             Map<String, Object> props = new HashMap<>(node.properties() == null ? Map.of() : node.properties());
@@ -131,9 +123,6 @@ public class GraphExtractionValidationService {
         Map<String, SchemaDocument.NodeDefinition> nodeDefs,
         List<GraphExtractionResult.ExtractedNode> normalizedNodes
     ) {
-        if (relationships == null) {
-            return null;
-        }
         List<GraphExtractionResult.ExtractedRelationship> normalized = new ArrayList<>(relationships.size());
         for (GraphExtractionResult.ExtractedRelationship rel : relationships) {
             Map<String, Object> fromKey = new HashMap<>(rel.fromKey() == null ? Map.of() : rel.fromKey());

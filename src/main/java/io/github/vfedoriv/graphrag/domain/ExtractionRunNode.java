@@ -12,7 +12,7 @@ public class ExtractionRunNode {
     private String documentId;
     private String schemaId;
     private String model;
-    private String status;
+    private ExtractionRunStatus status;
     private Instant startedAt;
     private Instant completedAt;
     private String errorMessage;
@@ -49,11 +49,11 @@ public class ExtractionRunNode {
         this.model = model;
     }
 
-    public String getStatus() {
+    public ExtractionRunStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ExtractionRunStatus status) {
         this.status = status;
     }
 

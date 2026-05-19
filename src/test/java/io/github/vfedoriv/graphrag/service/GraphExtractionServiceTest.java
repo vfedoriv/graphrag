@@ -1,0 +1,142 @@
+package io.github.vfedoriv.graphrag.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
+import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
+import io.github.vfedoriv.graphrag.graph.GraphWriteService;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.neo4j.core.Neo4jClient;
+
+@ExtendWith(MockitoExtension.class)
+class GraphExtractionServiceTest {
+
+    @Mock
+    private KnowledgeBaseRepository knowledgeBaseRepository;
+    @Mock
+    private SchemaDefinitionRepository schemaDefinitionRepository;
+    @Mock
+    private ExtractionRunRepository extractionRunRepository;
+    @Mock
+    private GraphExtractionValidationService validationService;
+    @Mock
+    private GraphWriteService graphWriteService;
+    @Mock
+    private ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private Neo4jClient neo4jClient;
+
+    @Test
+    void keepsCompletedStatusWhenCleanupFails() {
+        GraphExtractionClient extractionClient = (schema, chunkText) -> new GraphExtractionResult(List.of(), List.of());
+        GraphExtractionService service = serviceWithClient(extractionClient);
+        mockKnowledgeBaseAndSchema();
+        when(validationService.validate(any(), any())).thenAnswer(inv -> inv.getArgument(0));
+        lenient().doThrow(new RuntimeException("cleanup boom"))
+            .when(neo4jClient)
+            .query(argThat((String query) -> query.contains("current:ExtractionRun")));
+
+        service.extract(document(), List.of(chunk()), false);
+
+        ArgumentCaptor<ExtractionRunNode> runCaptor = ArgumentCaptor.forClass(ExtractionRunNode.class);
+        verify(extractionRunRepository, org.mockito.Mockito.atLeast(2)).save(runCaptor.capture());
+        List<ExtractionRunNode> savedRuns = runCaptor.getAllValues();
+        ExtractionRunNode finalSave = savedRuns.getLast();
+        assertThat(finalSave.getStatus()).isEqualTo(ExtractionRunStatus.COMPLETED);
+        verify(extractionRunRepository, never()).save(argThat(run -> run.getStatus() == ExtractionRunStatus.FAILED));
+    }
+
+    @Test
+    void storesNonBlankFallbackMessageWhenFailureHasNoMessage() {
+        GraphExtractionClient extractionClient = (schema, chunkText) -> {
+            throw new IllegalStateException();
+        };
+        GraphExtractionService service = serviceWithClient(extractionClient);
+        mockKnowledgeBaseAndSchema();
+
+        try {
+            service.extract(document(), List.of(chunk()), false);
+        } catch (Exception ignored) {
+        }
+
+        verify(extractionRunRepository, org.mockito.Mockito.atLeastOnce()).save(argThat(run ->
+            run.getStatus() == ExtractionRunStatus.FAILED
+                && run.getErrorMessage() != null
+                && !run.getErrorMessage().isBlank()
+        ));
+    }
+
+    private GraphExtractionService serviceWithClient(GraphExtractionClient extractionClient) {
+        when(graphExtractionClientProvider.orderedStream()).thenReturn(java.util.stream.Stream.of(extractionClient));
+        return new GraphExtractionService(
+            knowledgeBaseRepository,
+            schemaDefinitionRepository,
+            new SchemaParser(),
+            extractionRunRepository,
+            validationService,
+            graphWriteService,
+            graphExtractionClientProvider,
+            neo4jClient
+        );
+    }
+
+    private void mockKnowledgeBaseAndSchema() {
+        KnowledgeBaseNode kb = new KnowledgeBaseNode();
+        kb.setId("kb-1");
+        kb.setActiveSchemaId("schema-1");
+        when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(kb));
+
+        SchemaDefinitionNode schema = new SchemaDefinitionNode();
+        schema.setId("schema-1");
+        schema.setName("contracts");
+        schema.setContent("""
+            {
+              "name": "contracts",
+              "version": 1,
+              "nodes": [{"label": "Contract", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]}],
+              "relationships": []
+            }
+            """);
+        when(schemaDefinitionRepository.findById("schema-1")).thenReturn(Optional.of(schema));
+    }
+
+    private DocumentUploadNode document() {
+        DocumentUploadNode document = new DocumentUploadNode();
+        document.setId("doc-1");
+        document.setKnowledgeBaseId("kb-1");
+        return document;
+    }
+
+    private DocumentChunkNode chunk() {
+        DocumentChunkNode chunk = new DocumentChunkNode();
+        chunk.setId("chunk-1");
+        chunk.setText("hello");
+        return chunk;
+    }
+}
