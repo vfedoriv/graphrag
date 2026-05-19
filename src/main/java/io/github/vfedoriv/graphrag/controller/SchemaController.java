@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
@@ -16,8 +17,6 @@ import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
-import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationResult;
-import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -128,7 +127,7 @@ public class SchemaController {
             result.content().length(),
             result.warnings().size()
         );
-        return new GenerateSchemaResponse(result.content(), mapWarnings(result.warnings()));
+        return new GenerateSchemaResponse(result.content(), result.warnings());
     }
 
     @PostMapping(path = "/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -181,7 +180,7 @@ public class SchemaController {
             result.content().length(),
             result.warnings().size()
         );
-        return new GenerateSchemaResponse(result.content(), mapWarnings(result.warnings()));
+        return new GenerateSchemaResponse(result.content(), result.warnings());
     }
 
     private String normalizeExample(Object exampleValue) {
@@ -351,18 +350,4 @@ public class SchemaController {
         }
     }
 
-    private List<GenerateSchemaResponse.GenerateSchemaWarning> mapWarnings(List<SchemaGenerationWarning> warnings) {
-        if (warnings == null || warnings.isEmpty()) {
-            return List.of();
-        }
-        return warnings.stream()
-            .map(warning -> new GenerateSchemaResponse.GenerateSchemaWarning(
-                warning.nodeIndex(),
-                warning.nodeLabel(),
-                warning.code(),
-                warning.message(),
-                warning.suggestions()
-            ))
-            .toList();
-    }
 }

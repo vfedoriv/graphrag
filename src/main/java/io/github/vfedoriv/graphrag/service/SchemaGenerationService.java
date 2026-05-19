@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
-import java.util.List;
+import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 
 public interface SchemaGenerationService {
     SchemaGenerationResult generate(String name, int version, String description, String text, String example);
@@ -10,19 +10,4 @@ public interface SchemaGenerationService {
     }
 
     String generateExample(String text, String userPrompt);
-
-    record SchemaGenerationResult(
-        String content,
-        List<SchemaGenerationWarning> warnings
-    ) {
-    }
-
-    record SchemaGenerationWarning(
-        int nodeIndex,
-        String nodeLabel,
-        String code,
-        String message,
-        List<String> suggestions
-    ) {
-    }
 }

@@ -6,6 +6,8 @@ import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.data.document.Document;
+import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
+import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
