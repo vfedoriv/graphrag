@@ -46,10 +46,12 @@ public class CypherExecutionService {
         );
         QueryValidationResult validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters);
         if (!validation.valid()) {
+            String validationErrorSummary = LogSanitizer.preview(String.join(" | ", validation.errors()));
             log.info(
-                "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}",
+                "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}, validationErrors={}",
                 knowledgeBaseId,
-                validation.errors().size()
+                validation.errors().size(),
+                validationErrorSummary
             );
             throw new QueryRejectedException(validation.errors());
         }

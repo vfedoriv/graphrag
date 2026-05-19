@@ -126,6 +126,15 @@ class EndToEndMvpFlowMvcIntegrationTest {
             .andExpect(jsonPath("$.execution.validation.valid").value(true))
             .andExpect(jsonPath("$.execution.rowCount").value(1))
             .andExpect(jsonPath("$.execution.rows[0].contractId").value("C-100"));
+
+        mockMvc.perform(post("/api/v1/knowledge-bases/{knowledgeBaseId}/queries/execute", "kb-e2e-mvc")
+                .contentType("application/json")
+                .content("""
+                    { "cypher": "MATCH (c:Contract) DELETE c", "parameters": {} }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("Query validation failed"))
+            .andExpect(jsonPath("$.errors[0]").value("Blocked keyword detected: DELETE"));
     }
 
     @TestConfiguration

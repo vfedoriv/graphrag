@@ -88,7 +88,9 @@ class QueryControllerTest {
         );
 
         assertThatThrownBy(() -> controller.ask("kb-1", new QueryGenerateRequest("unsafe query")))
-            .isInstanceOf(QueryRejectedException.class);
+            .isInstanceOf(QueryRejectedException.class)
+            .satisfies(ex -> assertThat(((QueryRejectedException) ex).getErrors())
+                .containsExactly("Blocked keyword"));
     }
 
     private AppProperties props() {

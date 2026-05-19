@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.error;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
+import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -124,7 +125,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QueryRejectedException.class)
     public ProblemDetail handleQueryRejected(QueryRejectedException ex, HttpServletRequest request) {
-        log.error("Query rejected at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
+        String errorSummary = LogSanitizer.preview(String.join(" | ", ex.getErrors()));
+        log.error(
+            "Query rejected at {}: errorCount={}, validationErrors={}",
+            request.getRequestURI(),
+            ex.getErrors().size(),
+            errorSummary,
+            ex
+        );
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());
         return detail;

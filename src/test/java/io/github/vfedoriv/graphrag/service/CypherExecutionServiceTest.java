@@ -56,7 +56,29 @@ class CypherExecutionServiceTest {
 
         assertThatThrownBy(() -> service.execute("kb-1", "MATCH (c:Contract) DELETE c", Map.of()))
             .isInstanceOf(QueryRejectedException.class)
-            .hasMessageContaining("Query validation failed");
+            .hasMessageContaining("Query validation failed")
+            .satisfies(ex -> assertThat(((QueryRejectedException) ex).getErrors())
+                .containsExactly("Blocked keyword"));
+    }
+
+    @Test
+    void propagatesAllValidationErrorsInOriginalOrder() {
+        CypherValidationService validationService = Mockito.mock(CypherValidationService.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class, Answers.RETURNS_DEEP_STUBS);
+        when(validationService.validate("kb-1", "MATCH (x:Unknown) RETURN x.missing", Map.of()))
+            .thenReturn(new QueryValidationResult(
+                false,
+                "MATCH (x:Unknown) RETURN x.missing",
+                Map.of(),
+                List.of("Unknown label: Unknown", "Unknown property: missing")
+            ));
+
+        CypherExecutionService service = new CypherExecutionService(props(), validationService, neo4jClient);
+
+        assertThatThrownBy(() -> service.execute("kb-1", "MATCH (x:Unknown) RETURN x.missing", Map.of()))
+            .isInstanceOf(QueryRejectedException.class)
+            .satisfies(ex -> assertThat(((QueryRejectedException) ex).getErrors())
+                .containsExactly("Unknown label: Unknown", "Unknown property: missing"));
     }
 
     private AppProperties props() {
