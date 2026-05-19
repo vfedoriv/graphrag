@@ -140,8 +140,8 @@ class SpringAiGraphExtractionClientTest {
             1,
             "test",
             List.of(
-                new SchemaDocument.NodeDefinition("Contract", "", "contractId", List.of()),
-                new SchemaDocument.NodeDefinition("Party", "", "name", List.of())
+                new SchemaDocument.NodeDefinition("Contract", "", List.of("contractId"), List.of()),
+                new SchemaDocument.NodeDefinition("Party", "", List.of("name"), List.of())
             ),
             List.of(new SchemaDocument.RelationshipDefinition("HAS_PARTY", "Contract", "Party", "", List.of())),
             List.of(),

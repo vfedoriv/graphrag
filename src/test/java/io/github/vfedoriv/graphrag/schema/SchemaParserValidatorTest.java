@@ -104,4 +104,39 @@ class SchemaParserValidatorTest {
         assertThat(missingKeyErrors).anyMatch(it -> it.contains("missing from declared properties"));
         assertThat(emptyPropertyErrors).anyMatch(it -> it.contains("must be declared as a property"));
     }
+
+    @Test
+    void validatesCompositeNodeKeyDeclaredInProperties() {
+        String validCompositeKeyJson = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Person", "key": ["fullName", "birthDate"], "properties": [
+                  {"name": "fullName", "type": "string"},
+                  {"name": "birthDate", "type": "date"}
+                ]}
+              ],
+              "relationships": []
+            }
+            """;
+        String missingCompositeKeyPartJson = """
+            {
+              "name": "sample",
+              "version": 1,
+              "nodes": [
+                {"label": "Person", "key": ["fullName", "birthDate"], "properties": [
+                  {"name": "fullName", "type": "string"}
+                ]}
+              ],
+              "relationships": []
+            }
+            """;
+
+        List<String> validErrors = validator.validate(parser.parse(validCompositeKeyJson));
+        List<String> missingKeyErrors = validator.validate(parser.parse(missingCompositeKeyPartJson));
+
+        assertThat(validErrors).isEmpty();
+        assertThat(missingKeyErrors).anyMatch(it -> it.contains("birthDate") && it.contains("missing from declared properties"));
+    }
 }

@@ -91,12 +91,12 @@ class LangChain4jSchemaGenerationServiceTest {
               {
                 "head": "Contract A",
                 "head_type": "Contract",
-                "head_properties": {"description": ["A legal agreement"], "contractId": ["C-001"]},
+                "head_properties": {"description": "A legal agreement", "key": "contractId", "contractId": "C-001"},
                 "relation": "HAS_PARTY",
-                "relation_properties": {"description": ["Contract has participant"], "role": ["seller"]},
+                "relation_properties": {"description": "Contract has participant", "role": "seller"},
                 "tail": "Acme Corp",
                 "tail_type": "Party",
-                "tail_properties": {"name": ["Acme Corp"], "description": ["A participant"]}
+                "tail_properties": {"name": "Acme Corp", "description": "A participant", "key": "name"}
               }
             ]
             """;
@@ -124,13 +124,13 @@ class LangChain4jSchemaGenerationServiceTest {
             .findFirst()
             .orElseThrow();
         assertThat(contract.description()).isEqualTo("A legal agreement");
+        assertThat(contract.key()).containsExactly("contractId");
         assertThat(contract.properties()).extracting(SchemaDocument.PropertyDefinition::name).contains("contractId");
 
         SchemaDocument.RelationshipDefinition rel = schema.relationships().getFirst();
         assertThat(rel.description()).isEqualTo("Contract has participant");
         assertThat(rel.properties()).extracting(SchemaDocument.PropertyDefinition::name).contains("role");
-        assertThat(result.warnings()).hasSize(2);
-        assertThat(result.warnings()).extracting(warning -> warning.code()).containsOnly("NODE_KEY_PROPERTY_MISMATCH");
+        assertThat(result.warnings()).isEmpty();
     }
 
     @Test
@@ -141,12 +141,12 @@ class LangChain4jSchemaGenerationServiceTest {
               {
                 "head": "Alice",
                 "head_type": "Person",
-                "head_properties": {"description": ["A person"], "personId": ["p-1"]},
+                "head_properties": {"description": "A person", "key": "personId", "personId": "p-1"},
                 "relation": "KNOWS",
-                "relation_properties": {"description": ["social connection"]},
+                "relation_properties": {"description": "social connection"},
                 "tail": "Bob",
                 "tail_type": "Person",
-                "tail_properties": {"description": ["A person"], "personId": ["p-2"]}
+                "tail_properties": {"description": "A person", "key": "personId", "personId": "p-2"}
               }
             ]
             """;
@@ -166,8 +166,44 @@ class LangChain4jSchemaGenerationServiceTest {
         LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
         service.generate("generated", 1, "desc", "source text", "[]");
 
-        assertThat(promptTextRef.get()).contains("`key` MUST exactly match one property name");
+        assertThat(promptTextRef.get()).contains("`key` can be either a single property name or a list of property names");
+        assertThat(promptTextRef.get()).contains("include `key` inside head_properties/tail_properties");
         assertThat(promptTextRef.get()).contains("Avoid generic `id` unless `id` is explicitly present");
+        assertThat(promptTextRef.get()).contains("Person: fullName + birthDate");
+    }
+
+    @Test
+    void generate_rejectsArrayValuedProperties() {
+        String modelJson = """
+            [
+              {
+                "head": "Alice",
+                "head_type": "Person",
+                "head_properties": {"description": ["A person"], "personId": ["p-1"]},
+                "relation": "KNOWS",
+                "relation_properties": {"description": ["social connection"]},
+                "tail": "Bob",
+                "tail_type": "Person",
+                "tail_properties": {"description": ["A person"], "personId": ["p-2"]}
+              }
+            ]
+            """;
+        org.springframework.ai.chat.model.ChatModel springModel = new org.springframework.ai.chat.model.ChatModel() {
+            @Override
+            public ChatResponse call(Prompt prompt) {
+                return new ChatResponse(java.util.List.of(new Generation(new AssistantMessage(modelJson))));
+            }
+        };
+        ObjectProvider<org.springframework.ai.chat.model.ChatModel> provider = new ObjectProvider<>() {
+            @Override
+            public Stream<org.springframework.ai.chat.model.ChatModel> stream() {
+                return Stream.of(springModel);
+            }
+        };
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.generate("generated", 1, "desc", "source text", "[]"))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -179,7 +215,7 @@ class LangChain4jSchemaGenerationServiceTest {
             List.of(new SchemaDocument.NodeDefinition(
                 "Person",
                 "Primary entity",
-                "id",
+                List.of("id"),
                 List.of(new SchemaDocument.PropertyDefinition("name", "string", false))
             )),
             List.of(),
@@ -206,13 +242,13 @@ class LangChain4jSchemaGenerationServiceTest {
                 new SchemaDocument.NodeDefinition(
                     "Person",
                     "Primary entity",
-                    "id",
+                    List.of("id"),
                     List.of(new SchemaDocument.PropertyDefinition("name", "string", false))
                 ),
                 new SchemaDocument.NodeDefinition(
                     "Award",
                     "Secondary entity",
-                    "awardId",
+                    List.of("awardId"),
                     List.of(new SchemaDocument.PropertyDefinition("title", "string", false))
                 )
             ),

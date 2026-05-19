@@ -1,8 +1,10 @@
 package io.github.vfedoriv.graphrag.graph;
 
+import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -68,9 +70,9 @@ public class GraphWriteService {
         SchemaDocument.NodeDefinition nodeDef,
         GraphExtractionResult.ExtractedNode node
     ) {
-        String keyName = nodeDef.key();
-        String keyValue = String.valueOf(node.properties().get(keyName));
-        String entityId = stableId(schemaId, node.label(), keyName, keyValue);
+        List<String> keyNames = NodeKeySupport.normalizedKeys(nodeDef);
+        String keyValue = compositeKeyValue(node.properties(), keyNames);
+        String entityId = stableId(schemaId, node.label(), NodeKeySupport.display(keyNames), keyValue);
         String label = safeToken(node.label());
         Map<String, Object> props = new HashMap<>(node.properties());
         props.put("id", entityId);
@@ -113,12 +115,12 @@ public class GraphWriteService {
         String fromLabel = safeToken(rel.fromLabel());
         String toLabel = safeToken(rel.toLabel());
         String type = safeToken(rel.type());
-        String fromKeyName = nodeDefs.get(rel.fromLabel()).key();
-        String toKeyName = nodeDefs.get(rel.toLabel()).key();
-        String fromKeyValue = String.valueOf(rel.fromKey().get(fromKeyName));
-        String toKeyValue = String.valueOf(rel.toKey().get(toKeyName));
-        String fromId = stableId(schemaId, rel.fromLabel(), fromKeyName, fromKeyValue);
-        String toId = stableId(schemaId, rel.toLabel(), toKeyName, toKeyValue);
+        List<String> fromKeyNames = NodeKeySupport.normalizedKeys(nodeDefs.get(rel.fromLabel()));
+        List<String> toKeyNames = NodeKeySupport.normalizedKeys(nodeDefs.get(rel.toLabel()));
+        String fromKeyValue = compositeKeyValue(rel.fromKey(), fromKeyNames);
+        String toKeyValue = compositeKeyValue(rel.toKey(), toKeyNames);
+        String fromId = stableId(schemaId, rel.fromLabel(), NodeKeySupport.display(fromKeyNames), fromKeyValue);
+        String toId = stableId(schemaId, rel.toLabel(), NodeKeySupport.display(toKeyNames), toKeyValue);
         String relId = stableId(schemaId, rel.type(), "endpoints", fromId + "->" + toId);
 
         Map<String, Object> props = new HashMap<>();
@@ -148,6 +150,14 @@ public class GraphWriteService {
 
     private String stableId(String schemaId, String kind, String key, String value) {
         return schemaId + "|" + kind + "|" + key + "|" + value;
+    }
+
+    private String compositeKeyValue(Map<String, Object> properties, List<String> keyNames) {
+        List<String> values = keyNames.stream()
+            .map(keyName -> properties == null ? null : properties.get(keyName))
+            .map(value -> value == null ? "" : String.valueOf(value))
+            .toList();
+        return String.join("|", values);
     }
 
     private String safeToken(String value) {

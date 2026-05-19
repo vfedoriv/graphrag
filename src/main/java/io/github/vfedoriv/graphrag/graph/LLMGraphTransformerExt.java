@@ -39,8 +39,8 @@ import org.springframework.lang.Nullable;
  * <ul>
  *   <li>Node properties may come from `head_properties` and `tail_properties` maps.</li>
  *   <li>Relationship properties may come from `relation_properties` (preferred) or `properties`.</li>
- *   <li>If a property value is a list: empty list is dropped, single item is flattened, multi-item is JSON-serialized.</li>
- *   <li>All property values are converted to strings to fit GraphNode/GraphEdge map signature.</li>
+ *   <li>Property values must be scalar values; list-valued properties are rejected as invalid schema-generation output shape.</li>
+ *   <li>All accepted scalar property values are converted to strings to fit GraphNode/GraphEdge map signature.</li>
  * </ul>
  */
 @Slf4j
@@ -56,32 +56,43 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         Each object must have keys: 'head', 'head_type', 'head_properties', 'relation', 'relation_properties', 'tail', 'tail_type', and 'tail_properties'.
         'head_properties', 'tail_properties', and 'relation_properties' must be JSON objects.
         Every node and relationship properties object must include a non-empty 'description' property with a concise schema-level description.
-        Add useful domain properties that should exist on each node or relationship type, using concrete values from the text when available.
-        If a useful property is not directly stated but is important for the inferred schema, include a representative value that matches the expected type.
+        Think about useful domain properties that should exist on each node or relationship type, add these properties and assign concrete values for them from the text (when values available).
+        If a useful properties is not directly stated but is important for the inferred schema or domain, add property and assign a representative value that matches the expected type.
         Use property names in lower camelCase.
+        
         {{nodes}}
+        
         {{rels}}
+        
         IMPORTANT NOTES:
         - Return only a JSON array.
         - Don't add any explanation or extra text.
+        
         {{additional}}
+        
         """);
     private static final PromptTemplate USER_TEMPLATE = PromptTemplate.from(
         """
         Based on the following example, extract entities, relations, and useful schema properties from the provided text.
         {{nodes}}
         {{rels}}
+        `head_properties`, `relation_properties`, and `tail_properties` MUST be JSON key/value maps with scalar string values.
+        Do not use arrays as property values.
+        Each node properties object (`head_properties` and `tail_properties`) MUST include:
+        - `description`
+        - `key` as comma-separated property names selected only from that same properties object
+        - between 1 and 6 additional useful domain properties (excluding `description` and `key`)
         Required output shape:
         [
           {
             "head": "...",
             "head_type": "...",
-            "head_properties": {"description": ["..."], "usefulProperty": ["..."]},
+            "head_properties": {"description": "...", "key": "usefulProperty1,usefulProperty3", "usefulProperty1": "...", "usefulProperty2": "...", "usefulPropertyN": "..."},
             "relation": "...",
-            "relation_properties": {"description": ["..."], "usefulProperty": ["..."]},
+            "relation_properties": {"description": "...", "usefulProperty1": "...", "usefulProperty2": "...", "usefulPropertyN": "..."},
             "tail": "...",
             "tail_type": "...",
-            "tail_properties": {"description": ["..."], "usefulProperty": ["..."]}
+            "tail_properties": {"description": "...", "key": "usefulProperty2,usefulProperty1", "usefulProperty1": "...", "usefulProperty2": "...", "usefulPropertyN": "..."}
           }
         ]
 
@@ -208,7 +219,9 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         if (existing != null && existing.properties() != null) {
             mergedProperties.putAll(existing.properties());
         }
-        mergedProperties.putAll(extractProperties(rawProperties));
+        Map<String, String> extracted = extractProperties(rawProperties);
+        validateNodePropertyContract(normalizedType, extracted);
+        mergedProperties.putAll(extracted);
         GraphNode mergedNode = GraphNode.from(id, normalizedType, mergedProperties);
         byCompositeKey.put(key, mergedNode);
         return mergedNode;
@@ -308,12 +321,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
 
     private static Object normalizePropertyValue(@Nullable Object value) {
         if (value instanceof List<?> list) {
-            if (list.isEmpty()) {
-                return null;
-            }
-            if (list.size() == 1) {
-                return list.getFirst();
-            }
+            throw new IllegalArgumentException("Array-valued properties are not supported in schema generation output");
         }
         return value;
     }
@@ -334,6 +342,37 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             }
         }
         return String.valueOf(value);
+    }
+
+    private static void validateNodePropertyContract(String nodeType, Map<String, String> properties) {
+        String description = properties.get("description");
+        String key = properties.get("key");
+        if (isNullOrBlank(description)) {
+            throw new IllegalArgumentException("Node properties must include non-empty 'description' for node type: " + nodeType);
+        }
+        if (isNullOrBlank(key)) {
+            throw new IllegalArgumentException("Node properties must include non-empty 'key' for node type: " + nodeType);
+        }
+        List<String> keyParts = java.util.Arrays.stream(key.split(","))
+            .map(String::trim)
+            .filter(part -> !part.isBlank())
+            .toList();
+        if (keyParts.isEmpty()) {
+            throw new IllegalArgumentException("Node properties 'key' must reference at least one property for node type: " + nodeType);
+        }
+        for (String keyPart : keyParts) {
+            if (!properties.containsKey(keyPart)) {
+                throw new IllegalArgumentException("Node key component '" + keyPart + "' must exist in node properties for node type: " + nodeType);
+            }
+        }
+        long usefulPropertyCount = properties.keySet().stream()
+            .filter(propertyName -> !propertyName.equals("description") && !propertyName.equals("key"))
+            .count();
+        if (usefulPropertyCount < 1 || usefulPropertyCount > 6) {
+            throw new IllegalArgumentException(
+                "Node properties must include between 1 and 6 useful properties (excluding description/key) for node type: " + nodeType
+            );
+        }
     }
 
 }

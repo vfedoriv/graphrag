@@ -4,6 +4,7 @@ import io.github.vfedoriv.graphrag.config.AppProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,9 +64,12 @@ public class GraphExtractionValidationService {
             if (nodeDef == null) {
                 throw new GraphExtractionValidationException("Unknown node label: " + extracted.label());
             }
-            Object keyValue = extracted.properties() == null ? null : extracted.properties().get(nodeDef.key());
-            if (keyValue == null || keyValue.toString().isBlank()) {
-                throw new GraphExtractionValidationException("Node key is missing: " + extracted.label() + "." + nodeDef.key());
+            List<String> keyNames = NodeKeySupport.normalizedKeys(nodeDef);
+            for (String keyName : keyNames) {
+                Object keyValue = extracted.properties() == null ? null : extracted.properties().get(keyName);
+                if (keyValue == null || keyValue.toString().isBlank()) {
+                    throw new GraphExtractionValidationException("Node key is missing: " + extracted.label() + "." + keyName);
+                }
             }
         }
 
@@ -106,11 +110,14 @@ public class GraphExtractionValidationService {
             Map<String, Object> props = new HashMap<>(node.properties() == null ? Map.of() : node.properties());
             SchemaDocument.NodeDefinition def = nodeDefs.get(node.label());
             if (def != null) {
-                Object keyValue = props.get(def.key());
-                if (keyValue == null || keyValue.toString().isBlank()) {
-                    String generated = generateNodeKey(node.label(), def.key(), props);
-                    props.put(def.key(), generated);
-                    log.warn("Generated missing node key: {}.{}={}", node.label(), def.key(), generated);
+                List<String> keyNames = NodeKeySupport.normalizedKeys(def);
+                for (String keyName : keyNames) {
+                    Object keyValue = props.get(keyName);
+                    if (keyValue == null || keyValue.toString().isBlank()) {
+                        String generated = generateNodeKey(node.label(), keyName, props);
+                        props.put(keyName, generated);
+                        log.warn("Generated missing node key: {}.{}={}", node.label(), keyName, generated);
+                    }
                 }
             }
             normalized.add(new GraphExtractionResult.ExtractedNode(node.label(), props, node.confidence()));
@@ -131,10 +138,10 @@ public class GraphExtractionValidationService {
             SchemaDocument.NodeDefinition fromDef = nodeDefs.get(rel.fromLabel());
             SchemaDocument.NodeDefinition toDef = nodeDefs.get(rel.toLabel());
             if (fromDef != null) {
-                fillEndpointKey(rel.fromLabel(), fromDef.key(), fromKey, normalizedNodes);
+                fillEndpointKey(rel.fromLabel(), NodeKeySupport.normalizedKeys(fromDef), fromKey, normalizedNodes);
             }
             if (toDef != null) {
-                fillEndpointKey(rel.toLabel(), toDef.key(), toKey, normalizedNodes);
+                fillEndpointKey(rel.toLabel(), NodeKeySupport.normalizedKeys(toDef), toKey, normalizedNodes);
             }
 
             normalized.add(new GraphExtractionResult.ExtractedRelationship(
@@ -152,14 +159,10 @@ public class GraphExtractionValidationService {
 
     private void fillEndpointKey(
         String label,
-        String keyName,
+        List<String> keyNames,
         Map<String, Object> endpointKey,
         List<GraphExtractionResult.ExtractedNode> normalizedNodes
     ) {
-        Object current = endpointKey.get(keyName);
-        if (current != null && !current.toString().isBlank()) {
-            return;
-        }
         if (normalizedNodes == null) {
             return;
         }
@@ -167,10 +170,16 @@ public class GraphExtractionValidationService {
             .filter(node -> Objects.equals(node.label(), label))
             .toList();
         if (sameLabel.size() == 1) {
-            Object inferred = sameLabel.getFirst().properties() == null ? null : sameLabel.getFirst().properties().get(keyName);
-            if (inferred != null && !inferred.toString().isBlank()) {
-                endpointKey.put(keyName, inferred);
-                log.warn("Filled missing relationship endpoint key from node payload: {}.{}={}", label, keyName, inferred);
+            for (String keyName : keyNames) {
+                Object current = endpointKey.get(keyName);
+                if (current != null && !current.toString().isBlank()) {
+                    continue;
+                }
+                Object inferred = sameLabel.getFirst().properties() == null ? null : sameLabel.getFirst().properties().get(keyName);
+                if (inferred != null && !inferred.toString().isBlank()) {
+                    endpointKey.put(keyName, inferred);
+                    log.warn("Filled missing relationship endpoint key from node payload: {}.{}={}", label, keyName, inferred);
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.schema;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 
 public record SchemaDocument(
@@ -14,7 +15,8 @@ public record SchemaDocument(
     public record NodeDefinition(
         String label,
         String description,
-        String key,
+        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+        List<String> key,
         List<PropertyDefinition> properties
     ) {
     }

@@ -11,6 +11,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
+import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,9 +33,19 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final String SCHEMA_PROMPT_CONTRACT = """
         Schema key contract:
-        - For each generated node, `key` MUST exactly match one property name in that node's `properties[].name`.
+        - For each generated node, `key` can be either a single property name or a list of property names.
+        - Every key component MUST exactly match a property name in that node's.
+        - In extraction output, include `key` inside head_properties/tail_properties as a comma-separated list
+          of preferred key property names (e.g. "manufacturer,productName"), using only property names present in that node.
         - Avoid generic `id` unless `id` is explicitly present in that node's properties list.
-        - If an identity property is inferred (e.g. personId, contractId), use it as both the `key` and a declared property.
+        - Prefer meaningful canonical identity keys:
+          Product: manufacturer + productName
+          Model: manufacturer + modelCode
+          SparePart: manufacturer + partNumber
+          DocumentSection: documentId + sectionNumber or sectionTitle
+          Location: country + state + city + street
+          Person: fullName + birthDate
+        - If multiple properties are needed for uniqueness, emit `key` as a list preserving deterministic order.
         """;
     private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
 
@@ -136,8 +147,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         for (GraphNode node : graphDocument.nodes()) {
             log.info("Processing node {}", node.toString());
             String label = sanitizeLabel(node.type(), "Entity");
-            String key = "id";
-            NodeAccumulator accumulator = nodes.computeIfAbsent(label, ignored -> new NodeAccumulator(label, key));
+            NodeAccumulator accumulator = nodes.computeIfAbsent(label, ignored -> new NodeAccumulator(label));
             accumulator.mergeFrom(node);
             labelByNodeName.put(node.id(), label);
         }
@@ -228,22 +238,23 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
     private static final class NodeAccumulator {
         private final String label;
-        private final String key;
         private String description;
+        private final List<String> keyCandidates = new ArrayList<>();
         private final Map<String, SchemaDocument.PropertyDefinition> properties = new LinkedHashMap<>();
 
-        private NodeAccumulator(String label, String key) {
+        private NodeAccumulator(String label) {
             this.label = label;
-            this.key = key;
         }
 
         private void mergeFrom(GraphNode node) {
             Map<String, String> rawProperties = node.properties() == null ? Map.of() : node.properties();
             description = firstNonBlank(description, rawProperties.get("description"));
+            mergeKeyCandidates(rawProperties.get("key"));
 
             rawProperties.entrySet().stream()
                 .filter(entry -> entry.getKey() != null && !entry.getKey().isBlank())
                 .filter(entry -> !entry.getKey().equalsIgnoreCase("description"))
+                .filter(entry -> !entry.getKey().equalsIgnoreCase("key"))
                 .forEach(entry -> properties.putIfAbsent(
                     entry.getKey(),
                     new SchemaDocument.PropertyDefinition(entry.getKey(), inferPropertyType(entry.getValue()), Boolean.FALSE)
@@ -254,7 +265,23 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             List<SchemaDocument.PropertyDefinition> sortedProperties = properties.values().stream()
                 .sorted(Comparator.comparing(SchemaDocument.PropertyDefinition::name))
                 .toList();
+            List<String> key = keyCandidates.isEmpty() ? inferKeyCandidates(sortedProperties) : keyCandidates;
             return new SchemaDocument.NodeDefinition(label, description, key, sortedProperties);
+        }
+
+        private void mergeKeyCandidates(String raw) {
+            if (raw == null || raw.isBlank()) {
+                return;
+            }
+            List<String> candidates = java.util.Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .toList();
+            for (String candidate : candidates) {
+                if (!keyCandidates.contains(candidate)) {
+                    keyCandidates.add(candidate);
+                }
+            }
         }
     }
 
@@ -311,31 +338,51 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         }
         for (int index = 0; index < nodes.size(); index++) {
             SchemaDocument.NodeDefinition node = nodes.get(index);
-            if (node == null || node.key() == null || node.key().isBlank()) {
+            List<String> keyNames = NodeKeySupport.normalizedKeys(node);
+            if (node == null || keyNames.isEmpty()) {
                 continue;
             }
             List<SchemaDocument.PropertyDefinition> properties = node.properties();
-            boolean keyDeclared = properties != null && properties.stream()
+            List<String> propertyNames = properties == null ? List.of() : properties.stream()
                 .filter(Objects::nonNull)
                 .map(SchemaDocument.PropertyDefinition::name)
                 .filter(Objects::nonNull)
-                .anyMatch(propertyName -> propertyName.equals(node.key()));
-            if (keyDeclared) {
-                continue;
-            }
+                .toList();
             String nodeLabel = node.label() == null ? "(unknown)" : node.label();
-            warnings.add(new SchemaGenerationWarning(
-                index,
-                nodeLabel,
-                "NODE_KEY_PROPERTY_MISMATCH",
-                "Node key '%s' is not declared in properties for node '%s'".formatted(node.key(), nodeLabel),
-                List.of(
-                    "Add property '%s' to node properties".formatted(node.key()),
-                    "Change node key to an existing property name"
-                )
-            ));
+            for (String keyName : keyNames) {
+                if (propertyNames.contains(keyName)) {
+                    continue;
+                }
+                warnings.add(new SchemaGenerationWarning(
+                    index,
+                    nodeLabel,
+                    "NODE_KEY_PROPERTY_MISMATCH",
+                    "Node key component '%s' is not declared in properties for node '%s'".formatted(keyName, nodeLabel),
+                    List.of(
+                        "Add property '%s' to node properties".formatted(keyName),
+                        "Change node key to use existing property names"
+                    )
+                ));
+            }
         }
         return warnings;
+    }
+
+    private static List<String> inferKeyCandidates(List<SchemaDocument.PropertyDefinition> properties) {
+        if (properties == null || properties.isEmpty()) {
+            return List.of("id");
+        }
+        List<String> names = properties.stream()
+            .map(SchemaDocument.PropertyDefinition::name)
+            .filter(Objects::nonNull)
+            .toList();
+        List<String> preferred = names.stream()
+            .filter(name -> name.equals("id") || name.endsWith("Id") || name.endsWith("Code") || name.endsWith("Number"))
+            .toList();
+        if (!preferred.isEmpty()) {
+            return preferred.size() == 1 ? List.of(preferred.getFirst()) : preferred.subList(0, Math.min(preferred.size(), 2));
+        }
+        return names.size() == 1 ? List.of(names.getFirst()) : names.subList(0, 2);
     }
 
 }

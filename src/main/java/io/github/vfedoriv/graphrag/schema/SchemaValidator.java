@@ -41,24 +41,26 @@ public class SchemaValidator {
                 if (!nodeLabels.add(node.label())) {
                     errors.add(path + ".label: duplicate label '" + node.label() + "'");
                 }
-                if (isBlank(node.key())) {
+                List<String> keyNames = NodeKeySupport.normalizedKeys(node);
+                if (keyNames.isEmpty()) {
                     errors.add(path + ".key: must not be blank");
                     continue;
                 }
                 List<SchemaDocument.PropertyDefinition> properties = node.properties();
                 if (properties == null || properties.isEmpty()) {
-                    errors.add(path + ".properties: key '" + node.key() + "' must be declared as a property");
+                    errors.add(path + ".properties: key '" + NodeKeySupport.display(keyNames) + "' must be declared as a property");
                     continue;
                 }
-                boolean keyDeclared = false;
+                Set<String> propertyNames = new HashSet<>();
                 for (SchemaDocument.PropertyDefinition property : properties) {
-                    if (property != null && node.key().equals(property.name())) {
-                        keyDeclared = true;
-                        break;
+                    if (property != null && !isBlank(property.name())) {
+                        propertyNames.add(property.name());
                     }
                 }
-                if (!keyDeclared) {
-                    errors.add(path + ".key: '" + node.key() + "' is missing from declared properties");
+                for (String keyName : keyNames) {
+                    if (!propertyNames.contains(keyName)) {
+                        errors.add(path + ".key: '" + keyName + "' is missing from declared properties");
+                    }
                 }
             }
         }

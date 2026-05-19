@@ -42,12 +42,16 @@ class LLMGraphTransformerExtTest {
         assertThat(systemMessage.text())
             .contains("'head_properties'", "'tail_properties'", "'relation_properties'")
             .contains("must include a non-empty 'description' property")
-            .contains("Add useful domain properties")
+            .contains("Think about useful domain properties")
             .contains("The 'head_type' and 'tail_type' must be one of: [Contract, Party]")
             .contains("The 'relation' must be one of: [HAS_PARTY]");
         assertThat(userMessage.singleText())
-            .contains("\"head_properties\": {\"description\": [\"...\"]")
-            .contains("\"relation_properties\": {\"description\": [\"...\"]")
+            .contains("\"head_properties\": {\"description\": \"...\"")
+            .contains("\"relation_properties\": {\"description\": \"...\"")
+            .contains("MUST be JSON key/value maps with scalar string values")
+            .contains("`key` as comma-separated property names selected only from that same properties object")
+            .contains("\"key\": \"usefulProperty1,usefulProperty3\"")
+            .contains("between 1 and 6 additional useful domain properties")
             .contains("infer useful node and relationship properties plus non-empty descriptions")
             .contains("Prefer legal contract terminology.")
             .contains("Contract A names Acme as supplier.");
@@ -60,12 +64,12 @@ class LLMGraphTransformerExtTest {
               {
                 "head": "Contract A",
                 "head_type": "Contract",
-                "head_properties": {"contractId": ["C-1"], "tags": ["msa", "2026"]},
+                "head_properties": {"description": "Contract entity", "key": "contractId", "contractId": "C-1", "tags": "msa"},
                 "relation": "HAS_PARTY",
-                "relation_properties": {"description": ["Counterparty relationship"], "role": ["supplier"]},
+                "relation_properties": {"description": "Counterparty relationship", "role": "supplier"},
                 "tail": "Acme Corp",
                 "tail_type": "Party",
-                "tail_properties": {"name": ["Acme Corp"]}
+                "tail_properties": {"description": "Party entity", "key": "name", "name": "Acme Corp"}
               }
             ]
             """;
@@ -85,13 +89,13 @@ class LLMGraphTransformerExtTest {
         assertThat(graph.nodes()).hasSize(2);
         GraphNode contract = graph.nodes().stream().filter(node -> node.id().equals("Contract A")).findFirst().orElseThrow();
         assertThat(contract.properties()).containsEntry("contractId", "C-1");
-        assertThat(contract.properties()).containsEntry("tags", "[\"msa\",\"2026\"]");
+        assertThat(contract.properties()).containsEntry("tags", "msa");
 
         GraphEdge edge = graph.relationships().stream().findFirst().orElseThrow();
         assertThat(edge.properties()).containsEntry("description", "Counterparty relationship");
         assertThat(edge.properties()).containsEntry("role", "supplier");
         assertThat(output).contains("LLM graph transformer raw response attempt 1");
-        assertThat(output).contains("\"head_properties\": {\"contractId\": [\"C-1\"], \"tags\": [\"msa\", \"2026\"]}");
+        assertThat(output).contains("\"head_properties\": {\"description\": \"Contract entity\", \"key\": \"contractId\", \"contractId\": \"C-1\", \"tags\": \"msa\"}");
         assertThat(output).contains("LLM graph transformer parsed response attempt 1");
         assertThat(output).contains("headProperties={");
         assertThat(output).contains("relationProperties={");
@@ -99,7 +103,7 @@ class LLMGraphTransformerExtTest {
     }
 
     @Test
-    void transform_handlesMissingProperties() {
+    void transform_rejectsMissingRequiredNodePropertiesContract() {
         String payload = """
             [
               {
@@ -121,11 +125,9 @@ class LLMGraphTransformerExtTest {
             1
         );
 
-        GraphDocument graph = transformer.transform(Document.from("text"));
-
-        assertThat(graph).isNotNull();
-        assertThat(graph.nodes()).allSatisfy(node -> assertThat(node.properties()).isEmpty());
-        assertThat(graph.relationships()).allSatisfy(rel -> assertThat(rel.properties()).isEmpty());
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> transformer.transform(Document.from("text")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("must include non-empty 'description'");
     }
 
     private static ChatModel fixedModel(String responseText) {
