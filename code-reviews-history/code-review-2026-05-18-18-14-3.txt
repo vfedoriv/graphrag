@@ -1,0 +1,40 @@
+# PR Review Summary
+
+## Important Issues (3 found)
+
+- **type-design-analyzer**: `ExtractionRunNode.status` is typed as `String` — the strings `'FAILED'` and `'COMPLETED'` in Cypher literals are the only enforcement; a typo silently skips stale-run cleanup. Should be an `ExtractionRunStatus` enum (mirroring the existing `DocumentStatus` pattern). [`ExtractionRunNode.java`]
+- **type-design-analyzer**: `GraphExtractionResult` lists (`nodes`, `relationships`) are nullable — no compact-constructor validation exists, so `new GraphExtractionResult(null, null)` is valid and every consumer must defensively guard against `null`. Coerce to `List.of()` in a compact constructor. [`GraphExtractionResult.java`]
+- **type-design-analyzer**: `NodeDefinition.key` is never validated against the `properties` list — if `key` names a property not present in `properties`, all stable-ID lookups silently resolve to `"null"`-keyed nodes. [`SchemaDocument.java`]
+
+## Suggestions (8 found)
+
+- **type-design-analyzer**: Cleanup method returns `List<Map<String, Object>>` with magic-string keys (`"deletedRuns"`, `"deletedRelationships"`, `"deletedOrphanNodes"`); a `record CleanupResult(long, long, long)` would give compile-time safety and remove the `toLong` helper. [`GraphExtractionService.java:120-123`]
+- **code-simplifier**: `[run IN failedRunsRaw WHERE run IS NOT NULL]` and `[run IN completedRunsRaw WHERE run IS NOT NULL]` are dead weight — `collect()` already drops nulls in Neo4j 5. Remove both intermediate list comprehensions and the `*Raw` aliases. [`GraphExtractionService.java:186-190` (Cypher)]
+- **code-simplifier**: `runIds` is projected forward across three `WITH` stages but used only once (line 193). Drop it from the remaining projections. [`GraphExtractionService.java` (Cypher)]
+- **code-simplifier**: `OPTIONAL MATCH (obsoleteNode)` with no label performs a full-graph node scan. Guard it with a Java-side `if (deletedRuns == 0) return ...;` early return or scope the match through the `DocumentUpload` node to limit the scan to document-owned data. [`GraphExtractionService.java:202-205` (Cypher)]
+- **code-simplifier**: `OPTIONAL MATCH (runToDelete)-[runRel]-()` with `WHERE runToDelete IN runsToDelete` is clearer expressed as `UNWIND runsToDelete AS runToDelete / OPTIONAL MATCH (runToDelete)-[runRel]-()`. [`GraphExtractionService.java:197-199` (Cypher)]
+- **code-simplifier**: `deletedOrphanNodes` (variable name, Cypher alias, and log key) no longer reflects the new semantics — the spec explicitly broadened this from "degree-zero orphans" to "obsolete extracted nodes without retained provenance." Rename to `deletedObsoleteNodes` throughout. [`GraphExtractionService.java:132, 219`]
+- **code-simplifier**: Add a one-line comment above the `deletedRelationshipCount` addition clarifying that `graphRel` relationships are property-provenance-only (not run-attached), so there is no double-counting risk. [`GraphExtractionService.java` (Cypher)]
+- **type-design-analyzer**: `Double confidence` (boxed) on `ExtractedNode` and `ExtractedRelationship` should be `double` (primitive) — `null` confidence has no defined semantics anywhere in the codebase. [`GraphExtractionResult.java`]
+
+## Strengths
+
+- **code-reviewer** gave the cleanup-query logic a clean bill of health: relationship dedup via `collect(DISTINCT graphRel)`, provenance-based obsolete-node deletion (fixing the root-cause bug), and `sourceDocumentId` scoping are all correctly implemented.
+- The integration test was extended with a `Party` node connected only through a stale `HAS_PARTY` relationship — exactly the previously-uncovered case that motivated this fix. Assertions at lines 148–149 directly verify the new behavior.
+- Removing the duplicate cleanup query from `ExtractionRunRepository` and the now-unused `java.util.Map` import is a clean dead-code removal with no risk.
+- Using `neo4jClient` for the cleanup query (over a Spring Data repository method) is the right tool — it gives full Cypher control and lets the `RETURN` clause surface structured diagnostic counters.
+
+## Recommended Action
+
+1. Introduce `ExtractionRunStatus` enum and replace `status: String` on `ExtractionRunNode` — highest-value correctness fix, mirrors existing `DocumentStatus` pattern.
+2. Add compact constructors to `GraphExtractionResult` coercing `null` lists to `List.of()` — eliminates scattered null-guards across all consumers.
+3. Validate `NodeDefinition.key` against `properties` in `SchemaParser`/`SchemaValidator` — prevents silent `"null"`-keyed node upserts.
+4. Apply the three low-risk Cypher simplifications: drop `*Raw` null-filter list comprehensions, drop redundant `runIds` projections, rename `deletedOrphanNodes` → `deletedObsoleteNodes`.
+5. Consider the `CleanupResult` record and `OPTIONAL MATCH` scoping improvements when there is appetite for them.
+6. Re-run this review after fixes to confirm issues are resolved.
+
+---
+Review scope: last 2 commits on branch `custom_review_plugin`
+Agents: code-reviewer (code), type-design-analyzer (types), code-simplifier (simplify/post-wave)
+Mode: parallel
+Date: 2026-05-18 18:14

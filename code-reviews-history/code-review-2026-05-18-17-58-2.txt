@@ -1,0 +1,37 @@
+# PR Review Summary
+
+## Critical Issues (1 found)
+
+- **silent-failure-hunter**: Empty cleanup result is indistinguishable from a structural query failure — no warning is logged when `.fetch().one()` returns empty, so `deletedRuns=0` could mean "nothing to clean" or "query never reached RETURN" with no diagnostic difference. [`GraphExtractionService.java:216-218`]
+
+## Important Issues (3 found)
+
+- **silent-failure-hunter**: Broad `catch (Exception ex)` stores a `null` error message when the caught exception has no message (e.g. `NullPointerException`), silently persisting a blank failure reason to the database. [`GraphExtractionService.java:135-149`]
+- **silent-failure-hunter**: New cleanup Cypher uses an unlabeled `OPTIONAL MATCH (obsoleteNode)` — a full-graph scan that can silently delete non-domain nodes (e.g. `ExtractionRun`, `DocumentChunk`) if they carry a `sourceDocumentId` property, with no error or warning emitted. [`GraphExtractionService.java:202-206`]
+- **silent-failure-hunter**: A `Neo4jException` thrown inside `cleanupRunsAfterCompletion` is caught by the extraction `try/catch` and marks a successfully-completed extraction as `FAILED`, triggering unnecessary re-processing and misleading operational logs. [`GraphExtractionService.java:120-134`]
+
+## Suggestions (2 found)
+
+- **silent-failure-hunter**: A failure in `linkRunToDocument()` is reported as generic `"Graph extraction failed"` — wrapping the call with a phase-identifying exception message would make triage significantly faster. [`GraphExtractionService.java:94`]
+- **silent-failure-hunter**: The deleted `cleanupRunsAfterCompletion` from `ExtractionRunRepository` leaves no marker preventing divergent re-introduction in a future merge; a brief comment on the service method noting the migration would prevent confusion. [`ExtractionRunRepository.java`]
+
+## Strengths
+
+- The extraction run is always saved before rethrowing, ensuring failed runs are consistently visible in the database rather than lost.
+- Using `Neo4jClient` for the cleanup query (instead of a repository method) gives full Cypher control and allows the `RETURN` clause to surface structured diagnostic counters.
+- Separation of `runsToDelete` computation from deletion logic is clean and testable.
+
+## Recommended Action
+
+1. **Fix critical first**: Add a `log.warn` when `cleanup.fetch().one()` returns empty so absent results are distinguishable from zero-count results (`GraphExtractionService.java:216-218`).
+2. **Separate cleanup from extraction try/catch**: Move `cleanupRunsAfterCompletion` to its own `try/catch` after the run is saved as `COMPLETED`, so cleanup failures don't retroactively mark successful extractions as failed (`GraphExtractionService.java:120-134`).
+3. **Add label guards to cleanup Cypher**: Exclude known infrastructure node labels from the unlabeled `OPTIONAL MATCH` to prevent accidental deletion of non-domain nodes (`GraphExtractionService.java:202-206`).
+4. **Guard null error messages**: Default to `ex.getClass().getSimpleName() + " (no message)"` before persisting `errorMessage` (`GraphExtractionService.java:135-149`).
+5. Re-run this review after fixes to confirm issues are resolved.
+
+> Skipping post-review agents — address critical issues first, then re-run.
+
+---
+Review scope: last 2 commits on branch `custom_review_plugin`
+Agent: silent-failure-hunter (errors aspect)
+Date: 2026-05-18 17:58

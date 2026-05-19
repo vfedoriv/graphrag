@@ -1,0 +1,43 @@
+# PR Review Summary
+**Scope:** Last 2 commits (HEAD~2..HEAD) | **Agent:** pr-test-analyzer
+**Date:** 2026-05-18 17:42
+
+---
+
+## Critical Issues (3 found)
+
+- **pr-test-analyzer**: The `allowOverwrite=true` cleanup path is never meaningfully tested — no test verifies that stale relationships from a prior completed run are absent after overwrite, nor that the retained run's relationships survive. [GraphExtractionCleanupIntegrationTest.java]
+
+- **pr-test-analyzer**: Likely variable scoping defect in the cleanup Cypher — `runToDelete` appears as an unintroduced variable in `OPTIONAL MATCH (runToDelete)-[runRel]-()` after a `WITH` that does not include it. `runToDelete` is not defined by an `UNWIND` in that scope. The test does not assert `deletedRelationships` counts, so this defect is invisible. [GraphExtractionService.java ~lines 197-199]
+
+- **pr-test-analyzer**: No test covers the required spec scenario "Node shared with retained run is preserved" at the provenance-edge level — only the node's existence is checked, not that its `CREATED_NODE` edge from the retained run survived. [GraphExtractionCleanupIntegrationTest.java]
+
+## Important Issues (3 found)
+
+- **pr-test-analyzer**: Multi-failed-run batch cleanup is untested — only a single failed run is exercised; accumulation of two or more consecutive failures before a successful run is a gap. [GraphExtractionCleanupIntegrationTest.java]
+
+- **pr-test-analyzer**: No assertion that the retained (successful) run's domain relationship (`HAS_PARTY`) survives after cleanup — the successful mock run doesn't emit any relationship, leaving the "Retained run has domain relationship" spec scenario completely uncovered. [GraphExtractionCleanupIntegrationTest.java]
+
+- **pr-test-analyzer**: `cleanupRunsAfterCompletion` return values (`deletedRelationships`, `deletedOrphanNodes`) are never inspected by any test — asserting `deletedRelationships >= 1` would have caught the Cypher scoping issue above. [GraphExtractionCleanupIntegrationTest.java]
+
+## Suggestions (2 found)
+
+- **pr-test-analyzer**: The `failedOnlyRelationshipCount` assertion passes even if only the endpoint nodes were deleted (MATCH fails either way) — consider checking relationship deletion independently from node deletion. [GraphExtractionCleanupIntegrationTest.java]
+
+- **pr-test-analyzer**: The mock call counter `call == 2` is hardcoded and brittle against chunking parameter changes — a content change that shifts chunk count could silently stop exercising the failed-run path. [GraphExtractionCleanupIntegrationTest.java]
+
+## Strengths
+
+- Tests run against a real Testcontainers Neo4j instance, giving high confidence that the Cypher actually executes correctly.
+- Schema in the cleanup test now includes a real relationship type (`HAS_PARTY`) with proper from/to labels, matching the data model.
+- `C-SHARED` node assertion correctly verifies the key safety requirement that nodes shared across runs are not accidentally deleted.
+- Removing the duplicate `cleanupRunsAfterCompletion` from `ExtractionRunRepository` cleanly eliminates a dead code path.
+
+## Recommended Action
+
+1. **Fix the Cypher scoping bug** — verify whether `runToDelete` needs to be introduced by an `UNWIND runsToDelete AS runToDelete` before the `OPTIONAL MATCH (runToDelete)-[runRel]-()` block.
+2. **Add the overwrite-path test** — first extraction writes `(C-OLD)-[:HAS_PARTY]->(P-OLD)`, overwrite writes `(C-NEW)-[:HAS_PARTY]->(P-NEW)`, then assert old nodes/relationships are gone and new ones survive.
+3. **Assert `deletedRelationships` counts** in the cleanup return map to make future Cypher regressions visible.
+4. **Add provenance-edge check** for the shared-node scenario to confirm the `CREATED_NODE` edge from the retained run was not inadvertently severed.
+5. **Make the retained-run emit a relationship** in the success mock config to cover the "Retained run has domain relationship" spec requirement.
+6. Re-run review after addressing the critical issues.
