@@ -28,6 +28,12 @@ import org.springframework.stereotype.Service;
 public class LangChain4jSchemaGenerationService implements SchemaGenerationService {
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    private static final String SCHEMA_PROMPT_CONTRACT = """
+        Schema key contract:
+        - For each generated node, `key` MUST exactly match one property name in that node's `properties[].name`.
+        - Avoid generic `id` unless `id` is explicitly present in that node's properties list.
+        - If an identity property is inferred (e.g. personId, contractId), use it as both the `key` and a declared property.
+        """;
     private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
 
     public LangChain4jSchemaGenerationService(ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider) {
@@ -35,7 +41,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     }
 
     @Override
-    public String generateJson(String name, int version, String description, String text, String example) {
+    public SchemaGenerationResult generate(String name, int version, String description, String text, String example) {
         long startNanos = System.nanoTime();
         log.info(
             "Schema JSON generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textPreview={}",
@@ -55,27 +61,29 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             List.of(),
             List.of(),
             null,
-            "",
+            SCHEMA_PROMPT_CONTRACT,
             example,
             1
         );
         GraphDocument graphDocument = transformer.transform(Document.from(text));
         SchemaDocument schema = inferSchema(name, version, description, graphDocument);
+        List<SchemaGenerationWarning> warnings = buildKeyPropertyWarnings(schema);
         try {
             String json = JSON_MAPPER.writeValueAsString(schema);
             log.info(
-                "Schema JSON generation completed: name={}, version={}, nodes={}, relationships={}, jsonLength={}, elapsedMs={}",
+                "Schema JSON generation completed: name={}, version={}, nodes={}, relationships={}, warningCount={}, jsonLength={}, elapsedMs={}",
                 name,
                 version,
                 schema.nodes().size(),
                 schema.relationships().size(),
+                warnings.size(),
                 json.length(),
                 LogSanitizer.elapsedMillis(startNanos)
             );
             if (log.isDebugEnabled()) {
                 log.debug("Generated schema JSON: {}", json);
             }
-            return json;
+            return new SchemaGenerationResult(json, warnings);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize generated schema to JSON: name={}, version={}, message={}", name, version, e.getMessage(), e);
             throw new IllegalStateException("Failed to serialize generated schema to JSON", e);
@@ -291,6 +299,41 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         }
         log.info("Schema generation resolved chatModelClass={}", model.getClass().getName());
         return model;
+    }
+
+    static List<SchemaGenerationWarning> buildKeyPropertyWarnings(SchemaDocument schema) {
+        List<SchemaGenerationWarning> warnings = new ArrayList<>();
+        List<SchemaDocument.NodeDefinition> nodes = schema == null ? List.of() : schema.nodes();
+        if (nodes == null || nodes.isEmpty()) {
+            return warnings;
+        }
+        for (int index = 0; index < nodes.size(); index++) {
+            SchemaDocument.NodeDefinition node = nodes.get(index);
+            if (node == null || node.key() == null || node.key().isBlank()) {
+                continue;
+            }
+            List<SchemaDocument.PropertyDefinition> properties = node.properties();
+            boolean keyDeclared = properties != null && properties.stream()
+                .filter(Objects::nonNull)
+                .map(SchemaDocument.PropertyDefinition::name)
+                .filter(Objects::nonNull)
+                .anyMatch(propertyName -> propertyName.equals(node.key()));
+            if (keyDeclared) {
+                continue;
+            }
+            String nodeLabel = node.label() == null ? "(unknown)" : node.label();
+            warnings.add(new SchemaGenerationWarning(
+                index,
+                nodeLabel,
+                "NODE_KEY_PROPERTY_MISMATCH",
+                "Node key '%s' is not declared in properties for node '%s'".formatted(node.key(), nodeLabel),
+                List.of(
+                    "Add property '%s' to node properties".formatted(node.key()),
+                    "Change node key to an existing property name"
+                )
+            ));
+        }
+        return warnings;
     }
 
 }

@@ -20,6 +20,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaFormat;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationResult;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import java.time.Instant;
@@ -38,8 +40,11 @@ class SchemaControllerTest {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
         DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
-        when(generationService.generateJson("generated-legal-schema", 1, "from text", "raw input text", "example json"))
-            .thenReturn("{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}");
+        when(generationService.generate("generated-legal-schema", 1, "from text", "raw input text", "example json"))
+            .thenReturn(new SchemaGenerationResult(
+                "{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
+                List.of()
+            ));
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         GenerateSchemaResponse response = controller.generateSchema(
@@ -62,8 +67,8 @@ class SchemaControllerTest {
         when(parsingService.parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes))))
             .thenReturn("parsed text");
         String json = "{\"name\":\"generated-legal-schema\",\"version\":2,\"nodes\":[],\"relationships\":[]}";
-        when(generationService.generateJson("generated-legal-schema", 2, "from file", "parsed text", "\"example json\""))
-            .thenReturn(json);
+        when(generationService.generate("generated-legal-schema", 2, "from file", "parsed text", "\"example json\""))
+            .thenReturn(new SchemaGenerationResult(json, List.of()));
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         GenerateSchemaResponse response = controller.generateSchemaFromFile(
@@ -73,7 +78,36 @@ class SchemaControllerTest {
 
         assertThat(response.content()).isEqualTo(json);
         verify(parsingService).parse(eq("sample.txt"), eq("text/plain"), argThat(bytes -> Arrays.equals(bytes, rawBytes)));
-        verify(generationService).generateJson("generated-legal-schema", 2, "from file", "parsed text", "\"example json\"");
+        verify(generationService).generate("generated-legal-schema", 2, "from file", "parsed text", "\"example json\"");
+    }
+
+    @Test
+    void generateSchemaReturnsStructuredWarningsWithoutFailure() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+        when(generationService.generate("generated-legal-schema", 1, "from text", "raw input text", "example json"))
+            .thenReturn(new SchemaGenerationResult(
+                "{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
+                List.of(new SchemaGenerationWarning(
+                    0,
+                    "Person",
+                    "NODE_KEY_PROPERTY_MISMATCH",
+                    "Node key 'id' is not declared in properties for node 'Person'",
+                    List.of("Add property 'id' to node properties", "Change node key to an existing property name")
+                ))
+            ));
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        GenerateSchemaResponse response = controller.generateSchema(
+            new GenerateSchemaRequest("generated-legal-schema", 1, "from text", "raw input text", "example json")
+        );
+
+        assertThat(response.content()).contains("\"name\":\"generated-legal-schema\"");
+        assertThat(response.warnings()).hasSize(1);
+        assertThat(response.warnings().getFirst().nodeIndex()).isEqualTo(0);
+        assertThat(response.warnings().getFirst().nodeLabel()).isEqualTo("Person");
+        assertThat(response.warnings().getFirst().code()).isEqualTo("NODE_KEY_PROPERTY_MISMATCH");
     }
 
     @Test

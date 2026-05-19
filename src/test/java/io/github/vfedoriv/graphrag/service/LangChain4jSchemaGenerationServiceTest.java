@@ -8,8 +8,11 @@ import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.data.document.Document;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationResult;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -113,9 +116,9 @@ class LangChain4jSchemaGenerationServiceTest {
         };
 
         LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
-        String yaml = service.generateJson("generated", 1, "desc", "source text", "[]");
+        SchemaGenerationResult result = service.generate("generated", 1, "desc", "source text", "[]");
 
-        SchemaDocument schema = new SchemaParser().parse(yaml);
+        SchemaDocument schema = new SchemaParser().parse(result.content());
         SchemaDocument.NodeDefinition contract = schema.nodes().stream()
             .filter(node -> node.label().equals("Contract"))
             .findFirst()
@@ -126,6 +129,101 @@ class LangChain4jSchemaGenerationServiceTest {
         SchemaDocument.RelationshipDefinition rel = schema.relationships().getFirst();
         assertThat(rel.description()).isEqualTo("Contract has participant");
         assertThat(rel.properties()).extracting(SchemaDocument.PropertyDefinition::name).contains("role");
+        assertThat(result.warnings()).hasSize(2);
+        assertThat(result.warnings()).extracting(warning -> warning.code()).containsOnly("NODE_KEY_PROPERTY_MISMATCH");
+    }
+
+    @Test
+    void generate_includesPromptContractForKeyPropertyRule() {
+        AtomicReference<String> promptTextRef = new AtomicReference<>();
+        String modelJson = """
+            [
+              {
+                "head": "Alice",
+                "head_type": "Person",
+                "head_properties": {"description": ["A person"], "personId": ["p-1"]},
+                "relation": "KNOWS",
+                "relation_properties": {"description": ["social connection"]},
+                "tail": "Bob",
+                "tail_type": "Person",
+                "tail_properties": {"description": ["A person"], "personId": ["p-2"]}
+              }
+            ]
+            """;
+        org.springframework.ai.chat.model.ChatModel springModel = new org.springframework.ai.chat.model.ChatModel() {
+            @Override
+            public ChatResponse call(Prompt prompt) {
+                promptTextRef.set(prompt.getContents());
+                return new ChatResponse(java.util.List.of(new Generation(new AssistantMessage(modelJson))));
+            }
+        };
+        ObjectProvider<org.springframework.ai.chat.model.ChatModel> provider = new ObjectProvider<>() {
+            @Override
+            public Stream<org.springframework.ai.chat.model.ChatModel> stream() {
+                return Stream.of(springModel);
+            }
+        };
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
+        service.generate("generated", 1, "desc", "source text", "[]");
+
+        assertThat(promptTextRef.get()).contains("`key` MUST exactly match one property name");
+        assertThat(promptTextRef.get()).contains("Avoid generic `id` unless `id` is explicitly present");
+    }
+
+    @Test
+    void buildKeyPropertyWarnings_detectsSingleMismatch() {
+        SchemaDocument schema = new SchemaDocument(
+            "generated",
+            1,
+            "desc",
+            List.of(new SchemaDocument.NodeDefinition(
+                "Person",
+                "Primary entity",
+                "id",
+                List.of(new SchemaDocument.PropertyDefinition("name", "string", false))
+            )),
+            List.of(),
+            List.of(),
+            List.of()
+        );
+
+        assertThat(LangChain4jSchemaGenerationService.buildKeyPropertyWarnings(schema)).hasSize(1)
+            .first()
+            .satisfies(warning -> {
+                assertThat(warning.nodeIndex()).isEqualTo(0);
+                assertThat(warning.nodeLabel()).isEqualTo("Person");
+                assertThat(warning.code()).isEqualTo("NODE_KEY_PROPERTY_MISMATCH");
+            });
+    }
+
+    @Test
+    void buildKeyPropertyWarnings_detectsMultipleMismatchesInNodeOrder() {
+        SchemaDocument schema = new SchemaDocument(
+            "generated",
+            1,
+            "desc",
+            List.of(
+                new SchemaDocument.NodeDefinition(
+                    "Person",
+                    "Primary entity",
+                    "id",
+                    List.of(new SchemaDocument.PropertyDefinition("name", "string", false))
+                ),
+                new SchemaDocument.NodeDefinition(
+                    "Award",
+                    "Secondary entity",
+                    "awardId",
+                    List.of(new SchemaDocument.PropertyDefinition("title", "string", false))
+                )
+            ),
+            List.of(),
+            List.of(),
+            List.of()
+        );
+
+        assertThat(LangChain4jSchemaGenerationService.buildKeyPropertyWarnings(schema))
+            .extracting(warning -> warning.nodeLabel() + ":" + warning.nodeIndex())
+            .containsExactly("Person:0", "Award:1");
     }
 
 }

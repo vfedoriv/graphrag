@@ -16,6 +16,8 @@ import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationResult;
+import io.github.vfedoriv.graphrag.service.SchemaGenerationService.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -112,15 +114,21 @@ public class SchemaController {
             LogSanitizer.length(request.text()),
             LogSanitizer.length(request.example())
         );
-        String json = schemaGenerationService.generateJson(
+        SchemaGenerationResult result = schemaGenerationService.generate(
             request.name(),
             request.version(),
             request.description(),
             request.text(),
             request.example()
         );
-        log.info("Generate schema completed: name={}, version={}, jsonLength={}", request.name(), request.version(), json.length());
-        return new GenerateSchemaResponse(json);
+        log.info(
+            "Generate schema completed: name={}, version={}, jsonLength={}, warningCount={}",
+            request.name(),
+            request.version(),
+            result.content().length(),
+            result.warnings().size()
+        );
+        return new GenerateSchemaResponse(result.content(), mapWarnings(result.warnings()));
     }
 
     @PostMapping(path = "/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -159,15 +167,21 @@ public class SchemaController {
         );
         String text = parseUploadedText(file);
         log.info("Generate schema from file parsed text: fileName='{}', textLength={}", file.getOriginalFilename(), text.length());
-        String json = schemaGenerationService.generateJson(
+        SchemaGenerationResult result = schemaGenerationService.generate(
             request.name(),
             request.version(),
             request.description(),
             text,
             normalizeExample(request.example())
         );
-        log.info("Generate schema from file completed: name={}, version={}, jsonLength={}", request.name(), request.version(), json.length());
-        return new GenerateSchemaResponse(json);
+        log.info(
+            "Generate schema from file completed: name={}, version={}, jsonLength={}, warningCount={}",
+            request.name(),
+            request.version(),
+            result.content().length(),
+            result.warnings().size()
+        );
+        return new GenerateSchemaResponse(result.content(), mapWarnings(result.warnings()));
     }
 
     private String normalizeExample(Object exampleValue) {
@@ -335,5 +349,20 @@ public class SchemaController {
             log.error("Failed to read uploaded file: filename={}, message={}", file.getOriginalFilename(), e.getMessage(), e);
             throw new IllegalArgumentException("Failed to read uploaded file", e);
         }
+    }
+
+    private List<GenerateSchemaResponse.GenerateSchemaWarning> mapWarnings(List<SchemaGenerationWarning> warnings) {
+        if (warnings == null || warnings.isEmpty()) {
+            return List.of();
+        }
+        return warnings.stream()
+            .map(warning -> new GenerateSchemaResponse.GenerateSchemaWarning(
+                warning.nodeIndex(),
+                warning.nodeLabel(),
+                warning.code(),
+                warning.message(),
+                warning.suggestions()
+            ))
+            .toList();
     }
 }
