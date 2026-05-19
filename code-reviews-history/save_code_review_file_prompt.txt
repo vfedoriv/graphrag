@@ -1,2 +1,2 @@
-write this pr review summary into `code-reviews-history` dir as file with name template as  code-review-<current date -
+write this code review summary into `code-reviews-history` dir as file with name template as  code-review-<current date -
   current time>.txt

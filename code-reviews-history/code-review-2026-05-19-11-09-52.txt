@@ -1,0 +1,58 @@
+# PR Review Summary — `fdcb3a5: harden extraction cleanup and schema validation`
+
+## Critical Issues (1 found)
+
+- **silent-failure-hunter**: `linkRunToDocument` is inside the outer extraction `try` block, so a database link failure (network timeout, constraint violation) is caught by the same handler that processes LLM failures — the run is marked `FAILED` with a misleading error message, and no log distinguishes a link failure from an extraction failure. Move `linkRunToDocument` *before* the outer `try`, the same way cleanup was isolated. [`GraphExtractionService.java:95, 161–172`]
+
+## Important Issues (10 found)
+
+- **silent-failure-hunter**: `catch (Exception cleanupEx)` is too broad — programming errors like `NullPointerException` inside `cleanupRunsAfterCompletion` are silently logged as "cleanup failed" and execution continues. Narrow to `DataAccessException` or the Neo4j driver exception type. [`GraphExtractionService.java:122–132`]
+
+- **silent-failure-hunter**: `toLong` returns `0L` silently when a Cypher result key is absent or has an unexpected type. A column rename in the Cypher would log `deletedRuns=0` with no observable anomaly, defeating the typed counter design. Add a `warn` log when the value is null or not a `Number`. [`GraphExtractionService.java:242–247`]
+
+- **silent-failure-hunter**: `schemaToCompactJson` catches serialisation failure and falls back to `{"name":"unknown","nodes":[],"relationships":[]}` — the LLM proceeds with an empty schema prompt, producing unrestricted extraction that then fails schema validation with a confusing error. Rethrow after logging instead. [`SpringAiGraphExtractionClient.java:130–136`]
+
+- **silent-failure-hunter**: `extract` wraps all exceptions (network timeouts, NPE, rate limits, parse errors) as `IllegalArgumentException("Graph extraction response is invalid")`, causing the `GlobalExceptionHandler` to return HTTP 400 for what may be a server-side connectivity failure. [`SpringAiGraphExtractionClient.java:90–99`]
+
+- **pr-test-analyzer** (criticality 8): The infrastructure-node exclusion in the cleanup Cypher (`NOT obsoleteNode:DocumentUpload` etc.) has no integration test — removing any of those guards would silently corrupt system nodes in production. [`GraphExtractionService.java:211–217`]
+
+- **pr-test-analyzer** (criticality 7): `CleanupResult` counter values are never directly asserted in tests — a bug that always returns `CleanupResult.zero()` would not be caught by the integration tests, which only assert post-cleanup graph state. [`GraphExtractionCleanupIntegrationTest.java`]
+
+- **pr-test-analyzer** (criticality 6): `keepsCompletedStatusWhenCleanupFails` uses `lenient().doThrow(...)` with no `verify(...)` confirming the stub actually fired — the test could silently pass without ever triggering the cleanup exception path. [`GraphExtractionServiceTest.java:61–63`]
+
+- **silent-failure-hunter**: `CleanupResult.zero()` is returned both on a genuine zero-deletion cleanup and on a missing-row anomaly. The completion log reports the same `deletedRuns=0` in both cases, making anomalies invisible to operators. [`GraphExtractionService.java:231–233`]
+
+- **silent-failure-hunter**: `DocumentProcessingService.process` calls `ex.getMessage()` and stores it directly as the document error message — this can be `null` for exceptions with no message. Apply the same `toNonBlankErrorMessage` treatment used in `GraphExtractionService`. [`DocumentProcessingService.java:158–167`]
+
+- **silent-failure-hunter**: `logPayload` uses `log.error` for a serialisation failure in a diagnostic-only logging path, inflating alert severity for a non-operational issue. Downgrade to `log.warn`. [`GraphExtractionValidationService.java:202–211`]
+
+## Suggestions (10 found)
+
+- **comment-analyzer**: Design doc Decision 5 rationale incorrectly states `UNWIND` replaces `FOREACH` for deletion — they coexist; `UNWIND` is for counting relationships. [`design.md:44`]
+- **comment-analyzer**: Design doc Decision 3 rationale claims `toLong` is eliminated; it is still present, just moved to one call site. Update the rationale. [`design.md:36`]
+- **comment-analyzer**: Two openspec specs (`graph-extraction-result-contract/spec.md`, `schema-definition-validation/spec.md`) still have `TBD` `## Purpose` placeholders despite the change being archived.
+- **comment-analyzer**: Spec requirement title "Orphaned nodes created by cleanup are removed" uses old terminology; body now says "obsolete extracted nodes." Align the title. [`extraction-run-cleanup/spec.md`]
+- **comment-analyzer**: Add a short comment above `lenient()` explaining why it is needed (RETURNS_DEEP_STUBS). [`GraphExtractionServiceTest.java:61`]
+- **comment-analyzer**: The bare `catch (Exception ignored) {}` in `storesNonBlankFallbackMessageWhenFailureHasNoMessage` should note the intent. [`GraphExtractionServiceTest.java:83–86`]
+- **type-design-analyzer**: `ExtractionRunStatus` enum constants and the Cypher string literals are aligned by convention only — consider `ExtractionRunStatus.COMPLETED.name()` in query strings so a rename is caught at compile time.
+- **type-design-analyzer**: `ExtractionRunNode` has no transition guards; a `complete()` / `fail(String message)` pair would encapsulate the status-state-machine in the type.
+- **pr-test-analyzer**: `GraphExtractionResultTest` does not assert that `result.nodes().add(...)` throws — the immutability contract from `List.copyOf` is untested.
+- **pr-test-analyzer**: `reportsValidationErrors` now incidentally triggers the new key-property validation but doesn't assert it — a removal of the new rule would not break existing assertions.
+
+## Strengths
+
+- The core architectural fix — isolating cleanup in its own `try/catch` so a cleanup failure cannot retroactively corrupt a `COMPLETED` run status — is well-designed and directly addresses the most significant pre-existing defect.
+- `ExtractionRunStatus` enum eliminates an entire class of compiler-invisible typo bugs in status comparisons.
+- `GraphExtractionResult` compact constructor with `List.copyOf` is the correct Java record mechanism; downstream null-guards in `GraphExtractionValidationService` were cleanly deleted as a result.
+- `CleanupResult` typed record replaces a magic-string `Map<String, Object>` at the one location that matters.
+- `toNonBlankErrorMessage` helper prevents null error messages on persisted extraction runs.
+- `removesMultipleFailedRunsAfterLaterSuccessfulRetry` is a genuinely valuable regression test that would catch a common cleanup bug.
+- Log messages consistently include both `runId` and `documentId`, enabling operational correlation across services.
+- Design document records chosen approach and rejected alternatives for every decision — the right kind of documentation that survives code evolution.
+
+## Recommended Action
+
+1. **Fix critical**: Move `linkRunToDocument` outside the outer extraction `try` block.
+2. **Address important**: Narrow cleanup exception catch scope; add `toLong` warning; fix `schemaToCompactJson` fallback; add infrastructure-node exclusion integration test; add `CleanupResult` counter assertions; verify cleanup stub fires in unit test.
+3. **Consider suggestions**: Fill TBD spec placeholders; use `ExtractionRunStatus.COMPLETED.name()` in Cypher strings; add immutability assertion to `GraphExtractionResultTest`.
+4. **Re-run review** after critical and important issues are resolved.
