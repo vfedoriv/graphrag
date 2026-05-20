@@ -1,7 +1,6 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
@@ -91,9 +90,10 @@ class SpringAiGraphExtractionClientTest {
             )
         );
 
-        assertThatThrownBy(() -> validationService.validate(parsed, schema()))
-            .isInstanceOf(io.github.vfedoriv.graphrag.error.GraphExtractionValidationException.class)
-            .hasMessageContaining("Unknown node label");
+        GraphExtractionResult validated = validationService.validate(parsed, schema());
+
+        assertThat(validated.nodes()).isEmpty();
+        assertThat(validated.relationships()).isEmpty();
     }
 
     @Test

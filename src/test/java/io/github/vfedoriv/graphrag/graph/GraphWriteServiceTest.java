@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.lang.reflect.Method;
@@ -46,6 +47,26 @@ class GraphWriteServiceTest {
 
         assertThat(id1).isEqualTo(id2);
         assertThat(id1).startsWith("rel:");
+    }
+
+    @Test
+    void stableNodeId_rejectsIncompleteIdentityMaterial() throws Exception {
+        Method stableNodeId = GraphWriteService.class.getDeclaredMethod("stableNodeId", String.class, String.class, List.class, Map.class);
+        stableNodeId.setAccessible(true);
+
+        assertThatThrownBy(() -> stableNodeId.invoke(service, "schema-1", "Person", List.of("fullName", "birthDate"), Map.of("fullName", "Ada")))
+            .hasCauseInstanceOf(IllegalArgumentException.class)
+            .hasRootCauseMessage("Incomplete identity material for node label: Person.birthDate");
+    }
+
+    @Test
+    void stableNodeId_rejectsMissingSchemaKeyDefinition() throws Exception {
+        Method stableNodeId = GraphWriteService.class.getDeclaredMethod("stableNodeId", String.class, String.class, List.class, Map.class);
+        stableNodeId.setAccessible(true);
+
+        assertThatThrownBy(() -> stableNodeId.invoke(service, "schema-1", "Person", List.of(), Map.of("name", "Ada")))
+            .hasCauseInstanceOf(IllegalArgumentException.class)
+            .hasRootCauseMessage("Missing schema key definition for node label: Person");
     }
 
     @Test

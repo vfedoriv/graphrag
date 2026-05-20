@@ -92,6 +92,33 @@ class GraphExtractionServiceTest {
         ));
     }
 
+    @Test
+    void writesSanitizedValidationResult() {
+        GraphExtractionResult raw = new GraphExtractionResult(
+            List.of(new GraphExtractionResult.ExtractedNode("Unknown", java.util.Map.of("id", "bad"), 0.4)),
+            List.of()
+        );
+        GraphExtractionResult sanitized = new GraphExtractionResult(
+            List.of(new GraphExtractionResult.ExtractedNode("Contract", java.util.Map.of("contractId", "C-1"), 0.9)),
+            List.of()
+        );
+        GraphExtractionClient extractionClient = (schema, chunkText) -> raw;
+        GraphExtractionService service = serviceWithClient(extractionClient);
+        mockKnowledgeBaseAndSchema();
+        when(validationService.validate(any(), any())).thenReturn(sanitized);
+
+        service.extract(document(), List.of(chunk()), false);
+
+        verify(graphWriteService).write(
+            any(),
+            org.mockito.Mockito.eq("schema-1"),
+            org.mockito.Mockito.eq("doc-1"),
+            org.mockito.Mockito.eq("chunk-1"),
+            any(),
+            org.mockito.Mockito.eq(sanitized)
+        );
+    }
+
     private GraphExtractionService serviceWithClient(GraphExtractionClient extractionClient) {
         when(graphExtractionClientProvider.orderedStream()).thenReturn(java.util.stream.Stream.of(extractionClient));
         return new GraphExtractionService(

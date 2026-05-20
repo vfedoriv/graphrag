@@ -155,6 +155,7 @@ public class GraphWriteService {
     }
 
     private String stableNodeId(String schemaId, String label, List<String> keyNames, Map<String, Object> keyProperties) {
+        requireCompleteIdentity(label, keyNames, keyProperties);
         List<String> canonical = new ArrayList<>();
         canonical.add("schema:" + schemaId);
         canonical.add("label:" + label);
@@ -174,6 +175,18 @@ public class GraphWriteService {
             "to:" + toId
         );
         return "rel:" + sha256(String.join("\n", canonical));
+    }
+
+    private void requireCompleteIdentity(String label, List<String> keyNames, Map<String, Object> keyProperties) {
+        if (keyNames == null || keyNames.isEmpty()) {
+            throw new IllegalArgumentException("Missing schema key definition for node label: " + label);
+        }
+        for (String keyName : keyNames) {
+            Object value = keyProperties == null ? null : keyProperties.get(keyName);
+            if (value == null || value.toString().isBlank()) {
+                throw new IllegalArgumentException("Incomplete identity material for node label: " + label + "." + keyName);
+            }
+        }
     }
 
     private Map<String, Object> filterDeclaredProperties(
