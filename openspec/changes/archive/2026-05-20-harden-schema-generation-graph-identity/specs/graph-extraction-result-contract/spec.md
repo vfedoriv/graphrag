@@ -1,22 +1,4 @@
-# graph-extraction-result-contract Specification
-
-## Purpose
-TBD - created by archiving change harden-extraction-cleanup-and-schema-validation. Update Purpose after archive.
-## Requirements
-### Requirement: Extraction result collections are never null
-The system SHALL normalize graph extraction result node and relationship collections to empty collections when an extraction client supplies null collections.
-
-#### Scenario: Extraction client returns null node list
-- **WHEN** a graph extraction result is created with a null node collection
-- **THEN** the result exposes an empty node collection to validation and graph persistence
-
-#### Scenario: Extraction client returns null relationship list
-- **WHEN** a graph extraction result is created with a null relationship collection
-- **THEN** the result exposes an empty relationship collection to validation and graph persistence
-
-#### Scenario: Extraction client returns populated collections
-- **WHEN** a graph extraction result is created with populated node or relationship collections
-- **THEN** the result exposes those collections without dropping entries
+## ADDED Requirements
 
 ### Requirement: Relationship endpoint keys are complete after normalization
 The system SHALL require every extracted relationship endpoint key to contain all non-blank key components required by the endpoint node's schema definition after extraction normalization and any supported endpoint-key fill behavior.
@@ -44,4 +26,3 @@ The system SHALL persist only schema-declared domain properties from extracted n
 - **WHEN** an extracted relationship property map contains a property that is not declared for that relationship type and endpoints in the active schema
 - **THEN** graph persistence omits that undeclared property from the Neo4j relationship
 - **AND** declared properties and system metadata remain eligible for persistence
-

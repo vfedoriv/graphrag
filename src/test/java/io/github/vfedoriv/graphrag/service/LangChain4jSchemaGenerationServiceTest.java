@@ -262,4 +262,38 @@ class LangChain4jSchemaGenerationServiceTest {
             .containsExactly("Person:0", "Award:1");
     }
 
+    @Test
+    void inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist() {
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null);
+        GraphNode node = GraphNode.from("n1", "Person", Map.of("description", "entity"));
+        GraphDocument graphDocument = GraphDocument.from(Set.of(node), Set.of(), Document.from("text"));
+
+        SchemaDocument schema = service.inferSchema("generated", 1, "desc", graphDocument);
+
+        assertThat(schema.nodes()).hasSize(1);
+        assertThat(schema.nodes().getFirst().key()).isEmpty();
+    }
+
+    @Test
+    void buildKeyPropertyWarnings_reportsMissingNodeKey() {
+        SchemaDocument schema = new SchemaDocument(
+            "generated",
+            1,
+            "desc",
+            List.of(new SchemaDocument.NodeDefinition(
+                "Person",
+                "Primary entity",
+                List.of(),
+                List.of(new SchemaDocument.PropertyDefinition("name", "string", false))
+            )),
+            List.of(),
+            List.of(),
+            List.of()
+        );
+
+        assertThat(LangChain4jSchemaGenerationService.buildKeyPropertyWarnings(schema))
+            .extracting(w -> w.code())
+            .containsExactly("NODE_KEY_MISSING");
+    }
+
 }

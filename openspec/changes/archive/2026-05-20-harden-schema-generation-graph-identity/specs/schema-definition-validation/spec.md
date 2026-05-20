@@ -1,8 +1,5 @@
-# schema-definition-validation Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change harden-extraction-cleanup-and-schema-validation. Update Purpose after archive.
-## Requirements
 ### Requirement: Node keys are declared properties
 The system SHALL reject schema definitions where any node definition `key` component does not match one of that node definition's declared property names.
 
@@ -23,4 +20,3 @@ The system SHALL reject schema definitions where any node definition `key` compo
 - **WHEN** a schema definition contains a node with a non-blank `key` and a missing or empty property list
 - **THEN** schema validation rejects the schema
 - **AND** the validation error identifies that the key must be declared as a property
-

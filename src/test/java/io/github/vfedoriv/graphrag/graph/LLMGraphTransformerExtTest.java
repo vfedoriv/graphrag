@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
@@ -128,6 +129,136 @@ class LLMGraphTransformerExtTest {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> transformer.transform(Document.from("text")))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("must include non-empty 'description'");
+    }
+
+    @Test
+    void transform_rejectsMissingKey() {
+        String payload = """
+            [
+              {
+                "head": "WO-1",
+                "head_type": "WorkOrder",
+                "head_properties": {"description": "work order", "orderNumber": "WO-1"},
+                "relation": "ASSIGNED_TO",
+                "relation_properties": {"description": "assignment"},
+                "tail": "Tech-1",
+                "tail_type": "Technician",
+                "tail_properties": {"description": "technician", "techId": "T-1", "key": "techId"}
+              }
+            ]
+            """;
+        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+            fixedModel(payload),
+            List.of(),
+            List.of(),
+            null,
+            "",
+            "[]",
+            1
+        );
+
+        assertThatThrownBy(() -> transformer.transform(Document.from("text")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("must include non-empty 'key'");
+    }
+
+    @Test
+    void transform_rejectsKeyReferencingUndeclaredProperty() {
+        String payload = """
+            [
+              {
+                "head": "WO-1",
+                "head_type": "WorkOrder",
+                "head_properties": {"description": "work order", "key": "orderNumber,siteId", "orderNumber": "WO-1"},
+                "relation": "ASSIGNED_TO",
+                "relation_properties": {"description": "assignment"},
+                "tail": "Tech-1",
+                "tail_type": "Technician",
+                "tail_properties": {"description": "technician", "techId": "T-1", "key": "techId"}
+              }
+            ]
+            """;
+        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+            fixedModel(payload),
+            List.of(),
+            List.of(),
+            null,
+            "",
+            "[]",
+            1
+        );
+
+        assertThatThrownBy(() -> transformer.transform(Document.from("text")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Node key components must exist in node properties");
+    }
+
+    @Test
+    void transform_rejectsMoreThanSixUsefulProperties() {
+        String payload = """
+            [
+              {
+                "head": "WO-1",
+                "head_type": "WorkOrder",
+                "head_properties": {"description": "work order", "key": "orderNumber", "orderNumber": "WO-1", "p1": "a", "p2": "b", "p3": "c", "p4": "d", "p5": "e", "p6": "f", "p7": "g"},
+                "relation": "ASSIGNED_TO",
+                "relation_properties": {"description": "assignment"},
+                "tail": "Tech-1",
+                "tail_type": "Technician",
+                "tail_properties": {"description": "technician", "techId": "T-1", "key": "techId"}
+              }
+            ]
+            """;
+        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+            fixedModel(payload),
+            List.of(),
+            List.of(),
+            null,
+            "",
+            "[]",
+            1
+        );
+
+        assertThatThrownBy(() -> transformer.transform(Document.from("text")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("between 1 and 6 useful properties");
+    }
+
+    @Test
+    void transform_addsPlaceholderWhenNoAdditionalUsefulPropertiesExist() {
+        String payload = """
+            [
+              {
+                "head": "WO-1",
+                "head_type": "WorkOrder",
+                "head_properties": {"description": "work order", "key": "orderNumber", "orderNumber": "WO-1"},
+                "relation": "ASSIGNED_TO",
+                "relation_properties": {"description": "assignment"},
+                "tail": "Tech-1",
+                "tail_type": "Technician",
+                "tail_properties": {"description": "technician", "key": "techId", "techId": "T-1"}
+              }
+            ]
+            """;
+        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+            fixedModel(payload),
+            List.of(),
+            List.of(),
+            null,
+            "",
+            "[]",
+            1
+        );
+
+        GraphDocument graph = transformer.transform(Document.from("text"));
+
+        assertThat(graph).isNotNull();
+        GraphNode workOrder = graph.nodes().stream()
+            .filter(node -> node.type().equals("WorkOrder"))
+            .findFirst()
+            .orElseThrow();
+        assertThat(workOrder.properties())
+            .containsEntry("additional_property_required", "SHOULD BE UPDATED");
     }
 
     private static ChatModel fixedModel(String responseText) {

@@ -34,7 +34,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     private static final String SCHEMA_PROMPT_CONTRACT = """
         Schema key contract:
         - For each generated node, `key` can be either a single property name or a list of property names.
-        - Every key component MUST exactly match a property name in that node's.
+        - Every key component MUST exactly match a property name declared in that same node's properties.
         - In extraction output, include `key` inside head_properties/tail_properties as a comma-separated list
           of preferred key property names (e.g. "manufacturer,productName"), using only property names present in that node.
         - Avoid generic `id` unless `id` is explicitly present in that node's properties list.
@@ -240,6 +240,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         private final String label;
         private String description;
         private final List<String> keyCandidates = new ArrayList<>();
+        private final List<String> discardedKeyCandidates = new ArrayList<>();
         private final Map<String, SchemaDocument.PropertyDefinition> properties = new LinkedHashMap<>();
 
         private NodeAccumulator(String label) {
@@ -265,7 +266,19 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             List<SchemaDocument.PropertyDefinition> sortedProperties = properties.values().stream()
                 .sorted(Comparator.comparing(SchemaDocument.PropertyDefinition::name))
                 .toList();
-            List<String> key = keyCandidates.isEmpty() ? inferKeyCandidates(sortedProperties) : keyCandidates;
+            List<String> propertyNames = sortedProperties.stream()
+                .map(SchemaDocument.PropertyDefinition::name)
+                .filter(Objects::nonNull)
+                .toList();
+            List<String> declaredCandidates = keyCandidates.stream()
+                .filter(propertyNames::contains)
+                .toList();
+            for (String keyCandidate : keyCandidates) {
+                if (!propertyNames.contains(keyCandidate) && !discardedKeyCandidates.contains(keyCandidate)) {
+                    discardedKeyCandidates.add(keyCandidate);
+                }
+            }
+            List<String> key = declaredCandidates.isEmpty() ? inferKeyCandidates(sortedProperties) : declaredCandidates;
             return new SchemaDocument.NodeDefinition(label, description, key, sortedProperties);
         }
 
@@ -276,12 +289,17 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             List<String> candidates = java.util.Arrays.stream(raw.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isBlank())
+                .filter(NodeAccumulator::isSafePropertyName)
                 .toList();
             for (String candidate : candidates) {
                 if (!keyCandidates.contains(candidate)) {
                     keyCandidates.add(candidate);
                 }
             }
+        }
+
+        private static boolean isSafePropertyName(String value) {
+            return value.matches("[A-Za-z_][A-Za-z0-9_]*");
         }
     }
 
@@ -339,7 +357,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         for (int index = 0; index < nodes.size(); index++) {
             SchemaDocument.NodeDefinition node = nodes.get(index);
             List<String> keyNames = NodeKeySupport.normalizedKeys(node);
-            if (node == null || keyNames.isEmpty()) {
+            if (node == null) {
                 continue;
             }
             List<SchemaDocument.PropertyDefinition> properties = node.properties();
@@ -349,6 +367,19 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
                 .filter(Objects::nonNull)
                 .toList();
             String nodeLabel = node.label() == null ? "(unknown)" : node.label();
+            if (keyNames.isEmpty()) {
+                warnings.add(new SchemaGenerationWarning(
+                    index,
+                    nodeLabel,
+                    "NODE_KEY_MISSING",
+                    "Node key is missing for node '%s'".formatted(nodeLabel),
+                    List.of(
+                        "Choose one or more existing properties as node key",
+                        "Add canonical identity properties if current properties are not unique"
+                    )
+                ));
+                continue;
+            }
             for (String keyName : keyNames) {
                 if (propertyNames.contains(keyName)) {
                     continue;
@@ -370,7 +401,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
     private static List<String> inferKeyCandidates(List<SchemaDocument.PropertyDefinition> properties) {
         if (properties == null || properties.isEmpty()) {
-            return List.of("id");
+            return List.of();
         }
         List<String> names = properties.stream()
             .map(SchemaDocument.PropertyDefinition::name)

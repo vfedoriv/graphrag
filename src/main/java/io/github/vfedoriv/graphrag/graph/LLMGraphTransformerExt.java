@@ -262,21 +262,40 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             .map(rel -> Map.<String, Object>of(
                 "head", asText(rel.get("head")),
                 "headType", asText(rel.get("head_type")),
-                "headProperties", propertySummary(rel.get("head_properties")),
+                "headProperties", propertySummaryUnsafe(rel.get("head_properties")),
                 "relation", asText(rel.get("relation")),
-                "relationProperties", propertySummary(rel.get("relation_properties")),
+                "relationProperties", propertySummaryUnsafe(rel.get("relation_properties")),
                 "tail", asText(rel.get("tail")),
                 "tailType", asText(rel.get("tail_type")),
-                "tailProperties", propertySummary(rel.get("tail_properties"))))
+                "tailProperties", propertySummaryUnsafe(rel.get("tail_properties"))))
             .toList();
     }
 
-    private static Map<String, Object> propertySummary(@Nullable Object rawProperties) {
-        Map<String, String> properties = extractProperties(rawProperties);
+    private static Map<String, Object> propertySummaryUnsafe(@Nullable Object rawProperties) {
+        Map<String, String> properties = extractPropertiesForSummary(rawProperties);
         return Map.of(
             "nonEmpty", !properties.isEmpty(),
             "hasDescription", !isNullOrBlank(properties.get("description")),
             "keys", properties.keySet());
+    }
+
+    private static Map<String, String> extractPropertiesForSummary(@Nullable Object rawProperties) {
+        if (!(rawProperties instanceof Map<?, ?> rawMap)) {
+            return Map.of();
+        }
+        Map<String, String> normalized = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+            if (!(entry.getKey() instanceof String key) || isNullOrBlank(key)) {
+                continue;
+            }
+            Object value = entry.getValue();
+            if (value instanceof List<?> || value instanceof Map<?, ?>) {
+                normalized.put(key, "<non-scalar>");
+                continue;
+            }
+            normalized.put(key, asText(value));
+        }
+        return normalized;
     }
 
     private static String getBacktickText(String text) {
@@ -362,13 +381,23 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         }
         for (String keyPart : keyParts) {
             if (!properties.containsKey(keyPart)) {
-                throw new IllegalArgumentException("Node key component '" + keyPart + "' must exist in node properties for node type: " + nodeType);
+                throw new IllegalArgumentException("Node key components must exist in node properties for node type: " + nodeType);
             }
         }
+        Set<String> keyPartNames = new HashSet<>(keyParts);
         long usefulPropertyCount = properties.keySet().stream()
             .filter(propertyName -> !propertyName.equals("description") && !propertyName.equals("key"))
+            .filter(propertyName -> !keyPartNames.contains(propertyName))
             .count();
-        if (usefulPropertyCount < 1 || usefulPropertyCount > 6) {
+        if (usefulPropertyCount == 0) {
+            log.warn(
+                "Node properties have no additional useful properties; adding placeholder marker: nodeType={}",
+                nodeType
+            );
+            properties.put("additional_property_required", "SHOULD BE UPDATED");
+            usefulPropertyCount = 1;
+        }
+        if (usefulPropertyCount > 6) {
             throw new IllegalArgumentException(
                 "Node properties must include between 1 and 6 useful properties (excluding description/key) for node type: " + nodeType
             );

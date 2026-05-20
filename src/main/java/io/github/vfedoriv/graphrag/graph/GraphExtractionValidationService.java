@@ -89,6 +89,7 @@ public class GraphExtractionValidationService {
                 || extracted.toKey() == null || extracted.toKey().isEmpty()) {
                 throw new GraphExtractionValidationException("Relationship endpoint keys must not be empty");
             }
+            validateRelationshipEndpointKeyComponents(extracted, nodeDefs);
             filteredRelationships.add(extracted);
         }
         normalized = new GraphExtractionResult(normalized.nodes(), filteredRelationships);
@@ -180,6 +181,33 @@ public class GraphExtractionValidationService {
                     endpointKey.put(keyName, inferred);
                     log.warn("Filled missing relationship endpoint key from node payload: {}.{}={}", label, keyName, inferred);
                 }
+            }
+        }
+    }
+
+    private void validateRelationshipEndpointKeyComponents(
+        GraphExtractionResult.ExtractedRelationship relationship,
+        Map<String, SchemaDocument.NodeDefinition> nodeDefs
+    ) {
+        SchemaDocument.NodeDefinition fromDef = nodeDefs.get(relationship.fromLabel());
+        SchemaDocument.NodeDefinition toDef = nodeDefs.get(relationship.toLabel());
+        validateRequiredKeyComponents("from", relationship.fromLabel(), relationship.fromKey(), fromDef);
+        validateRequiredKeyComponents("to", relationship.toLabel(), relationship.toKey(), toDef);
+    }
+
+    private void validateRequiredKeyComponents(
+        String endpoint,
+        String label,
+        Map<String, Object> endpointKey,
+        SchemaDocument.NodeDefinition nodeDefinition
+    ) {
+        List<String> keyNames = NodeKeySupport.normalizedKeys(nodeDefinition);
+        for (String keyName : keyNames) {
+            Object value = endpointKey.get(keyName);
+            if (value == null || value.toString().isBlank()) {
+                throw new GraphExtractionValidationException(
+                    "Relationship %s endpoint key is missing component: %s.%s".formatted(endpoint, label, keyName)
+                );
             }
         }
     }

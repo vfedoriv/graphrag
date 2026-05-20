@@ -2,10 +2,19 @@ package io.github.vfedoriv.graphrag.graph;
 
 import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -49,7 +58,7 @@ public class GraphWriteService {
         }
         if (result.relationships() != null) {
             for (GraphExtractionResult.ExtractedRelationship rel : result.relationships()) {
-                upsertRelationship(extractionRunId, schemaId, documentId, chunkId, nodeDefs, rel);
+                upsertRelationship(extractionRunId, schemaId, documentId, chunkId, schema, nodeDefs, rel);
             }
         }
         log.info(
@@ -71,10 +80,10 @@ public class GraphWriteService {
         GraphExtractionResult.ExtractedNode node
     ) {
         List<String> keyNames = NodeKeySupport.normalizedKeys(nodeDef);
-        String keyValue = compositeKeyValue(node.properties(), keyNames);
-        String entityId = stableId(schemaId, node.label(), NodeKeySupport.display(keyNames), keyValue);
+        String entityId = stableNodeId(schemaId, node.label(), keyNames, node.properties());
         String label = safeToken(node.label());
-        Map<String, Object> props = new HashMap<>(node.properties());
+        Set<String> allowedProperties = allowedNodeProperties(nodeDef);
+        Map<String, Object> props = filterDeclaredProperties(node.properties(), allowedProperties, "node", node.label());
         props.put("id", entityId);
         props.put("sourceDocumentId", documentId);
         props.put("sourceChunkIds", java.util.List.of(chunkId));
@@ -109,6 +118,7 @@ public class GraphWriteService {
         String schemaId,
         String documentId,
         String chunkId,
+        SchemaDocument schema,
         Map<String, SchemaDocument.NodeDefinition> nodeDefs,
         GraphExtractionResult.ExtractedRelationship rel
     ) {
@@ -117,16 +127,12 @@ public class GraphWriteService {
         String type = safeToken(rel.type());
         List<String> fromKeyNames = NodeKeySupport.normalizedKeys(nodeDefs.get(rel.fromLabel()));
         List<String> toKeyNames = NodeKeySupport.normalizedKeys(nodeDefs.get(rel.toLabel()));
-        String fromKeyValue = compositeKeyValue(rel.fromKey(), fromKeyNames);
-        String toKeyValue = compositeKeyValue(rel.toKey(), toKeyNames);
-        String fromId = stableId(schemaId, rel.fromLabel(), NodeKeySupport.display(fromKeyNames), fromKeyValue);
-        String toId = stableId(schemaId, rel.toLabel(), NodeKeySupport.display(toKeyNames), toKeyValue);
-        String relId = stableId(schemaId, rel.type(), "endpoints", fromId + "->" + toId);
+        String fromId = stableNodeId(schemaId, rel.fromLabel(), fromKeyNames, rel.fromKey());
+        String toId = stableNodeId(schemaId, rel.toLabel(), toKeyNames, rel.toKey());
+        String relId = stableRelationshipId(schemaId, rel.type(), fromId, toId);
 
-        Map<String, Object> props = new HashMap<>();
-        if (rel.properties() != null) {
-            props.putAll(rel.properties());
-        }
+        Set<String> allowedProperties = allowedRelationshipProperties(schema, rel.type(), rel.fromLabel(), rel.toLabel());
+        Map<String, Object> props = filterDeclaredProperties(rel.properties(), allowedProperties, "relationship", rel.type());
         props.put("id", relId);
         props.put("sourceDocumentId", documentId);
         props.put("sourceChunkIds", java.util.List.of(chunkId));
@@ -148,16 +154,105 @@ public class GraphWriteService {
             .run();
     }
 
-    private String stableId(String schemaId, String kind, String key, String value) {
-        return schemaId + "|" + kind + "|" + key + "|" + value;
+    private String stableNodeId(String schemaId, String label, List<String> keyNames, Map<String, Object> keyProperties) {
+        List<String> canonical = new ArrayList<>();
+        canonical.add("schema:" + schemaId);
+        canonical.add("label:" + label);
+        for (String keyName : keyNames) {
+            Object value = keyProperties == null ? null : keyProperties.get(keyName);
+            String normalized = value == null ? "" : String.valueOf(value);
+            canonical.add("key:" + keyName + "=" + normalized.length() + ":" + normalized);
+        }
+        return "node:" + sha256(String.join("\n", canonical));
     }
 
-    private String compositeKeyValue(Map<String, Object> properties, List<String> keyNames) {
-        List<String> values = keyNames.stream()
-            .map(keyName -> properties == null ? null : properties.get(keyName))
-            .map(value -> value == null ? "" : String.valueOf(value))
-            .toList();
-        return String.join("|", values);
+    private String stableRelationshipId(String schemaId, String type, String fromId, String toId) {
+        List<String> canonical = List.of(
+            "schema:" + schemaId,
+            "type:" + type,
+            "from:" + fromId,
+            "to:" + toId
+        );
+        return "rel:" + sha256(String.join("\n", canonical));
+    }
+
+    private Map<String, Object> filterDeclaredProperties(
+        Map<String, Object> input,
+        Set<String> allowed,
+        String entityKind,
+        String entityName
+    ) {
+        Map<String, Object> filtered = new LinkedHashMap<>();
+        if (input == null || input.isEmpty()) {
+            return filtered;
+        }
+        List<String> dropped = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : input.entrySet()) {
+            String key = entry.getKey();
+            if (key == null || key.isBlank()) {
+                continue;
+            }
+            if (allowed.contains(key)) {
+                filtered.put(key, entry.getValue());
+            } else {
+                dropped.add(key);
+            }
+        }
+        if (!dropped.isEmpty()) {
+            log.warn("Dropped undeclared {} properties: {}={}", entityKind, entityName, dropped);
+        }
+        return filtered;
+    }
+
+    private Set<String> allowedNodeProperties(SchemaDocument.NodeDefinition nodeDef) {
+        Set<String> properties = new LinkedHashSet<>();
+        if (nodeDef == null || nodeDef.properties() == null) {
+            return properties;
+        }
+        for (SchemaDocument.PropertyDefinition propertyDefinition : nodeDef.properties()) {
+            if (propertyDefinition != null && propertyDefinition.name() != null && !propertyDefinition.name().isBlank()) {
+                properties.add(propertyDefinition.name());
+            }
+        }
+        return properties;
+    }
+
+    private Set<String> allowedRelationshipProperties(SchemaDocument schema, String type, String from, String to) {
+        Set<String> properties = new LinkedHashSet<>();
+        if (schema == null || schema.relationships() == null) {
+            return properties;
+        }
+        for (SchemaDocument.RelationshipDefinition relationshipDefinition : schema.relationships()) {
+            if (relationshipDefinition == null) {
+                continue;
+            }
+            if (!Objects.equals(type, relationshipDefinition.type())
+                || !Objects.equals(from, relationshipDefinition.from())
+                || !Objects.equals(to, relationshipDefinition.to())) {
+                continue;
+            }
+            List<SchemaDocument.PropertyDefinition> relationshipProperties = relationshipDefinition.properties();
+            if (relationshipProperties == null) {
+                return properties;
+            }
+            for (SchemaDocument.PropertyDefinition propertyDefinition : relationshipProperties) {
+                if (propertyDefinition != null && propertyDefinition.name() != null && !propertyDefinition.name().isBlank()) {
+                    properties.add(propertyDefinition.name());
+                }
+            }
+            return properties;
+        }
+        return properties;
+    }
+
+    private String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 
     private String safeToken(String value) {

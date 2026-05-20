@@ -14,6 +14,7 @@ public final class NodeKeySupport {
         }
         return nodeDefinition.key().stream()
             .filter(keyName -> keyName != null && !keyName.isBlank())
+            .map(String::trim)
             .distinct()
             .toList();
     }

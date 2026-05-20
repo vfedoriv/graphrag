@@ -130,6 +130,178 @@ class GraphExtractionValidationServiceTest {
         assertThatCode(() -> validationService.validate(result, schema)).doesNotThrowAnyException();
     }
 
+    @Test
+    void acceptsRelationshipWithCompleteCompositeEndpoints() {
+        SchemaDocument schema = new SchemaDocument(
+            "contracts",
+            1,
+            "test",
+            List.of(
+                new SchemaDocument.NodeDefinition(
+                    "Person",
+                    "",
+                    List.of("fullName", "birthDate"),
+                    List.of(
+                        new SchemaDocument.PropertyDefinition("fullName", "string", false),
+                        new SchemaDocument.PropertyDefinition("birthDate", "date", false)
+                    )
+                )
+            ),
+            List.of(new SchemaDocument.RelationshipDefinition("KNOWS", "Person", "Person", "", List.of())),
+            List.of(),
+            List.of()
+        );
+        GraphExtractionResult result = new GraphExtractionResult(
+            List.of(new GraphExtractionResult.ExtractedNode(
+                "Person",
+                Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                0.9
+            )),
+            List.of(new GraphExtractionResult.ExtractedRelationship(
+                "KNOWS",
+                "Person",
+                Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                "Person",
+                Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                Map.of(),
+                0.7
+            ))
+        );
+
+        assertThatCode(() -> validationService.validate(result, schema)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void normalizesMissingNodeKeyComponentsBeforeValidation() {
+        SchemaDocument schema = new SchemaDocument(
+            "contracts",
+            1,
+            "test",
+            List.of(
+                new SchemaDocument.NodeDefinition(
+                    "Person",
+                    "",
+                    List.of("fullName", "birthDate"),
+                    List.of(
+                        new SchemaDocument.PropertyDefinition("fullName", "string", false),
+                        new SchemaDocument.PropertyDefinition("birthDate", "date", false)
+                    )
+                )
+            ),
+            List.of(),
+            List.of(),
+            List.of()
+        );
+        GraphExtractionResult result = new GraphExtractionResult(
+            List.of(new GraphExtractionResult.ExtractedNode(
+                "Person",
+                Map.of("fullName", "Ada Lovelace"),
+                0.9
+            )),
+            List.of()
+        );
+
+        GraphExtractionResult validated = validationService.validate(result, schema);
+        assertThat(validated.nodes()).hasSize(1);
+        Object generatedBirthDate = validated.nodes().getFirst().properties().get("birthDate");
+        assertThat(generatedBirthDate).isNotNull();
+        assertThat(generatedBirthDate.toString()).isNotBlank();
+    }
+
+    @Test
+    void fillsMissingCompositeEndpointComponentWhenSingleMatchingNodeExists() {
+        SchemaDocument schema = new SchemaDocument(
+            "contracts",
+            1,
+            "test",
+            List.of(
+                new SchemaDocument.NodeDefinition(
+                    "Person",
+                    "",
+                    List.of("fullName", "birthDate"),
+                    List.of(
+                        new SchemaDocument.PropertyDefinition("fullName", "string", false),
+                        new SchemaDocument.PropertyDefinition("birthDate", "date", false)
+                    )
+                )
+            ),
+            List.of(new SchemaDocument.RelationshipDefinition("KNOWS", "Person", "Person", "", List.of())),
+            List.of(),
+            List.of()
+        );
+        GraphExtractionResult result = new GraphExtractionResult(
+            List.of(new GraphExtractionResult.ExtractedNode(
+                "Person",
+                Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                0.9
+            )),
+            List.of(new GraphExtractionResult.ExtractedRelationship(
+                "KNOWS",
+                "Person",
+                Map.of("fullName", "Ada Lovelace"),
+                "Person",
+                Map.of("fullName", "Ada Lovelace"),
+                Map.of(),
+                0.7
+            ))
+        );
+
+        GraphExtractionResult validated = validationService.validate(result, schema);
+        assertThat(validated.relationships()).hasSize(1);
+        assertThat(validated.relationships().getFirst().fromKey()).containsEntry("birthDate", "1815-12-10");
+        assertThat(validated.relationships().getFirst().toKey()).containsEntry("birthDate", "1815-12-10");
+    }
+
+    @Test
+    void rejectsPartialCompositeRelationshipEndpointKey() {
+        SchemaDocument schema = new SchemaDocument(
+            "contracts",
+            1,
+            "test",
+            List.of(
+                new SchemaDocument.NodeDefinition(
+                    "Person",
+                    "",
+                    List.of("fullName", "birthDate"),
+                    List.of(
+                        new SchemaDocument.PropertyDefinition("fullName", "string", false),
+                        new SchemaDocument.PropertyDefinition("birthDate", "date", false)
+                    )
+                )
+            ),
+            List.of(new SchemaDocument.RelationshipDefinition("KNOWS", "Person", "Person", "", List.of())),
+            List.of(),
+            List.of()
+        );
+        GraphExtractionResult result = new GraphExtractionResult(
+            List.of(
+                new GraphExtractionResult.ExtractedNode(
+                    "Person",
+                    Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                    0.9
+                ),
+                new GraphExtractionResult.ExtractedNode(
+                    "Person",
+                    Map.of("fullName", "Grace Hopper", "birthDate", "1906-12-09"),
+                    0.9
+                )
+            ),
+            List.of(new GraphExtractionResult.ExtractedRelationship(
+                "KNOWS",
+                "Person",
+                Map.of("fullName", "Ada Lovelace"),
+                "Person",
+                Map.of("fullName", "Ada Lovelace", "birthDate", "1815-12-10"),
+                Map.of(),
+                0.7
+            ))
+        );
+
+        assertThatThrownBy(() -> validationService.validate(result, schema))
+            .isInstanceOf(GraphExtractionValidationException.class)
+            .hasMessageContaining("missing component");
+    }
+
     private SchemaDocument schema() {
         return new SchemaDocument(
             "contracts",
