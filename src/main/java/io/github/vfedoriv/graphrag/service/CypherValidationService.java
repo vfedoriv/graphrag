@@ -11,13 +11,11 @@ import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -27,10 +25,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherValidationService {
 
-    private static final Pattern NODE_PATTERN = Pattern.compile("\\(([^\\[\\]]*?)\\)");
-    private static final Pattern RELATIONSHIP_PATTERN = Pattern.compile("\\[([^\\]]*?)\\]");
-    private static final Pattern LABEL_PATTERN = Pattern.compile(":[`]?([A-Za-z_][A-Za-z0-9_]*)[`]?");
-    private static final Pattern PROPERTY_PATTERN = Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\.([A-Za-z_][A-Za-z0-9_]*)\\b");
     private static final Pattern LIMIT_PATTERN = Pattern.compile("\\bLIMIT\\b", Pattern.CASE_INSENSITIVE);
     private static final Set<String> INFRA_LABELS = Set.of(
         "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "ExtractedEntity", "ExtractedRelation"
@@ -119,103 +113,19 @@ public class CypherValidationService {
     }
 
     private void validateSchemaReferences(SchemaDocument schema, String cypher, List<String> errors) {
-        Set<String> allowedLabels = new HashSet<>(INFRA_LABELS);
-        for (SchemaDocument.NodeDefinition node : schema.nodes()) {
-            allowedLabels.add(node.label());
-        }
-        Set<String> allowedRelationshipTypes = new HashSet<>();
-        for (SchemaDocument.RelationshipDefinition relationship : schema.relationships()) {
-            allowedRelationshipTypes.add(relationship.type());
-        }
-        Set<String> allowedProperties = new HashSet<>(Set.of(
-            "id", "sourceDocumentId", "sourceChunkIds", "schemaId", "extractionRunId", "confidence", "createdAt"
-        ));
-        for (SchemaDocument.NodeDefinition node : schema.nodes()) {
-            for (SchemaDocument.PropertyDefinition property : node.properties()) {
-                allowedProperties.add(property.name());
-            }
-        }
-        for (SchemaDocument.RelationshipDefinition relationship : schema.relationships()) {
-            for (SchemaDocument.PropertyDefinition property : relationship.properties()) {
-                allowedProperties.add(property.name());
-            }
-        }
+        Set<String> allowedLabels = CypherSchemaSupport.allowedLabels(schema, INFRA_LABELS);
+        Set<String> allowedRelationshipTypes = CypherSchemaSupport.allowedRelationshipTypes(schema);
+        Set<String> allowedProperties = CypherSchemaSupport.allowedProperties(schema);
 
-        extractNodeLabels(cypher).stream()
+        CypherParsingSupport.extractNodeLabels(cypher).stream()
             .filter(label -> !allowedLabels.contains(label))
             .forEach(label -> errors.add("Unknown label: " + label));
-        extractRelationshipTypes(cypher).stream()
+        CypherParsingSupport.extractRelationshipTypes(cypher).stream()
             .filter(type -> !allowedRelationshipTypes.contains(type))
             .forEach(type -> errors.add("Unknown relationship type: " + type));
-        matchCaptures(PROPERTY_PATTERN, cypher).stream()
+        CypherParsingSupport.extractPropertyReferences(cypher).stream()
             .filter(property -> !allowedProperties.contains(property))
             .forEach(property -> errors.add("Unknown property: " + property));
-    }
-
-    private List<String> extractNodeLabels(String cypher) {
-        Matcher matcher = NODE_PATTERN.matcher(cypher);
-        List<String> labels = new ArrayList<>();
-        while (matcher.find()) {
-            String nodePattern = beforePropertyMap(matcher.group(1));
-            labels.addAll(matchCaptures(LABEL_PATTERN, nodePattern));
-        }
-        return labels;
-    }
-
-    private List<String> extractRelationshipTypes(String cypher) {
-        Matcher matcher = RELATIONSHIP_PATTERN.matcher(cypher);
-        List<String> relationshipTypes = new ArrayList<>();
-        while (matcher.find()) {
-            String relationshipPattern = beforePropertyMap(matcher.group(1));
-            int typePrefixIndex = relationshipPattern.indexOf(':');
-            if (typePrefixIndex < 0) {
-                continue;
-            }
-            String typeExpression = relationshipPattern.substring(typePrefixIndex + 1).trim();
-            int typeExpressionEnd = findTypeExpressionEnd(typeExpression);
-            String typeSegment = typeExpression.substring(0, typeExpressionEnd);
-            for (String rawType : typeSegment.split("\\|")) {
-                String relationshipType = trimBackticks(rawType.trim());
-                if (!relationshipType.isBlank()) {
-                    relationshipTypes.add(relationshipType);
-                }
-            }
-        }
-        return relationshipTypes;
-    }
-
-    private String beforePropertyMap(String patternContent) {
-        int propertyMapIndex = patternContent.indexOf('{');
-        if (propertyMapIndex < 0) {
-            return patternContent;
-        }
-        return patternContent.substring(0, propertyMapIndex);
-    }
-
-    private int findTypeExpressionEnd(String typeExpression) {
-        for (int i = 0; i < typeExpression.length(); i++) {
-            char ch = typeExpression.charAt(i);
-            if (Character.isWhitespace(ch) || ch == '*') {
-                return i;
-            }
-        }
-        return typeExpression.length();
-    }
-
-    private String trimBackticks(String value) {
-        if (value.length() >= 2 && value.startsWith("`") && value.endsWith("`")) {
-            return value.substring(1, value.length() - 1);
-        }
-        return value;
-    }
-
-    private List<String> matchCaptures(Pattern pattern, String cypher) {
-        Matcher matcher = pattern.matcher(cypher);
-        List<String> values = new ArrayList<>();
-        while (matcher.find()) {
-            values.add(matcher.group(1));
-        }
-        return values;
     }
 
     private void explain(String cypher, Map<String, Object> params, List<String> errors) {

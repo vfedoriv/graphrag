@@ -2,18 +2,10 @@ package io.github.vfedoriv.graphrag.graph;
 
 import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HexFormat;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -155,38 +147,11 @@ public class GraphWriteService {
     }
 
     private String stableNodeId(String schemaId, String label, List<String> keyNames, Map<String, Object> keyProperties) {
-        requireCompleteIdentity(label, keyNames, keyProperties);
-        List<String> canonical = new ArrayList<>();
-        canonical.add("schema:" + schemaId);
-        canonical.add("label:" + label);
-        for (String keyName : keyNames) {
-            Object value = keyProperties == null ? null : keyProperties.get(keyName);
-            String normalized = value == null ? "" : String.valueOf(value);
-            canonical.add("key:" + keyName + "=" + normalized.length() + ":" + normalized);
-        }
-        return "node:" + sha256(String.join("\n", canonical));
+        return GraphWriteSupport.stableNodeId(schemaId, label, keyNames, keyProperties);
     }
 
     private String stableRelationshipId(String schemaId, String type, String fromId, String toId) {
-        List<String> canonical = List.of(
-            "schema:" + schemaId,
-            "type:" + type,
-            "from:" + fromId,
-            "to:" + toId
-        );
-        return "rel:" + sha256(String.join("\n", canonical));
-    }
-
-    private void requireCompleteIdentity(String label, List<String> keyNames, Map<String, Object> keyProperties) {
-        if (keyNames == null || keyNames.isEmpty()) {
-            throw new IllegalArgumentException("Missing schema key definition for node label: " + label);
-        }
-        for (String keyName : keyNames) {
-            Object value = keyProperties == null ? null : keyProperties.get(keyName);
-            if (value == null || value.toString().isBlank()) {
-                throw new IllegalArgumentException("Incomplete identity material for node label: " + label + "." + keyName);
-            }
-        }
+        return GraphWriteSupport.stableRelationshipId(schemaId, type, fromId, toId);
     }
 
     private Map<String, Object> filterDeclaredProperties(
@@ -195,22 +160,8 @@ public class GraphWriteService {
         String entityKind,
         String entityName
     ) {
-        Map<String, Object> filtered = new LinkedHashMap<>();
-        if (input == null || input.isEmpty()) {
-            return filtered;
-        }
-        List<String> dropped = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : input.entrySet()) {
-            String key = entry.getKey();
-            if (key == null || key.isBlank()) {
-                continue;
-            }
-            if (allowed.contains(key)) {
-                filtered.put(key, entry.getValue());
-            } else {
-                dropped.add(key);
-            }
-        }
+        Map<String, Object> filtered = GraphWriteSupport.filterDeclaredProperties(input, allowed);
+        Set<String> dropped = GraphWriteSupport.droppedPropertyNames(input, allowed);
         if (!dropped.isEmpty()) {
             log.warn("Dropped undeclared {} properties: {}={}", entityKind, entityName, dropped);
         }
@@ -218,60 +169,14 @@ public class GraphWriteService {
     }
 
     private Set<String> allowedNodeProperties(SchemaDocument.NodeDefinition nodeDef) {
-        Set<String> properties = new LinkedHashSet<>();
-        if (nodeDef == null || nodeDef.properties() == null) {
-            return properties;
-        }
-        for (SchemaDocument.PropertyDefinition propertyDefinition : nodeDef.properties()) {
-            if (propertyDefinition != null && propertyDefinition.name() != null && !propertyDefinition.name().isBlank()) {
-                properties.add(propertyDefinition.name());
-            }
-        }
-        return properties;
+        return GraphWriteSupport.allowedNodeProperties(nodeDef);
     }
 
     private Set<String> allowedRelationshipProperties(SchemaDocument schema, String type, String from, String to) {
-        Set<String> properties = new LinkedHashSet<>();
-        if (schema == null || schema.relationships() == null) {
-            return properties;
-        }
-        for (SchemaDocument.RelationshipDefinition relationshipDefinition : schema.relationships()) {
-            if (relationshipDefinition == null) {
-                continue;
-            }
-            if (!Objects.equals(type, relationshipDefinition.type())
-                || !Objects.equals(from, relationshipDefinition.from())
-                || !Objects.equals(to, relationshipDefinition.to())) {
-                continue;
-            }
-            List<SchemaDocument.PropertyDefinition> relationshipProperties = relationshipDefinition.properties();
-            if (relationshipProperties == null) {
-                return properties;
-            }
-            for (SchemaDocument.PropertyDefinition propertyDefinition : relationshipProperties) {
-                if (propertyDefinition != null && propertyDefinition.name() != null && !propertyDefinition.name().isBlank()) {
-                    properties.add(propertyDefinition.name());
-                }
-            }
-            return properties;
-        }
-        return properties;
-    }
-
-    private String sha256(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 not available", e);
-        }
+        return GraphWriteSupport.allowedRelationshipProperties(schema, type, from, to);
     }
 
     private String safeToken(String value) {
-        if (value == null || !value.matches("[A-Za-z][A-Za-z0-9_]*")) {
-            throw new IllegalArgumentException("Unsafe schema token: " + value);
-        }
-        return value;
+        return GraphWriteSupport.safeToken(value);
     }
 }

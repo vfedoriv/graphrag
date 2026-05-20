@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -146,7 +145,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
         for (GraphNode node : graphDocument.nodes()) {
             log.info("Processing node {}", node.toString());
-            String label = sanitizeLabel(node.type(), "Entity");
+            String label = SchemaGenerationNormalizationSupport.sanitizeLabel(node.type(), "Entity");
             NodeAccumulator accumulator = nodes.computeIfAbsent(label, ignored -> new NodeAccumulator(label));
             accumulator.mergeFrom(node);
             labelByNodeName.put(node.id(), label);
@@ -157,7 +156,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             log.info("Processing edge {}", edge.toString());
             String fromLabel = labelByNodeName.getOrDefault(edge.sourceNode().id(), "Entity");
             String toLabel = labelByNodeName.getOrDefault(edge.targetNode().id(), "Entity");
-            String type = sanitizeRelation(edge.type());
+            String type = SchemaGenerationNormalizationSupport.sanitizeRelation(edge.type());
             String key = type + "|" + fromLabel + "|" + toLabel;
             RelationshipAccumulator accumulator = relationships.computeIfAbsent(
                 key, ignored -> new RelationshipAccumulator(type, fromLabel, toLabel));
@@ -185,57 +184,6 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         );
     }
 
-    private String sanitizeLabel(String raw, String fallback) {
-        if (raw == null || raw.isBlank()) {
-            return fallback;
-        }
-        String cleaned = raw.replaceAll("[^A-Za-z0-9_]", "_");
-        if (cleaned.isBlank()) {
-            return fallback;
-        }
-        String first = cleaned.substring(0, 1).toUpperCase(Locale.ROOT);
-        return first + cleaned.substring(1);
-    }
-
-    private String sanitizeRelation(String raw) {
-        if (raw == null || raw.isBlank()) {
-            return "RELATED_TO";
-        }
-        String cleaned = raw.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_");
-        cleaned = cleaned.replaceAll("^_+|_+$", "");
-        return cleaned.isBlank() ? "RELATED_TO" : cleaned;
-    }
-
-    private static String firstNonBlank(String left, String right) {
-        if (left != null && !left.isBlank()) {
-            return left;
-        }
-        return (right == null || right.isBlank()) ? null : right;
-    }
-
-    private static String inferPropertyType(String value) {
-        if (value == null || value.isBlank()) {
-            return "string";
-        }
-        String normalized = value.trim();
-        if (normalized.matches("(?i)true|false")) {
-            return "boolean";
-        }
-        if (normalized.matches("[+-]?\\d+")) {
-            return "integer";
-        }
-        if (normalized.matches("[+-]?\\d*\\.\\d+")) {
-            return "number";
-        }
-        if (normalized.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            return "date";
-        }
-        if (normalized.matches("\\d{4}-\\d{2}-\\d{2}[Tt ][0-2]\\d:[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:[Zz]|[+-][0-2]\\d:[0-5]\\d)?")) {
-            return "datetime";
-        }
-        return "string";
-    }
-
     private static final class NodeAccumulator {
         private final String label;
         private String description;
@@ -249,7 +197,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
         private void mergeFrom(GraphNode node) {
             Map<String, String> rawProperties = node.properties() == null ? Map.of() : node.properties();
-            description = firstNonBlank(description, rawProperties.get("description"));
+            description = SchemaGenerationNormalizationSupport.firstNonBlank(description, rawProperties.get("description"));
             mergeKeyCandidates(rawProperties.get("key"));
 
             rawProperties.entrySet().stream()
@@ -258,7 +206,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
                 .filter(entry -> !entry.getKey().equalsIgnoreCase("key"))
                 .forEach(entry -> properties.putIfAbsent(
                     entry.getKey(),
-                    new SchemaDocument.PropertyDefinition(entry.getKey(), inferPropertyType(entry.getValue()), Boolean.FALSE)
+                    new SchemaDocument.PropertyDefinition(entry.getKey(), SchemaGenerationNormalizationSupport.inferPropertyType(entry.getValue()), Boolean.FALSE)
                 ));
         }
 
@@ -278,7 +226,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
                     discardedKeyCandidates.add(keyCandidate);
                 }
             }
-            List<String> key = declaredCandidates.isEmpty() ? inferKeyCandidates(sortedProperties) : declaredCandidates;
+            List<String> key = declaredCandidates.isEmpty() ? SchemaGenerationNormalizationSupport.inferKeyCandidates(sortedProperties) : declaredCandidates;
             return new SchemaDocument.NodeDefinition(label, description, key, sortedProperties);
         }
 
@@ -289,7 +237,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             List<String> candidates = java.util.Arrays.stream(raw.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isBlank())
-                .filter(NodeAccumulator::isSafePropertyName)
+                .filter(SchemaGenerationNormalizationSupport::isSafePropertyName)
                 .toList();
             for (String candidate : candidates) {
                 if (!keyCandidates.contains(candidate)) {
@@ -318,14 +266,14 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
 
         private void mergeFrom(GraphEdge edge) {
             Map<String, String> rawProperties = edge.properties() == null ? Map.of() : edge.properties();
-            description = firstNonBlank(description, rawProperties.get("description"));
+            description = SchemaGenerationNormalizationSupport.firstNonBlank(description, rawProperties.get("description"));
 
             rawProperties.entrySet().stream()
                 .filter(entry -> entry.getKey() != null && !entry.getKey().isBlank())
                 .filter(entry -> !entry.getKey().equalsIgnoreCase("description"))
                 .forEach(entry -> properties.putIfAbsent(
                     entry.getKey(),
-                    new SchemaDocument.PropertyDefinition(entry.getKey(), inferPropertyType(entry.getValue()), Boolean.FALSE)
+                    new SchemaDocument.PropertyDefinition(entry.getKey(), SchemaGenerationNormalizationSupport.inferPropertyType(entry.getValue()), Boolean.FALSE)
                 ));
         }
 
@@ -397,23 +345,6 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             }
         }
         return warnings;
-    }
-
-    private static List<String> inferKeyCandidates(List<SchemaDocument.PropertyDefinition> properties) {
-        if (properties == null || properties.isEmpty()) {
-            return List.of();
-        }
-        List<String> names = properties.stream()
-            .map(SchemaDocument.PropertyDefinition::name)
-            .filter(Objects::nonNull)
-            .toList();
-        List<String> preferred = names.stream()
-            .filter(name -> name.equals("id") || name.endsWith("Id") || name.endsWith("Code") || name.endsWith("Number"))
-            .toList();
-        if (!preferred.isEmpty()) {
-            return preferred.size() == 1 ? List.of(preferred.getFirst()) : preferred.subList(0, Math.min(preferred.size(), 2));
-        }
-        return names.size() == 1 ? List.of(names.getFirst()) : names.subList(0, 2);
     }
 
 }

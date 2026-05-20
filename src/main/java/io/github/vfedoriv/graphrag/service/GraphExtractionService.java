@@ -143,7 +143,7 @@ public class GraphExtractionService {
             );
         } catch (Exception ex) {
             run.setStatus(ExtractionRunStatus.FAILED);
-            run.setErrorMessage(toNonBlankErrorMessage(ex));
+            run.setErrorMessage(GraphExtractionCleanupSupport.toNonBlankErrorMessage(ex));
             run.setCompletedAt(Instant.now());
             extractionRunRepository.save(run);
             log.error(
@@ -233,24 +233,10 @@ public class GraphExtractionService {
             return CleanupResult.zero();
         }
         return new CleanupResult(
-            toLong(cleanupRow.get("deletedRuns")),
-            toLong(cleanupRow.get("deletedRelationships")),
-            toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRelationships")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
         );
-    }
-
-    private long toLong(Object value) {
-        if (value instanceof Number number) {
-            return number.longValue();
-        }
-        return 0L;
-    }
-
-    private String toNonBlankErrorMessage(Exception ex) {
-        if (ex.getMessage() == null || ex.getMessage().isBlank()) {
-            return ex.getClass().getSimpleName();
-        }
-        return ex.getMessage();
     }
 
     private record CleanupResult(
