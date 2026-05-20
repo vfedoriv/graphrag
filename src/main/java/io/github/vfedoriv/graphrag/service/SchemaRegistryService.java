@@ -117,15 +117,29 @@ public class SchemaRegistryService {
                 created.setCreatedAt(Instant.now());
                 return knowledgeBaseRepository.save(created);
             });
+        if (schemaId.equals(kb.getActiveSchemaId())) {
+            if (schema.getStatus() != SchemaStatus.ACTIVE) {
+                schema.setStatus(SchemaStatus.ACTIVE);
+                schemaRepository.save(schema);
+            }
+            log.info("Schema already active: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+            return;
+        }
         kb.setActiveSchemaId(schema.getId());
         knowledgeBaseRepository.save(kb);
-        schema.setStatus(SchemaStatus.ACTIVE);
-        schemaRepository.save(schema);
 
         neo4jClient.query("""
             MATCH (kb:KnowledgeBase {id: $knowledgeBaseId})
             MATCH (s:SchemaDefinition {id: $schemaId})
             MERGE (kb)-[:USES_SCHEMA]->(s)
+            """)
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(schemaId).to("schemaId")
+            .run();
+
+        neo4jClient.query("""
+            MATCH (kb:KnowledgeBase {id: $knowledgeBaseId})-[:USES_SCHEMA]->(s:SchemaDefinition)
+            SET s.status = CASE WHEN s.id = $schemaId THEN 'ACTIVE' ELSE 'INACTIVE' END
             """)
             .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(schemaId).to("schemaId")

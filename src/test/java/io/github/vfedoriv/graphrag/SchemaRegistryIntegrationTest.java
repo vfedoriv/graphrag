@@ -6,11 +6,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.List;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -18,6 +22,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @org.springframework.test.context.TestPropertySource(properties = {
     "spring.autoconfigure.exclude="
         + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
@@ -97,8 +102,99 @@ class SchemaRegistryIntegrationTest {
     }
 
     @Test
+    @Order(1)
     void bootstrapsPredefinedSchemasFromResources() {
         List<SchemaDefinitionNode> schemas = schemaRegistryService.listSchemas();
         assertThat(schemas).extracting("name").contains("legal-contracts", "cmms");
+    }
+
+    @Test
+    void activatingSchemaDeactivatesSiblingsWithinKnowledgeBase() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode first = schemaRegistryService.createSchema(schemaJson("contracts-a"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode second = schemaRegistryService.createSchema(schemaJson("contracts-b"), SchemaSourceType.PREDEFINED);
+
+        schemaRegistryService.activateSchema("kb-single", first.getId());
+        schemaRegistryService.activateSchema("kb-single", second.getId());
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-single").orElseThrow();
+        SchemaDefinitionNode firstReloaded = schemaRegistryService.getSchema(first.getId());
+        SchemaDefinitionNode secondReloaded = schemaRegistryService.getSchema(second.getId());
+
+        assertThat(kb.getActiveSchemaId()).isEqualTo(second.getId());
+        assertThat(firstReloaded.getStatus()).isEqualTo(SchemaStatus.INACTIVE);
+        assertThat(secondReloaded.getStatus()).isEqualTo(SchemaStatus.ACTIVE);
+        assertThat(usesSchemaRelationCount("kb-single")).isEqualTo(2L);
+    }
+
+    @Test
+    void activatingSchemaDoesNotAffectOtherKnowledgeBases() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode kb1SchemaA = schemaRegistryService.createSchema(schemaJson("kb1-a"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode kb1SchemaB = schemaRegistryService.createSchema(schemaJson("kb1-b"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode kb2Schema = schemaRegistryService.createSchema(schemaJson("kb2-a"), SchemaSourceType.PREDEFINED);
+
+        schemaRegistryService.activateSchema("kb-one", kb1SchemaA.getId());
+        schemaRegistryService.activateSchema("kb-two", kb2Schema.getId());
+        schemaRegistryService.activateSchema("kb-one", kb1SchemaB.getId());
+
+        KnowledgeBaseNode kbOne = knowledgeBaseRepository.findById("kb-one").orElseThrow();
+        KnowledgeBaseNode kbTwo = knowledgeBaseRepository.findById("kb-two").orElseThrow();
+
+        assertThat(kbOne.getActiveSchemaId()).isEqualTo(kb1SchemaB.getId());
+        assertThat(kbTwo.getActiveSchemaId()).isEqualTo(kb2Schema.getId());
+        assertThat(usesSchemaTargetCount("kb-two", kb2Schema.getId())).isEqualTo(1L);
+    }
+
+    @Test
+    void repeatedActivationIsIdempotent() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-idempotent"), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-repeat", schema.getId());
+        schemaRegistryService.activateSchema("kb-repeat", schema.getId());
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-repeat").orElseThrow();
+        assertThat(kb.getActiveSchemaId()).isEqualTo(schema.getId());
+        assertThat(usesSchemaRelationCount("kb-repeat")).isEqualTo(1L);
+        assertThat(usesSchemaTargetCount("kb-repeat", schema.getId())).isEqualTo(1L);
+    }
+
+    private String schemaJson(String name) {
+        return """
+            {
+              "name": "%s",
+              "version": 1,
+              "nodes": [
+                {"label": "Contract", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]}
+              ],
+              "relationships": []
+            }
+            """.formatted(name);
+    }
+
+    private Long usesSchemaRelationCount(String knowledgeBaseId) {
+        return neo4jClient.query("""
+            MATCH (:KnowledgeBase {id: $kbId})-[r:USES_SCHEMA]->(:SchemaDefinition)
+            RETURN count(r) AS c
+            """)
+            .bind(knowledgeBaseId).to("kbId")
+            .fetchAs(Long.class)
+            .one()
+            .orElse(0L);
+    }
+
+    private Long usesSchemaTargetCount(String knowledgeBaseId, String schemaId) {
+        return neo4jClient.query("""
+            MATCH (:KnowledgeBase {id: $kbId})-[:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
+            RETURN count(*) AS c
+            """)
+            .bind(knowledgeBaseId).to("kbId")
+            .bind(schemaId).to("schemaId")
+            .fetchAs(Long.class)
+            .one()
+            .orElse(0L);
     }
 }
