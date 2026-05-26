@@ -1,0 +1,46 @@
+# PR Review Summary
+# Commit: ab165b7 "enforce schema deactivation on activation"
+# Agents: silent-failure-hunter, security-reviewer
+# Scope: HEAD~1..HEAD (recent commit, branch: dev)
+# Date: 2026-05-22 16:30
+
+## Critical Issues (2 found)
+
+1. **silent-failure-hunter**: Bulk Cypher `SET` result is never checked — `.run()` silently succeeds when the `MATCH` finds zero `USES_SCHEMA` relationships, leaving the KB's `activeSchemaId` pointing to a schema whose `status` was never updated to `ACTIVE`. [SchemaRegistryService.java:140-146]
+
+2. **silent-failure-hunter**: The preceding `MERGE` Cypher result is also unchecked — if either `MATCH` clause returns nothing (e.g. the Spring Data `save()` hasn't committed yet in the same session), the merge is skipped silently and `.run()` returns without error, producing a permanently broken `USES_SCHEMA` graph edge with no signal. [SchemaRegistryService.java:131-138]
+
+## Important Issues (5 found)
+
+1. **silent-failure-hunter**: Data inconsistency in the idempotency guard is silently repaired with `log.info` — when the schema node is not `ACTIVE` despite the KB's `activeSchemaId` pointing to it, the code patches the corruption without a `WARN` or audit trail, making prior `SET` failures permanently invisible. [SchemaRegistryService.java:120-127]
+
+2. **silent-failure-hunter**: Hard-coded string literals `'ACTIVE'`/`'INACTIVE'` in the Cypher `SET` bypass `SchemaStatus` enum serialization — a future enum rename or custom converter silently diverges from stored values, corrupting status reads with no compiler error. [SchemaRegistryService.java:140-146]
+
+3. **silent-failure-hunter**: `@Transactional` does not provably cover the two `Neo4jClient` queries — unless the client is explicitly enrolled in the same Spring transaction manager, the repository saves and the raw Cypher writes run in separate auto-commit sessions, making the design doc's atomicity guarantee unenforceable. [SchemaRegistryService.java:108-148]
+
+4. **security-reviewer**: No authentication or authorization guard on the activation endpoint — any unauthenticated caller can switch the active schema for any knowledge base, now with a wider blast radius (this commit adds bulk sibling deactivation). [SchemaController.java:302-315]
+
+5. **security-reviewer**: `activateSchema` implicitly creates a `KnowledgeBaseNode` from the caller-controlled `knowledgeBaseId` path variable with no format constraint, no length limit, and no permission check — enables arbitrary node creation via the unauthenticated endpoint. [SchemaRegistryService.java:112-119]
+
+## Suggestions (4 found)
+
+- **silent-failure-hunter**: Add `log.info` after bulk SET with `summary.counters().propertiesSet()` — the sibling deactivation is the most operationally significant side effect of this commit but leaves no audit trail [SchemaRegistryService.java:140-146]
+- **silent-failure-hunter**: Add missing status assertion in `activatingSchemaDoesNotAffectOtherKnowledgeBases` — `kb1SchemaA.getStatus()` is never checked after `kb1SchemaB` is activated, so a silent `SET` failure would not be caught [SchemaRegistryIntegrationTest.java:132-149]
+- **security-reviewer**: Race condition on idempotency guard — two concurrent activations for different schemas can both pass the `schemaId.equals(kb.getActiveSchemaId())` check and produce inconsistent final state; design doc acknowledges the risk but the transaction boundary doesn't fully mitigate it [SchemaRegistryService.java:120-127]
+- **security-reviewer**: `@TestMethodOrder` added but only one method has `@Order(1)` — un-annotated tests with `DETACH DELETE n` can run before the bootstrap test and wipe required schemas, causing a flaky pass [SchemaRegistryIntegrationTest.java:104-113]
+
+## Strengths
+
+- All Cypher queries use parameterized binding (`.bind(...).to(...)`) throughout — no Cypher injection surface
+- `safeToken` allowlist in `GraphWriteService` correctly blocks label/relationship injection; reviewed and confirmed sound
+- Idempotency semantics are well-defined and the three test scenarios (sibling deactivation, cross-KB isolation, repeated activation) cover the right behavioral axes
+- The spec and design documents accurately capture the architectural decisions and trade-offs, including the race condition risk
+
+## Recommended Action
+
+1. Fix Critical issues first: add `ResultSummary` row-count assertions on both `neo4jClient` queries and throw `IllegalStateException` on zero rows
+2. Address Important issue #3 (transaction boundary): verify or enforce that `Neo4jClient` and Spring Data Neo4j share the same transaction in `activateSchema`
+3. Address Important issues #4 and #5 (security): add Spring Security with authentication and constrain `knowledgeBaseId` input
+4. Address Important issue #2 (enum safety): replace hard-coded string literals with `SchemaStatus.ACTIVE.name()`
+5. Consider suggestions for log observability and test coverage
+6. Re-run review after fixes
