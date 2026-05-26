@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
@@ -109,6 +111,7 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         String prompt = """
             You generate examples for graph extraction.
             Return only a JSON array where each object has keys 'head', 'head_type', 'relation', 'tail', and 'tail_type'.
+            Do not wrap with any outer object (no {"example": ...}).
             No markdown and no explanations.
 
             Generate representative entity-relationship examples from this text so they can guide schema extraction.
@@ -126,7 +129,15 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         if (log.isDebugEnabled()) {
             log.debug("Schema example generation prompt: {}", prompt);
         }
-        String response = requireSpringChatModel().call(new Prompt(prompt)).getResult().getOutput().getText();
+        ChatResponse chatResponse = requireSpringChatModel().call(new Prompt(prompt));
+        AssistantMessage outputMessage = null;
+        if (chatResponse.getResult() != null) {
+            outputMessage = chatResponse.getResult().getOutput();
+        }
+        String response = "";
+        if (outputMessage != null && outputMessage.getText() != null) {
+            response = outputMessage.getText().trim();
+        }
         log.info(
             "Schema example generation completed: responseLength={}, responsePreview={}, elapsedMs={}",
             LogSanitizer.length(response),

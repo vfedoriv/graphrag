@@ -122,7 +122,7 @@ class SchemaControllerTest {
         GenerateSchemaExampleResponse response =
             controller.generateSchemaExample(new GenerateSchemaExampleRequest("raw input text", "focus on contracts"));
 
-        assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
+        assertThat(response.value()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("raw input text", "focus on contracts");
     }
 
@@ -141,7 +141,7 @@ class SchemaControllerTest {
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         GenerateSchemaExampleResponse response = controller.generateSchemaExampleFromFile(null, file);
 
-        assertThat(response.example()).isEqualTo("[{\"head\":\"Acme\"}]");
+        assertThat(response.value()).isEqualTo("[{\"head\":\"Acme\"}]");
         verify(generationService).generateExample("parsed text", null);
     }
 
