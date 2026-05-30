@@ -224,6 +224,60 @@ class SchemaControllerTest {
             .doesNotContain("content");
     }
 
+    @Test
+    void listSchemasByKnowledgeBaseReturnsAssociatedSchemas() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        SchemaDefinitionNode schema = new SchemaDefinitionNode();
+        schema.setId("schema-01");
+        schema.setName("legal-contracts");
+        schema.setVersion(1);
+        schema.setSourceType(SchemaSourceType.PREDEFINED);
+        schema.setFormat(SchemaFormat.JSON);
+        schema.setContentHash("hash-01");
+        schema.setStatus(SchemaStatus.ACTIVE);
+        schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
+        when(registryService.listSchemasByKnowledgeBase("kb-01")).thenReturn(List.of(schema));
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        List<SchemaResponse> response = controller.listSchemasByKnowledgeBase("kb-01");
+
+        assertThat(response).hasSize(1);
+        assertThat(response.getFirst().id()).isEqualTo("schema-01");
+        verify(registryService).listSchemasByKnowledgeBase("kb-01");
+    }
+
+    @Test
+    void listSchemasByKnowledgeBaseReturnsEmptyList() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+        when(registryService.listSchemasByKnowledgeBase("kb-empty")).thenReturn(List.of());
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        List<SchemaResponse> response = controller.listSchemasByKnowledgeBase("kb-empty");
+
+        assertThat(response).isEmpty();
+        verify(registryService).listSchemasByKnowledgeBase("kb-empty");
+    }
+
+    @Test
+    void listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+        when(registryService.listSchemasByKnowledgeBase("missing-kb"))
+            .thenThrow(new NotFoundException("Knowledge base not found: missing-kb"));
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+
+        assertThatThrownBy(() -> controller.listSchemasByKnowledgeBase("missing-kb"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Knowledge base not found: missing-kb");
+    }
+
     private static com.fasterxml.jackson.databind.JsonNode readJson(String json) {
         try {
             return OBJECT_MAPPER.readTree(json);

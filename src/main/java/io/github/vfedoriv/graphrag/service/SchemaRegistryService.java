@@ -89,6 +89,17 @@ public class SchemaRegistryService {
     }
 
     @Transactional(readOnly = true)
+    public List<SchemaDefinitionNode> listSchemasByKnowledgeBase(String knowledgeBaseId) {
+        log.info("Listing schemas by knowledge base: knowledgeBaseId={}", knowledgeBaseId);
+        if (!knowledgeBaseRepository.existsById(knowledgeBaseId)) {
+            throw new NotFoundException("Knowledge base not found: " + knowledgeBaseId);
+        }
+        List<SchemaDefinitionNode> schemas = schemaRepository.findAllByKnowledgeBaseId(knowledgeBaseId);
+        log.info("Schemas listed by knowledge base: knowledgeBaseId={}, count={}", knowledgeBaseId, schemas.size());
+        return schemas;
+    }
+
+    @Transactional(readOnly = true)
     public SchemaDefinitionNode getSchema(String schemaId) {
         log.info("Loading schema: schemaId={}", schemaId);
         SchemaDefinitionNode schema = schemaRepository.findById(schemaId).orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));

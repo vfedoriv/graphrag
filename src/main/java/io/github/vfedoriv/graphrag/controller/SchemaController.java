@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -250,6 +251,21 @@ public class SchemaController {
         log.info("List schemas request");
         List<SchemaResponse> response = schemaRegistryService.listSchemas().stream().map(this::toResponse).toList();
         log.info("List schemas completed: count={}", response.size());
+        return response;
+    }
+
+    @GetMapping("/knowledge-bases/{knowledgeBaseId}/schemas")
+    @Operation(summary = "List schemas by knowledge base", description = "Returns schemas associated with a knowledge base.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schemas retrieved"),
+        @ApiResponse(responseCode = "404", description = "Knowledge base not found", content = @Content(schema = @Schema()))
+    })
+    public List<SchemaResponse> listSchemasByKnowledgeBase(
+        @Parameter(description = "Knowledge base identifier") @PathVariable @NotBlank String knowledgeBaseId
+    ) {
+        log.info("List schemas by knowledge base request: knowledgeBaseId={}", knowledgeBaseId);
+        List<SchemaResponse> response = schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream().map(this::toResponse).toList();
+        log.info("List schemas by knowledge base completed: knowledgeBaseId={}, count={}", knowledgeBaseId, response.size());
         return response;
     }
 
