@@ -42,7 +42,7 @@ Use `./mvnw` instead of bare `mvn`.
 - Layering: Controllers -> Services -> Repositories -> Neo4j
 
 Main controllers:
-- `SchemaController`
+- `SchemaController` (create/list/validate/activate, schema generation, example generation, KB schema listing)
 - `KnowledgeBaseController`
 - `DocumentController`
 - `QueryController`
@@ -80,6 +80,8 @@ Key services:
 ## OpenSpec Workflow
 
 OpenSpec artifacts are the source of historical product decisions. Archived changes under `openspec/changes/archive` document completed implementation work. For new behavior or contract changes, add or update OpenSpec specs before implementation when the change is non-trivial.
+
+When changing shared contributor guidance in `README.md`, `AGENTS.md`, or `CLAUDE.md`, keep overlapping implementation facts synchronized in the same change.
 
 ## Commit & Pull Request Guidelines
 

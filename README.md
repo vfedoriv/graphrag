@@ -241,8 +241,8 @@ Key app properties:
   - `app.query.require-limit=true`
   - `app.query.blocked-keywords=CREATE,MERGE,SET,DELETE,DETACH,REMOVE,DROP,LOAD CSV,CALL`
 - Extraction:
-  - `app.extraction.max-entities-per-chunk=40`
-  - `app.extraction.max-relationships-per-chunk=80`
+  - `app.extraction.max-entities-per-chunk=100`
+  - `app.extraction.max-relationships-per-chunk=200`
   - `app.extraction.max-retries=2`
 
 ## Schema Format
@@ -344,7 +344,10 @@ Base path: `/api/v1`
 - `POST /schemas`
 - `POST /schemas/generate`
 - `POST /schemas/generate/from-file` (multipart form, part name: `file`)
+- `POST /schemas/generate/example`
+- `POST /schemas/generate/example/from-file` (multipart form, part name: `file`)
 - `GET /schemas`
+- `GET /knowledge-bases/{knowledgeBaseId}/schemas`
 - `GET /schemas/{schemaId}`
 - `POST /schemas/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`
@@ -379,9 +382,13 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 - `POST /schemas`
   - body: `{"content":"<json>", "sourceType":"PREDEFINED|GENERATED"}`
 - `POST /schemas/generate`
-  - body: `{"name":"generated-legal-schema", "version":1, "description":"optional", "text":"<unstructured text>", "save":false}`
+  - body: `{"name":"generated-legal-schema", "version":1, "description":"optional", "text":"<unstructured text>", "example":"optional example json or text"}`
 - `POST /schemas/generate/from-file`
-  - multipart fields: `name` (string), `version` (int), `description` (optional string), `save` (optional boolean), part `file` (PDF/TXT/DOCX)
+  - multipart parts: `request` (JSON: `{"name":"generated-legal-schema","version":1,"description":"optional","example":{...}}`), `file` (PDF/TXT/DOCX)
+- `POST /schemas/generate/example`
+  - body: `{"text":"<unstructured text>", "userPrompt":"optional guidance"}`
+- `POST /schemas/generate/example/from-file`
+  - multipart fields: optional `userPrompt` (string), part `file` (PDF/TXT/DOCX)
 - `POST /schemas/validate`
   - body: `{"content":"<json>"}`
 - `POST /knowledge-bases`
@@ -392,6 +399,8 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - multipart: part `file`
 - `GET /knowledge-bases/{knowledgeBaseId}/documents`
   - returns: document metadata list for the knowledge base
+- `GET /knowledge-bases/{knowledgeBaseId}/schemas`
+  - returns: schema versions associated with the knowledge base
 - `POST /documents/{documentId}/process`
   - query param: `allowOverwrite` (optional boolean, default `false`)
   - returns `409 Conflict` when a completed extraction already exists and overwrite is not allowed

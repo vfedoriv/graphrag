@@ -52,7 +52,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 
 | Controller | Responsibility |
 |---|---|
-| `SchemaController` | CRUD, generation, validation, and activation of JSON schemas |
+| `SchemaController` | CRUD, generation, example generation, validation, knowledge-base schema listing, and activation of JSON schemas |
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
@@ -120,3 +120,7 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 - **Provider-agnostic AI:** storage, embedding, generation, and extraction are all behind interfaces to allow swapping providers or using mocks.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
 - **No Java `var`:** declare concrete variable types explicitly instead of using the `var` keyword.
+
+## Documentation Hygiene
+
+When updating shared implementation facts in `README.md`, `AGENTS.md`, or `CLAUDE.md`, keep the overlapping guidance aligned in the same change so contributors do not receive conflicting instructions.
