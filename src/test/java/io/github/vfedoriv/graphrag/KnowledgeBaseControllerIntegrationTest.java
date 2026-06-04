@@ -113,6 +113,28 @@ class KnowledgeBaseControllerIntegrationTest {
     }
 
     @Test
+    void createKnowledgeBaseValidationFailureReturnsProblemDetails() throws Exception {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        mockMvc.perform(post("/api/v1/knowledge-bases")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "id": "",
+                      "name": ""
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.type").value("about:blank"))
+            .andExpect(jsonPath("$.title").value("Validation failed"))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.detail").value("Validation failed"))
+            .andExpect(jsonPath("$.instance").value("/api/v1/knowledge-bases"))
+            .andExpect(jsonPath("$.errors.id").exists())
+            .andExpect(jsonPath("$.errors.name").exists());
+    }
+
+    @Test
     void deleteKnowledgeBaseDetachesSchemaRelation() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 
