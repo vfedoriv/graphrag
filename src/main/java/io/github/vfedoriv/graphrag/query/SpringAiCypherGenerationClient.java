@@ -82,14 +82,14 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
                 if (log.isDebugEnabled()) {
                     log.debug("Cypher generation model response: {}", content);
                 }
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
                 Payload payload = objectMapper.readValue(content, Payload.class);
                 GeneratedCypher generated = new GeneratedCypher(
                     payload.cypher(),
                     payload.explanation(),
                     payload.parameters() == null ? Map.of() : payload.parameters()
                 );
-                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
-                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
                 observation.highCardinalityAttribute("ai.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
                 observation.highCardinalityAttribute("ai.cypher.parameter_count", String.valueOf(generated.parameters().size()));
                 log.info(

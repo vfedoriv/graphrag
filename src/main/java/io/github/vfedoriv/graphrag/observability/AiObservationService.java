@@ -45,6 +45,10 @@ public class AiObservationService {
     static final String OTEL_OUTPUT_VALUE = "output.value";
     static final String GEN_AI_PROMPT = "gen_ai.prompt";
     static final String GEN_AI_COMPLETION = "gen_ai.completion";
+    static final String LANGFUSE_OBSERVATION_TYPE = "langfuse.observation.type";
+    static final String LANGFUSE_OBSERVATION_MODEL_NAME = "langfuse.observation.model.name";
+    static final String OTEL_MODEL = "model";
+    static final String LANGFUSE_GENERATION_TYPE = "generation";
 
     private final AiObservabilityProperties properties;
     private final ObservationRegistry observationRegistry;
@@ -200,11 +204,12 @@ public class AiObservationService {
         }
         Observation parentObservation = observationRegistry.getCurrentObservation();
         Span parentSpan = Span.current();
-        addSpanInputOutputAttributes(parentSpan, context.highCardinalityAttributes());
+        addTraceSpanInputOutputAttributes(parentSpan, context.highCardinalityAttributes());
         Observation observation = startObservation("graphrag.ai.model", context.workflow(), context.schemaName());
         observation.lowCardinalityKeyValue(AiObservationAttributes.OPERATION, stable(context.operation()));
         observation.lowCardinalityKeyValue(AiObservationAttributes.PROVIDER_PROFILE, stable(context.providerProfile()));
         observation.lowCardinalityKeyValue(AiObservationAttributes.MODEL_NAME, stable(context.modelName()));
+        addLangfuseModelAttributes(observation, context);
         addHighCardinalityAttributes(observation, context.highCardinalityAttributes());
         addTraceInputOutputAttributes(parentObservation, context.highCardinalityAttributes());
         AiModelCallObservation modelObservation = new AiModelCallObservation(
@@ -215,6 +220,7 @@ public class AiObservationService {
             parentObservation,
             parentSpan
         );
+        addLangfuseModelSpanAttributes(Span.current(), context);
         addSpanInputOutputAttributes(Span.current(), context.highCardinalityAttributes());
         return modelObservation;
     }
@@ -239,13 +245,41 @@ public class AiObservationService {
         }
     }
 
+    private void addLangfuseModelAttributes(Observation observation, AiModelCallContext context) {
+        String modelName = stable(context.modelName());
+        observation.highCardinalityKeyValue(LANGFUSE_OBSERVATION_TYPE, LANGFUSE_GENERATION_TYPE);
+        observation.highCardinalityKeyValue(LANGFUSE_OBSERVATION_MODEL_NAME, modelName);
+        observation.highCardinalityKeyValue(OTEL_MODEL, modelName);
+    }
+
+    private void addLangfuseModelSpanAttributes(Span span, AiModelCallContext context) {
+        if (span == null) {
+            return;
+        }
+        String modelName = stable(context.modelName());
+        span.setAttribute(LANGFUSE_OBSERVATION_TYPE, LANGFUSE_GENERATION_TYPE);
+        span.setAttribute(LANGFUSE_OBSERVATION_MODEL_NAME, modelName);
+        span.setAttribute(OTEL_MODEL, modelName);
+    }
+
     void addTraceInputOutputAttributes(Observation observation, Map<String, String> attributes) {
         if (observation == null || observation.isNoop()) {
             return;
         }
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            if (isInputOutputAttribute(entry.getKey()) && entry.getValue() != null) {
+            if (isTraceInputOutputAttribute(entry.getKey()) && entry.getValue() != null) {
                 observation.highCardinalityKeyValue(entry.getKey(), truncateInputOutput(entry.getValue()));
+            }
+        }
+    }
+
+    void addTraceSpanInputOutputAttributes(Span span, Map<String, String> attributes) {
+        if (span == null) {
+            return;
+        }
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            if (isTraceInputOutputAttribute(entry.getKey()) && entry.getValue() != null) {
+                span.setAttribute(entry.getKey(), truncateInputOutput(entry.getValue()));
             }
         }
     }
@@ -270,6 +304,13 @@ public class AiObservationService {
             || OTEL_OUTPUT_VALUE.equals(key)
             || GEN_AI_PROMPT.equals(key)
             || GEN_AI_COMPLETION.equals(key);
+    }
+
+    static boolean isTraceInputOutputAttribute(String key) {
+        return LANGFUSE_TRACE_INPUT.equals(key)
+            || LANGFUSE_TRACE_OUTPUT.equals(key)
+            || OTEL_INPUT_VALUE.equals(key)
+            || OTEL_OUTPUT_VALUE.equals(key);
     }
 
     private Iterable<Tag> modelTags(AiModelCallContext context, String status, String failureCategory) {

@@ -4,10 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationRegistry;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -85,11 +90,61 @@ class AiObservationServiceTest {
 
     @Test
     void langfuseInputOutputAttributesCanExceedGenericAttributeMaxLength() {
-        AiObservationService service = service(true, false, true, 32, 128, new SimpleMeterRegistry());
+        AiObservationService service = service(
+            true,
+            false,
+            ObservationRegistry.create(),
+            true,
+            32,
+            128,
+            new SimpleMeterRegistry()
+        );
 
         Map<String, String> input = service.langfuseInputAttributes("123456789");
 
         assertThat(input.get("langfuse.observation.input")).isEqualTo("123456789");
+    }
+
+    @Test
+    void modelCallRecordsObservationInputOutputAndParentTraceInputOutput() {
+        CapturingObservationHandler handler = new CapturingObservationHandler();
+        ObservationRegistry observationRegistry = ObservationRegistry.create();
+        observationRegistry.observationConfig().observationHandler(handler);
+        AiObservationService service = service(true, false, observationRegistry, new SimpleMeterRegistry());
+
+        try (AiObservationScope workflow = service.startWorkflow(new AiWorkflowContext(
+            AiObservationService.WORKFLOW_CYPHER_GENERATION,
+            "contracts",
+            Map.of("workflow.id", "wf-1")
+        ))) {
+            Map<String, String> inputAttributes = service.langfuseInputAttributes("prompt text");
+            try (AiModelCallObservation observation = service.startChatModelCall(
+                AiObservationService.WORKFLOW_CYPHER_GENERATION,
+                "contracts",
+                inputAttributes
+            )) {
+                observation.highCardinalityAttributes(service.langfuseOutputAttributes("model text"));
+                observation.success(AiTokenUsage.none());
+            }
+            workflow.success();
+        }
+
+        CapturedObservation modelObservation = handler.singleObservationNamed("graphrag.ai.model");
+        CapturedObservation workflowObservation = handler.singleObservationNamed("graphrag.ai.workflow");
+        assertThat(modelObservation.highCardinalityAttributes())
+            .containsEntry("langfuse.observation.type", "generation")
+            .containsEntry("langfuse.observation.model.name", "gpt-5-mini")
+            .containsEntry("model", "gpt-5-mini")
+            .containsEntry("langfuse.observation.input", "prompt text")
+            .containsEntry("langfuse.observation.output", "model text")
+            .containsEntry("langfuse.trace.input", "prompt text")
+            .containsEntry("langfuse.trace.output", "model text");
+        assertThat(workflowObservation.highCardinalityAttributes())
+            .containsEntry("langfuse.trace.input", "prompt text")
+            .containsEntry("langfuse.trace.output", "model text")
+            .containsEntry("input.value", "prompt text")
+            .containsEntry("output.value", "model text")
+            .doesNotContainKeys("langfuse.observation.input", "langfuse.observation.output");
     }
 
     @Test
@@ -142,7 +197,7 @@ class AiObservationServiceTest {
     }
 
     private AiObservationService service(boolean enabled, boolean contentCaptureEnabled, SimpleMeterRegistry meterRegistry) {
-        return service(enabled, contentCaptureEnabled, true, 128, meterRegistry);
+        return service(enabled, contentCaptureEnabled, ObservationRegistry.create(), true, 128, meterRegistry);
     }
 
     private AiObservationService service(
@@ -152,12 +207,33 @@ class AiObservationServiceTest {
         int maxInputOutputLength,
         SimpleMeterRegistry meterRegistry
     ) {
-        return service(enabled, contentCaptureEnabled, inputOutputContentEnabled, 128, maxInputOutputLength, meterRegistry);
+        return service(enabled, contentCaptureEnabled, ObservationRegistry.create(), inputOutputContentEnabled, 128, maxInputOutputLength, meterRegistry);
     }
 
     private AiObservationService service(
         boolean enabled,
         boolean contentCaptureEnabled,
+        ObservationRegistry observationRegistry,
+        SimpleMeterRegistry meterRegistry
+    ) {
+        return service(enabled, contentCaptureEnabled, observationRegistry, true, 128, meterRegistry);
+    }
+
+    private AiObservationService service(
+        boolean enabled,
+        boolean contentCaptureEnabled,
+        ObservationRegistry observationRegistry,
+        boolean inputOutputContentEnabled,
+        int maxInputOutputLength,
+        SimpleMeterRegistry meterRegistry
+    ) {
+        return service(enabled, contentCaptureEnabled, observationRegistry, inputOutputContentEnabled, 128, maxInputOutputLength, meterRegistry);
+    }
+
+    private AiObservationService service(
+        boolean enabled,
+        boolean contentCaptureEnabled,
+        ObservationRegistry observationRegistry,
         boolean inputOutputContentEnabled,
         int maxAttributeLength,
         int maxInputOutputLength,
@@ -176,7 +252,7 @@ class AiObservationServiceTest {
                 true,
                 true
             ),
-            ObservationRegistry.create(),
+            observationRegistry,
             meterRegistry,
             appProperties(),
             environment
@@ -200,6 +276,36 @@ class AiObservationServiceTest {
             .map(Tag::getKey)
             .distinct()
             .toList();
+    }
+
+    private static final class CapturingObservationHandler implements ObservationHandler<Observation.Context> {
+
+        private final List<CapturedObservation> observations = new ArrayList<>();
+
+        @Override
+        public void onStop(Observation.Context context) {
+            Map<String, String> highCardinalityAttributes = new HashMap<>();
+            for (KeyValue keyValue : context.getHighCardinalityKeyValues()) {
+                highCardinalityAttributes.put(keyValue.getKey(), keyValue.getValue());
+            }
+            observations.add(new CapturedObservation(context.getName(), highCardinalityAttributes));
+        }
+
+        @Override
+        public boolean supportsContext(Observation.Context context) {
+            return true;
+        }
+
+        private CapturedObservation singleObservationNamed(String name) {
+            List<CapturedObservation> matches = observations.stream()
+                .filter(observation -> name.equals(observation.name()))
+                .toList();
+            assertThat(matches).hasSize(1);
+            return matches.getFirst();
+        }
+    }
+
+    private record CapturedObservation(String name, Map<String, String> highCardinalityAttributes) {
     }
 
     private record Response(Metadata metadata) {

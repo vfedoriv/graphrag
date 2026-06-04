@@ -87,7 +87,6 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
                 log.info("Graph extraction resolved chatModelClass={}", chatModel.getClass().getName());
                 org.springframework.ai.chat.model.ChatResponse chatResponse = chatModel.call(new Prompt(prompt));
                 String content = chatResponse.getResult().getOutput().getText();
-                String normalizedContent = extractJsonPayload(content);
                 log.info(
                     "Graph extraction model call completed: responseLength={}, responsePreview={}",
                     LogSanitizer.length(content),
@@ -96,11 +95,12 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
                 if (log.isDebugEnabled()) {
                     log.debug("Graph extraction model response: {}", content);
                 }
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
+                String normalizedContent = extractJsonPayload(content);
                 JsonNode responseJson = objectMapper.readTree(normalizedContent);
                 logUnknownExtractionFields(schema, chunkLength, responseJson);
                 GraphExtractionResult result = tolerantObjectMapper.treeToValue(responseJson, GraphExtractionResult.class);
-                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
-                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
                 observation.highCardinalityAttribute("ai.graph.nodes", String.valueOf(result.nodes() == null ? 0 : result.nodes().size()));
                 observation.highCardinalityAttribute(
                     "ai.graph.relationships",

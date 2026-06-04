@@ -38,7 +38,7 @@ public final class AiModelCallObservation extends AiObservationScope {
         super.highCardinalityAttribute(key, value);
         if (AiObservationService.isInputOutputAttribute(key) && value != null) {
             service.addTraceInputOutputAttributes(parentObservation, java.util.Map.of(key, value));
-            service.addSpanInputOutputAttributes(parentSpan, java.util.Map.of(key, value));
+            service.addTraceSpanInputOutputAttributes(parentSpan, java.util.Map.of(key, value));
             service.addSpanInputOutputAttributes(Span.current(), java.util.Map.of(key, value));
         }
     }
