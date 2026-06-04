@@ -157,7 +157,11 @@ services:
 
 volumes:
   neo4j_data:
+    external: true
+    name: graphrag_neo4j_data
   neo4j_logs:
+    external: true
+    name: graphrag_neo4j_logs
   langfuse_postgres_data:
   langfuse_clickhouse_data:
   langfuse_clickhouse_logs:
