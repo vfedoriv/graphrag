@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
@@ -57,7 +58,8 @@ class QueryControllerTest {
             props(),
             generationService,
             Mockito.mock(CypherValidationService.class),
-            executionService
+            executionService,
+            TestAiObservationService.noop()
         );
         QueryAskResponse response = controller.ask("kb-1", new QueryGenerateRequest("list contracts"));
 
@@ -84,7 +86,8 @@ class QueryControllerTest {
             props(),
             generationService,
             Mockito.mock(CypherValidationService.class),
-            Mockito.mock(CypherExecutionService.class)
+            Mockito.mock(CypherExecutionService.class),
+            TestAiObservationService.noop()
         );
 
         assertThatThrownBy(() -> controller.ask("kb-1", new QueryGenerateRequest("unsafe query")))

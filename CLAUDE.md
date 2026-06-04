@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Language:** Java 25, **Framework:** Spring Boot 4.0.6
 - **Database:** Neo4j 5 (graph + vector index via Spring Data Neo4j)
 - **LLM Integration:** Spring AI 2.0 (OpenAI-compatible) + LangChain4j 1.14
+- **AI Observability:** OpenTelemetry + Micrometer, optional local Langfuse
 - **Document Parsing:** LangChain4j Apache Tika
 - **Build:** Maven (use `./mvnw`, never bare `mvn`)
 - **API Docs:** SpringDoc OpenAPI at `/swagger-ui/index.html`
@@ -23,6 +24,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run with OpenAI
 OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai
 
+# Run with OpenAI and local Langfuse tracing
+OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,langfuse
+
 # Run with local LM Studio
 LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm_studio
 
@@ -34,6 +38,9 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 
 # Start Neo4j only
 docker compose up -d neo4j
+
+# Start Neo4j + local Langfuse stack
+docker compose --profile langfuse up -d
 ```
 
 Neo4j default credentials (dev): `neo4j / notverysecret`, ports `7474` (HTTP) and `7687` (Bolt).
@@ -67,6 +74,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`CypherValidationService`** — multi-stage safety: blocked keywords → schema label/rel/property check → Neo4j `EXPLAIN` → auto-inject `LIMIT`.
 - **`CypherExecutionService`** — read-only Cypher execution.
 - **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
+- **`AiObservationService`** — AI workflow spans, model call metrics, token counters, and privacy-controlled content metadata.
 
 ### Document Ingestion Pipeline
 
@@ -96,14 +104,16 @@ Question → LLM Cypher generation → Multi-stage validation → Read-only exec
 | *(default)* | AI auto-config disabled; embedding/chat endpoints error if invoked |
 | `openai` | Spring AI OpenAI enabled; requires `OPENAI_API_KEY` env var |
 | `lm_studio` | OpenAI-compatible; requires `LM_STUDIO_API_KEY=lm-studio` |
+| `langfuse` | Enables AI observability and exports OTLP traces to local Langfuse defaults |
 
 ## Configuration
 
 Key config files:
 - `src/main/resources/application.properties` — base settings (Neo4j URI, storage path, chunking params, query safety rules, extraction limits)
 - `src/main/resources/application-openai.properties` / `application-lm_studio.properties` — profile overrides
+- `src/main/resources/application-langfuse.properties` — local Langfuse observability profile
 - `src/main/resources/schemas/*.json` — predefined bootstrap schemas (`legal-contracts-v1`, `cmms-v1`)
-- `compose.yaml` — Neo4j via Docker Compose
+- `compose.yaml` — Neo4j and optional local Langfuse stack via Docker Compose profiles
 
 All application config is bound to `AppProperties` (validated `@ConfigurationProperties` record).
 

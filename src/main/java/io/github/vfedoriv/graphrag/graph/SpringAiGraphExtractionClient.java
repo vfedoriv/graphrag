@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +28,17 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
     private static final Set<String> RELATIONSHIP_FIELDS =
         Set.of("type", "fromLabel", "fromKey", "toLabel", "toKey", "properties", "confidence");
     private final ObjectProvider<ChatModel> chatModelProvider;
+    private final AiObservationService aiObservationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectMapper tolerantObjectMapper =
         new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public SpringAiGraphExtractionClient(ObjectProvider<ChatModel> chatModelProvider) {
+    public SpringAiGraphExtractionClient(
+        ObjectProvider<ChatModel> chatModelProvider,
+        AiObservationService aiObservationService
+    ) {
         this.chatModelProvider = chatModelProvider;
+        this.aiObservationService = aiObservationService;
     }
 
     @Override
@@ -61,32 +71,53 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
         if (log.isDebugEnabled()) {
             log.debug("Graph extraction model request: {}", prompt);
         }
-        try {
-            ChatModel chatModel = chatModelProvider.getIfAvailable();
-            if (chatModel == null) {
-                throw new IllegalStateException("ChatModel bean is not available in application context");
+        Map<String, String> attributes = new HashMap<>(aiObservationService.contentAttributes("ai.prompt", prompt));
+        attributes.putAll(aiObservationService.langfuseInputAttributes(prompt));
+        attributes.put("ai.chunk.length", String.valueOf(chunkLength));
+        try (AiModelCallObservation observation = aiObservationService.startChatModelCall(
+            AiObservationService.WORKFLOW_GRAPH_EXTRACTION,
+            schema.name(),
+            attributes
+        )) {
+            try {
+                ChatModel chatModel = chatModelProvider.getIfAvailable();
+                if (chatModel == null) {
+                    throw new IllegalStateException("ChatModel bean is not available in application context");
+                }
+                log.info("Graph extraction resolved chatModelClass={}", chatModel.getClass().getName());
+                org.springframework.ai.chat.model.ChatResponse chatResponse = chatModel.call(new Prompt(prompt));
+                String content = chatResponse.getResult().getOutput().getText();
+                String normalizedContent = extractJsonPayload(content);
+                log.info(
+                    "Graph extraction model call completed: responseLength={}, responsePreview={}",
+                    LogSanitizer.length(content),
+                    LogSanitizer.preview(content)
+                );
+                if (log.isDebugEnabled()) {
+                    log.debug("Graph extraction model response: {}", content);
+                }
+                JsonNode responseJson = objectMapper.readTree(normalizedContent);
+                logUnknownExtractionFields(schema, chunkLength, responseJson);
+                GraphExtractionResult result = tolerantObjectMapper.treeToValue(responseJson, GraphExtractionResult.class);
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
+                observation.highCardinalityAttribute("ai.graph.nodes", String.valueOf(result.nodes() == null ? 0 : result.nodes().size()));
+                observation.highCardinalityAttribute(
+                    "ai.graph.relationships",
+                    String.valueOf(result.relationships() == null ? 0 : result.relationships().size())
+                );
+                log.info(
+                    "Graph extraction model response parsed: nodes={}, relationships={}, elapsedMs={}",
+                    result.nodes() == null ? 0 : result.nodes().size(),
+                    result.relationships() == null ? 0 : result.relationships().size(),
+                    LogSanitizer.elapsedMillis(startNanos)
+                );
+                observation.success(AiTokenUsage.fromResponse(chatResponse));
+                return result;
+            } catch (Exception e) {
+                observation.error(e);
+                throw e;
             }
-            log.info("Graph extraction resolved chatModelClass={}", chatModel.getClass().getName());
-            String content = chatModel.call(new Prompt(prompt)).getResult().getOutput().getText();
-            String normalizedContent = extractJsonPayload(content);
-            log.info(
-                "Graph extraction model call completed: responseLength={}, responsePreview={}",
-                LogSanitizer.length(content),
-                LogSanitizer.preview(content)
-            );
-            if (log.isDebugEnabled()) {
-                log.debug("Graph extraction model response: {}", content);
-            }
-            JsonNode responseJson = objectMapper.readTree(normalizedContent);
-            logUnknownExtractionFields(schema, chunkLength, responseJson);
-            GraphExtractionResult result = tolerantObjectMapper.treeToValue(responseJson, GraphExtractionResult.class);
-            log.info(
-                "Graph extraction model response parsed: nodes={}, relationships={}, elapsedMs={}",
-                result.nodes() == null ? 0 : result.nodes().size(),
-                result.relationships() == null ? 0 : result.relationships().size(),
-                LogSanitizer.elapsedMillis(startNanos)
-            );
-            return result;
         } catch (Exception e) {
             log.error(
                 "Graph extraction model call failed: chunkLength={}, elapsedMs={}, message={}",
@@ -95,6 +126,9 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
                 e.getMessage(),
                 e
             );
+            if (e instanceof RuntimeException runtimeException) {
+                throw new IllegalArgumentException("Graph extraction response is invalid", runtimeException);
+            }
             throw new IllegalArgumentException("Graph extraction response is invalid", e);
         }
     }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
@@ -129,7 +130,8 @@ class GraphExtractionServiceTest {
             validationService,
             graphWriteService,
             graphExtractionClientProvider,
-            neo4jClient
+            neo4jClient,
+            TestAiObservationService.noop()
         );
     }
 

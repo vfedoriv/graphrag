@@ -12,6 +12,9 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.observability.AiObservationScope;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
@@ -38,6 +41,7 @@ public class GraphExtractionService {
     private final GraphWriteService graphWriteService;
     private final ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
     private final Neo4jClient neo4jClient;
+    private final AiObservationService aiObservationService;
 
     public GraphExtractionService(
         KnowledgeBaseRepository knowledgeBaseRepository,
@@ -47,7 +51,8 @@ public class GraphExtractionService {
         GraphExtractionValidationService validationService,
         GraphWriteService graphWriteService,
         ObjectProvider<GraphExtractionClient> graphExtractionClientProvider,
-        Neo4jClient neo4jClient
+        Neo4jClient neo4jClient,
+        AiObservationService aiObservationService
     ) {
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.schemaDefinitionRepository = schemaDefinitionRepository;
@@ -57,6 +62,7 @@ public class GraphExtractionService {
         this.graphWriteService = graphWriteService;
         this.graphExtractionClientProvider = graphExtractionClientProvider;
         this.neo4jClient = neo4jClient;
+        this.aiObservationService = aiObservationService;
     }
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks, boolean allowOverwrite) {
@@ -93,7 +99,18 @@ public class GraphExtractionService {
         extractionRunRepository.save(run);
         log.info("Extraction run created: runId={}, schemaId={}, model={}", run.getId(), run.getSchemaId(), run.getModel());
         linkRunToDocument(run.getId(), document.getId());
-        try {
+        try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
+            AiObservationService.WORKFLOW_GRAPH_EXTRACTION,
+            schema.name(),
+            Map.of(
+                "document.id", String.valueOf(document.getId()),
+                "knowledge_base.id", String.valueOf(document.getKnowledgeBaseId()),
+                "schema.id", String.valueOf(schemaNode.getId()),
+                "extraction_run.id", String.valueOf(run.getId()),
+                "document.chunk_count", String.valueOf(chunks.size())
+            )
+        ))) {
+            try {
             for (int i = 0; i < chunks.size(); i++) {
                 DocumentChunkNode chunk = chunks.get(i);
                 log.info(
@@ -113,6 +130,8 @@ public class GraphExtractionService {
                     result.relationships().size()
                 );
                 GraphExtractionResult validatedResult = validationService.validate(result, schema);
+                workflow.highCardinalityAttribute("ai.graph.validated_nodes", String.valueOf(validatedResult.nodes().size()));
+                workflow.highCardinalityAttribute("ai.graph.validated_relationships", String.valueOf(validatedResult.relationships().size()));
                 graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, validatedResult);
             }
             run.setStatus(ExtractionRunStatus.COMPLETED);
@@ -141,7 +160,11 @@ public class GraphExtractionService {
                 cleanupResult.deletedObsoleteExtractedNodes(),
                 LogSanitizer.elapsedMillis(startNanos)
             );
+            workflow.highCardinalityAttribute("ai.graph.deleted_runs", String.valueOf(cleanupResult.deletedRuns()));
+            workflow.highCardinalityAttribute("ai.graph.deleted_relationships", String.valueOf(cleanupResult.deletedRelationships()));
+            workflow.success();
         } catch (Exception ex) {
+            workflow.error(ex);
             run.setStatus(ExtractionRunStatus.FAILED);
             run.setErrorMessage(GraphExtractionCleanupSupport.toNonBlankErrorMessage(ex));
             run.setCompletedAt(Instant.now());
@@ -155,6 +178,7 @@ public class GraphExtractionService {
                 ex
             );
             throw ex;
+            }
         }
     }
 

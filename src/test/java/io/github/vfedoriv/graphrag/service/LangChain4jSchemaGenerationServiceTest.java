@@ -6,6 +6,7 @@ import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.data.document.Document;
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
@@ -25,7 +26,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
         GraphNode contract = GraphNode.from("c1", "contract", Map.of(
             "description", "A legal agreement",
             "contractId", "C-001",
@@ -66,7 +67,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_handlesMissingOptionalMetadata() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
         GraphNode source = GraphNode.from("n1", "NodeType", Map.of());
         GraphNode target = GraphNode.from("n2", "AnotherType", Map.of());
         GraphEdge edge = GraphEdge.from(source, target, "relates_to", Map.of());
@@ -115,7 +116,7 @@ class LangChain4jSchemaGenerationServiceTest {
             }
         };
 
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
         SchemaGenerationResult result = service.generate("generated", 1, "desc", "source text", "[]");
 
         SchemaDocument schema = new SchemaParser().parse(result.content());
@@ -163,7 +164,7 @@ class LangChain4jSchemaGenerationServiceTest {
                 return Stream.of(springModel);
             }
         };
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
         service.generate("generated", 1, "desc", "source text", "[]");
 
         assertThat(promptTextRef.get()).contains("`key` can be either a single property name or a list of property names");
@@ -200,7 +201,7 @@ class LangChain4jSchemaGenerationServiceTest {
                 return Stream.of(springModel);
             }
         };
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.generate("generated", 1, "desc", "source text", "[]"))
             .isInstanceOf(IllegalArgumentException.class);
@@ -264,7 +265,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null);
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
         GraphNode node = GraphNode.from("n1", "Person", Map.of("description", "entity"));
         GraphDocument graphDocument = GraphDocument.from(Set.of(node), Set.of(), Document.from("text"));
 

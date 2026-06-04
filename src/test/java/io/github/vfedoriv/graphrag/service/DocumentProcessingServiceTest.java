@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
@@ -91,7 +92,8 @@ class DocumentProcessingServiceTest {
             embeddingClientProvider,
             embeddingModelProvider,
             environment,
-            graphExtractionService
+            graphExtractionService,
+            TestAiObservationService.noop()
         );
         DocumentUploadNode processed = service.process("doc-1");
 
@@ -162,7 +164,8 @@ class DocumentProcessingServiceTest {
             embeddingClientProvider,
             embeddingModelProvider,
             environment,
-            graphExtractionService
+            graphExtractionService,
+            TestAiObservationService.noop()
         );
 
         DocumentUploadNode processed = service.process("doc-1");

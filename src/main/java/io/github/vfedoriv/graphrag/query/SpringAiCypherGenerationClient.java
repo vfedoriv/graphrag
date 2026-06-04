@@ -2,7 +2,11 @@ package io.github.vfedoriv.graphrag.query;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -15,10 +19,15 @@ import org.springframework.stereotype.Component;
 public class SpringAiCypherGenerationClient implements CypherGenerationClient {
 
     private final ObjectProvider<ChatModel> chatModelProvider;
+    private final AiObservationService aiObservationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SpringAiCypherGenerationClient(ObjectProvider<ChatModel> chatModelProvider) {
+    public SpringAiCypherGenerationClient(
+        ObjectProvider<ChatModel> chatModelProvider,
+        AiObservationService aiObservationService
+    ) {
         this.chatModelProvider = chatModelProvider;
+        this.aiObservationService = aiObservationService;
     }
 
     @Override
@@ -49,30 +58,52 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
         if (log.isDebugEnabled()) {
             log.debug("Cypher generation model request: {}", request);
         }
-        try {
-            ChatModel chatModel = chatModelProvider.getIfAvailable();
-            if (chatModel == null) {
-                throw new IllegalStateException("ChatModel bean is not available in application context");
+        Map<String, String> attributes = new HashMap<>(aiObservationService.contentAttributes("ai.prompt", request));
+        attributes.putAll(aiObservationService.langfuseInputAttributes(request));
+        attributes.put("ai.user_prompt.length", String.valueOf(LogSanitizer.length(prompt)));
+        try (AiModelCallObservation observation = aiObservationService.startChatModelCall(
+            AiObservationService.WORKFLOW_CYPHER_GENERATION,
+            schema.name(),
+            attributes
+        )) {
+            try {
+                ChatModel chatModel = chatModelProvider.getIfAvailable();
+                if (chatModel == null) {
+                    throw new IllegalStateException("ChatModel bean is not available in application context");
+                }
+                log.info("Cypher generation resolved chatModelClass={}", chatModel.getClass().getName());
+                org.springframework.ai.chat.model.ChatResponse chatResponse = chatModel.call(new Prompt(request));
+                String content = chatResponse.getResult().getOutput().getText();
+                log.info(
+                    "Cypher generation model response received: responseLength={}, responsePreview={}",
+                    LogSanitizer.length(content),
+                    LogSanitizer.preview(content)
+                );
+                if (log.isDebugEnabled()) {
+                    log.debug("Cypher generation model response: {}", content);
+                }
+                Payload payload = objectMapper.readValue(content, Payload.class);
+                GeneratedCypher generated = new GeneratedCypher(
+                    payload.cypher(),
+                    payload.explanation(),
+                    payload.parameters() == null ? Map.of() : payload.parameters()
+                );
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
+                observation.highCardinalityAttribute("ai.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
+                observation.highCardinalityAttribute("ai.cypher.parameter_count", String.valueOf(generated.parameters().size()));
+                log.info(
+                    "Cypher generation model call completed: cypherLength={}, parameterCount={}, elapsedMs={}",
+                    LogSanitizer.length(generated.cypher()),
+                    generated.parameters().size(),
+                    LogSanitizer.elapsedMillis(startNanos)
+                );
+                observation.success(AiTokenUsage.fromResponse(chatResponse));
+                return generated;
+            } catch (Exception ex) {
+                observation.error(ex);
+                throw ex;
             }
-            log.info("Cypher generation resolved chatModelClass={}", chatModel.getClass().getName());
-            String content = chatModel.call(new Prompt(request)).getResult().getOutput().getText();
-            log.info(
-                "Cypher generation model response received: responseLength={}, responsePreview={}",
-                LogSanitizer.length(content),
-                LogSanitizer.preview(content)
-            );
-            if (log.isDebugEnabled()) {
-                log.debug("Cypher generation model response: {}", content);
-            }
-            Payload payload = objectMapper.readValue(content, Payload.class);
-            GeneratedCypher generated = new GeneratedCypher(payload.cypher(), payload.explanation(), payload.parameters() == null ? Map.of() : payload.parameters());
-            log.info(
-                "Cypher generation model call completed: cypherLength={}, parameterCount={}, elapsedMs={}",
-                LogSanitizer.length(generated.cypher()),
-                generated.parameters().size(),
-                LogSanitizer.elapsedMillis(startNanos)
-            );
-            return generated;
         } catch (Exception ex) {
             log.error("Cypher generation model call failed: schemaName={}, message={}", schema.name(), ex.getMessage(), ex);
             throw new IllegalArgumentException("Cypher generation response is invalid", ex);

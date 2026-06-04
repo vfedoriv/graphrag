@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
@@ -97,7 +98,8 @@ class CypherGenerationServiceTest {
             schemaRepo,
             new SchemaParser(),
             provider,
-            validationService
+            validationService,
+            TestAiObservationService.noop()
         );
 
         GeneratedQueryResponse response = service.generate("kb-1", "list contracts");

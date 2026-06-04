@@ -8,6 +8,7 @@ This file provides guidance to coding agents working in this repository.
 - Spring Boot 4.0.6
 - Neo4j 5 (graph + vector index)
 - Spring AI 2.0 (OpenAI-compatible) + LangChain4j 1.14
+- OpenTelemetry + Micrometer AI observability, optional local Langfuse
 - Maven Wrapper (`./mvnw`)
 
 ## Commands
@@ -22,6 +23,9 @@ This file provides guidance to coding agents working in this repository.
 # Run with OpenAI profile
 OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai
 
+# Run with OpenAI profile and local Langfuse tracing
+OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,langfuse
+
 # Run with LM Studio profile
 LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm_studio
 
@@ -31,6 +35,9 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 
 # Neo4j only
 docker compose up -d neo4j
+
+# Neo4j + local Langfuse stack
+docker compose --profile langfuse up -d
 ```
 
 Use `./mvnw` instead of bare `mvn`.
@@ -56,18 +63,21 @@ Key services:
 - `CypherValidationService` (blocked keywords + schema checks + `EXPLAIN` + auto `LIMIT`)
 - `CypherExecutionService`
 - `SchemaBootstrapService` (loads bootstrap schemas on startup)
+- `AiObservationService` (AI workflow spans, model call metrics, privacy-controlled content metadata)
 
 ## Profiles
 
 - `default`: no AI provider auto-config
 - `openai`: requires `OPENAI_API_KEY`
 - `lm_studio`: requires `LM_STUDIO_API_KEY=lm-studio`
+- `langfuse`: enables AI observability and exports OTLP traces to local Langfuse defaults
 
 ## Key Files
 
 - `src/main/resources/application.properties`
 - `src/main/resources/application-openai.properties`
 - `src/main/resources/application-lm_studio.properties`
+- `src/main/resources/application-langfuse.properties`
 - `src/main/resources/schemas/*.json`
 - `compose.yaml`
 

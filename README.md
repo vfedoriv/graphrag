@@ -221,6 +221,7 @@ Main app config is in `src/main/resources/application.properties`; profile overr
 
 - `src/main/resources/application-openai.properties`
 - `src/main/resources/application-lm_studio.properties`
+- `src/main/resources/application-langfuse.properties`
 
 Key app properties:
 
@@ -244,6 +245,13 @@ Key app properties:
   - `app.extraction.max-entities-per-chunk=100`
   - `app.extraction.max-relationships-per-chunk=200`
   - `app.extraction.max-retries=2`
+- AI observability:
+  - `app.ai.observability.enabled=false`
+  - `app.ai.observability.content-capture-enabled=false`
+  - `app.ai.observability.input-output-content-enabled=true`
+  - `app.ai.observability.max-input-output-length=1048576`
+  - `management.tracing.enabled=false`
+  - `management.opentelemetry.tracing.export.otlp.endpoint=`
 
 ## Schema Format
 
@@ -319,6 +327,96 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 ```bash
 curl http://localhost:8080/actuator/health
 ```
+
+## AI Observability
+
+The application includes optional AI observability for model-facing workflows:
+
+- OpenTelemetry traces for document processing, schema generation, graph extraction, embeddings, and Cypher generation.
+- Micrometer metrics for model calls, failures, latency, and token usage when provider metadata exposes token counts.
+- Prompt, chunk, query, and response content capture is disabled by default.
+
+Default startup does not require Langfuse or an OTLP endpoint.
+
+### Local Langfuse
+
+Start Neo4j plus the local Langfuse stack:
+
+```bash
+docker compose --profile langfuse up -d
+```
+
+The `langfuse` profile starts Langfuse web/worker, Postgres, ClickHouse, Redis, and MinIO. Without the profile, Compose still starts only Neo4j.
+
+Local Langfuse UI:
+
+- URL: `http://localhost:3000`
+- Login: `dev@example.local`
+- Password: `langfuse-local-password`
+- Project public key: `pk-lf-local-dev`
+- Project secret key: `sk-lf-local-dev`
+- Spring Boot OTLP HTTP traces endpoint: `http://localhost:3000/api/public/otel/v1/traces`
+
+These credentials are auto-created from Compose environment variables and are local-development defaults only. Do not reuse them in shared or production environments.
+
+Run the app with Langfuse tracing enabled:
+
+```bash
+OPENAI_API_KEY=... ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,langfuse
+```
+
+For LM Studio:
+
+```bash
+LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm_studio,langfuse
+```
+
+After processing a document or running a query generation flow, open Langfuse and inspect the `GraphRAG Local` project traces. Local model metrics are available through Actuator, for example:
+
+```bash
+curl http://localhost:8080/actuator/metrics/graphrag.ai.model.calls
+curl http://localhost:8080/actuator/metrics/graphrag.ai.model.latency
+curl http://localhost:8080/actuator/metrics/graphrag.ai.model.tokens
+```
+
+Verified local trace smoke test:
+
+```bash
+docker compose --profile langfuse up -d
+
+curl -u pk-lf-local-dev:sk-lf-local-dev \
+  http://localhost:3000/api/public/projects
+
+OPENAI_API_KEY=... ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,langfuse
+
+curl -X POST http://localhost:8080/api/v1/schemas/generate/example \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"Acme signed contract C-101 with Beta Corp.","userPrompt":"Use Party and Contract entities."}'
+
+FROM_TIMESTAMP="$(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%SZ)"
+curl -u pk-lf-local-dev:sk-lf-local-dev \
+  "http://localhost:3000/api/public/traces?fromTimestamp=${FROM_TIMESTAMP}&limit=10"
+```
+
+The trace response should include an HTTP parent trace with observations such as `graphrag.ai.model` and `chat <model>`. The AI span includes stable attributes like `ai.workflow`, `ai.operation`, `ai.provider.profile`, `ai.model.name`, `ai.status`, and `ai.content_capture`; the Spring AI generation observation includes token usage when the provider returns it.
+
+### Content Capture
+
+By default, Langfuse trace Input/Output fields include full prompt and model response content, capped by `app.ai.observability.max-input-output-length`. This makes local trace debugging useful without relying on preview-only metadata.
+
+To disable full Input/Output capture and export only sanitized previews plus length/hash metadata:
+
+```bash
+-Dapp.ai.observability.input-output-content-enabled=false
+```
+
+Generic high-cardinality trace attributes still include sanitized lengths, previews, hashes, workflow names, status, model/provider metadata, and result counts by default. To also export separate full `*.content` metadata attributes for local debugging:
+
+```bash
+-Dapp.ai.observability.content-capture-enabled=true
+```
+
+Do not enable full content capture or full Input/Output export for shared or production environments unless data handling and retention policies allow prompt/document content to be stored in the trace backend.
 
 ## Schema Bootstrap
 
@@ -578,8 +676,8 @@ Reliability and performance:
 Observability and operations:
 
 - Add structured logging with correlation/request IDs across ingestion and query flows.
-- Export metrics (latency, error rate, queue depth, token/model usage, Neo4j query timings).
-- Add tracing spans for parse/chunk/embed/extract/validate/execute stages.
+- Extend metrics beyond AI model calls to queue depth, Neo4j query timings, and storage operations.
+- Tune tracing coverage, sampling, dashboards, and alerts for production SLOs.
 - Define SLOs and alerting for API availability, processing failures, and Neo4j health.
 - Keep runbooks for incident response: model outage, Neo4j outage, storage outage, and rollback.
 

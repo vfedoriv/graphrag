@@ -10,13 +10,18 @@ import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.observability.AiObservationScope;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -43,6 +48,7 @@ public class DocumentProcessingService {
     private final ObjectProvider<EmbeddingModel> embeddingModelProvider;
     private final Environment environment;
     private final GraphExtractionService graphExtractionService;
+    private final AiObservationService aiObservationService;
 
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
@@ -56,7 +62,8 @@ public class DocumentProcessingService {
         ObjectProvider<EmbeddingClient> embeddingClientProvider,
         ObjectProvider<EmbeddingModel> embeddingModelProvider,
         Environment environment,
-        GraphExtractionService graphExtractionService
+        GraphExtractionService graphExtractionService,
+        AiObservationService aiObservationService
     ) {
         this.documentUploadRepository = documentUploadRepository;
         this.documentChunkRepository = documentChunkRepository;
@@ -70,6 +77,7 @@ public class DocumentProcessingService {
         this.embeddingModelProvider = embeddingModelProvider;
         this.environment = environment;
         this.graphExtractionService = graphExtractionService;
+        this.aiObservationService = aiObservationService;
     }
 
     public DocumentUploadNode process(String documentId) {
@@ -94,10 +102,21 @@ public class DocumentProcessingService {
             document.getSizeBytes(),
             allowOverwrite
         );
-        try {
+        Map<String, String> workflowAttributes = new LinkedHashMap<>();
+        workflowAttributes.put("document.id", String.valueOf(document.getId()));
+        workflowAttributes.put("knowledge_base.id", String.valueOf(document.getKnowledgeBaseId()));
+        workflowAttributes.put("document.size_bytes", String.valueOf(document.getSizeBytes()));
+        workflowAttributes.put("document.allow_overwrite", String.valueOf(allowOverwrite));
+        try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
+            AiObservationService.WORKFLOW_DOCUMENT_PROCESSING,
+            null,
+            workflowAttributes
+        ))) {
+            try {
             document = setStatus(document, DocumentStatus.PARSING, null);
             String text = parseDocument(document);
             List<String> chunks = chunkingService.split(text);
+            workflow.highCardinalityAttribute("document.chunk_count", String.valueOf(chunks.size()));
             log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
             document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
@@ -154,8 +173,10 @@ public class DocumentProcessingService {
                 documentId,
                 LogSanitizer.elapsedMillis(startNanos)
             );
+            workflow.success();
             return setStatus(document, DocumentStatus.COMPLETED, null);
         } catch (Exception ex) {
+            workflow.error(ex);
             log.error(
                 "Document processing failed: documentId={}, elapsedMs={}, message={}",
                 documentId,
@@ -164,6 +185,7 @@ public class DocumentProcessingService {
                 ex
             );
             return setStatus(document, DocumentStatus.FAILED, ex.getMessage());
+            }
         }
     }
 

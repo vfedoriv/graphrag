@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.nio.file.Path;
@@ -50,7 +51,7 @@ class SpringAiGraphExtractionClientTest {
             }
             """;
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)));
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)), TestAiObservationService.noop());
         GraphExtractionResult result = client.extract(schema(), "Contract C-1 has party Acme");
 
         assertThat(result.nodes()).hasSize(2);
@@ -77,7 +78,7 @@ class SpringAiGraphExtractionClientTest {
             }
             """;
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)));
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)), TestAiObservationService.noop());
         GraphExtractionResult parsed = client.extract(schema(), "bad node label");
         GraphExtractionValidationService validationService = new GraphExtractionValidationService(
             new AppProperties(
@@ -108,7 +109,7 @@ class SpringAiGraphExtractionClientTest {
             }
         };
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(model));
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(model), TestAiObservationService.noop());
         client.extract(schema(), "source text");
 
         assertThat(capturedPrompt.get()).contains("Allowed relationship triples (type|fromLabel|toLabel):");

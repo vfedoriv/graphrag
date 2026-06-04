@@ -11,10 +11,16 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
+import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
+import io.github.vfedoriv.graphrag.observability.AiObservationScope;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
+import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +55,14 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         - If multiple properties are needed for uniqueness, emit `key` as a list preserving deterministic order.
         """;
     private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
+    private final AiObservationService aiObservationService;
 
-    public LangChain4jSchemaGenerationService(ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider) {
+    public LangChain4jSchemaGenerationService(
+        ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider,
+        AiObservationService aiObservationService
+    ) {
         this.springChatModelProvider = springChatModelProvider;
+        this.aiObservationService = aiObservationService;
     }
 
     @Override
@@ -70,37 +81,55 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             log.debug("Schema JSON generation source text: {}", text);
             log.debug("Schema JSON generation example: {}", example);
         }
-        LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
-            new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel()),
-            List.of(),
-            List.of(),
-            null,
-            SCHEMA_PROMPT_CONTRACT,
-            example,
-            1
-        );
-        GraphDocument graphDocument = transformer.transform(Document.from(text));
-        SchemaDocument schema = inferSchema(name, version, description, graphDocument);
-        List<SchemaGenerationWarning> warnings = buildKeyPropertyWarnings(schema);
-        try {
-            String json = JSON_MAPPER.writeValueAsString(schema);
-            log.info(
-                "Schema JSON generation completed: name={}, version={}, nodes={}, relationships={}, warningCount={}, jsonLength={}, elapsedMs={}",
-                name,
-                version,
-                schema.nodes().size(),
-                schema.relationships().size(),
-                warnings.size(),
-                json.length(),
-                LogSanitizer.elapsedMillis(startNanos)
-            );
-            if (log.isDebugEnabled()) {
-                log.debug("Generated schema JSON: {}", json);
+        try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
+            AiObservationService.WORKFLOW_SCHEMA_GENERATION,
+            name,
+            Map.of(
+                "ai.schema.version", String.valueOf(version),
+                "ai.schema.description_present", String.valueOf(description != null && !description.isBlank()),
+                "ai.text.length", String.valueOf(LogSanitizer.length(text)),
+                "ai.example.length", String.valueOf(LogSanitizer.length(example))
+            )
+        ))) {
+            try {
+                LLMGraphTransformerExt transformer = new LLMGraphTransformerExt(
+                    new SpringAiLangChain4jChatModelAdapter(requireSpringChatModel(), aiObservationService),
+                    List.of(),
+                    List.of(),
+                    null,
+                    SCHEMA_PROMPT_CONTRACT,
+                    example,
+                    1
+                );
+                GraphDocument graphDocument = transformer.transform(Document.from(text));
+                SchemaDocument schema = inferSchema(name, version, description, graphDocument);
+                List<SchemaGenerationWarning> warnings = buildKeyPropertyWarnings(schema);
+                String json = JSON_MAPPER.writeValueAsString(schema);
+                log.info(
+                    "Schema JSON generation completed: name={}, version={}, nodes={}, relationships={}, warningCount={}, jsonLength={}, elapsedMs={}",
+                    name,
+                    version,
+                    schema.nodes().size(),
+                    schema.relationships().size(),
+                    warnings.size(),
+                    json.length(),
+                    LogSanitizer.elapsedMillis(startNanos)
+                );
+                if (log.isDebugEnabled()) {
+                    log.debug("Generated schema JSON: {}", json);
+                }
+                workflow.highCardinalityAttribute("ai.schema.node_count", String.valueOf(schema.nodes().size()));
+                workflow.highCardinalityAttribute("ai.schema.relationship_count", String.valueOf(schema.relationships().size()));
+                workflow.success();
+                return new SchemaGenerationResult(json, warnings);
+            } catch (JsonProcessingException e) {
+                workflow.error(e);
+                log.error("Failed to serialize generated schema to JSON: name={}, version={}, message={}", name, version, e.getMessage(), e);
+                throw new IllegalStateException("Failed to serialize generated schema to JSON", e);
+            } catch (RuntimeException e) {
+                workflow.error(e);
+                throw e;
             }
-            return new SchemaGenerationResult(json, warnings);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to serialize generated schema to JSON: name={}, version={}, message={}", name, version, e.getMessage(), e);
-            throw new IllegalStateException("Failed to serialize generated schema to JSON", e);
         }
     }
 
@@ -129,7 +158,32 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         if (log.isDebugEnabled()) {
             log.debug("Schema example generation prompt: {}", prompt);
         }
-        ChatResponse chatResponse = requireSpringChatModel().call(new Prompt(prompt));
+        ChatResponse chatResponse;
+        Map<String, String> attributes = new HashMap<>(aiObservationService.contentAttributes("ai.prompt", prompt));
+        attributes.putAll(aiObservationService.langfuseInputAttributes(prompt));
+        try (AiModelCallObservation observation = aiObservationService.startChatModelCall(
+            AiObservationService.WORKFLOW_SCHEMA_GENERATION,
+            null,
+            attributes
+        )) {
+            try {
+                chatResponse = requireSpringChatModel().call(new Prompt(prompt));
+                AssistantMessage outputMessage = null;
+                if (chatResponse.getResult() != null) {
+                    outputMessage = chatResponse.getResult().getOutput();
+                }
+                String response = "";
+                if (outputMessage != null && outputMessage.getText() != null) {
+                    response = outputMessage.getText().trim();
+                }
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(response)));
+                observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(response));
+                observation.success(AiTokenUsage.fromResponse(chatResponse));
+            } catch (RuntimeException ex) {
+                observation.error(ex);
+                throw ex;
+            }
+        }
         AssistantMessage outputMessage = null;
         if (chatResponse.getResult() != null) {
             outputMessage = chatResponse.getResult().getOutput();
