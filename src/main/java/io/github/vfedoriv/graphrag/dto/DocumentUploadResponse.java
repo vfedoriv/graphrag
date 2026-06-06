@@ -19,6 +19,8 @@ public record DocumentUploadResponse(
     String sha256,
     @Schema(description = "Storage URI for the binary.", example = "file:///var/documents/kb-01/doc-01.pdf")
     String contentUri,
+    @Schema(description = "Absolute local filesystem path for trusted desktop clients.", example = "/var/documents/kb-01/doc-01.pdf")
+    String localPath,
     @Schema(description = "Current document processing status.", example = "UPLOADED")
     DocumentStatus status,
     @Schema(description = "Upload timestamp in UTC.", example = "2026-05-03T10:15:30Z")

@@ -34,5 +34,8 @@ class LocalFilesystemBinaryStorageServiceTest {
         try (InputStream stream = storage.read(uri)) {
             assertThat(new String(stream.readAllBytes())).isEqualTo("abc");
         }
+
+        storage.delete(uri);
+        assertThat(storage.resolvePath(uri)).doesNotExist();
     }
 }

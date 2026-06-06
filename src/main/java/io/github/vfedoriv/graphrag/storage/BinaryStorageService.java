@@ -12,4 +12,6 @@ public interface BinaryStorageService {
     InputStream read(URI contentUri) throws IOException;
 
     Path resolvePath(URI contentUri);
+
+    void delete(URI contentUri) throws IOException;
 }

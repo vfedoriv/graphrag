@@ -14,10 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -51,7 +54,7 @@ public class DocumentController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = DocumentUploadResponse.class),
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"status\":\"UPLOADED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":null,\"errorMessage\":null}"
+                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"localPath\":\"/var/documents/kb-01/doc-01.pdf\",\"status\":\"UPLOADED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":null,\"errorMessage\":null}"
                 )
             )
         ),
@@ -76,6 +79,48 @@ public class DocumentController {
             response.status()
         );
         return response;
+    }
+
+    @PutMapping(path = "/knowledge-bases/{knowledgeBaseId}/documents/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Replace document", description = "Replaces an existing document binary and clears derived processing artifacts.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Document replaced"),
+        @ApiResponse(responseCode = "400", description = "Invalid multipart payload", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "409", description = "Replacement duplicates another document", content = @Content(schema = @Schema()))
+    })
+    public DocumentUploadResponse replaceDocument(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @Parameter(description = "Replacement document file") @RequestPart("file") MultipartFile file
+    ) {
+        log.info(
+            "Replace document request: knowledgeBaseId={}, documentId={}, filename={}, contentType={}, sizeBytes={}",
+            knowledgeBaseId,
+            documentId,
+            file.getOriginalFilename(),
+            file.getContentType(),
+            file.getSize()
+        );
+        DocumentUploadResponse response = toResponse(documentUploadService.replace(knowledgeBaseId, documentId, file));
+        log.info("Replace document completed: knowledgeBaseId={}, documentId={}, status={}", knowledgeBaseId, documentId, response.status());
+        return response;
+    }
+
+    @DeleteMapping("/knowledge-bases/{knowledgeBaseId}/documents/{documentId}")
+    @Operation(summary = "Delete document", description = "Deletes a document and all document-scoped derived artifacts.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Document deleted"),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<Void> deleteDocument(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Document identifier") @PathVariable String documentId
+    ) {
+        log.info("Delete document request: knowledgeBaseId={}, documentId={}", knowledgeBaseId, documentId);
+        documentUploadService.delete(knowledgeBaseId, documentId);
+        log.info("Delete document completed: knowledgeBaseId={}, documentId={}", knowledgeBaseId, documentId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/knowledge-bases/{knowledgeBaseId}/documents")
@@ -104,7 +149,7 @@ public class DocumentController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = DocumentUploadResponse.class),
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"status\":\"PROCESSED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":\"2026-05-03T10:16:02Z\",\"errorMessage\":null}"
+                    value = "{\"id\":\"doc-01\",\"knowledgeBaseId\":\"kb-01\",\"originalFilename\":\"contract.pdf\",\"contentType\":\"application/pdf\",\"sizeBytes\":89432,\"sha256\":\"5f70bf18a086007016e948b04aed3b82\",\"contentUri\":\"file:///var/documents/kb-01/doc-01.pdf\",\"localPath\":\"/var/documents/kb-01/doc-01.pdf\",\"status\":\"PROCESSED\",\"uploadedAt\":\"2026-05-03T10:15:30Z\",\"processedAt\":\"2026-05-03T10:16:02Z\",\"errorMessage\":null}"
                 )
             )
         ),
@@ -153,6 +198,7 @@ public class DocumentController {
             node.getSizeBytes(),
             node.getSha256(),
             node.getContentUri(),
+            documentUploadService.localPath(node),
             node.getStatus(),
             node.getUploadedAt(),
             node.getProcessedAt(),

@@ -108,7 +108,8 @@ class EndToEndMvpFlowMvcIntegrationTest {
 
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("COMPLETED"));
+            .andExpect(jsonPath("$.status").value("COMPLETED"))
+            .andExpect(jsonPath("$.localPath").isNotEmpty());
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
             .andExpect(status().isConflict());
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId)

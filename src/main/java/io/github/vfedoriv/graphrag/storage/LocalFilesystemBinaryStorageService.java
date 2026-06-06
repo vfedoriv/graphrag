@@ -52,6 +52,14 @@ public class LocalFilesystemBinaryStorageService implements BinaryStorageService
         return Path.of(contentUri).toAbsolutePath().normalize();
     }
 
+    @Override
+    public void delete(URI contentUri) throws IOException {
+        Path path = resolvePath(contentUri);
+        log.info("Deleting document content from storage: uri={}, path={}", contentUri, path);
+        Files.delete(path);
+        log.info("Document content deleted from storage: uri={}, path={}", contentUri, path);
+    }
+
     private String sanitizeFilename(String originalFilename) {
         if (originalFilename == null || originalFilename.isBlank()) {
             return "document.bin";

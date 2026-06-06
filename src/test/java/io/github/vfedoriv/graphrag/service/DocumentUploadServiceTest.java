@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.neo4j.core.Neo4jClient;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,6 +28,8 @@ class DocumentUploadServiceTest {
     private BinaryStorageService binaryStorageService;
     @Mock
     private DocumentUploadRepository documentUploadRepository;
+    @Mock
+    private Neo4jClient neo4jClient;
     @InjectMocks
     private DocumentUploadService documentUploadService;
 
