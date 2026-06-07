@@ -34,6 +34,7 @@ Out of scope (current implementation):
 - Schema registry:
   - JSON schema parsing/validation,
   - immutable versioning,
+  - guarded inactive-schema content replacement and deletion,
   - Neo4j persistence,
   - activation per knowledge base,
   - schema generation from free text and uploaded files (optional save to registry).
@@ -43,7 +44,8 @@ Out of scope (current implementation):
   - SHA-256 deduplication within a knowledge base,
   - local filesystem binary storage,
   - metadata persistence in Neo4j,
-  - list documents by knowledge base.
+  - list documents by knowledge base,
+  - replace/delete documents with cleanup of chunks, extraction runs, graph relationships, and obsolete extracted nodes.
 - Processing pipeline:
   - parse document text (TXT/PDF/DOCX),
   - chunk text,
@@ -84,8 +86,8 @@ io.github.vfedoriv.graphrag
 
 Primary runtime services:
 
-- `SchemaRegistryService`: parse/validate/store/activate schemas.
-- `DocumentUploadService`: upload metadata + binary storage + dedup.
+- `SchemaRegistryService`: parse/validate/store/activate schemas, with guarded inactive-schema update/delete.
+- `DocumentUploadService`: upload metadata + binary storage + dedup, plus replace/delete cleanup.
 - `DocumentProcessingService`: parse -> chunk -> embed -> extract graph.
 - `GraphExtractionService`: LLM extraction + validation + write orchestration.
 - `CypherGenerationService`: prompt-to-Cypher using active schema.
@@ -102,9 +104,13 @@ flowchart TD
     B --> C{Valid schema?}
     C -- No --> D[Reject with ProblemDetail]
     C -- Yes --> E[Persist immutable SchemaDefinition version]
-    E --> F[Activate schema for KnowledgeBase]
-    F --> G[KnowledgeBase.activeSchemaId updated]
-    G --> H[Used by extraction + query generation + query validation]
+    E --> F{Inactive and needs edit/delete?}
+    F -- Edit --> I[Replace content with same name + version]
+    F -- Delete --> J[Detach schema references and remove schema]
+    F -- Activate --> G[Activate schema for KnowledgeBase]
+    I --> G
+    G --> H[KnowledgeBase.activeSchemaId updated]
+    H --> K[Used by extraction + query generation + query validation]
 ```
 
 ### Document ingestion and processing
@@ -295,6 +301,8 @@ Example:
 Schema rules:
 
 - schema version is immutable (`name + version` cannot be overwritten),
+- inactive schemas can be updated only when replacement JSON keeps the same `name + version`,
+- active schemas cannot be updated or deleted,
 - generated/runtime schemas must pass validation before use,
 - query generation/validation is restricted to active schema labels/types/properties.
 
@@ -447,6 +455,8 @@ Base path: `/api/v1`
 - `GET /schemas`
 - `GET /knowledge-bases/{knowledgeBaseId}/schemas`
 - `GET /schemas/{schemaId}`
+- `PUT /schemas/{schemaId}`
+- `DELETE /schemas/{schemaId}`
 - `POST /schemas/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activate`
 
@@ -465,6 +475,8 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 
 - `POST /knowledge-bases/{knowledgeBaseId}/documents` (multipart form, part name: `file`)
 - `GET /knowledge-bases/{knowledgeBaseId}/documents`
+- `PUT /knowledge-bases/{knowledgeBaseId}/documents/{documentId}` (multipart form, part name: `file`)
+- `DELETE /knowledge-bases/{knowledgeBaseId}/documents/{documentId}`
 - `POST /documents/{documentId}/process?allowOverwrite=false|true`
 - `GET /documents/{documentId}/chunks`
 
@@ -489,6 +501,11 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - multipart fields: optional `userPrompt` (string), part `file` (PDF/TXT/DOCX)
 - `POST /schemas/validate`
   - body: `{"content":"<json>"}`
+- `PUT /schemas/{schemaId}`
+  - body: `{"content":"<json>", "sourceType":"PREDEFINED|GENERATED"}`
+  - replaces content only for inactive schemas and only when the JSON keeps the original `name + version`
+- `DELETE /schemas/{schemaId}`
+  - returns `409 Conflict` when the schema is active for a knowledge base
 - `POST /knowledge-bases`
   - body: `{"id":"kb-demo", "name":"Demo knowledge base"}`
 - `PUT /knowledge-bases/{knowledgeBaseId}`
@@ -497,6 +514,11 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - multipart: part `file`
 - `GET /knowledge-bases/{knowledgeBaseId}/documents`
   - returns: document metadata list for the knowledge base
+- `PUT /knowledge-bases/{knowledgeBaseId}/documents/{documentId}`
+  - multipart: part `file`
+  - replaces the binary, resets processing status to `UPLOADED`, and removes document-scoped chunks/extraction artifacts
+- `DELETE /knowledge-bases/{knowledgeBaseId}/documents/{documentId}`
+  - deletes the binary, upload metadata, and document-scoped derived artifacts
 - `GET /knowledge-bases/{knowledgeBaseId}/schemas`
   - returns: schema versions associated with the knowledge base
 - `POST /documents/{documentId}/process`
@@ -603,7 +625,7 @@ Common status patterns:
 
 - `400` validation/schema/query rejection,
 - `404` missing schema/knowledge-base/document,
-- `409` immutable schema version conflict,
+- `409` immutable schema identity, active-schema mutation, duplicate document, or overwrite conflict,
 - `500` unexpected server error.
 
 ## Testing

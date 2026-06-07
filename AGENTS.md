@@ -49,14 +49,14 @@ Use `./mvnw` instead of bare `mvn`.
 - Layering: Controllers -> Services -> Repositories -> Neo4j
 
 Main controllers:
-- `SchemaController` (create/list/validate/activate, schema generation, example generation, KB schema listing)
+- `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, example generation, KB schema listing)
 - `KnowledgeBaseController`
-- `DocumentController`
+- `DocumentController` (upload/list/replace/delete/process/chunks)
 - `QueryController`
 
 Key services:
-- `SchemaRegistryService` (schema parse/validate/versioning)
-- `DocumentUploadService` (multipart upload + SHA-256 dedup)
+- `SchemaRegistryService` (schema parse/validate/versioning + guarded inactive-schema update/delete)
+- `DocumentUploadService` (multipart upload + SHA-256 dedup + replace/delete artifact cleanup)
 - `DocumentProcessingService` (parse -> chunk -> embed -> graph extract -> persist)
 - `GraphExtractionService` (schema-constrained extraction + validation)
 - `CypherGenerationService`
@@ -99,7 +99,9 @@ Use short imperative commit messages such as `add schema activation panel`. Keep
 
 ## Design Constraints
 
-- Schema versions are immutable (`name + version` cannot be updated after save)
+- Schema identity is immutable (`name + version` cannot change after save)
+- Inactive schema content can be replaced only when the schema identity (`name + version`) is unchanged; active schemas cannot be updated or deleted
+- Document replacement/deletion must clean document-scoped chunks, extraction runs, graph relationships, obsolete extracted nodes, and local binary content
 - Extraction must stay constrained to active schema labels/relationship types
 - Query execution is read-only and validated before run
 - Do not use the Java `var` keyword; declare the concrete variable type explicitly.

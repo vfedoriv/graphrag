@@ -61,13 +61,13 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 |---|---|
 | `SchemaController` | CRUD, generation, example generation, validation, knowledge-base schema listing, and activation of JSON schemas |
 | `KnowledgeBaseController` | Knowledge base lifecycle |
-| `DocumentController` | Upload, dedup, and trigger processing |
+| `DocumentController` | Upload, dedup, list, replace, delete, chunk retrieval, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
 
 ### Core Services
 
-- **`SchemaRegistryService`** — parse/validate/store schema versions; `name + version` is immutable once saved.
-- **`DocumentUploadService`** — multipart upload with SHA-256 dedup; stores binary to filesystem via `BinaryStorageService` interface.
+- **`SchemaRegistryService`** — parse/validate/store schema versions; `name + version` identity is immutable; inactive schemas can be replaced or deleted under guard.
+- **`DocumentUploadService`** — multipart upload with SHA-256 dedup; stores binary to filesystem via `BinaryStorageService` interface; replace/delete paths clean document-scoped artifacts.
 - **`DocumentProcessingService`** — orchestrates: parse → chunk → embed → graph-extract → persist.
 - **`GraphExtractionService`** — LLM-based entity/relationship extraction constrained by the active schema; validates against schema before any DB write.
 - **`CypherGenerationService`** — LLM prompt-to-Cypher using active schema as context.
@@ -125,7 +125,8 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 
 ## Key Design Decisions
 
-- **Immutable schema versions:** once a `name + version` is persisted, the content cannot be updated — only new versions can be added.
+- **Immutable schema identity:** once a `name + version` is persisted, that identity cannot change. Inactive schema content can be replaced when the replacement keeps the same identity; active schemas cannot be updated or deleted.
+- **Document mutation cleanup:** replacing or deleting a document must remove its chunks, extraction runs, graph relationships, obsolete extracted nodes, and local binary content.
 - **Schema-driven extraction:** LLM is explicitly constrained to only extract node labels and relationship types defined in the active schema.
 - **Provider-agnostic AI:** storage, embedding, generation, and extraction are all behind interfaces to allow swapping providers or using mocks.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
