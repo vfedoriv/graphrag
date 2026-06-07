@@ -16,6 +16,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
+import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaFormat;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -186,6 +188,52 @@ class SchemaControllerTest {
         assertThatThrownBy(() -> controller.getSchema("missing-schema"))
             .isInstanceOf(NotFoundException.class)
             .hasMessage("Schema not found: missing-schema");
+    }
+
+    @Test
+    void updateSchemaReturnsDetailsAndDelegatesToRegistry() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        String content = "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}";
+        SchemaDefinitionNode schema = new SchemaDefinitionNode();
+        schema.setId("schema-01");
+        schema.setName("legal-contracts");
+        schema.setVersion(1);
+        schema.setSourceType(SchemaSourceType.GENERATED);
+        schema.setFormat(SchemaFormat.JSON);
+        schema.setContent(content);
+        schema.setContentHash("hash-updated");
+        schema.setStatus(SchemaStatus.INACTIVE);
+        schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
+
+        when(registryService.updateSchema("schema-01", content, SchemaSourceType.GENERATED)).thenReturn(schema);
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        SchemaDetailsResponse response = controller.updateSchema(
+            "schema-01",
+            new UpdateSchemaRequest(content, SchemaSourceType.GENERATED)
+        );
+
+        assertThat(response.id()).isEqualTo("schema-01");
+        assertThat(response.content()).isEqualTo(content);
+        assertThat(response.contentHash()).isEqualTo("hash-updated");
+        verify(registryService).updateSchema("schema-01", content, SchemaSourceType.GENERATED);
+    }
+
+    @Test
+    void deleteSchemaReturnsNoContentAndDelegatesToRegistry() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+        ResponseEntity<Void> response = controller.deleteSchema("schema-01");
+
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
+        assertThat(response.getBody()).isNull();
+        verify(registryService).deleteSchema("schema-01");
     }
 
     @Test

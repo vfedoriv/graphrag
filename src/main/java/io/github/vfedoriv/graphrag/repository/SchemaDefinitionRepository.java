@@ -14,4 +14,17 @@ public interface SchemaDefinitionRepository extends Neo4jRepository<SchemaDefini
         RETURN s
         """)
     List<SchemaDefinitionNode> findAllByKnowledgeBaseId(String knowledgeBaseId);
+
+    @Query("""
+        MATCH (kb:KnowledgeBase)
+        WHERE kb.activeSchemaId = $schemaId
+        RETURN count(kb) > 0
+        """)
+    boolean existsActiveKnowledgeBaseReference(String schemaId);
+
+    @Query("""
+        MATCH (:KnowledgeBase)-[r:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
+        DELETE r
+        """)
+    void detachKnowledgeBaseAssociations(String schemaId);
 }

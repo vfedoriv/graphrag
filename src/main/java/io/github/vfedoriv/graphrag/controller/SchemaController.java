@@ -13,6 +13,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
+import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
@@ -32,10 +33,13 @@ import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -280,6 +284,43 @@ public class SchemaController {
         SchemaDetailsResponse response = toDetailsResponse(schemaRegistryService.getSchema(schemaId));
         log.info("Get schema completed: schemaId={}, name={}, version={}", response.id(), response.name(), response.version());
         return response;
+    }
+
+    @PutMapping("/schemas/{schemaId}")
+    @Operation(summary = "Update schema by ID", description = "Replaces content for an existing inactive schema while preserving name and version.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema updated"),
+        @ApiResponse(responseCode = "400", description = "Invalid schema payload", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Schema not found", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "409", description = "Schema identity conflict or active schema", content = @Content(schema = @Schema()))
+    })
+    public SchemaDetailsResponse updateSchema(
+        @Parameter(description = "Schema identifier") @PathVariable String schemaId,
+        @Valid @RequestBody UpdateSchemaRequest request
+    ) {
+        log.info(
+            "Update schema request: schemaId={}, sourceType={}, contentLength={}",
+            schemaId,
+            request.sourceType(),
+            LogSanitizer.length(request.content())
+        );
+        SchemaDetailsResponse response = toDetailsResponse(schemaRegistryService.updateSchema(schemaId, request.content(), request.sourceType()));
+        log.info("Update schema completed: schemaId={}, name={}, version={}", response.id(), response.name(), response.version());
+        return response;
+    }
+
+    @DeleteMapping("/schemas/{schemaId}")
+    @Operation(summary = "Delete schema by ID", description = "Deletes an inactive schema and detaches knowledge-base schema relationships.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Schema deleted"),
+        @ApiResponse(responseCode = "404", description = "Schema not found", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "409", description = "Schema is active", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<Void> deleteSchema(@Parameter(description = "Schema identifier") @PathVariable String schemaId) {
+        log.info("Delete schema request: schemaId={}", schemaId);
+        schemaRegistryService.deleteSchema(schemaId);
+        log.info("Delete schema completed: schemaId={}", schemaId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/schemas/validate")

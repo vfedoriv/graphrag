@@ -1,8 +1,5 @@
-# single-active-schema-per-knowledge-base Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change single-active-schema-per-knowledge-base. Update Purpose after archive.
-## Requirements
 ### Requirement: Schema activation is exclusive within a knowledge base
 The system MUST ensure that at most one schema is active for a given knowledge base at any time.
 

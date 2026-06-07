@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.List;
@@ -162,17 +163,103 @@ class SchemaRegistryIntegrationTest {
         assertThat(usesSchemaTargetCount("kb-repeat", schema.getId())).isEqualTo(1L);
     }
 
+    @Test
+    void updatesInactiveSchemaContentAndHash() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-update"), SchemaSourceType.PREDEFINED);
+        String originalHash = schema.getContentHash();
+        String updatedJson = schemaJson("contracts-update", "Agreement");
+
+        SchemaDefinitionNode updated = schemaRegistryService.updateSchema(schema.getId(), updatedJson, SchemaSourceType.GENERATED);
+        SchemaDefinitionNode reloaded = schemaRegistryService.getSchema(schema.getId());
+
+        assertThat(updated.getId()).isEqualTo(schema.getId());
+        assertThat(updated.getContent()).isEqualTo(updatedJson);
+        assertThat(updated.getContentHash()).isNotEqualTo(originalHash);
+        assertThat(updated.getSourceType()).isEqualTo(SchemaSourceType.GENERATED);
+        assertThat(reloaded.getContent()).isEqualTo(updatedJson);
+        assertThat(reloaded.getContentHash()).isEqualTo(updated.getContentHash());
+    }
+
+    @Test
+    void deletesInactiveSchemaAndRejectsSubsequentRetrieval() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-delete"), SchemaSourceType.PREDEFINED);
+
+        schemaRegistryService.deleteSchema(schema.getId());
+
+        assertThatThrownBy(() -> schemaRegistryService.getSchema(schema.getId()))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Schema not found: " + schema.getId());
+    }
+
+    @Test
+    void updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode inactive = schemaRegistryService.createSchema(schemaJson("contracts-inactive"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode active = schemaRegistryService.createSchema(schemaJson("contracts-active"), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-associated", inactive.getId());
+        schemaRegistryService.activateSchema("kb-associated", active.getId());
+
+        String updatedInactiveJson = schemaJson("contracts-inactive", "Agreement");
+        SchemaDefinitionNode updatedInactive = schemaRegistryService.updateSchema(
+            inactive.getId(),
+            updatedInactiveJson,
+            SchemaSourceType.GENERATED
+        );
+        assertThat(updatedInactive.getContent()).isEqualTo(updatedInactiveJson);
+        assertThat(usesSchemaTargetCount("kb-associated", inactive.getId())).isEqualTo(1L);
+
+        schemaRegistryService.deleteSchema(inactive.getId());
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-associated").orElseThrow();
+        assertThat(kb.getActiveSchemaId()).isEqualTo(active.getId());
+        assertThat(usesSchemaTargetCount("kb-associated", inactive.getId())).isZero();
+        assertThat(usesSchemaTargetCount("kb-associated", active.getId())).isEqualTo(1L);
+    }
+
+    @Test
+    void rejectsUpdateAndDeleteOfActiveSchema() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-guarded"), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-guarded", schema.getId());
+
+        assertThatThrownBy(() -> schemaRegistryService.updateSchema(
+            schema.getId(),
+            schemaJson("contracts-guarded", "Agreement"),
+            SchemaSourceType.GENERATED
+        ))
+            .isInstanceOf(ConflictException.class)
+            .hasMessage("Cannot update active schema: " + schema.getId());
+
+        assertThatThrownBy(() -> schemaRegistryService.deleteSchema(schema.getId()))
+            .isInstanceOf(ConflictException.class)
+            .hasMessage("Cannot delete active schema: " + schema.getId());
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-guarded").orElseThrow();
+        assertThat(kb.getActiveSchemaId()).isEqualTo(schema.getId());
+        assertThat(schemaRegistryService.getSchema(schema.getId()).getContent()).isEqualTo(schema.getContent());
+    }
+
     private String schemaJson(String name) {
+        return schemaJson(name, "Contract");
+    }
+
+    private String schemaJson(String name, String label) {
         return """
             {
               "name": "%s",
               "version": 1,
               "nodes": [
-                {"label": "Contract", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]}
+                {"label": "%s", "key": "contractId", "properties": [{"name": "contractId", "type": "string"}]}
               ],
               "relationships": []
             }
-            """.formatted(name);
+            """.formatted(name, label);
     }
 
     private Long usesSchemaRelationCount(String knowledgeBaseId) {

@@ -1,8 +1,5 @@
-# schema-definition-validation Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change harden-extraction-cleanup-and-schema-validation. Update Purpose after archive.
-## Requirements
 ### Requirement: Node keys are declared properties
 The system SHALL reject schema definitions where any node definition `key` component does not match one of that node definition's declared property names.
 

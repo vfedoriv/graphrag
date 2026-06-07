@@ -1,8 +1,5 @@
-# schema-json-format-enforcement Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change migrate-schemas-yaml-to-json. Update Purpose after archive.
-## Requirements
 ### Requirement: Schema lifecycle operations accept JSON definitions only
 The system SHALL accept schema definition content only when the content is valid JSON for schema lifecycle operations.
 

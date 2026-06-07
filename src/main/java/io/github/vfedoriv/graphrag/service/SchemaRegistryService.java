@@ -107,6 +107,35 @@ public class SchemaRegistryService {
         return schema;
     }
 
+    @Transactional
+    public SchemaDefinitionNode updateSchema(String schemaId, String json, SchemaSourceType sourceType) {
+        log.info("Updating schema: schemaId={}, sourceType={}, contentLength={}", schemaId, sourceType, json == null ? 0 : json.length());
+        SchemaDefinitionNode schema = schemaRepository.findById(schemaId)
+            .orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
+        rejectIfActive(schemaId, "Cannot update active schema: ");
+
+        SchemaDocument doc = schemaParser.parse(json);
+        List<String> errors = schemaValidator.validate(doc);
+        if (!errors.isEmpty()) {
+            log.info("Schema validation failed before update: schemaId={}, name={}, version={}, errorCount={}", schemaId, doc.name(), doc.version(), errors.size());
+            throw new SchemaValidationException(errors);
+        }
+        if (!schema.getName().equals(doc.name()) || schema.getVersion() != doc.version()) {
+            throw new ConflictException(
+                "Schema identity is immutable for schemaId=" + schemaId
+                    + "; expected name=" + schema.getName() + ", version=" + schema.getVersion()
+            );
+        }
+
+        schema.setSourceType(sourceType == null ? schema.getSourceType() : sourceType);
+        schema.setFormat(SchemaFormat.JSON);
+        schema.setContent(json);
+        schema.setContentHash(sha256(json));
+        SchemaDefinitionNode saved = schemaRepository.save(schema);
+        log.info("Schema updated: schemaId={}, name={}, version={}", saved.getId(), saved.getName(), saved.getVersion());
+        return saved;
+    }
+
     @Transactional(readOnly = true)
     public List<String> validateJson(String json) {
         log.info("Validating schema JSON: contentLength={}", json == null ? 0 : json.length());
@@ -156,6 +185,23 @@ public class SchemaRegistryService {
             .bind(schemaId).to("schemaId")
             .run();
         log.info("Schema activated: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+    }
+
+    @Transactional
+    public void deleteSchema(String schemaId) {
+        log.info("Deleting schema: schemaId={}", schemaId);
+        SchemaDefinitionNode schema = schemaRepository.findById(schemaId)
+            .orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
+        rejectIfActive(schemaId, "Cannot delete active schema: ");
+        schemaRepository.detachKnowledgeBaseAssociations(schemaId);
+        schemaRepository.delete(schema);
+        log.info("Schema deleted: schemaId={}", schemaId);
+    }
+
+    private void rejectIfActive(String schemaId, String messagePrefix) {
+        if (schemaRepository.existsActiveKnowledgeBaseReference(schemaId)) {
+            throw new ConflictException(messagePrefix + schemaId);
+        }
     }
 
     private String sha256(String value) {
