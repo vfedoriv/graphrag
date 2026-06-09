@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/design.md",
+      "language": "markdown",
+      "sizeLines": 52,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/proposal.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/.openspec.yaml": [],
+    "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/design.md": [],
+    "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/proposal.md": [],
+    "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/tasks.md": []
+  }
+}

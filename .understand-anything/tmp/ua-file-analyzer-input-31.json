@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/design.md",
+      "language": "markdown",
+      "sizeLines": 167,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/tasks.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/.openspec.yaml": [],
+    "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/design.md": [],
+    "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/proposal.md": [],
+    "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/tasks.md": []
+  }
+}

@@ -1,0 +1,3661 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "type": "file",
+      "name": "KnowledgeBaseController.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:KnowledgeBaseController",
+      "type": "class",
+      "name": "KnowledgeBaseController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        27,
+        115
+      ],
+      "summary": "Represents KnowledgeBaseController in KnowledgeBaseController.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:KnowledgeBaseController",
+      "type": "function",
+      "name": "KnowledgeBaseController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        35,
+        37
+      ],
+      "summary": "Provides KnowledgeBaseController behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:createKnowledgeBase",
+      "type": "function",
+      "name": "createKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        39,
+        50
+      ],
+      "summary": "Provides createKnowledgeBase behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:listKnowledgeBases",
+      "type": "function",
+      "name": "listKnowledgeBases",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        52,
+        60
+      ],
+      "summary": "Provides listKnowledgeBases behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:getKnowledgeBase",
+      "type": "function",
+      "name": "getKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        62,
+        75
+      ],
+      "summary": "Provides getKnowledgeBase behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:updateKnowledgeBase",
+      "type": "function",
+      "name": "updateKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        77,
+        91
+      ],
+      "summary": "Provides updateKnowledgeBase behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:deleteKnowledgeBase",
+      "type": "function",
+      "name": "deleteKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "lineRange": [
+        93,
+        105
+      ],
+      "summary": "Provides deleteKnowledgeBase behavior in KnowledgeBaseController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "file",
+      "name": "KnowledgeBaseNode.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java with 1 class(es) and 8 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:KnowledgeBaseNode",
+      "type": "class",
+      "name": "KnowledgeBaseNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        7,
+        47
+      ],
+      "summary": "Represents KnowledgeBaseNode in KnowledgeBaseNode.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getId",
+      "type": "function",
+      "name": "getId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        16,
+        18
+      ],
+      "summary": "Provides getId behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setId",
+      "type": "function",
+      "name": "setId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "Provides setId behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getName",
+      "type": "function",
+      "name": "getName",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        24,
+        26
+      ],
+      "summary": "Provides getName behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setName",
+      "type": "function",
+      "name": "setName",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        28,
+        30
+      ],
+      "summary": "Provides setName behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getActiveSchemaId",
+      "type": "function",
+      "name": "getActiveSchemaId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        32,
+        34
+      ],
+      "summary": "Provides getActiveSchemaId behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setActiveSchemaId",
+      "type": "function",
+      "name": "setActiveSchemaId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        36,
+        38
+      ],
+      "summary": "Provides setActiveSchemaId behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getCreatedAt",
+      "type": "function",
+      "name": "getCreatedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        40,
+        42
+      ],
+      "summary": "Provides getCreatedAt behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setCreatedAt",
+      "type": "function",
+      "name": "setCreatedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "lineRange": [
+        44,
+        46
+      ],
+      "summary": "Provides setCreatedAt behavior in KnowledgeBaseNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "file",
+      "name": "SchemaDefinitionNode.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java with 1 class(es) and 18 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:SchemaDefinitionNode",
+      "type": "class",
+      "name": "SchemaDefinitionNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        7,
+        92
+      ],
+      "summary": "Represents SchemaDefinitionNode in SchemaDefinitionNode.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getId",
+      "type": "function",
+      "name": "getId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        21,
+        23
+      ],
+      "summary": "Provides getId behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setId",
+      "type": "function",
+      "name": "setId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        25,
+        27
+      ],
+      "summary": "Provides setId behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getName",
+      "type": "function",
+      "name": "getName",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        29,
+        31
+      ],
+      "summary": "Provides getName behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setName",
+      "type": "function",
+      "name": "setName",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        33,
+        35
+      ],
+      "summary": "Provides setName behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getVersion",
+      "type": "function",
+      "name": "getVersion",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        37,
+        39
+      ],
+      "summary": "Provides getVersion behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setVersion",
+      "type": "function",
+      "name": "setVersion",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        41,
+        43
+      ],
+      "summary": "Provides setVersion behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getSourceType",
+      "type": "function",
+      "name": "getSourceType",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        45,
+        47
+      ],
+      "summary": "Provides getSourceType behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setSourceType",
+      "type": "function",
+      "name": "setSourceType",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        49,
+        51
+      ],
+      "summary": "Provides setSourceType behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getFormat",
+      "type": "function",
+      "name": "getFormat",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        53,
+        55
+      ],
+      "summary": "Provides getFormat behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setFormat",
+      "type": "function",
+      "name": "setFormat",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        57,
+        59
+      ],
+      "summary": "Provides setFormat behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getContent",
+      "type": "function",
+      "name": "getContent",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        61,
+        63
+      ],
+      "summary": "Provides getContent behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setContent",
+      "type": "function",
+      "name": "setContent",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        65,
+        67
+      ],
+      "summary": "Provides setContent behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getContentHash",
+      "type": "function",
+      "name": "getContentHash",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        69,
+        71
+      ],
+      "summary": "Provides getContentHash behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setContentHash",
+      "type": "function",
+      "name": "setContentHash",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        73,
+        75
+      ],
+      "summary": "Provides setContentHash behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getStatus",
+      "type": "function",
+      "name": "getStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        77,
+        79
+      ],
+      "summary": "Provides getStatus behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setStatus",
+      "type": "function",
+      "name": "setStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        81,
+        83
+      ],
+      "summary": "Provides setStatus behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getCreatedAt",
+      "type": "function",
+      "name": "getCreatedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        85,
+        87
+      ],
+      "summary": "Provides getCreatedAt behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setCreatedAt",
+      "type": "function",
+      "name": "setCreatedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "lineRange": [
+        89,
+        91
+      ],
+      "summary": "Provides setCreatedAt behavior in SchemaDefinitionNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "type": "file",
+      "name": "CreateKnowledgeBaseRequest.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "type": "file",
+      "name": "KnowledgeBaseResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "type": "file",
+      "name": "UpdateKnowledgeBaseRequest.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "file",
+      "name": "ConflictException.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/ConflictException.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java:ConflictException",
+      "type": "function",
+      "name": "ConflictException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "lineRange": [
+        4,
+        6
+      ],
+      "summary": "Provides ConflictException behavior in ConflictException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "type": "file",
+      "name": "GlobalExceptionHandler.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java with 1 class(es) and 13 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:GlobalExceptionHandler",
+      "type": "class",
+      "name": "GlobalExceptionHandler",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        21,
+        148
+      ],
+      "summary": "Represents GlobalExceptionHandler in GlobalExceptionHandler.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleMethodArgumentNotValid",
+      "type": "function",
+      "name": "handleMethodArgumentNotValid",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        25,
+        38
+      ],
+      "summary": "Provides handleMethodArgumentNotValid behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleBindException",
+      "type": "function",
+      "name": "handleBindException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        40,
+        50
+      ],
+      "summary": "Provides handleBindException behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleConstraintViolation",
+      "type": "function",
+      "name": "handleConstraintViolation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        52,
+        63
+      ],
+      "summary": "Provides handleConstraintViolation behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleMaxUploadSizeExceeded",
+      "type": "function",
+      "name": "handleMaxUploadSizeExceeded",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        65,
+        69
+      ],
+      "summary": "Provides handleMaxUploadSizeExceeded behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleIllegalArgument",
+      "type": "function",
+      "name": "handleIllegalArgument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        71,
+        75
+      ],
+      "summary": "Provides handleIllegalArgument behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleGraphExtractionValidation",
+      "type": "function",
+      "name": "handleGraphExtractionValidation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        77,
+        84
+      ],
+      "summary": "Provides handleGraphExtractionValidation behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleHttpMessageConversion",
+      "type": "function",
+      "name": "handleHttpMessageConversion",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        86,
+        97
+      ],
+      "summary": "Provides handleHttpMessageConversion behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleUnhandled",
+      "type": "function",
+      "name": "handleUnhandled",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        99,
+        104
+      ],
+      "summary": "Provides handleUnhandled behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleSchemaValidation",
+      "type": "function",
+      "name": "handleSchemaValidation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        106,
+        112
+      ],
+      "summary": "Provides handleSchemaValidation behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleNotFound",
+      "type": "function",
+      "name": "handleNotFound",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        114,
+        118
+      ],
+      "summary": "Provides handleNotFound behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleConflict",
+      "type": "function",
+      "name": "handleConflict",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        120,
+        124
+      ],
+      "summary": "Provides handleConflict behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleQueryRejected",
+      "type": "function",
+      "name": "handleQueryRejected",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "lineRange": [
+        126,
+        139
+      ],
+      "summary": "Provides handleQueryRejected behavior in GlobalExceptionHandler.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "file",
+      "name": "NotFoundException.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/NotFoundException.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java:NotFoundException",
+      "type": "function",
+      "name": "NotFoundException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "lineRange": [
+        4,
+        6
+      ],
+      "summary": "Provides NotFoundException behavior in NotFoundException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "file",
+      "name": "QueryValidationResult.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/query/QueryValidationResult.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "file",
+      "name": "KnowledgeBaseRepository.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "file",
+      "name": "SchemaDefinitionRepository.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java:SchemaDefinitionRepository",
+      "type": "class",
+      "name": "SchemaDefinitionRepository",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "lineRange": [
+        9,
+        30
+      ],
+      "summary": "Represents SchemaDefinitionRepository in SchemaDefinitionRepository.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "file",
+      "name": "SchemaParser.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/schema/SchemaParser.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java:parse",
+      "type": "function",
+      "name": "parse",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "lineRange": [
+        14,
+        21
+      ],
+      "summary": "Provides parse behavior in SchemaParser.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "type": "file",
+      "name": "SchemaValidationException.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/schema/SchemaValidationException.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:SchemaValidationException",
+      "type": "class",
+      "name": "SchemaValidationException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "lineRange": [
+        5,
+        17
+      ],
+      "summary": "Represents SchemaValidationException in SchemaValidationException.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:SchemaValidationException",
+      "type": "function",
+      "name": "SchemaValidationException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "Provides SchemaValidationException behavior in SchemaValidationException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:getErrors",
+      "type": "function",
+      "name": "getErrors",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "Provides getErrors behavior in SchemaValidationException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "type": "file",
+      "name": "SchemaValidator.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/schema/SchemaValidator.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java:SchemaValidator",
+      "type": "class",
+      "name": "SchemaValidator",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "lineRange": [
+        10,
+        108
+      ],
+      "summary": "Represents SchemaValidator in SchemaValidator.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "lineRange": [
+        13,
+        103
+      ],
+      "summary": "Provides validate behavior in SchemaValidator.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "type": "file",
+      "name": "CypherValidationService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherValidationService.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:CypherValidationService",
+      "type": "class",
+      "name": "CypherValidationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "lineRange": [
+        24,
+        139
+      ],
+      "summary": "Represents CypherValidationService in CypherValidationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:CypherValidationService",
+      "type": "function",
+      "name": "CypherValidationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "lineRange": [
+        38,
+        50
+      ],
+      "summary": "Provides CypherValidationService behavior in CypherValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "lineRange": [
+        52,
+        74
+      ],
+      "summary": "Provides validate behavior in CypherValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:validateSchemaReferences",
+      "type": "function",
+      "name": "validateSchemaReferences",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "lineRange": [
+        115,
+        129
+      ],
+      "summary": "Provides validateSchemaReferences behavior in CypherValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "type": "file",
+      "name": "KnowledgeBaseService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:KnowledgeBaseService",
+      "type": "class",
+      "name": "KnowledgeBaseService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        14,
+        82
+      ],
+      "summary": "Represents KnowledgeBaseService in KnowledgeBaseService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:KnowledgeBaseService",
+      "type": "function",
+      "name": "KnowledgeBaseService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "Provides KnowledgeBaseService behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:create",
+      "type": "function",
+      "name": "create",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        26,
+        39
+      ],
+      "summary": "Provides create behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:list",
+      "type": "function",
+      "name": "list",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        41,
+        47
+      ],
+      "summary": "Provides list behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:get",
+      "type": "function",
+      "name": "get",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        49,
+        56
+      ],
+      "summary": "Provides get behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:update",
+      "type": "function",
+      "name": "update",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        58,
+        66
+      ],
+      "summary": "Provides update behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:delete",
+      "type": "function",
+      "name": "delete",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "lineRange": [
+        68,
+        81
+      ],
+      "summary": "Provides delete behavior in KnowledgeBaseService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "file",
+      "name": "SchemaRegistryService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/SchemaRegistryService.java with 1 class(es) and 11 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:SchemaRegistryService",
+      "type": "class",
+      "name": "SchemaRegistryService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        28,
+        217
+      ],
+      "summary": "Represents SchemaRegistryService in SchemaRegistryService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:SchemaRegistryService",
+      "type": "function",
+      "name": "SchemaRegistryService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        38,
+        50
+      ],
+      "summary": "Provides SchemaRegistryService behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:createSchema",
+      "type": "function",
+      "name": "createSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        52,
+        81
+      ],
+      "summary": "Provides createSchema behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:listSchemas",
+      "type": "function",
+      "name": "listSchemas",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        83,
+        89
+      ],
+      "summary": "Provides listSchemas behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:listSchemasByKnowledgeBase",
+      "type": "function",
+      "name": "listSchemasByKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        91,
+        100
+      ],
+      "summary": "Provides listSchemasByKnowledgeBase behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:getSchema",
+      "type": "function",
+      "name": "getSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        102,
+        108
+      ],
+      "summary": "Provides getSchema behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:updateSchema",
+      "type": "function",
+      "name": "updateSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        110,
+        137
+      ],
+      "summary": "Provides updateSchema behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:validateJson",
+      "type": "function",
+      "name": "validateJson",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        139,
+        146
+      ],
+      "summary": "Provides validateJson behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:activateSchema",
+      "type": "function",
+      "name": "activateSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        148,
+        188
+      ],
+      "summary": "Provides activateSchema behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:deleteSchema",
+      "type": "function",
+      "name": "deleteSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        190,
+        199
+      ],
+      "summary": "Provides deleteSchema behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:sha256",
+      "type": "function",
+      "name": "sha256",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "lineRange": [
+        207,
+        216
+      ],
+      "summary": "Provides sha256 behavior in SchemaRegistryService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "type": "file",
+      "name": "CypherValidationIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java:CypherValidationIntegrationTest",
+      "type": "class",
+      "name": "CypherValidationIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "lineRange": [
+        17,
+        77
+      ],
+      "summary": "Represents CypherValidationIntegrationTest in CypherValidationIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java:validatesWithExplainAgainstNeo4j",
+      "type": "function",
+      "name": "validatesWithExplainAgainstNeo4j",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "lineRange": [
+        41,
+        76
+      ],
+      "summary": "Provides validatesWithExplainAgainstNeo4j behavior in CypherValidationIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "type": "file",
+      "name": "SchemaRegistryIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java with 1 class(es) and 14 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:SchemaRegistryIntegrationTest",
+      "type": "class",
+      "name": "SchemaRegistryIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        24,
+        287
+      ],
+      "summary": "Represents SchemaRegistryIntegrationTest in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:persistsAndActivatesSchema",
+      "type": "function",
+      "name": "persistsAndActivatesSchema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        49,
+        83
+      ],
+      "summary": "Provides persistsAndActivatesSchema behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:schemaVersionIsImmutable",
+      "type": "function",
+      "name": "schemaVersionIsImmutable",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        85,
+        103
+      ],
+      "summary": "Provides schemaVersionIsImmutable behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:activatingSchemaDeactivatesSiblingsWithinKnowledgeBase",
+      "type": "function",
+      "name": "activatingSchemaDeactivatesSiblingsWithinKnowledgeBase",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        112,
+        130
+      ],
+      "summary": "Provides activatingSchemaDeactivatesSiblingsWithinKnowledgeBase behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:activatingSchemaDoesNotAffectOtherKnowledgeBases",
+      "type": "function",
+      "name": "activatingSchemaDoesNotAffectOtherKnowledgeBases",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        132,
+        150
+      ],
+      "summary": "Provides activatingSchemaDoesNotAffectOtherKnowledgeBases behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:repeatedActivationIsIdempotent",
+      "type": "function",
+      "name": "repeatedActivationIsIdempotent",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        152,
+        164
+      ],
+      "summary": "Provides repeatedActivationIsIdempotent behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:updatesInactiveSchemaContentAndHash",
+      "type": "function",
+      "name": "updatesInactiveSchemaContentAndHash",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        166,
+        183
+      ],
+      "summary": "Provides updatesInactiveSchemaContentAndHash behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:deletesInactiveSchemaAndRejectsSubsequentRetrieval",
+      "type": "function",
+      "name": "deletesInactiveSchemaAndRejectsSubsequentRetrieval",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        185,
+        196
+      ],
+      "summary": "Provides deletesInactiveSchemaAndRejectsSubsequentRetrieval behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship",
+      "type": "function",
+      "name": "updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        198,
+        222
+      ],
+      "summary": "Provides updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:rejectsUpdateAndDeleteOfActiveSchema",
+      "type": "function",
+      "name": "rejectsUpdateAndDeleteOfActiveSchema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        224,
+        246
+      ],
+      "summary": "Provides rejectsUpdateAndDeleteOfActiveSchema behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:schemaJson",
+      "type": "function",
+      "name": "schemaJson",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        252,
+        263
+      ],
+      "summary": "Provides schemaJson behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:usesSchemaRelationCount",
+      "type": "function",
+      "name": "usesSchemaRelationCount",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        265,
+        274
+      ],
+      "summary": "Provides usesSchemaRelationCount behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:usesSchemaTargetCount",
+      "type": "function",
+      "name": "usesSchemaTargetCount",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "lineRange": [
+        276,
+        286
+      ],
+      "summary": "Provides usesSchemaTargetCount behavior in SchemaRegistryIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "type": "file",
+      "name": "GlobalExceptionHandlerTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:GlobalExceptionHandlerTest",
+      "type": "class",
+      "name": "GlobalExceptionHandlerTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "lineRange": [
+        12,
+        53
+      ],
+      "summary": "Represents GlobalExceptionHandlerTest in GlobalExceptionHandlerTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:queryRejectedProblemIncludesValidationErrors",
+      "type": "function",
+      "name": "queryRejectedProblemIncludesValidationErrors",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "lineRange": [
+        16,
+        28
+      ],
+      "summary": "Provides queryRejectedProblemIncludesValidationErrors behavior in GlobalExceptionHandlerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:schemaValidationProblemIncludesErrors",
+      "type": "function",
+      "name": "schemaValidationProblemIncludesErrors",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "lineRange": [
+        30,
+        41
+      ],
+      "summary": "Provides schemaValidationProblemIncludesErrors behavior in GlobalExceptionHandlerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:unhandledProblemUsesFallbackMessageWhenExceptionMessageIsBlank",
+      "type": "function",
+      "name": "unhandledProblemUsesFallbackMessageWhenExceptionMessageIsBlank",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "lineRange": [
+        43,
+        52
+      ],
+      "summary": "Provides unhandledProblemUsesFallbackMessageWhenExceptionMessageIsBlank behavior in GlobalExceptionHandlerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "type": "file",
+      "name": "CypherGenerationServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:CypherGenerationServiceTest",
+      "type": "class",
+      "name": "CypherGenerationServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "lineRange": [
+        26,
+        125
+      ],
+      "summary": "Represents CypherGenerationServiceTest in CypherGenerationServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:mapsGeneratedQueryAndValidation",
+      "type": "function",
+      "name": "mapsGeneratedQueryAndValidation",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "lineRange": [
+        28,
+        113
+      ],
+      "summary": "Provides mapsGeneratedQueryAndValidation behavior in CypherGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:props",
+      "type": "function",
+      "name": "props",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "lineRange": [
+        115,
+        124
+      ],
+      "summary": "Provides props behavior in CypherGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "type": "file",
+      "name": "CypherValidationServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java with 1 class(es) and 15 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:CypherValidationServiceTest",
+      "type": "class",
+      "name": "CypherValidationServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        21,
+        247
+      ],
+      "summary": "Represents CypherValidationServiceTest in CypherValidationServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsRelationshipUnionWithoutTreatingTypesAsLabels",
+      "type": "function",
+      "name": "acceptsRelationshipUnionWithoutTreatingTypesAsLabels",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        45,
+        61
+      ],
+      "summary": "Provides acceptsRelationshipUnionWithoutTreatingTypesAsLabels behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:rejectsUnknownRelationshipUnionMembersOnlyAsRelationships",
+      "type": "function",
+      "name": "rejectsUnknownRelationshipUnionMembersOnlyAsRelationships",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        63,
+        76
+      ],
+      "summary": "Provides rejectsUnknownRelationshipUnionMembersOnlyAsRelationships behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsAliasedRelationshipUnion",
+      "type": "function",
+      "name": "acceptsAliasedRelationshipUnion",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        78,
+        90
+      ],
+      "summary": "Provides acceptsAliasedRelationshipUnion behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsValidQualifiedPropertiesAndRejectsUnknownOnes",
+      "type": "function",
+      "name": "acceptsValidQualifiedPropertiesAndRejectsUnknownOnes",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        111,
+        123
+      ],
+      "summary": "Provides acceptsValidQualifiedPropertiesAndRejectsUnknownOnes behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:validatesMixedQueryShapes",
+      "type": "function",
+      "name": "validatesMixedQueryShapes",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        125,
+        138
+      ],
+      "summary": "Provides validatesMixedQueryShapes behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:service",
+      "type": "function",
+      "name": "service",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        168,
+        183
+      ],
+      "summary": "Provides service behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:schema",
+      "type": "function",
+      "name": "schema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "lineRange": [
+        190,
+        246
+      ],
+      "summary": "Provides schema behavior in CypherValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "type": "file",
+      "name": "SchemaRegistryServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java with 1 class(es) and 14 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:SchemaRegistryServiceTest",
+      "type": "class",
+      "name": "SchemaRegistryServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        27,
+        349
+      ],
+      "summary": "Represents SchemaRegistryServiceTest in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+      "type": "function",
+      "name": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        29,
+        57
+      ],
+      "summary": "Provides listSchemasByKnowledgeBaseReturnsAssociatedSchemas behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseReturnsEmptyWhenNoAssociations",
+      "type": "function",
+      "name": "listSchemasByKnowledgeBaseReturnsEmptyWhenNoAssociations",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        59,
+        83
+      ],
+      "summary": "Provides listSchemasByKnowledgeBaseReturnsEmptyWhenNoAssociations behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseThrowsWhenKnowledgeBaseMissing",
+      "type": "function",
+      "name": "listSchemasByKnowledgeBaseThrowsWhenKnowledgeBaseMissing",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        85,
+        106
+      ],
+      "summary": "Provides listSchemasByKnowledgeBaseThrowsWhenKnowledgeBaseMissing behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaPersistsReplacementContentAndHashForInactiveSchema",
+      "type": "function",
+      "name": "updateSchemaPersistsReplacementContentAndHashForInactiveSchema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        108,
+        140
+      ],
+      "summary": "Provides updateSchemaPersistsReplacementContentAndHashForInactiveSchema behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsInvalidContentWithoutSaving",
+      "type": "function",
+      "name": "updateSchemaRejectsInvalidContentWithoutSaving",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        142,
+        167
+      ],
+      "summary": "Provides updateSchemaRejectsInvalidContentWithoutSaving behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaThrowsWhenMissing",
+      "type": "function",
+      "name": "updateSchemaThrowsWhenMissing",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        169,
+        190
+      ],
+      "summary": "Provides updateSchemaThrowsWhenMissing behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsIdentityChangeWithoutSaving",
+      "type": "function",
+      "name": "updateSchemaRejectsIdentityChangeWithoutSaving",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        192,
+        218
+      ],
+      "summary": "Provides updateSchemaRejectsIdentityChangeWithoutSaving behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsActiveSchemaBeforeParsing",
+      "type": "function",
+      "name": "updateSchemaRejectsActiveSchemaBeforeParsing",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        220,
+        244
+      ],
+      "summary": "Provides updateSchemaRejectsActiveSchemaBeforeParsing behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaDetachesRelationshipsAndDeletesInactiveSchema",
+      "type": "function",
+      "name": "deleteSchemaDetachesRelationshipsAndDeletesInactiveSchema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        246,
+        270
+      ],
+      "summary": "Provides deleteSchemaDetachesRelationshipsAndDeletesInactiveSchema behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaThrowsWhenMissing",
+      "type": "function",
+      "name": "deleteSchemaThrowsWhenMissing",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        272,
+        293
+      ],
+      "summary": "Provides deleteSchemaThrowsWhenMissing behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaRejectsActiveSchemaWithoutDetaching",
+      "type": "function",
+      "name": "deleteSchemaRejectsActiveSchemaWithoutDetaching",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        295,
+        319
+      ],
+      "summary": "Provides deleteSchemaRejectsActiveSchemaWithoutDetaching behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:schemaNode",
+      "type": "function",
+      "name": "schemaNode",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        321,
+        331
+      ],
+      "summary": "Provides schemaNode behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:schemaJson",
+      "type": "function",
+      "name": "schemaJson",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "lineRange": [
+        337,
+        348
+      ],
+      "summary": "Provides schemaJson behavior in SchemaRegistryServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:KnowledgeBaseController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:KnowledgeBaseController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:createKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:listKnowledgeBases",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:getKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:updateKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java:deleteKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:KnowledgeBaseNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getActiveSchemaId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setActiveSchemaId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:getCreatedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java:setCreatedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:SchemaDefinitionNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getSourceType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setSourceType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getFormat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setFormat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getContentHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setContentHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:getCreatedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java:setCreatedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java:ConflictException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:GlobalExceptionHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleMethodArgumentNotValid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleBindException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleConstraintViolation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleMaxUploadSizeExceeded",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleIllegalArgument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleGraphExtractionValidation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleHttpMessageConversion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleUnhandled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleSchemaValidation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleNotFound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleConflict",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java:handleQueryRejected",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java:NotFoundException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java:SchemaDefinitionRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java:parse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:SchemaValidationException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:SchemaValidationException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java:getErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java:SchemaValidator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java:validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:CypherValidationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:CypherValidationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java:validateSchemaReferences",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:KnowledgeBaseService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:KnowledgeBaseService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:create",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:list",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:update",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java:delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:SchemaRegistryService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:SchemaRegistryService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:createSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:listSchemas",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:listSchemasByKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:getSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:updateSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:validateJson",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:activateSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:deleteSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java:sha256",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java:CypherValidationIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java:validatesWithExplainAgainstNeo4j",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:SchemaRegistryIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:persistsAndActivatesSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:schemaVersionIsImmutable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:activatingSchemaDeactivatesSiblingsWithinKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:activatingSchemaDoesNotAffectOtherKnowledgeBases",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:repeatedActivationIsIdempotent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:updatesInactiveSchemaContentAndHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:deletesInactiveSchemaAndRejectsSubsequentRetrieval",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:rejectsUpdateAndDeleteOfActiveSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:schemaJson",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:usesSchemaRelationCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java:usesSchemaTargetCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:GlobalExceptionHandlerTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:queryRejectedProblemIncludesValidationErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:schemaValidationProblemIncludesErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java:unhandledProblemUsesFallbackMessageWhenExceptionMessageIsBlank",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:CypherGenerationServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:mapsGeneratedQueryAndValidation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java:props",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:CypherValidationServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsRelationshipUnionWithoutTreatingTypesAsLabels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:rejectsUnknownRelationshipUnionMembersOnlyAsRelationships",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsAliasedRelationshipUnion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:acceptsValidQualifiedPropertiesAndRejectsUnknownOnes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:validatesMixedQueryShapes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:service",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java:schema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:SchemaRegistryServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseReturnsEmptyWhenNoAssociations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:listSchemasByKnowledgeBaseThrowsWhenKnowledgeBaseMissing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaPersistsReplacementContentAndHashForInactiveSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsInvalidContentWithoutSaving",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaThrowsWhenMissing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsIdentityChangeWithoutSaving",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:updateSchemaRejectsActiveSchemaBeforeParsing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaDetachesRelationshipsAndDeletesInactiveSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaThrowsWhenMissing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:deleteSchemaRejectsActiveSchemaWithoutDetaching",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:schemaNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java:schemaJson",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

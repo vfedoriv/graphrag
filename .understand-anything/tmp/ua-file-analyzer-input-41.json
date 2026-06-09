@@ -1,0 +1,133 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResultTest.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExtTest.java",
+      "language": "java",
+      "sizeLines": 272,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/GraphragApplicationTests.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuardTest.java",
+      "language": "java",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/llm/LangChain4jProviderModelUsageTest.java",
+      "language": "java",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/logging/LogSanitizerTest.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/schema/NodeKeySupportTest.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/schema/SchemaParserValidatorTest.java",
+      "language": "java",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherParsingSupportTest.java",
+      "language": "java",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupportTest.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestcontainersConfiguration.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestDocumentStorage.java",
+      "language": "java",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestGraphragApplication.java",
+      "language": "java",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/resources/fixtures/documents/contract-sample.txt",
+      "language": "txt",
+      "sizeLines": 4,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "src/test/resources/fixtures/schemas/contracts-v1.json",
+      "language": "json",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker",
+      "language": "mockmaker",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/test/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequestValidationTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResultTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExtTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/GraphragApplicationTests.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuardTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/llm/LangChain4jProviderModelUsageTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/logging/LogSanitizerTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/schema/NodeKeySupportTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/schema/SchemaParserValidatorTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/service/CypherParsingSupportTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupportTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/TestcontainersConfiguration.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/TestDocumentStorage.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/TestGraphragApplication.java": [],
+    "src/test/resources/fixtures/documents/contract-sample.txt": [],
+    "src/test/resources/fixtures/schemas/contracts-v1.json": [],
+    "src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker": []
+  }
+}

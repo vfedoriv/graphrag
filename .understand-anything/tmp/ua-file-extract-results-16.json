@@ -1,0 +1,146 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/.openspec.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "schema",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "created",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/design.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 43,
+      "nonEmptyLines": 32,
+      "sections": [
+        {
+          "heading": "Context",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Goals / Non-Goals",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Decisions",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "Risks / Trade-offs",
+          "level": 2,
+          "line": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/proposal.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 25,
+      "nonEmptyLines": 17,
+      "sections": [
+        {
+          "heading": "Why",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "What Changes",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Capabilities",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "New Capabilities",
+          "level": 3,
+          "line": 14
+        },
+        {
+          "heading": "Modified Capabilities",
+          "level": 3,
+          "line": 17
+        },
+        {
+          "heading": "Impact",
+          "level": 2,
+          "line": 20
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/tasks.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 15,
+      "nonEmptyLines": 10,
+      "sections": [
+        {
+          "heading": "1. Parser Tolerance",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "2. Validation And Observability",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "3. Test Coverage",
+          "level": 2,
+          "line": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    }
+  ]
+}

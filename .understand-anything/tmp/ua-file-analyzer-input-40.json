@@ -1,0 +1,182 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/BaseRequest.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/IdResponse.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/embedding/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/GraphragApplication.java",
+      "language": "java",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuard.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/llm/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallContext.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationAttributes.java",
+      "language": "java",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherParsingSupport.java",
+      "language": "java",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupport.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/storage/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/resources/schemas/cmms-v1.json",
+      "language": "json",
+      "sizeLines": 71,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/schemas/legal-contracts-v1.json",
+      "language": "json",
+      "sizeLines": 46,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/config/AiModelProfilePropertiesTest.java",
+      "language": "java",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/config/AppPropertiesTest.java",
+      "language": "java",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParserTest.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentControllerIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/main/java/io/github/vfedoriv/graphrag/dto/BaseRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/IdResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/embedding/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/graph/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/GraphragApplication.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuard.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/llm/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallContext.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationAttributes.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/query/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/repository/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/schema/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/service/CypherParsingSupport.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupport.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/service/package-info.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/storage/package-info.java": [],
+    "src/main/resources/schemas/cmms-v1.json": [],
+    "src/main/resources/schemas/legal-contracts-v1.json": [],
+    "src/test/java/io/github/vfedoriv/graphrag/config/AiModelProfilePropertiesTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/config/AppPropertiesTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParserTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/DocumentControllerIntegrationTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequestValidationTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequestValidationTest.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequestValidationTest.java": []
+  }
+}

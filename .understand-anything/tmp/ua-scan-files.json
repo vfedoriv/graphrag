@@ -1,0 +1,2202 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".codex/settings.local.json",
+      "language": "json",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codex/skills/openspec-apply-change/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 159,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/openspec-archive-change/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 117,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/openspec-explore/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 287,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/openspec-propose/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 111,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".gitattributes",
+      "language": "unknown",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".github/workflows/claude.yml",
+      "language": "yaml",
+      "sizeLines": 66,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".mvn/wrapper/maven-wrapper.properties",
+      "language": "properties",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 107,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 137,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "compose.yaml",
+      "language": "yaml",
+      "sizeLines": 168,
+      "fileCategory": "infra"
+    },
+    {
+      "path": "mvnw",
+      "language": "unknown",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "mvnw.cmd",
+      "language": "batch",
+      "sizeLines": 189,
+      "fileCategory": "script"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md",
+      "language": "markdown",
+      "sizeLines": 53,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-example-generation/spec.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 41,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/design.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/proposal.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/tasks.md",
+      "language": "markdown",
+      "sizeLines": 16,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/design.md",
+      "language": "markdown",
+      "sizeLines": 37,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/proposal.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/tasks.md",
+      "language": "markdown",
+      "sizeLines": 16,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/design.md",
+      "language": "markdown",
+      "sizeLines": 35,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/proposal.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/specs/schema-retrieval-with-content/spec.md",
+      "language": "markdown",
+      "sizeLines": 18,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/tasks.md",
+      "language": "markdown",
+      "sizeLines": 14,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/design.md",
+      "language": "markdown",
+      "sizeLines": 48,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/proposal.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 62,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/specs/schema-json-format-enforcement/spec.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-14-migrate-schemas-yaml-to-json/tasks.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-cleanup-stale-failed-extraction-runs/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-cleanup-stale-failed-extraction-runs/design.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-cleanup-stale-failed-extraction-runs/specs/extraction-run-cleanup/spec.md",
+      "language": "markdown",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-cleanup-stale-failed-extraction-runs/tasks.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-fix-obsolete-extraction-graph-cleanup/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-fix-obsolete-extraction-graph-cleanup/design.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-fix-obsolete-extraction-graph-cleanup/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-fix-obsolete-extraction-graph-cleanup/specs/extraction-run-cleanup/spec.md",
+      "language": "markdown",
+      "sizeLines": 29,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-fix-obsolete-extraction-graph-cleanup/tasks.md",
+      "language": "markdown",
+      "sizeLines": 18,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/design.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/specs/graph-extraction-response-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/tasks.md",
+      "language": "markdown",
+      "sizeLines": 15,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-overwrite-completed-extraction/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-overwrite-completed-extraction/design.md",
+      "language": "markdown",
+      "sizeLines": 77,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-overwrite-completed-extraction/proposal.md",
+      "language": "markdown",
+      "sizeLines": 27,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-overwrite-completed-extraction/specs/extraction-run-cleanup/spec.md",
+      "language": "markdown",
+      "sizeLines": 54,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-overwrite-completed-extraction/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-tolerate-invalid-relationship-triples/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-tolerate-invalid-relationship-triples/design.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-tolerate-invalid-relationship-triples/specs/graph-extraction-response-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-tolerate-invalid-relationship-triples/tasks.md",
+      "language": "markdown",
+      "sizeLines": 17,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-16-fix-cypher-validation-patterns/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-16-fix-cypher-validation-patterns/design.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-16-fix-cypher-validation-patterns/proposal.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-16-fix-cypher-validation-patterns/specs/cypher-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 42,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-16-fix-cypher-validation-patterns/tasks.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/design.md",
+      "language": "markdown",
+      "sizeLines": 59,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/specs/extraction-run-cleanup/spec.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/specs/graph-extraction-result-contract/spec.md",
+      "language": "markdown",
+      "sizeLines": 16,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/specs/schema-definition-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 18,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-harden-extraction-cleanup-and-schema-validation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 44,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/design.md",
+      "language": "markdown",
+      "sizeLines": 52,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/proposal.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/specs/cypher-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-improve-query-validation-error-reporting/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/design.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/proposal.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/tasks.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/design.md",
+      "language": "markdown",
+      "sizeLines": 52,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/proposal.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/tasks.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/design.md",
+      "language": "markdown",
+      "sizeLines": 62,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/specs/service-helper-utilities/spec.md",
+      "language": "markdown",
+      "sizeLines": 53,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/tasks.md",
+      "language": "markdown",
+      "sizeLines": 36,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/design.md",
+      "language": "markdown",
+      "sizeLines": 75,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/proposal.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-extraction-result-contract/spec.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-identity-persistence/spec.md",
+      "language": "markdown",
+      "sizeLines": 37,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-definition-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 50,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/tasks.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/design.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/cypher-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 20,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/single-active-schema-per-knowledge-base/spec.md",
+      "language": "markdown",
+      "sizeLines": 32,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/design.md",
+      "language": "markdown",
+      "sizeLines": 82,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md",
+      "language": "markdown",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-response-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 32,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-result-contract/spec.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-validation-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 64,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-identity-persistence/spec.md",
+      "language": "markdown",
+      "sizeLines": 17,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/tasks.md",
+      "language": "markdown",
+      "sizeLines": 29,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/design.md",
+      "language": "markdown",
+      "sizeLines": 39,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/proposal.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/specs/schema-example-generation/spec.md",
+      "language": "markdown",
+      "sizeLines": 14,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/tasks.md",
+      "language": "markdown",
+      "sizeLines": 16,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/design.md",
+      "language": "markdown",
+      "sizeLines": 36,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/specs/schema-list-by-knowledge-base/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/design.md",
+      "language": "markdown",
+      "sizeLines": 35,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/specs/documentation-alignment/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 14,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/design.md",
+      "language": "markdown",
+      "sizeLines": 167,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md",
+      "language": "markdown",
+      "sizeLines": 113,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/tasks.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/design.md",
+      "language": "markdown",
+      "sizeLines": 57,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/proposal.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/specs/ai-observability-monitoring/spec.md",
+      "language": "markdown",
+      "sizeLines": 48,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/tasks.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/design.md",
+      "language": "markdown",
+      "sizeLines": 64,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/proposal.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/specs/test-coverage-governance/spec.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-06-extend-document-operations/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-06-extend-document-operations/design.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-06-extend-document-operations/proposal.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-06-extend-document-operations/specs/document-management/spec.md",
+      "language": "markdown",
+      "sizeLines": 98,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-06-extend-document-operations/tasks.md",
+      "language": "markdown",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/design.md",
+      "language": "markdown",
+      "sizeLines": 50,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/proposal.md",
+      "language": "markdown",
+      "sizeLines": 29,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-definition-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 27,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-json-format-enforcement/spec.md",
+      "language": "markdown",
+      "sizeLines": 39,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-mutation/spec.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/single-active-schema-per-knowledge-base/spec.md",
+      "language": "markdown",
+      "sizeLines": 41,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/tasks.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/config.yaml",
+      "language": "yaml",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/specs/ai-observability-monitoring/spec.md",
+      "language": "markdown",
+      "sizeLines": 51,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/cypher-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 75,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/document-management/spec.md",
+      "language": "markdown",
+      "sizeLines": 103,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/documentation-alignment/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/extraction-run-cleanup/spec.md",
+      "language": "markdown",
+      "sizeLines": 118,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/graph-extraction-response-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 47,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/graph-extraction-result-contract/spec.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/graph-extraction-validation-tolerance/spec.md",
+      "language": "markdown",
+      "sizeLines": 68,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/graph-identity-persistence/spec.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-definition-validation/spec.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-example-generation/spec.md",
+      "language": "markdown",
+      "sizeLines": 54,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-generation-with-examples/spec.md",
+      "language": "markdown",
+      "sizeLines": 149,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-json-format-enforcement/spec.md",
+      "language": "markdown",
+      "sizeLines": 42,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-list-by-knowledge-base/spec.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-mutation/spec.md",
+      "language": "markdown",
+      "sizeLines": 67,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/schema-retrieval-with-content/spec.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/service-helper-utilities/spec.md",
+      "language": "markdown",
+      "sizeLines": 57,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/single-active-schema-per-knowledge-base/spec.md",
+      "language": "markdown",
+      "sizeLines": 44,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/specs/test-coverage-governance/spec.md",
+      "language": "markdown",
+      "sizeLines": 49,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "pom.xml",
+      "language": "xml",
+      "sizeLines": 288,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 719,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/config/AiObservationConfiguration.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "language": "java",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "language": "java",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "language": "java",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "language": "java",
+      "sizeLines": 276,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java",
+      "language": "java",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "language": "java",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "language": "java",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "language": "java",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "language": "java",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java",
+      "language": "java",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "language": "java",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "language": "java",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "language": "java",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/BaseRequest.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "language": "java",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java",
+      "language": "java",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/IdResponse.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryAskResponse.java",
+      "language": "java",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequest.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "language": "java",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidateRequest.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "language": "java",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java",
+      "language": "java",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaValidationResponse.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/ValidateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/embedding/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "language": "java",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "language": "java",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "language": "java",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "language": "java",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "language": "java",
+      "sizeLines": 212,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "language": "java",
+      "sizeLines": 218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "language": "java",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "language": "java",
+      "sizeLines": 147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "language": "java",
+      "sizeLines": 407,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "language": "java",
+      "sizeLines": 219,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/GraphragApplication.java",
+      "language": "java",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuard.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/llm/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "language": "java",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallContext.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "language": "java",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationAttributes.java",
+      "language": "java",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "language": "java",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "language": "java",
+      "sizeLines": 422,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "language": "java",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "language": "java",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "language": "java",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "language": "java",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "language": "java",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "language": "java",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "language": "java",
+      "sizeLines": 108,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "language": "java",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "language": "java",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherParsingSupport.java",
+      "language": "java",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "language": "java",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "language": "java",
+      "sizeLines": 259,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "language": "java",
+      "sizeLines": 342,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupport.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "language": "java",
+      "sizeLines": 275,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "language": "java",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "language": "java",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaBootstrapService.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "language": "java",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "language": "java",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "language": "java",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/storage/package-info.java",
+      "language": "java",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/resources/application-langfuse.properties",
+      "language": "properties",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application-lm_studio.properties",
+      "language": "properties",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application-openai.properties",
+      "language": "properties",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application.properties",
+      "language": "properties",
+      "sizeLines": 54,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/schemas/cmms-v1.json",
+      "language": "json",
+      "sizeLines": 71,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/schemas/legal-contracts-v1.json",
+      "language": "json",
+      "sizeLines": 46,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/config/AiModelProfilePropertiesTest.java",
+      "language": "java",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/config/AppPropertiesTest.java",
+      "language": "java",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "language": "java",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaControllerTest.java",
+      "language": "java",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "language": "java",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParserTest.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentControllerIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequestValidationTest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResultTest.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "language": "java",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "language": "java",
+      "sizeLines": 438,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "language": "java",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "language": "java",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExtTest.java",
+      "language": "java",
+      "sizeLines": 272,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "language": "java",
+      "sizeLines": 168,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 443,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/GraphragApplicationTests.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/llm/AiModelOwnershipGuardTest.java",
+      "language": "java",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/llm/LangChain4jProviderModelUsageTest.java",
+      "language": "java",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/logging/LogSanitizerTest.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "language": "java",
+      "sizeLines": 327,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "language": "java",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/schema/NodeKeySupportTest.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/schema/SchemaParserValidatorTest.java",
+      "language": "java",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 287,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "language": "java",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "language": "java",
+      "sizeLines": 125,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherParsingSupportTest.java",
+      "language": "java",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "language": "java",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "language": "java",
+      "sizeLines": 247,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "language": "java",
+      "sizeLines": 186,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "language": "java",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupportTest.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "language": "java",
+      "sizeLines": 171,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "language": "java",
+      "sizeLines": 300,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "language": "java",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "language": "java",
+      "sizeLines": 349,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "language": "java",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestcontainersConfiguration.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestDocumentStorage.java",
+      "language": "java",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/TestGraphragApplication.java",
+      "language": "java",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/resources/fixtures/documents/contract-sample.txt",
+      "language": "txt",
+      "sizeLines": 4,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "src/test/resources/fixtures/schemas/contracts-v1.json",
+      "language": "json",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker",
+      "language": "mockmaker",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 362,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "large",
+  "stats": {
+    "filesScanned": 362,
+    "byCategory": {
+      "config": 38,
+      "docs": 149,
+      "code": 172,
+      "infra": 2,
+      "script": 1
+    },
+    "byLanguage": {
+      "json": 4,
+      "markdown": 148,
+      "unknown": 2,
+      "yaml": 30,
+      "properties": 5,
+      "batch": 1,
+      "xml": 1,
+      "java": 169,
+      "txt": 1,
+      "mockmaker": 1
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "schema",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "created",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 53,
+      "nonEmptyLines": 31,
+      "sections": [
+        {
+          "heading": "Context",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Goals / Non-Goals",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Decisions",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "Risks / Trade-offs",
+          "level": 2,
+          "line": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 25,
+      "nonEmptyLines": 17,
+      "sections": [
+        {
+          "heading": "Why",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "What Changes",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Capabilities",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "New Capabilities",
+          "level": 3,
+          "line": 15
+        },
+        {
+          "heading": "Modified Capabilities",
+          "level": 3,
+          "line": 19
+        },
+        {
+          "heading": "Impact",
+          "level": 2,
+          "line": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 26,
+      "nonEmptyLines": 19,
+      "sections": [
+        {
+          "heading": "1. API Contract",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "2. Service Implementation",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "3. Validation and File Handling",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "4. Tests and Verification",
+          "level": 2,
+          "line": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    }
+  ]
+}

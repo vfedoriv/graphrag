@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/design.md",
+      "language": "markdown",
+      "sizeLines": 57,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/proposal.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/tasks.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/.openspec.yaml": [],
+    "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/design.md": [],
+    "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/proposal.md": [],
+    "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/tasks.md": []
+  }
+}

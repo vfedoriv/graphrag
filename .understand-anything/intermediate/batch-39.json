@@ -1,0 +1,375 @@
+{
+  "nodes": [
+    {
+      "id": "document:openspec/specs/ai-observability-monitoring/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/ai-observability-monitoring/spec.md",
+      "summary": "Documents openspec/specs/ai-observability-monitoring/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/cypher-validation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/cypher-validation/spec.md",
+      "summary": "Documents openspec/specs/cypher-validation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/document-management/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/document-management/spec.md",
+      "summary": "Documents openspec/specs/document-management/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/specs/documentation-alignment/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/documentation-alignment/spec.md",
+      "summary": "Documents openspec/specs/documentation-alignment/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/extraction-run-cleanup/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/extraction-run-cleanup/spec.md",
+      "summary": "Documents openspec/specs/extraction-run-cleanup/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/specs/graph-extraction-response-tolerance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/graph-extraction-response-tolerance/spec.md",
+      "summary": "Documents openspec/specs/graph-extraction-response-tolerance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/graph-extraction-result-contract/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/graph-extraction-result-contract/spec.md",
+      "summary": "Documents openspec/specs/graph-extraction-result-contract/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/graph-extraction-validation-tolerance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/graph-extraction-validation-tolerance/spec.md",
+      "summary": "Documents openspec/specs/graph-extraction-validation-tolerance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/graph-identity-persistence/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/graph-identity-persistence/spec.md",
+      "summary": "Documents openspec/specs/graph-identity-persistence/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-definition-validation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-definition-validation/spec.md",
+      "summary": "Documents openspec/specs/schema-definition-validation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-example-generation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-example-generation/spec.md",
+      "summary": "Documents openspec/specs/schema-example-generation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-generation-with-examples/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-generation-with-examples/spec.md",
+      "summary": "Documents openspec/specs/schema-generation-with-examples/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/specs/schema-json-format-enforcement/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-json-format-enforcement/spec.md",
+      "summary": "Documents openspec/specs/schema-json-format-enforcement/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-list-by-knowledge-base/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-list-by-knowledge-base/spec.md",
+      "summary": "Documents openspec/specs/schema-list-by-knowledge-base/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-mutation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-mutation/spec.md",
+      "summary": "Documents openspec/specs/schema-mutation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/schema-retrieval-with-content/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/schema-retrieval-with-content/spec.md",
+      "summary": "Documents openspec/specs/schema-retrieval-with-content/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/service-helper-utilities/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/service-helper-utilities/spec.md",
+      "summary": "Documents openspec/specs/service-helper-utilities/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/single-active-schema-per-knowledge-base/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/single-active-schema-per-knowledge-base/spec.md",
+      "summary": "Documents openspec/specs/single-active-schema-per-knowledge-base/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/specs/test-coverage-governance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/specs/test-coverage-governance/spec.md",
+      "summary": "Documents openspec/specs/test-coverage-governance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservationConfiguration.java",
+      "type": "file",
+      "name": "AiObservationConfiguration.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/config/AiObservationConfiguration.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/config/AiObservationConfiguration.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java",
+      "type": "file",
+      "name": "OpenApiConfig.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/config/OpenApiConfig.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java:graphragOpenApi",
+      "type": "function",
+      "name": "graphragOpenApi",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java",
+      "lineRange": [
+        12,
+        20
+      ],
+      "summary": "Provides graphragOpenApi behavior in OpenApiConfig.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/controller/package-info.java",
+      "type": "file",
+      "name": "package-info.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/package-info.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/controller/package-info.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/document/package-info.java",
+      "type": "file",
+      "name": "package-info.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/package-info.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/document/package-info.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "type": "file",
+      "name": "RoutedDocumentParser.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java:RoutedDocumentParser",
+      "type": "class",
+      "name": "RoutedDocumentParser",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "lineRange": [
+        10,
+        36
+      ],
+      "summary": "Represents RoutedDocumentParser in RoutedDocumentParser.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java:parserFor",
+      "type": "function",
+      "name": "parserFor",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "lineRange": [
+        17,
+        35
+      ],
+      "summary": "Provides parserFor behavior in RoutedDocumentParser.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/package-info.java",
+      "type": "file",
+      "name": "package-info.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/package-info.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/package-info.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java:graphragOpenApi",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java:RoutedDocumentParser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java:parserFor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/.openspec.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "schema",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "created",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/design.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 82,
+      "nonEmptyLines": 48,
+      "sections": [
+        {
+          "heading": "Context",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Goals / Non-Goals",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Decisions",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Make extraction validation return a sanitized result",
+          "level": 3,
+          "line": 28
+        },
+        {
+          "heading": "Reserve exceptions for non-model-output failures",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "Validate relationships against the kept node set",
+          "level": 3,
+          "line": 44
+        },
+        {
+          "heading": "Keep deterministic repair narrow",
+          "level": 3,
+          "line": 52
+        },
+        {
+          "heading": "Introduce validation findings internally",
+          "level": 3,
+          "line": 60
+        },
+        {
+          "heading": "Keep graph writes strict",
+          "level": 3,
+          "line": 68
+        },
+        {
+          "heading": "Risks / Trade-offs",
+          "level": 2,
+          "line": 76
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 33,
+      "nonEmptyLines": 23,
+      "sections": [
+        {
+          "heading": "Why",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "What Changes",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Capabilities",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "New Capabilities",
+          "level": 3,
+          "line": 17
+        },
+        {
+          "heading": "Modified Capabilities",
+          "level": 3,
+          "line": 21
+        },
+        {
+          "heading": "Impact",
+          "level": 2,
+          "line": 27
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/tasks.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 29,
+      "nonEmptyLines": 22,
+      "sections": [
+        {
+          "heading": "1. Contract Tests",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "2. Validation Refactor",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "3. Logging And Safety Boundaries",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "4. Verification",
+          "level": 2,
+          "line": 25
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/design.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/proposal.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/tasks.md",
+      "language": "markdown",
+      "sizeLines": 16,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/.openspec.yaml": [],
+    "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/design.md": [],
+    "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/proposal.md": [],
+    "openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/tasks.md": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/design.md",
+      "language": "markdown",
+      "sizeLines": 35,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 14,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/.openspec.yaml": [],
+    "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/design.md": [],
+    "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/proposal.md": [],
+    "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/tasks.md": []
+  }
+}

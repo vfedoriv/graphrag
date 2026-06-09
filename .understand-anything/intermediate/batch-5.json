@@ -1,0 +1,3331 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "type": "file",
+      "name": "ExtractionRunNode.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java with 1 class(es) and 16 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:ExtractionRunNode",
+      "type": "class",
+      "name": "ExtractionRunNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        7,
+        83
+      ],
+      "summary": "Represents ExtractionRunNode in ExtractionRunNode.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getId",
+      "type": "function",
+      "name": "getId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "Provides getId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setId",
+      "type": "function",
+      "name": "setId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        24,
+        26
+      ],
+      "summary": "Provides setId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getDocumentId",
+      "type": "function",
+      "name": "getDocumentId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        28,
+        30
+      ],
+      "summary": "Provides getDocumentId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setDocumentId",
+      "type": "function",
+      "name": "setDocumentId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        32,
+        34
+      ],
+      "summary": "Provides setDocumentId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getSchemaId",
+      "type": "function",
+      "name": "getSchemaId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        36,
+        38
+      ],
+      "summary": "Provides getSchemaId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setSchemaId",
+      "type": "function",
+      "name": "setSchemaId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        40,
+        42
+      ],
+      "summary": "Provides setSchemaId behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getModel",
+      "type": "function",
+      "name": "getModel",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        44,
+        46
+      ],
+      "summary": "Provides getModel behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setModel",
+      "type": "function",
+      "name": "setModel",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        48,
+        50
+      ],
+      "summary": "Provides setModel behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getStatus",
+      "type": "function",
+      "name": "getStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        52,
+        54
+      ],
+      "summary": "Provides getStatus behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setStatus",
+      "type": "function",
+      "name": "setStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        56,
+        58
+      ],
+      "summary": "Provides setStatus behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getStartedAt",
+      "type": "function",
+      "name": "getStartedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        60,
+        62
+      ],
+      "summary": "Provides getStartedAt behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setStartedAt",
+      "type": "function",
+      "name": "setStartedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        64,
+        66
+      ],
+      "summary": "Provides setStartedAt behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getCompletedAt",
+      "type": "function",
+      "name": "getCompletedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        68,
+        70
+      ],
+      "summary": "Provides getCompletedAt behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setCompletedAt",
+      "type": "function",
+      "name": "setCompletedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        72,
+        74
+      ],
+      "summary": "Provides setCompletedAt behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getErrorMessage",
+      "type": "function",
+      "name": "getErrorMessage",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        76,
+        78
+      ],
+      "summary": "Provides getErrorMessage behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setErrorMessage",
+      "type": "function",
+      "name": "setErrorMessage",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "lineRange": [
+        80,
+        82
+      ],
+      "summary": "Provides setErrorMessage behavior in ExtractionRunNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java",
+      "type": "file",
+      "name": "ExtractionRunStatus.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "type": "file",
+      "name": "GraphExtractionValidationException.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java:GraphExtractionValidationException",
+      "type": "function",
+      "name": "GraphExtractionValidationException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "lineRange": [
+        5,
+        7
+      ],
+      "summary": "Provides GraphExtractionValidationException behavior in GraphExtractionValidationException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "type": "file",
+      "name": "GraphExtractionSupport.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java with 1 class(es) and 14 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:GraphExtractionSupport",
+      "type": "class",
+      "name": "GraphExtractionSupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        14,
+        212
+      ],
+      "summary": "Represents GraphExtractionSupport in GraphExtractionSupport.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:buildSchemaIndex",
+      "type": "function",
+      "name": "buildSchemaIndex",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        19,
+        29
+      ],
+      "summary": "Provides buildSchemaIndex behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:normalizeNode",
+      "type": "function",
+      "name": "normalizeNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        31,
+        46
+      ],
+      "summary": "Provides normalizeNode behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:normalizeRelationship",
+      "type": "function",
+      "name": "normalizeRelationship",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        48,
+        74
+      ],
+      "summary": "Provides normalizeRelationship behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:relationshipDropReason",
+      "type": "function",
+      "name": "relationshipDropReason",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        76,
+        105
+      ],
+      "summary": "Provides relationshipDropReason behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:hasCompleteRequiredKeys",
+      "type": "function",
+      "name": "hasCompleteRequiredKeys",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        107,
+        120
+      ],
+      "summary": "Provides hasCompleteRequiredKeys behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:fillEndpointKey",
+      "type": "function",
+      "name": "fillEndpointKey",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        156,
+        179
+      ],
+      "summary": "Provides fillEndpointKey behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:endpointMatchesKeptNode",
+      "type": "function",
+      "name": "endpointMatchesKeptNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "lineRange": [
+        181,
+        196
+      ],
+      "summary": "Provides endpointMatchesKeptNode behavior in GraphExtractionSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "type": "file",
+      "name": "GraphExtractionValidationService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java with 1 class(es) and 14 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:GraphExtractionValidationService",
+      "type": "class",
+      "name": "GraphExtractionValidationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        14,
+        218
+      ],
+      "summary": "Represents GraphExtractionValidationService in GraphExtractionValidationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:GraphExtractionValidationService",
+      "type": "function",
+      "name": "GraphExtractionValidationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        21,
+        23
+      ],
+      "summary": "Provides GraphExtractionValidationService behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        25,
+        51
+      ],
+      "summary": "Provides validate behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:filterNodes",
+      "type": "function",
+      "name": "filterNodes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        80,
+        107
+      ],
+      "summary": "Provides filterNodes behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:filterRelationships",
+      "type": "function",
+      "name": "filterRelationships",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        109,
+        127
+      ],
+      "summary": "Provides filterRelationships behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logDroppedRelationship",
+      "type": "function",
+      "name": "logDroppedRelationship",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        139,
+        148
+      ],
+      "summary": "Provides logDroppedRelationship behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logEndpointRepairDiffs",
+      "type": "function",
+      "name": "logEndpointRepairDiffs",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        159,
+        176
+      ],
+      "summary": "Provides logEndpointRepairDiffs behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logEndpointRepair",
+      "type": "function",
+      "name": "logEndpointRepair",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        188,
+        205
+      ],
+      "summary": "Provides logEndpointRepair behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logPayload",
+      "type": "function",
+      "name": "logPayload",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "lineRange": [
+        207,
+        217
+      ],
+      "summary": "Provides logPayload behavior in GraphExtractionValidationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "type": "file",
+      "name": "GraphWriteService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphWriteService.java with 1 class(es) and 10 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:GraphWriteService",
+      "type": "class",
+      "name": "GraphWriteService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        14,
+        182
+      ],
+      "summary": "Represents GraphWriteService in GraphWriteService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:GraphWriteService",
+      "type": "function",
+      "name": "GraphWriteService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        20,
+        22
+      ],
+      "summary": "Provides GraphWriteService behavior in GraphWriteService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:write",
+      "type": "function",
+      "name": "write",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        24,
+        64
+      ],
+      "summary": "Provides write behavior in GraphWriteService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:upsertNode",
+      "type": "function",
+      "name": "upsertNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        66,
+        106
+      ],
+      "summary": "Provides upsertNode behavior in GraphWriteService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:upsertRelationship",
+      "type": "function",
+      "name": "upsertRelationship",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        108,
+        147
+      ],
+      "summary": "Provides upsertRelationship behavior in GraphWriteService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:filterDeclaredProperties",
+      "type": "function",
+      "name": "filterDeclaredProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "lineRange": [
+        157,
+        169
+      ],
+      "summary": "Provides filterDeclaredProperties behavior in GraphWriteService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "type": "file",
+      "name": "GraphWriteSupport.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java with 1 class(es) and 10 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:GraphWriteSupport",
+      "type": "class",
+      "name": "GraphWriteSupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        16,
+        147
+      ],
+      "summary": "Represents GraphWriteSupport in GraphWriteSupport.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:stableNodeId",
+      "type": "function",
+      "name": "stableNodeId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        21,
+        32
+      ],
+      "summary": "Provides stableNodeId behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:requireCompleteIdentity",
+      "type": "function",
+      "name": "requireCompleteIdentity",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        44,
+        54
+      ],
+      "summary": "Provides requireCompleteIdentity behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:filterDeclaredProperties",
+      "type": "function",
+      "name": "filterDeclaredProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        56,
+        71
+      ],
+      "summary": "Provides filterDeclaredProperties behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:droppedPropertyNames",
+      "type": "function",
+      "name": "droppedPropertyNames",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        73,
+        88
+      ],
+      "summary": "Provides droppedPropertyNames behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:allowedNodeProperties",
+      "type": "function",
+      "name": "allowedNodeProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        90,
+        101
+      ],
+      "summary": "Provides allowedNodeProperties behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:allowedRelationshipProperties",
+      "type": "function",
+      "name": "allowedRelationshipProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "lineRange": [
+        103,
+        129
+      ],
+      "summary": "Provides allowedRelationshipProperties behavior in GraphWriteSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "type": "file",
+      "name": "ExtractionRunRepository.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java:ExtractionRunRepository",
+      "type": "class",
+      "name": "ExtractionRunRepository",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "lineRange": [
+        8,
+        18
+      ],
+      "summary": "Represents ExtractionRunRepository in ExtractionRunRepository.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "type": "file",
+      "name": "NodeKeySupport.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/schema/NodeKeySupport.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:NodeKeySupport",
+      "type": "class",
+      "name": "NodeKeySupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "lineRange": [
+        6,
+        31
+      ],
+      "summary": "Represents NodeKeySupport in NodeKeySupport.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:NodeKeySupport",
+      "type": "function",
+      "name": "NodeKeySupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "lineRange": [
+        8,
+        9
+      ],
+      "summary": "Provides NodeKeySupport behavior in NodeKeySupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:normalizedKeys",
+      "type": "function",
+      "name": "normalizedKeys",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "lineRange": [
+        11,
+        20
+      ],
+      "summary": "Provides normalizedKeys behavior in NodeKeySupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:display",
+      "type": "function",
+      "name": "display",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "lineRange": [
+        22,
+        30
+      ],
+      "summary": "Provides display behavior in NodeKeySupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "file",
+      "name": "SchemaDocument.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/schema/SchemaDocument.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "type": "file",
+      "name": "CypherSchemaSupport.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java with 1 class(es) and 4 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java:CypherSchemaSupport",
+      "type": "class",
+      "name": "CypherSchemaSupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "lineRange": [
+        7,
+        44
+      ],
+      "summary": "Represents CypherSchemaSupport in CypherSchemaSupport.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java:allowedProperties",
+      "type": "function",
+      "name": "allowedProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "lineRange": [
+        28,
+        43
+      ],
+      "summary": "Provides allowedProperties behavior in CypherSchemaSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "type": "file",
+      "name": "GraphExtractionService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/GraphExtractionService.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:GraphExtractionService",
+      "type": "class",
+      "name": "GraphExtractionService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        32,
+        275
+      ],
+      "summary": "Represents GraphExtractionService in GraphExtractionService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:GraphExtractionService",
+      "type": "function",
+      "name": "GraphExtractionService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        46,
+        66
+      ],
+      "summary": "Provides GraphExtractionService behavior in GraphExtractionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:extract",
+      "type": "function",
+      "name": "extract",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        68,
+        183
+      ],
+      "summary": "Provides extract behavior in GraphExtractionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:linkRunToDocument",
+      "type": "function",
+      "name": "linkRunToDocument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        185,
+        196
+      ],
+      "summary": "Provides linkRunToDocument behavior in GraphExtractionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:resolveGraphExtractionClient",
+      "type": "function",
+      "name": "resolveGraphExtractionClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        198,
+        210
+      ],
+      "summary": "Provides resolveGraphExtractionClient behavior in GraphExtractionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:cleanupRunsAfterCompletion",
+      "type": "function",
+      "name": "cleanupRunsAfterCompletion",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "lineRange": [
+        212,
+        264
+      ],
+      "summary": "Provides cleanupRunsAfterCompletion behavior in GraphExtractionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "type": "file",
+      "name": "SchemaGenerationNormalizationSupport.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:SchemaGenerationNormalizationSupport",
+      "type": "class",
+      "name": "SchemaGenerationNormalizationSupport",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "lineRange": [
+        8,
+        84
+      ],
+      "summary": "Represents SchemaGenerationNormalizationSupport in SchemaGenerationNormalizationSupport.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:sanitizeLabel",
+      "type": "function",
+      "name": "sanitizeLabel",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "lineRange": [
+        13,
+        23
+      ],
+      "summary": "Provides sanitizeLabel behavior in SchemaGenerationNormalizationSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:inferPropertyType",
+      "type": "function",
+      "name": "inferPropertyType",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "lineRange": [
+        41,
+        62
+      ],
+      "summary": "Provides inferPropertyType behavior in SchemaGenerationNormalizationSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:inferKeyCandidates",
+      "type": "function",
+      "name": "inferKeyCandidates",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "lineRange": [
+        64,
+        79
+      ],
+      "summary": "Provides inferKeyCandidates behavior in SchemaGenerationNormalizationSupport.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "type": "file",
+      "name": "GraphExtractionSupportTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:GraphExtractionSupportTest",
+      "type": "class",
+      "name": "GraphExtractionSupportTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        10,
+        131
+      ],
+      "summary": "Represents GraphExtractionSupportTest in GraphExtractionSupportTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldRepairNodeKeyFromName",
+      "type": "function",
+      "name": "shouldRepairNodeKeyFromName",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        12,
+        24
+      ],
+      "summary": "Provides shouldRepairNodeKeyFromName behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldNotRepairNodeWhenAllFallbackValuesAreBlank",
+      "type": "function",
+      "name": "shouldNotRepairNodeWhenAllFallbackValuesAreBlank",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        26,
+        38
+      ],
+      "summary": "Provides shouldNotRepairNodeWhenAllFallbackValuesAreBlank behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropInvalidRelationshipTriple",
+      "type": "function",
+      "name": "shouldDropInvalidRelationshipTriple",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        40,
+        64
+      ],
+      "summary": "Provides shouldDropInvalidRelationshipTriple behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropWhenEndpointLabelIsUnknown",
+      "type": "function",
+      "name": "shouldDropWhenEndpointLabelIsUnknown",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        66,
+        79
+      ],
+      "summary": "Provides shouldDropWhenEndpointLabelIsUnknown behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropWhenEndpointDoesNotMatchKeptNode",
+      "type": "function",
+      "name": "shouldDropWhenEndpointDoesNotMatchKeptNode",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        81,
+        102
+      ],
+      "summary": "Provides shouldDropWhenEndpointDoesNotMatchKeptNode behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldRepairEndpointWhenSingleNodeOfLabelExists",
+      "type": "function",
+      "name": "shouldRepairEndpointWhenSingleNodeOfLabelExists",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "lineRange": [
+        104,
+        130
+      ],
+      "summary": "Provides shouldRepairEndpointWhenSingleNodeOfLabelExists behavior in GraphExtractionSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "type": "file",
+      "name": "GraphExtractionValidationServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java with 1 class(es) and 13 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:GraphExtractionValidationServiceTest",
+      "type": "class",
+      "name": "GraphExtractionValidationServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        18,
+        438
+      ],
+      "summary": "Represents GraphExtractionValidationServiceTest in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:rejectsPayloadAboveConfiguredNodeLimit",
+      "type": "function",
+      "name": "rejectsPayloadAboveConfiguredNodeLimit",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        40,
+        52
+      ],
+      "summary": "Provides rejectsPayloadAboveConfiguredNodeLimit behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsUnknownLabelAndKeepsValidNodes",
+      "type": "function",
+      "name": "skipsUnknownLabelAndKeepsValidNodes",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        54,
+        69
+      ],
+      "summary": "Provides skipsUnknownLabelAndKeepsValidNodes behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsValidPayload",
+      "type": "function",
+      "name": "acceptsValidPayload",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        71,
+        94
+      ],
+      "summary": "Provides acceptsValidPayload behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:dropsInvalidRelationshipTriplesAndKeepsValidOnes",
+      "type": "function",
+      "name": "dropsInvalidRelationshipTriplesAndKeepsValidOnes",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        96,
+        129
+      ],
+      "summary": "Provides dropsInvalidRelationshipTriplesAndKeepsValidOnes behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsCompositeNodeKeyAndEndpointKeys",
+      "type": "function",
+      "name": "acceptsCompositeNodeKeyAndEndpointKeys",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        131,
+        162
+      ],
+      "summary": "Provides acceptsCompositeNodeKeyAndEndpointKeys behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsRelationshipWithCompleteCompositeEndpoints",
+      "type": "function",
+      "name": "acceptsRelationshipWithCompleteCompositeEndpoints",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        164,
+        203
+      ],
+      "summary": "Provides acceptsRelationshipWithCompleteCompositeEndpoints behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:repairsMissingNodeKeyComponentsWhenPreferredPropertyExists",
+      "type": "function",
+      "name": "repairsMissingNodeKeyComponentsWhenPreferredPropertyExists",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        205,
+        240
+      ],
+      "summary": "Provides repairsMissingNodeKeyComponentsWhenPreferredPropertyExists behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsNodeWhenMissingKeyCannotBeRepaired",
+      "type": "function",
+      "name": "skipsNodeWhenMissingKeyCannotBeRepaired",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        242,
+        283
+      ],
+      "summary": "Provides skipsNodeWhenMissingKeyCannotBeRepaired behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:fillsMissingCompositeEndpointComponentWhenSingleMatchingNodeExists",
+      "type": "function",
+      "name": "fillsMissingCompositeEndpointComponentWhenSingleMatchingNodeExists",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        285,
+        329
+      ],
+      "summary": "Provides fillsMissingCompositeEndpointComponentWhenSingleMatchingNodeExists behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsPartialCompositeRelationshipEndpointKeyAndKeepsValidRelationship",
+      "type": "function",
+      "name": "skipsPartialCompositeRelationshipEndpointKeyAndKeepsValidRelationship",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        331,
+        393
+      ],
+      "summary": "Provides skipsPartialCompositeRelationshipEndpointKeyAndKeepsValidRelationship behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsRelationshipWhenEndpointIdentityDoesNotMatchKeptNode",
+      "type": "function",
+      "name": "skipsRelationshipWhenEndpointIdentityDoesNotMatchKeptNode",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        395,
+        421
+      ],
+      "summary": "Provides skipsRelationshipWhenEndpointIdentityDoesNotMatchKeptNode behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:schema",
+      "type": "function",
+      "name": "schema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "lineRange": [
+        423,
+        437
+      ],
+      "summary": "Provides schema behavior in GraphExtractionValidationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "type": "file",
+      "name": "GraphWriteServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:GraphWriteServiceTest",
+      "type": "class",
+      "name": "GraphWriteServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "lineRange": [
+        16,
+        137
+      ],
+      "summary": "Represents GraphWriteServiceTest in GraphWriteServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:stableNodeId_isDeterministicAndResistantToDelimiterCollisions",
+      "type": "function",
+      "name": "stableNodeId_isDeterministicAndResistantToDelimiterCollisions",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "lineRange": [
+        20,
+        32
+      ],
+      "summary": "Provides stableNodeId_isDeterministicAndResistantToDelimiterCollisions behavior in GraphWriteServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:stableRelationshipId_isDeterministic",
+      "type": "function",
+      "name": "stableRelationshipId_isDeterministic",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "lineRange": [
+        34,
+        50
+      ],
+      "summary": "Provides stableRelationshipId_isDeterministic behavior in GraphWriteServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:filterDeclaredProperties_dropsUndeclaredNodeAndRelationshipProperties",
+      "type": "function",
+      "name": "filterDeclaredProperties_dropsUndeclaredNodeAndRelationshipProperties",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "lineRange": [
+        72,
+        102
+      ],
+      "summary": "Provides filterDeclaredProperties_dropsUndeclaredNodeAndRelationshipProperties behavior in GraphWriteServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:allowedRelationshipProperties_matchesExactRelationshipDefinition",
+      "type": "function",
+      "name": "allowedRelationshipProperties_matchesExactRelationshipDefinition",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "lineRange": [
+        104,
+        136
+      ],
+      "summary": "Provides allowedRelationshipProperties_matchesExactRelationshipDefinition behavior in GraphWriteServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "type": "file",
+      "name": "GraphWriteSupportTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:GraphWriteSupportTest",
+      "type": "class",
+      "name": "GraphWriteSupportTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "lineRange": [
+        12,
+        89
+      ],
+      "summary": "Represents GraphWriteSupportTest in GraphWriteSupportTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldGenerateDeterministicNodeIdAndRejectIncompleteIdentity",
+      "type": "function",
+      "name": "shouldGenerateDeterministicNodeIdAndRejectIncompleteIdentity",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "lineRange": [
+        14,
+        23
+      ],
+      "summary": "Provides shouldGenerateDeterministicNodeIdAndRejectIncompleteIdentity behavior in GraphWriteSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldFilterDeclaredPropertiesAndRejectUnsafeToken",
+      "type": "function",
+      "name": "shouldFilterDeclaredPropertiesAndRejectUnsafeToken",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "lineRange": [
+        33,
+        46
+      ],
+      "summary": "Provides shouldFilterDeclaredPropertiesAndRejectUnsafeToken behavior in GraphWriteSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldAllowDeclaredRelationshipPropertiesOnlyForExactTriple",
+      "type": "function",
+      "name": "shouldAllowDeclaredRelationshipPropertiesOnlyForExactTriple",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "lineRange": [
+        58,
+        73
+      ],
+      "summary": "Provides shouldAllowDeclaredRelationshipPropertiesOnlyForExactTriple behavior in GraphWriteSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "type": "file",
+      "name": "CypherSchemaSupportTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:CypherSchemaSupportTest",
+      "type": "class",
+      "name": "CypherSchemaSupportTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "lineRange": [
+        10,
+        43
+      ],
+      "summary": "Represents CypherSchemaSupportTest in CypherSchemaSupportTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:shouldBuildAllowedLabelsIncludingInfraAndSchemaLabels",
+      "type": "function",
+      "name": "shouldBuildAllowedLabelsIncludingInfraAndSchemaLabels",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "lineRange": [
+        12,
+        23
+      ],
+      "summary": "Provides shouldBuildAllowedLabelsIncludingInfraAndSchemaLabels behavior in CypherSchemaSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:shouldBuildAllowedRelationshipTypesAndProperties",
+      "type": "function",
+      "name": "shouldBuildAllowedRelationshipTypesAndProperties",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "lineRange": [
+        25,
+        42
+      ],
+      "summary": "Provides shouldBuildAllowedRelationshipTypesAndProperties behavior in CypherSchemaSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "type": "file",
+      "name": "GraphExtractionServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:GraphExtractionServiceTest",
+      "type": "class",
+      "name": "GraphExtractionServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        38,
+        171
+      ],
+      "summary": "Represents GraphExtractionServiceTest in GraphExtractionServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:keepsCompletedStatusWhenCleanupFails",
+      "type": "function",
+      "name": "keepsCompletedStatusWhenCleanupFails",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        56,
+        74
+      ],
+      "summary": "Provides keepsCompletedStatusWhenCleanupFails behavior in GraphExtractionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:storesNonBlankFallbackMessageWhenFailureHasNoMessage",
+      "type": "function",
+      "name": "storesNonBlankFallbackMessageWhenFailureHasNoMessage",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        76,
+        94
+      ],
+      "summary": "Provides storesNonBlankFallbackMessageWhenFailureHasNoMessage behavior in GraphExtractionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:writesSanitizedValidationResult",
+      "type": "function",
+      "name": "writesSanitizedValidationResult",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        96,
+        121
+      ],
+      "summary": "Provides writesSanitizedValidationResult behavior in GraphExtractionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:serviceWithClient",
+      "type": "function",
+      "name": "serviceWithClient",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        123,
+        136
+      ],
+      "summary": "Provides serviceWithClient behavior in GraphExtractionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:mockKnowledgeBaseAndSchema",
+      "type": "function",
+      "name": "mockKnowledgeBaseAndSchema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "lineRange": [
+        138,
+        156
+      ],
+      "summary": "Provides mockKnowledgeBaseAndSchema behavior in GraphExtractionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "type": "file",
+      "name": "LangChain4jSchemaGenerationServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java with 1 class(es) and 9 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:LangChain4jSchemaGenerationServiceTest",
+      "type": "class",
+      "name": "LangChain4jSchemaGenerationServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        25,
+        300
+      ],
+      "summary": "Represents LangChain4jSchemaGenerationServiceTest in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions",
+      "type": "function",
+      "name": "inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        27,
+        66
+      ],
+      "summary": "Provides inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_handlesMissingOptionalMetadata",
+      "type": "function",
+      "name": "inferSchema_handlesMissingOptionalMetadata",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        68,
+        86
+      ],
+      "summary": "Provides inferSchema_handlesMissingOptionalMetadata behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generateJson_usesTransformedPropertiesInSchemaOutput",
+      "type": "function",
+      "name": "generateJson_usesTransformedPropertiesInSchemaOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        88,
+        135
+      ],
+      "summary": "Provides generateJson_usesTransformedPropertiesInSchemaOutput behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generate_includesPromptContractForKeyPropertyRule",
+      "type": "function",
+      "name": "generate_includesPromptContractForKeyPropertyRule",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        137,
+        174
+      ],
+      "summary": "Provides generate_includesPromptContractForKeyPropertyRule behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generate_rejectsArrayValuedProperties",
+      "type": "function",
+      "name": "generate_rejectsArrayValuedProperties",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        176,
+        208
+      ],
+      "summary": "Provides generate_rejectsArrayValuedProperties behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_detectsSingleMismatch",
+      "type": "function",
+      "name": "buildKeyPropertyWarnings_detectsSingleMismatch",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        210,
+        234
+      ],
+      "summary": "Provides buildKeyPropertyWarnings_detectsSingleMismatch behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_detectsMultipleMismatchesInNodeOrder",
+      "type": "function",
+      "name": "buildKeyPropertyWarnings_detectsMultipleMismatchesInNodeOrder",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        236,
+        264
+      ],
+      "summary": "Provides buildKeyPropertyWarnings_detectsMultipleMismatchesInNodeOrder behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist",
+      "type": "function",
+      "name": "inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        266,
+        276
+      ],
+      "summary": "Provides inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_reportsMissingNodeKey",
+      "type": "function",
+      "name": "buildKeyPropertyWarnings_reportsMissingNodeKey",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "lineRange": [
+        278,
+        298
+      ],
+      "summary": "Provides buildKeyPropertyWarnings_reportsMissingNodeKey behavior in LangChain4jSchemaGenerationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "type": "file",
+      "name": "SchemaGenerationNormalizationSupportTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java:SchemaGenerationNormalizationSupportTest",
+      "type": "class",
+      "name": "SchemaGenerationNormalizationSupportTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "lineRange": [
+        9,
+        42
+      ],
+      "summary": "Represents SchemaGenerationNormalizationSupportTest in SchemaGenerationNormalizationSupportTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java:shouldInferKeyCandidatesAndSafePropertyNames",
+      "type": "function",
+      "name": "shouldInferKeyCandidatesAndSafePropertyNames",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "lineRange": [
+        29,
+        41
+      ],
+      "summary": "Provides shouldInferKeyCandidatesAndSafePropertyNames behavior in SchemaGenerationNormalizationSupportTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:ExtractionRunNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getDocumentId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setDocumentId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getSchemaId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setSchemaId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getModel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setModel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getStartedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setStartedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getCompletedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setCompletedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:getErrorMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java:setErrorMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java:GraphExtractionValidationException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:GraphExtractionSupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:buildSchemaIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:normalizeNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:normalizeRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:relationshipDropReason",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:hasCompleteRequiredKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:fillEndpointKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupport.java:endpointMatchesKeptNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:GraphExtractionValidationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:GraphExtractionValidationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:filterNodes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:filterRelationships",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logDroppedRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logEndpointRepairDiffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logEndpointRepair",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java:logPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:GraphWriteService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:GraphWriteService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:write",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:upsertNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:upsertRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java:filterDeclaredProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:GraphWriteSupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:stableNodeId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:requireCompleteIdentity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:filterDeclaredProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:droppedPropertyNames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:allowedNodeProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java:allowedRelationshipProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java:ExtractionRunRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:NodeKeySupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:NodeKeySupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:normalizedKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java:display",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java:CypherSchemaSupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupport.java:allowedProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:GraphExtractionService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:GraphExtractionService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:extract",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:linkRunToDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:resolveGraphExtractionClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java:cleanupRunsAfterCompletion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:SchemaGenerationNormalizationSupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:sanitizeLabel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:inferPropertyType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupport.java:inferKeyCandidates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:GraphExtractionSupportTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldRepairNodeKeyFromName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldNotRepairNodeWhenAllFallbackValuesAreBlank",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropInvalidRelationshipTriple",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropWhenEndpointLabelIsUnknown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldDropWhenEndpointDoesNotMatchKeptNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionSupportTest.java:shouldRepairEndpointWhenSingleNodeOfLabelExists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/GraphExtractionValidationException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:GraphExtractionValidationServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:rejectsPayloadAboveConfiguredNodeLimit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsUnknownLabelAndKeepsValidNodes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsValidPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:dropsInvalidRelationshipTriplesAndKeepsValidOnes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsCompositeNodeKeyAndEndpointKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:acceptsRelationshipWithCompleteCompositeEndpoints",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:repairsMissingNodeKeyComponentsWhenPreferredPropertyExists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsNodeWhenMissingKeyCannotBeRepaired",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:fillsMissingCompositeEndpointComponentWhenSingleMatchingNodeExists",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsPartialCompositeRelationshipEndpointKeyAndKeepsValidRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:skipsRelationshipWhenEndpointIdentityDoesNotMatchKeptNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationServiceTest.java:schema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:GraphWriteServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:stableNodeId_isDeterministicAndResistantToDelimiterCollisions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:stableRelationshipId_isDeterministic",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:filterDeclaredProperties_dropsUndeclaredNodeAndRelationshipProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java:allowedRelationshipProperties_matchesExactRelationshipDefinition",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:GraphWriteSupportTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldGenerateDeterministicNodeIdAndRejectIncompleteIdentity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldFilterDeclaredPropertiesAndRejectUnsafeToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java:shouldAllowDeclaredRelationshipPropertiesOnlyForExactTriple",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:CypherSchemaSupportTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:shouldBuildAllowedLabelsIncludingInfraAndSchemaLabels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherSchemaSupportTest.java:shouldBuildAllowedRelationshipTypesAndProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionValidationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:GraphExtractionServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:keepsCompletedStatusWhenCleanupFails",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:storesNonBlankFallbackMessageWhenFailureHasNoMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:writesSanitizedValidationResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:serviceWithClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java:mockKnowledgeBaseAndSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:LangChain4jSchemaGenerationServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_handlesMissingOptionalMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generateJson_usesTransformedPropertiesInSchemaOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generate_includesPromptContractForKeyPropertyRule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:generate_rejectsArrayValuedProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_detectsSingleMismatch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_detectsMultipleMismatchesInNodeOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java:buildKeyPropertyWarnings_reportsMissingNodeKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java:SchemaGenerationNormalizationSupportTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/SchemaGenerationNormalizationSupportTest.java:shouldInferKeyCandidatesAndSafePropertyNames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

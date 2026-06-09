@@ -1,0 +1,264 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java",
+      "language": "java",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "language": "java",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "language": "java",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "language": "java",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java",
+      "language": "java",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "language": "java",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "language": "java",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "language": "java",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java",
+      "language": "java",
+      "sizeLines": 108,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "language": "java",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java",
+      "language": "java",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "language": "java",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 287,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java",
+      "language": "java",
+      "sizeLines": 125,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java",
+      "language": "java",
+      "sizeLines": 247,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java",
+      "language": "java",
+      "sizeLines": 349,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/KnowledgeBaseResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateKnowledgeBaseRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandler.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/CypherValidationIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/error/GlobalExceptionHandlerTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/service/CypherGenerationServiceTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/service/CypherValidationServiceTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidationException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaValidator.java"
+    ]
+  }
+}

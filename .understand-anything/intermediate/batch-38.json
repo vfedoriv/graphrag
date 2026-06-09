@@ -1,0 +1,306 @@
+{
+  "nodes": [
+    {
+      "id": "document:openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/specs/schema-generation-with-examples/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/specs/schema-generation-with-examples/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-19-refine-schema-generation-prompts-and-key-guidance/specs/schema-generation-with-examples/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/specs/schema-generation-with-examples/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/specs/schema-generation-with-examples/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-19-strengthen-schema-generation-key-property-guidance/specs/schema-generation-with-examples/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-extract-service-helper-utilities/specs/service-helper-utilities/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-extract-service-helper-utilities/specs/service-helper-utilities/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-extract-service-helper-utilities/specs/service-helper-utilities/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-extraction-result-contract/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-extraction-result-contract/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-extraction-result-contract/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-identity-persistence/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-identity-persistence/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/graph-identity-persistence/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-definition-validation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-definition-validation/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-definition-validation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-generation-with-examples/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-generation-with-examples/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-harden-schema-generation-graph-identity/specs/schema-generation-with-examples/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/cypher-validation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/cypher-validation/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/cypher-validation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/single-active-schema-per-knowledge-base/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/single-active-schema-per-knowledge-base/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-single-active-schema-per-knowledge-base/specs/single-active-schema-per-knowledge-base/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-response-tolerance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-response-tolerance/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-response-tolerance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-result-contract/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-result-contract/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-result-contract/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-validation-tolerance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-validation-tolerance/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-extraction-validation-tolerance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-identity-persistence/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-identity-persistence/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/specs/graph-identity-persistence/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/specs/schema-example-generation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/specs/schema-example-generation/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-26-clean-schema-generate-example-json/specs/schema-example-generation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/specs/schema-list-by-knowledge-base/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/specs/schema-list-by-knowledge-base/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-05-30-add-kb-schemas-list-endpoint/specs/schema-list-by-knowledge-base/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/specs/documentation-alignment/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/specs/documentation-alignment/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/specs/documentation-alignment/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/specs/ai-observability-monitoring/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/specs/ai-observability-monitoring/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-04-fix-langfuse-llm-io-capture/specs/ai-observability-monitoring/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-04-improve-test-coverage/specs/test-coverage-governance/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-04-improve-test-coverage/specs/test-coverage-governance/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-04-improve-test-coverage/specs/test-coverage-governance/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-06-extend-document-operations/specs/document-management/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-06-extend-document-operations/specs/document-management/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-06-extend-document-operations/specs/document-management/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-definition-validation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-definition-validation/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-definition-validation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-json-format-enforcement/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-json-format-enforcement/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-json-format-enforcement/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-mutation/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-mutation/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/schema-mutation/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/single-active-schema-per-knowledge-base/spec.md",
+      "type": "document",
+      "name": "spec.md",
+      "filePath": "openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/single-active-schema-per-knowledge-base/spec.md",
+      "summary": "Documents openspec/changes/archive/2026-06-07-add-schema-update-delete-endpoints/specs/single-active-schema-per-knowledge-base/spec.md for the GraphRAG project.",
+      "tags": [
+        "documentation",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:openspec/config.yaml",
+      "type": "config",
+      "name": "config.yaml",
+      "filePath": "openspec/config.yaml",
+      "summary": "Configures config.yaml for the GraphRAG application and its tooling.",
+      "tags": [
+        "config",
+        "yaml",
+        "configuration"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

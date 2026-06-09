@@ -1,0 +1,146 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/.openspec.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "schema",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "created",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/design.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 35,
+      "nonEmptyLines": 25,
+      "sections": [
+        {
+          "heading": "Context",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Goals / Non-Goals",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Decisions",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Risks / Trade-offs",
+          "level": 2,
+          "line": 31
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/proposal.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 23,
+      "nonEmptyLines": 15,
+      "sections": [
+        {
+          "heading": "Why",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "What Changes",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Capabilities",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "New Capabilities",
+          "level": 3,
+          "line": 14
+        },
+        {
+          "heading": "Modified Capabilities",
+          "level": 3,
+          "line": 17
+        },
+        {
+          "heading": "Impact",
+          "level": 2,
+          "line": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-03-sync-docs-with-current-implementation/tasks.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 14,
+      "nonEmptyLines": 9,
+      "sections": [
+        {
+          "heading": "1. Align public documentation",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "2. Align contributor guidance",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "3. Verify consistency",
+          "level": 2,
+          "line": 11
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+[
+  {
+    "order": 1,
+    "title": "Project Overview",
+    "description": "Start with the README and contributor guidance to understand the REST API scope, Neo4j-backed knowledge base model, and safety constraints.",
+    "nodeIds": [
+      "document:README.md",
+      "document:AGENTS.md"
+    ]
+  },
+  {
+    "order": 2,
+    "title": "Application Bootstrap",
+    "description": "Follow the Spring Boot entry point and configuration resources that initialize the service and profiles.",
+    "nodeIds": [
+      "file:src/main/java/io/github/vfedoriv/graphrag/GraphragApplication.java",
+      "config:src/main/resources/application.properties",
+      "config:pom.xml"
+    ]
+  },
+  {
+    "order": 3,
+    "title": "Schema and Knowledge Base API",
+    "description": "Inspect the controller, registry service, schema parser, and repositories that enforce immutable schema identity and active schema rules.",
+    "nodeIds": [
+      "file:src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java"
+    ]
+  },
+  {
+    "order": 4,
+    "title": "Document Ingestion Pipeline",
+    "description": "Trace upload, storage, parsing, chunking, embedding, and graph extraction from the document controller into service and graph components.",
+    "nodeIds": [
+      "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java"
+    ]
+  },
+  {
+    "order": 5,
+    "title": "Query Flow",
+    "description": "Review Cypher generation, validation, and execution, including read-only safeguards and query controller endpoints.",
+    "nodeIds": [
+      "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java"
+    ]
+  },
+  {
+    "order": 6,
+    "title": "Verification Coverage",
+    "description": "Finish with the integration and focused service tests that exercise the end-to-end flow and cleanup behavior.",
+    "nodeIds": [
+      "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java"
+    ]
+  }
+]

@@ -1,0 +1,276 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "language": "java",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "language": "java",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "language": "java",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "language": "java",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "language": "java",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "language": "java",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "language": "java",
+      "sizeLines": 259,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "language": "java",
+      "sizeLines": 342,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "language": "java",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "language": "java",
+      "sizeLines": 443,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "language": "java",
+      "sizeLines": 186,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "language": "java",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java": [],
+    "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java"
+    ]
+  }
+}

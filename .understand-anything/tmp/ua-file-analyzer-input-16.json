@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/design.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/tasks.md",
+      "language": "markdown",
+      "sizeLines": 15,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/.openspec.yaml": [],
+    "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/design.md": [],
+    "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/proposal.md": [],
+    "openspec/changes/archive/2026-05-15-harden-graph-extraction-json-parsing/tasks.md": []
+  }
+}

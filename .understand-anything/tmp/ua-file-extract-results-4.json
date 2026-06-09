@@ -1,0 +1,3266 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 21,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 410,
+      "nonEmptyLines": 389,
+      "functions": [
+        {
+          "name": "SchemaController",
+          "startLine": 62,
+          "endLine": 70,
+          "params": [
+            "schemaRegistryService",
+            "schemaGenerationService",
+            "documentParsingService"
+          ]
+        },
+        {
+          "name": "createSchema",
+          "startLine": 72,
+          "endLine": 104,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "generateSchema",
+          "startLine": 106,
+          "endLine": 136,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "generateSchemaFromFile",
+          "startLine": 138,
+          "endLine": 189,
+          "params": [
+            "request",
+            "file"
+          ]
+        },
+        {
+          "name": "normalizeExample",
+          "startLine": 191,
+          "endLine": 201,
+          "params": [
+            "exampleValue"
+          ]
+        },
+        {
+          "name": "generateSchemaExample",
+          "startLine": 203,
+          "endLine": 221,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "generateSchemaExampleFromFile",
+          "startLine": 223,
+          "endLine": 249,
+          "params": [
+            "userPrompt",
+            "file"
+          ]
+        },
+        {
+          "name": "listSchemas",
+          "startLine": 251,
+          "endLine": 259,
+          "params": []
+        },
+        {
+          "name": "listSchemasByKnowledgeBase",
+          "startLine": 261,
+          "endLine": 274,
+          "params": [
+            "knowledgeBaseId"
+          ]
+        },
+        {
+          "name": "getSchema",
+          "startLine": 276,
+          "endLine": 287,
+          "params": [
+            "schemaId"
+          ]
+        },
+        {
+          "name": "updateSchema",
+          "startLine": 289,
+          "endLine": 310,
+          "params": [
+            "schemaId",
+            "request"
+          ]
+        },
+        {
+          "name": "deleteSchema",
+          "startLine": 312,
+          "endLine": 324,
+          "params": [
+            "schemaId"
+          ]
+        },
+        {
+          "name": "validateSchema",
+          "startLine": 326,
+          "endLine": 357,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "activateSchema",
+          "startLine": 359,
+          "endLine": 372,
+          "params": [
+            "knowledgeBaseId",
+            "schemaId"
+          ]
+        },
+        {
+          "name": "toResponse",
+          "startLine": 374,
+          "endLine": 385,
+          "params": [
+            "node"
+          ]
+        },
+        {
+          "name": "toDetailsResponse",
+          "startLine": 387,
+          "endLine": 399,
+          "params": [
+            "node"
+          ]
+        },
+        {
+          "name": "parseUploadedText",
+          "startLine": 401,
+          "endLine": 408,
+          "params": [
+            "file"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SchemaController",
+          "startLine": 50,
+          "endLine": 410,
+          "methods": [
+            "SchemaController",
+            "createSchema",
+            "generateSchema",
+            "generateSchemaFromFile",
+            "normalizeExample",
+            "generateSchemaExample",
+            "generateSchemaExampleFromFile",
+            "listSchemas",
+            "listSchemasByKnowledgeBase",
+            "getSchema",
+            "updateSchema",
+            "deleteSchema",
+            "validateSchema",
+            "activateSchema",
+            "toResponse",
+            "toDetailsResponse",
+            "parseUploadedText"
+          ],
+          "properties": [
+            "OBJECT_MAPPER",
+            "schemaRegistryService",
+            "schemaGenerationService",
+            "documentParsingService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SchemaController",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "createSchema",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "generateSchema",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "generateSchemaFromFile",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "generateSchemaExample",
+          "line": 203,
+          "isDefault": false
+        },
+        {
+          "name": "generateSchemaExampleFromFile",
+          "line": 223,
+          "isDefault": false
+        },
+        {
+          "name": "listSchemas",
+          "line": 251,
+          "isDefault": false
+        },
+        {
+          "name": "listSchemasByKnowledgeBase",
+          "line": 261,
+          "isDefault": false
+        },
+        {
+          "name": "getSchema",
+          "line": 276,
+          "isDefault": false
+        },
+        {
+          "name": "updateSchema",
+          "line": 289,
+          "isDefault": false
+        },
+        {
+          "name": "deleteSchema",
+          "line": 312,
+          "isDefault": false
+        },
+        {
+          "name": "validateSchema",
+          "line": 326,
+          "isDefault": false
+        },
+        {
+          "name": "activateSchema",
+          "line": 359,
+          "isDefault": false
+        },
+        {
+          "name": "SchemaController",
+          "line": 50,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "createSchema",
+          "callee": "log.info",
+          "lineNumber": 90
+        },
+        {
+          "caller": "createSchema",
+          "callee": "request.sourceType",
+          "lineNumber": 92
+        },
+        {
+          "caller": "createSchema",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 93
+        },
+        {
+          "caller": "createSchema",
+          "callee": "request.content",
+          "lineNumber": 93
+        },
+        {
+          "caller": "createSchema",
+          "callee": "toResponse",
+          "lineNumber": 95
+        },
+        {
+          "caller": "createSchema",
+          "callee": "schemaRegistryService.createSchema",
+          "lineNumber": 95
+        },
+        {
+          "caller": "createSchema",
+          "callee": "request.content",
+          "lineNumber": 95
+        },
+        {
+          "caller": "createSchema",
+          "callee": "request.sourceType",
+          "lineNumber": 95
+        },
+        {
+          "caller": "createSchema",
+          "callee": "log.info",
+          "lineNumber": 96
+        },
+        {
+          "caller": "createSchema",
+          "callee": "response.id",
+          "lineNumber": 98
+        },
+        {
+          "caller": "createSchema",
+          "callee": "response.name",
+          "lineNumber": 99
+        },
+        {
+          "caller": "createSchema",
+          "callee": "response.version",
+          "lineNumber": 100
+        },
+        {
+          "caller": "createSchema",
+          "callee": "response.status",
+          "lineNumber": 101
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "log.info",
+          "lineNumber": 113
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.name",
+          "lineNumber": 115
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.version",
+          "lineNumber": 116
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.description",
+          "lineNumber": 117
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.description().isBlank",
+          "lineNumber": 117
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.description",
+          "lineNumber": 117
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 118
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.text",
+          "lineNumber": 118
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 119
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.example",
+          "lineNumber": 119
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "schemaGenerationService.generate",
+          "lineNumber": 121
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.name",
+          "lineNumber": 122
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.version",
+          "lineNumber": 123
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.description",
+          "lineNumber": 124
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.text",
+          "lineNumber": 125
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.example",
+          "lineNumber": 126
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "log.info",
+          "lineNumber": 128
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.name",
+          "lineNumber": 130
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "request.version",
+          "lineNumber": 131
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.content().length",
+          "lineNumber": 132
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.content",
+          "lineNumber": 132
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.warnings().size",
+          "lineNumber": 133
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.warnings",
+          "lineNumber": 133
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "new GenerateSchemaResponse",
+          "lineNumber": 135
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.content",
+          "lineNumber": 135
+        },
+        {
+          "caller": "generateSchema",
+          "callee": "result.warnings",
+          "lineNumber": 135
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "log.info",
+          "lineNumber": 162
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.name",
+          "lineNumber": 164
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.version",
+          "lineNumber": 165
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.description",
+          "lineNumber": 166
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.description().isBlank",
+          "lineNumber": 166
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.description",
+          "lineNumber": 166
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.example",
+          "lineNumber": 167
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.example().getClass().getName",
+          "lineNumber": 167
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.example().getClass",
+          "lineNumber": 167
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.example",
+          "lineNumber": 167
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 168
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "file.getContentType",
+          "lineNumber": 169
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "file.getSize",
+          "lineNumber": 170
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "parseUploadedText",
+          "lineNumber": 172
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "log.info",
+          "lineNumber": 173
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 173
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "text.length",
+          "lineNumber": 173
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "schemaGenerationService.generate",
+          "lineNumber": 174
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.name",
+          "lineNumber": 175
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.version",
+          "lineNumber": 176
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.description",
+          "lineNumber": 177
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "normalizeExample",
+          "lineNumber": 179
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.example",
+          "lineNumber": 179
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "log.info",
+          "lineNumber": 181
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.name",
+          "lineNumber": 183
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "request.version",
+          "lineNumber": 184
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.content().length",
+          "lineNumber": 185
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.content",
+          "lineNumber": 185
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.warnings().size",
+          "lineNumber": 186
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.warnings",
+          "lineNumber": 186
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "new GenerateSchemaResponse",
+          "lineNumber": 188
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.content",
+          "lineNumber": 188
+        },
+        {
+          "caller": "generateSchemaFromFile",
+          "callee": "result.warnings",
+          "lineNumber": 188
+        },
+        {
+          "caller": "normalizeExample",
+          "callee": "OBJECT_MAPPER.writeValueAsString",
+          "lineNumber": 196
+        },
+        {
+          "caller": "normalizeExample",
+          "callee": "log.error",
+          "lineNumber": 198
+        },
+        {
+          "caller": "normalizeExample",
+          "callee": "e.getMessage",
+          "lineNumber": 198
+        },
+        {
+          "caller": "normalizeExample",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 199
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "log.info",
+          "lineNumber": 213
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 215
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "request.text",
+          "lineNumber": 215
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 216
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "request.userPrompt",
+          "lineNumber": 216
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "schemaGenerationService.generateExample",
+          "lineNumber": 218
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "request.text",
+          "lineNumber": 218
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "request.userPrompt",
+          "lineNumber": 218
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "log.info",
+          "lineNumber": 219
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "example.length",
+          "lineNumber": 219
+        },
+        {
+          "caller": "generateSchemaExample",
+          "callee": "new GenerateSchemaExampleResponse",
+          "lineNumber": 220
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "log.info",
+          "lineNumber": 237
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 239
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 240
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "file.getContentType",
+          "lineNumber": 241
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "file.getSize",
+          "lineNumber": 242
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "parseUploadedText",
+          "lineNumber": 244
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "log.info",
+          "lineNumber": 245
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 245
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "text.length",
+          "lineNumber": 245
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "schemaGenerationService.generateExample",
+          "lineNumber": 246
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "log.info",
+          "lineNumber": 247
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 247
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "example.length",
+          "lineNumber": 247
+        },
+        {
+          "caller": "generateSchemaExampleFromFile",
+          "callee": "new GenerateSchemaExampleResponse",
+          "lineNumber": 248
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "log.info",
+          "lineNumber": 255
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "schemaRegistryService.listSchemas().stream().map(this::toResponse).toList",
+          "lineNumber": 256
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "schemaRegistryService.listSchemas().stream().map",
+          "lineNumber": 256
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "schemaRegistryService.listSchemas().stream",
+          "lineNumber": 256
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "schemaRegistryService.listSchemas",
+          "lineNumber": 256
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "log.info",
+          "lineNumber": 257
+        },
+        {
+          "caller": "listSchemas",
+          "callee": "response.size",
+          "lineNumber": 257
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "log.info",
+          "lineNumber": 270
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream().map(this::toResponse).toList",
+          "lineNumber": 271
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream().map",
+          "lineNumber": 271
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream",
+          "lineNumber": 271
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "schemaRegistryService.listSchemasByKnowledgeBase",
+          "lineNumber": 271
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "log.info",
+          "lineNumber": 272
+        },
+        {
+          "caller": "listSchemasByKnowledgeBase",
+          "callee": "response.size",
+          "lineNumber": 272
+        },
+        {
+          "caller": "getSchema",
+          "callee": "log.info",
+          "lineNumber": 283
+        },
+        {
+          "caller": "getSchema",
+          "callee": "toDetailsResponse",
+          "lineNumber": 284
+        },
+        {
+          "caller": "getSchema",
+          "callee": "schemaRegistryService.getSchema",
+          "lineNumber": 284
+        },
+        {
+          "caller": "getSchema",
+          "callee": "log.info",
+          "lineNumber": 285
+        },
+        {
+          "caller": "getSchema",
+          "callee": "response.id",
+          "lineNumber": 285
+        },
+        {
+          "caller": "getSchema",
+          "callee": "response.name",
+          "lineNumber": 285
+        },
+        {
+          "caller": "getSchema",
+          "callee": "response.version",
+          "lineNumber": 285
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "log.info",
+          "lineNumber": 301
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "request.sourceType",
+          "lineNumber": 304
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 305
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "request.content",
+          "lineNumber": 305
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "toDetailsResponse",
+          "lineNumber": 307
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "schemaRegistryService.updateSchema",
+          "lineNumber": 307
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "request.content",
+          "lineNumber": 307
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "request.sourceType",
+          "lineNumber": 307
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "log.info",
+          "lineNumber": 308
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "response.id",
+          "lineNumber": 308
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "response.name",
+          "lineNumber": 308
+        },
+        {
+          "caller": "updateSchema",
+          "callee": "response.version",
+          "lineNumber": 308
+        },
+        {
+          "caller": "deleteSchema",
+          "callee": "log.info",
+          "lineNumber": 320
+        },
+        {
+          "caller": "deleteSchema",
+          "callee": "schemaRegistryService.deleteSchema",
+          "lineNumber": 321
+        },
+        {
+          "caller": "deleteSchema",
+          "callee": "log.info",
+          "lineNumber": 322
+        },
+        {
+          "caller": "deleteSchema",
+          "callee": "ResponseEntity.noContent().build",
+          "lineNumber": 323
+        },
+        {
+          "caller": "deleteSchema",
+          "callee": "ResponseEntity.noContent",
+          "lineNumber": 323
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "log.info",
+          "lineNumber": 353
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "LogSanitizer.length",
+          "lineNumber": 353
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "request.content",
+          "lineNumber": 353
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "schemaRegistryService.validateJson",
+          "lineNumber": 354
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "request.content",
+          "lineNumber": 354
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "log.info",
+          "lineNumber": 355
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "errors.isEmpty",
+          "lineNumber": 355
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "errors.size",
+          "lineNumber": 355
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "new SchemaValidationResponse",
+          "lineNumber": 356
+        },
+        {
+          "caller": "validateSchema",
+          "callee": "errors.isEmpty",
+          "lineNumber": 356
+        },
+        {
+          "caller": "activateSchema",
+          "callee": "log.info",
+          "lineNumber": 369
+        },
+        {
+          "caller": "activateSchema",
+          "callee": "schemaRegistryService.activateSchema",
+          "lineNumber": 370
+        },
+        {
+          "caller": "activateSchema",
+          "callee": "log.info",
+          "lineNumber": 371
+        },
+        {
+          "caller": "toResponse",
+          "callee": "new SchemaResponse",
+          "lineNumber": 375
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getId",
+          "lineNumber": 376
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getName",
+          "lineNumber": 377
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getVersion",
+          "lineNumber": 378
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getSourceType",
+          "lineNumber": 379
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getFormat",
+          "lineNumber": 380
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getContentHash",
+          "lineNumber": 381
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getStatus",
+          "lineNumber": 382
+        },
+        {
+          "caller": "toResponse",
+          "callee": "node.getCreatedAt",
+          "lineNumber": 383
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "new SchemaDetailsResponse",
+          "lineNumber": 388
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getId",
+          "lineNumber": 389
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getName",
+          "lineNumber": 390
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getVersion",
+          "lineNumber": 391
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getSourceType",
+          "lineNumber": 392
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getFormat",
+          "lineNumber": 393
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getContent",
+          "lineNumber": 394
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getContentHash",
+          "lineNumber": 395
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getStatus",
+          "lineNumber": 396
+        },
+        {
+          "caller": "toDetailsResponse",
+          "callee": "node.getCreatedAt",
+          "lineNumber": 397
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "documentParsingService.parse",
+          "lineNumber": 403
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 403
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "file.getContentType",
+          "lineNumber": 403
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "file.getBytes",
+          "lineNumber": 403
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "log.error",
+          "lineNumber": 405
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "file.getOriginalFilename",
+          "lineNumber": 405
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "e.getMessage",
+          "lineNumber": 405
+        },
+        {
+          "caller": "parseUploadedText",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 406
+        }
+      ],
+      "metrics": {
+        "importCount": 17,
+        "exportCount": 14,
+        "functionCount": 17,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 13,
+      "functions": [
+        {
+          "name": "DocumentParsingService",
+          "startLine": 11,
+          "endLine": 13,
+          "params": [
+            "routedDocumentParser"
+          ]
+        },
+        {
+          "name": "parse",
+          "startLine": 15,
+          "endLine": 17,
+          "params": [
+            "filename",
+            "contentType",
+            "bytes"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DocumentParsingService",
+          "startLine": 6,
+          "endLine": 18,
+          "methods": [
+            "DocumentParsingService",
+            "parse"
+          ],
+          "properties": [
+            "routedDocumentParser"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DocumentParsingService",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "parse",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "DocumentParsingService",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "parse",
+          "callee": "routedDocumentParser.parserFor(filename, contentType).parse(new ByteArrayInputStream(bytes)).text",
+          "lineNumber": 16
+        },
+        {
+          "caller": "parse",
+          "callee": "routedDocumentParser.parserFor(filename, contentType).parse",
+          "lineNumber": 16
+        },
+        {
+          "caller": "parse",
+          "callee": "routedDocumentParser.parserFor",
+          "lineNumber": 16
+        },
+        {
+          "caller": "parse",
+          "callee": "new ByteArrayInputStream",
+          "lineNumber": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 5,
+      "nonEmptyLines": 4,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 5,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 5,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 12,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 19,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 23,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 16,
+      "callGraph": [
+        {
+          "caller": "GenerateSchemaResponse",
+          "callee": "List.of",
+          "lineNumber": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 27,
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 9,
+      "nonEmptyLines": 7,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 22,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 25,
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaValidationResponse.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 12,
+      "nonEmptyLines": 10,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/ValidateSchemaRequest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 11,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaBootstrapService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 27,
+      "functions": [
+        {
+          "name": "SchemaBootstrapService",
+          "startLine": 16,
+          "endLine": 29,
+          "params": [
+            "schemaRegistryService"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SchemaBootstrapService",
+          "startLine": 12,
+          "endLine": 30,
+          "methods": [
+            "SchemaBootstrapService"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SchemaBootstrapService",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "SchemaBootstrapService",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "new PathMatchingResourcePatternResolver().getResources",
+          "lineNumber": 17
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "new PathMatchingResourcePatternResolver",
+          "lineNumber": 17
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "log.info",
+          "lineNumber": 19
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "new String",
+          "lineNumber": 21
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "resource.getInputStream().readAllBytes",
+          "lineNumber": 21
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "resource.getInputStream",
+          "lineNumber": 21
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "schemaRegistryService.createSchema",
+          "lineNumber": 23
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "log.info",
+          "lineNumber": 24
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "resource.getFilename",
+          "lineNumber": 24
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "log.debug",
+          "lineNumber": 26
+        },
+        {
+          "caller": "SchemaBootstrapService",
+          "callee": "resource.getFilename",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "SchemaGenerationService",
+          "startLine": 5,
+          "endLine": 13,
+          "methods": [
+            "generate",
+            "generateJson",
+            "generateExample"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SchemaGenerationService",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "generateJson",
+          "callee": "generate(name, version, description, text, example).content",
+          "lineNumber": 9
+        },
+        {
+          "caller": "generateJson",
+          "callee": "generate",
+          "lineNumber": 9
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaControllerTest.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 336,
+      "nonEmptyLines": 282,
+      "functions": [
+        {
+          "name": "generateSchemaReturnsJsonContent",
+          "startLine": 40,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "startLine": 61,
+          "endLine": 84,
+          "params": []
+        },
+        {
+          "name": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "startLine": 86,
+          "endLine": 113,
+          "params": []
+        },
+        {
+          "name": "generateSchemaExampleUsesTextAndPrompt",
+          "startLine": 115,
+          "endLine": 129,
+          "params": []
+        },
+        {
+          "name": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "startLine": 131,
+          "endLine": 148,
+          "params": []
+        },
+        {
+          "name": "getSchemaReturnsPersistedSchemaContent",
+          "startLine": 150,
+          "endLine": 176,
+          "params": []
+        },
+        {
+          "name": "getSchemaNotFoundPropagatesException",
+          "startLine": 178,
+          "endLine": 191,
+          "params": []
+        },
+        {
+          "name": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "startLine": 193,
+          "endLine": 223,
+          "params": []
+        },
+        {
+          "name": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "startLine": 225,
+          "endLine": 237,
+          "params": []
+        },
+        {
+          "name": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "startLine": 239,
+          "endLine": 273,
+          "params": []
+        },
+        {
+          "name": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "startLine": 275,
+          "endLine": 298,
+          "params": []
+        },
+        {
+          "name": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "startLine": 300,
+          "endLine": 312,
+          "params": []
+        },
+        {
+          "name": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "startLine": 314,
+          "endLine": 327,
+          "params": []
+        },
+        {
+          "name": "readJson",
+          "startLine": 329,
+          "endLine": 335,
+          "params": [
+            "json"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SchemaControllerTest",
+          "startLine": 37,
+          "endLine": 336,
+          "methods": [
+            "generateSchemaReturnsJsonContent",
+            "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+            "generateSchemaReturnsStructuredWarningsWithoutFailure",
+            "generateSchemaExampleUsesTextAndPrompt",
+            "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+            "getSchemaReturnsPersistedSchemaContent",
+            "getSchemaNotFoundPropagatesException",
+            "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+            "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+            "createAndListSchemasUseSummaryResponseWithoutContentField",
+            "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+            "listSchemasByKnowledgeBaseReturnsEmptyList",
+            "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+            "readJson"
+          ],
+          "properties": [
+            "OBJECT_MAPPER"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 42
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 43
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 44
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "when(generationService.generate(\"generated-legal-schema\", 1, \"from text\", \"raw input text\", \"example json\")).thenReturn",
+          "lineNumber": 45
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "when",
+          "lineNumber": 45
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "generationService.generate",
+          "lineNumber": 45
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "new SchemaGenerationResult",
+          "lineNumber": 46
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "List.of",
+          "lineNumber": 48
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "new SchemaController",
+          "lineNumber": 51
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "controller.generateSchema",
+          "lineNumber": 52
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "new GenerateSchemaRequest",
+          "lineNumber": 53
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat(response.content()).contains",
+          "lineNumber": 56
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat",
+          "lineNumber": 56
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "response.content",
+          "lineNumber": 56
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat(response.content()).contains",
+          "lineNumber": 57
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat",
+          "lineNumber": 57
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "response.content",
+          "lineNumber": 57
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat(response.content()).contains",
+          "lineNumber": 58
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "assertThat",
+          "lineNumber": 58
+        },
+        {
+          "caller": "generateSchemaReturnsJsonContent",
+          "callee": "response.content",
+          "lineNumber": 58
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "Mockito.mock",
+          "lineNumber": 63
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "Mockito.mock",
+          "lineNumber": 64
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "Mockito.mock",
+          "lineNumber": 65
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "new MockMultipartFile",
+          "lineNumber": 67
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "\"raw bytes\".getBytes",
+          "lineNumber": 67
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "\"raw bytes\".getBytes",
+          "lineNumber": 68
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "when(parsingService.parse(eq(\"sample.txt\"), eq(\"text/plain\"), argThat(bytes -> Arrays.equals(bytes, rawBytes)))).thenReturn",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "when",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "parsingService.parse",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "eq",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "eq",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "argThat",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "Arrays.equals",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "when(generationService.generate(\"generated-legal-schema\", 2, \"from file\", \"parsed text\", \"\\\"example json\\\"\")).thenReturn",
+          "lineNumber": 72
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "when",
+          "lineNumber": 72
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "generationService.generate",
+          "lineNumber": 72
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "new SchemaGenerationResult",
+          "lineNumber": 73
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "List.of",
+          "lineNumber": 73
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "new SchemaController",
+          "lineNumber": 75
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "controller.generateSchemaFromFile",
+          "lineNumber": 76
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "new GenerateSchemaFromFileRequest",
+          "lineNumber": 77
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "readJson",
+          "lineNumber": 77
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "assertThat(response.content()).isEqualTo",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "assertThat",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "response.content",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "verify(parsingService).parse",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "verify",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "eq",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "eq",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "argThat",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "Arrays.equals",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "verify(generationService).generate",
+          "lineNumber": 83
+        },
+        {
+          "caller": "generateSchemaFromFileParsesAndGeneratesWithoutSaving",
+          "callee": "verify",
+          "lineNumber": 83
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "Mockito.mock",
+          "lineNumber": 88
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "Mockito.mock",
+          "lineNumber": 89
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "Mockito.mock",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "when(generationService.generate(\"generated-legal-schema\", 1, \"from text\", \"raw input text\", \"example json\")).thenReturn",
+          "lineNumber": 91
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "when",
+          "lineNumber": 91
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "generationService.generate",
+          "lineNumber": 91
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "new SchemaGenerationResult",
+          "lineNumber": 92
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "List.of",
+          "lineNumber": 94
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "new SchemaGenerationWarning",
+          "lineNumber": 94
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "List.of",
+          "lineNumber": 99
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "new SchemaController",
+          "lineNumber": 103
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "controller.generateSchema",
+          "lineNumber": 104
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "new GenerateSchemaRequest",
+          "lineNumber": 105
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat(response.content()).contains",
+          "lineNumber": 108
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat",
+          "lineNumber": 108
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.content",
+          "lineNumber": 108
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat(response.warnings()).hasSize",
+          "lineNumber": 109
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat",
+          "lineNumber": 109
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings",
+          "lineNumber": 109
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat(response.warnings().getFirst().nodeIndex()).isEqualTo",
+          "lineNumber": 110
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat",
+          "lineNumber": 110
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst().nodeIndex",
+          "lineNumber": 110
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst",
+          "lineNumber": 110
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings",
+          "lineNumber": 110
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat(response.warnings().getFirst().nodeLabel()).isEqualTo",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst().nodeLabel",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat(response.warnings().getFirst().code()).isEqualTo",
+          "lineNumber": 112
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "assertThat",
+          "lineNumber": 112
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst().code",
+          "lineNumber": 112
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings().getFirst",
+          "lineNumber": 112
+        },
+        {
+          "caller": "generateSchemaReturnsStructuredWarningsWithoutFailure",
+          "callee": "response.warnings",
+          "lineNumber": 112
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 117
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 118
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 119
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "when(generationService.generateExample(\"raw input text\", \"focus on contracts\")).thenReturn",
+          "lineNumber": 121
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "when",
+          "lineNumber": 121
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "generationService.generateExample",
+          "lineNumber": 121
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "new SchemaController",
+          "lineNumber": 123
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "controller.generateSchemaExample",
+          "lineNumber": 125
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "new GenerateSchemaExampleRequest",
+          "lineNumber": 125
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "assertThat(response.value()).isEqualTo",
+          "lineNumber": 127
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "assertThat",
+          "lineNumber": 127
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "response.value",
+          "lineNumber": 127
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "verify(generationService).generateExample",
+          "lineNumber": 128
+        },
+        {
+          "caller": "generateSchemaExampleUsesTextAndPrompt",
+          "callee": "verify",
+          "lineNumber": 128
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 133
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 134
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "Mockito.mock",
+          "lineNumber": 135
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "new MockMultipartFile",
+          "lineNumber": 137
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "\"raw bytes\".getBytes",
+          "lineNumber": 137
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "\"raw bytes\".getBytes",
+          "lineNumber": 138
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "when(parsingService.parse(eq(\"sample.txt\"), eq(\"text/plain\"), argThat(bytes -> Arrays.equals(bytes, rawBytes)))).thenReturn",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "when",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "parsingService.parse",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "eq",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "eq",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "argThat",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "Arrays.equals",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "when(generationService.generateExample(\"parsed text\", null)).thenReturn",
+          "lineNumber": 141
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "when",
+          "lineNumber": 141
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "generationService.generateExample",
+          "lineNumber": 141
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "new SchemaController",
+          "lineNumber": 143
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "controller.generateSchemaExampleFromFile",
+          "lineNumber": 144
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "assertThat(response.value()).isEqualTo",
+          "lineNumber": 146
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "assertThat",
+          "lineNumber": 146
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "response.value",
+          "lineNumber": 146
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "verify(generationService).generateExample",
+          "lineNumber": 147
+        },
+        {
+          "caller": "generateSchemaExampleFromFileParsesAndUsesOptionalPrompt",
+          "callee": "verify",
+          "lineNumber": 147
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 152
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 153
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "Mockito.mock",
+          "lineNumber": 154
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "new SchemaDefinitionNode",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setId",
+          "lineNumber": 157
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setName",
+          "lineNumber": 158
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setVersion",
+          "lineNumber": 159
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setSourceType",
+          "lineNumber": 160
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setFormat",
+          "lineNumber": 161
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setContent",
+          "lineNumber": 162
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setContentHash",
+          "lineNumber": 163
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setStatus",
+          "lineNumber": 164
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "schema.setCreatedAt",
+          "lineNumber": 165
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "Instant.parse",
+          "lineNumber": 165
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "when(registryService.getSchema(\"schema-01\")).thenReturn",
+          "lineNumber": 167
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "when",
+          "lineNumber": 167
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "registryService.getSchema",
+          "lineNumber": 167
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "new SchemaController",
+          "lineNumber": 169
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "controller.getSchema",
+          "lineNumber": 170
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat(response.id()).isEqualTo",
+          "lineNumber": 172
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat",
+          "lineNumber": 172
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "response.id",
+          "lineNumber": 172
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat(response.content()).isEqualTo",
+          "lineNumber": 173
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat",
+          "lineNumber": 173
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "response.content",
+          "lineNumber": 173
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat(response.contentHash()).isEqualTo",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "assertThat",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "response.contentHash",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "verify(registryService).getSchema",
+          "lineNumber": 175
+        },
+        {
+          "caller": "getSchemaReturnsPersistedSchemaContent",
+          "callee": "verify",
+          "lineNumber": 175
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "Mockito.mock",
+          "lineNumber": 180
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "Mockito.mock",
+          "lineNumber": 181
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "Mockito.mock",
+          "lineNumber": 182
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "when(registryService.getSchema(\"missing-schema\")).thenThrow",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "when",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "registryService.getSchema",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "new NotFoundException",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "new SchemaController",
+          "lineNumber": 186
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "assertThatThrownBy(() -> controller.getSchema(\"missing-schema\"))\n            .isInstanceOf(NotFoundException.class).hasMessage",
+          "lineNumber": 188
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "assertThatThrownBy(() -> controller.getSchema(\"missing-schema\")).isInstanceOf",
+          "lineNumber": 188
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "assertThatThrownBy",
+          "lineNumber": 188
+        },
+        {
+          "caller": "getSchemaNotFoundPropagatesException",
+          "callee": "controller.getSchema",
+          "lineNumber": 188
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 195
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 196
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 197
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "new SchemaDefinitionNode",
+          "lineNumber": 200
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setId",
+          "lineNumber": 201
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setName",
+          "lineNumber": 202
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setVersion",
+          "lineNumber": 203
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setSourceType",
+          "lineNumber": 204
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setFormat",
+          "lineNumber": 205
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setContent",
+          "lineNumber": 206
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setContentHash",
+          "lineNumber": 207
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setStatus",
+          "lineNumber": 208
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "schema.setCreatedAt",
+          "lineNumber": 209
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "Instant.parse",
+          "lineNumber": 209
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "when(registryService.updateSchema(\"schema-01\", content, SchemaSourceType.GENERATED)).thenReturn",
+          "lineNumber": 211
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "when",
+          "lineNumber": 211
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "registryService.updateSchema",
+          "lineNumber": 211
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "new SchemaController",
+          "lineNumber": 213
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "controller.updateSchema",
+          "lineNumber": 214
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "new UpdateSchemaRequest",
+          "lineNumber": 216
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat(response.id()).isEqualTo",
+          "lineNumber": 219
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat",
+          "lineNumber": 219
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "response.id",
+          "lineNumber": 219
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat(response.content()).isEqualTo",
+          "lineNumber": 220
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat",
+          "lineNumber": 220
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "response.content",
+          "lineNumber": 220
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat(response.contentHash()).isEqualTo",
+          "lineNumber": 221
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "assertThat",
+          "lineNumber": 221
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "response.contentHash",
+          "lineNumber": 221
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "verify(registryService).updateSchema",
+          "lineNumber": 222
+        },
+        {
+          "caller": "updateSchemaReturnsDetailsAndDelegatesToRegistry",
+          "callee": "verify",
+          "lineNumber": 222
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 227
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 228
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "Mockito.mock",
+          "lineNumber": 229
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "new SchemaController",
+          "lineNumber": 231
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "controller.deleteSchema",
+          "lineNumber": 232
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "assertThat(response.getStatusCode().value()).isEqualTo",
+          "lineNumber": 234
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "assertThat",
+          "lineNumber": 234
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "response.getStatusCode().value",
+          "lineNumber": 234
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "response.getStatusCode",
+          "lineNumber": 234
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "assertThat(response.getBody()).isNull",
+          "lineNumber": 235
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "assertThat",
+          "lineNumber": 235
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "response.getBody",
+          "lineNumber": 235
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "verify(registryService).deleteSchema",
+          "lineNumber": 236
+        },
+        {
+          "caller": "deleteSchemaReturnsNoContentAndDelegatesToRegistry",
+          "callee": "verify",
+          "lineNumber": 236
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Mockito.mock",
+          "lineNumber": 241
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Mockito.mock",
+          "lineNumber": 242
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Mockito.mock",
+          "lineNumber": 243
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "new SchemaDefinitionNode",
+          "lineNumber": 245
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setId",
+          "lineNumber": 246
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setName",
+          "lineNumber": 247
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setVersion",
+          "lineNumber": 248
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setSourceType",
+          "lineNumber": 249
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setFormat",
+          "lineNumber": 250
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setContent",
+          "lineNumber": 251
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setContentHash",
+          "lineNumber": 252
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setStatus",
+          "lineNumber": 253
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "schema.setCreatedAt",
+          "lineNumber": 254
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Instant.parse",
+          "lineNumber": 254
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "when(registryService.createSchema(Mockito.anyString(), Mockito.any())).thenReturn",
+          "lineNumber": 256
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "when",
+          "lineNumber": 256
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "registryService.createSchema",
+          "lineNumber": 256
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Mockito.anyString",
+          "lineNumber": 256
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Mockito.any",
+          "lineNumber": 256
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "when(registryService.listSchemas()).thenReturn",
+          "lineNumber": 257
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "when",
+          "lineNumber": 257
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "registryService.listSchemas",
+          "lineNumber": 257
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "List.of",
+          "lineNumber": 257
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "new SchemaController",
+          "lineNumber": 259
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "controller.createSchema",
+          "lineNumber": 260
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "new io.github.vfedoriv.graphrag.dto.CreateSchemaRequest",
+          "lineNumber": 261
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "controller.listSchemas",
+          "lineNumber": 266
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat(created).isInstanceOf",
+          "lineNumber": 268
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat",
+          "lineNumber": 268
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat(listed).hasSize",
+          "lineNumber": 269
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat",
+          "lineNumber": 269
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat(listed.getFirst()).isInstanceOf",
+          "lineNumber": 270
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat",
+          "lineNumber": 270
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "listed.getFirst",
+          "lineNumber": 270
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat(Arrays.stream(SchemaResponse.class.getDeclaredMethods()).map(method -> method.getName())).doesNotContain",
+          "lineNumber": 271
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "assertThat",
+          "lineNumber": 271
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Arrays.stream(SchemaResponse.class.getDeclaredMethods()).map",
+          "lineNumber": 271
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "Arrays.stream",
+          "lineNumber": 271
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "SchemaResponse.class.getDeclaredMethods",
+          "lineNumber": 271
+        },
+        {
+          "caller": "createAndListSchemasUseSummaryResponseWithoutContentField",
+          "callee": "method.getName",
+          "lineNumber": 271
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "Mockito.mock",
+          "lineNumber": 277
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "Mockito.mock",
+          "lineNumber": 278
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "Mockito.mock",
+          "lineNumber": 279
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "new SchemaDefinitionNode",
+          "lineNumber": 281
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setId",
+          "lineNumber": 282
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setName",
+          "lineNumber": 283
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setVersion",
+          "lineNumber": 284
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setSourceType",
+          "lineNumber": 285
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setFormat",
+          "lineNumber": 286
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setContentHash",
+          "lineNumber": 287
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setStatus",
+          "lineNumber": 288
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "schema.setCreatedAt",
+          "lineNumber": 289
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "Instant.parse",
+          "lineNumber": 289
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "when(registryService.listSchemasByKnowledgeBase(\"kb-01\")).thenReturn",
+          "lineNumber": 290
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "when",
+          "lineNumber": 290
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "registryService.listSchemasByKnowledgeBase",
+          "lineNumber": 290
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "List.of",
+          "lineNumber": 290
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "new SchemaController",
+          "lineNumber": 292
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "controller.listSchemasByKnowledgeBase",
+          "lineNumber": 293
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "assertThat(response).hasSize",
+          "lineNumber": 295
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "assertThat",
+          "lineNumber": 295
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "assertThat(response.getFirst().id()).isEqualTo",
+          "lineNumber": 296
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "assertThat",
+          "lineNumber": 296
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "response.getFirst().id",
+          "lineNumber": 296
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "response.getFirst",
+          "lineNumber": 296
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "verify(registryService).listSchemasByKnowledgeBase",
+          "lineNumber": 297
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsAssociatedSchemas",
+          "callee": "verify",
+          "lineNumber": 297
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "Mockito.mock",
+          "lineNumber": 302
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "Mockito.mock",
+          "lineNumber": 303
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "Mockito.mock",
+          "lineNumber": 304
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "when(registryService.listSchemasByKnowledgeBase(\"kb-empty\")).thenReturn",
+          "lineNumber": 305
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "when",
+          "lineNumber": 305
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "registryService.listSchemasByKnowledgeBase",
+          "lineNumber": 305
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "List.of",
+          "lineNumber": 305
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "new SchemaController",
+          "lineNumber": 307
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "controller.listSchemasByKnowledgeBase",
+          "lineNumber": 308
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "assertThat(response).isEmpty",
+          "lineNumber": 310
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "assertThat",
+          "lineNumber": 310
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "verify(registryService).listSchemasByKnowledgeBase",
+          "lineNumber": 311
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseReturnsEmptyList",
+          "callee": "verify",
+          "lineNumber": 311
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "Mockito.mock",
+          "lineNumber": 316
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "Mockito.mock",
+          "lineNumber": 317
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "Mockito.mock",
+          "lineNumber": 318
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "when(registryService.listSchemasByKnowledgeBase(\"missing-kb\")).thenThrow",
+          "lineNumber": 319
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "when",
+          "lineNumber": 319
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "registryService.listSchemasByKnowledgeBase",
+          "lineNumber": 319
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "new NotFoundException",
+          "lineNumber": 320
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "new SchemaController",
+          "lineNumber": 322
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "assertThatThrownBy(() -> controller.listSchemasByKnowledgeBase(\"missing-kb\"))\n            .isInstanceOf(NotFoundException.class).hasMessage",
+          "lineNumber": 324
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "assertThatThrownBy(() -> controller.listSchemasByKnowledgeBase(\"missing-kb\")).isInstanceOf",
+          "lineNumber": 324
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "assertThatThrownBy",
+          "lineNumber": 324
+        },
+        {
+          "caller": "listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound",
+          "callee": "controller.listSchemasByKnowledgeBase",
+          "lineNumber": 324
+        },
+        {
+          "caller": "readJson",
+          "callee": "OBJECT_MAPPER.readTree",
+          "lineNumber": 331
+        },
+        {
+          "caller": "readJson",
+          "callee": "new IllegalStateException",
+          "lineNumber": 333
+        }
+      ],
+      "metrics": {
+        "importCount": 18,
+        "exportCount": 0,
+        "functionCount": 14,
+        "classCount": 1
+      }
+    }
+  ]
+}

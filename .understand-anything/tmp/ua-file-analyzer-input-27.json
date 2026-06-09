@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/design.md",
+      "language": "markdown",
+      "sizeLines": 82,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md",
+      "language": "markdown",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/tasks.md",
+      "language": "markdown",
+      "sizeLines": 29,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/.openspec.yaml": [],
+    "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/design.md": [],
+    "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md": [],
+    "openspec/changes/archive/2026-05-20-tolerate-invalid-extraction-elements/tasks.md": []
+  }
+}

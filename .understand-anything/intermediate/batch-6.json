@@ -1,0 +1,2328 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "type": "file",
+      "name": "AiObservabilityProperties.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "type": "file",
+      "name": "SpringAiEmbeddingClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:SpringAiEmbeddingClient",
+      "type": "class",
+      "name": "SpringAiEmbeddingClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "lineRange": [
+        18,
+        79
+      ],
+      "summary": "Represents SpringAiEmbeddingClient in SpringAiEmbeddingClient.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:SpringAiEmbeddingClient",
+      "type": "function",
+      "name": "SpringAiEmbeddingClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "lineRange": [
+        24,
+        30
+      ],
+      "summary": "Provides SpringAiEmbeddingClient behavior in SpringAiEmbeddingClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:embed",
+      "type": "function",
+      "name": "embed",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "lineRange": [
+        32,
+        78
+      ],
+      "summary": "Provides embed behavior in SpringAiEmbeddingClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "type": "file",
+      "name": "LLMGraphTransformerExt.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java with 1 class(es) and 13 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:LLMGraphTransformerExt",
+      "type": "class",
+      "name": "LLMGraphTransformerExt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        46,
+        407
+      ],
+      "summary": "Represents LLMGraphTransformerExt in LLMGraphTransformerExt.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:LLMGraphTransformerExt",
+      "type": "function",
+      "name": "LLMGraphTransformerExt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        115,
+        132
+      ],
+      "summary": "Provides LLMGraphTransformerExt behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:createUnstructuredPrompt",
+      "type": "function",
+      "name": "createUnstructuredPrompt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        134,
+        159
+      ],
+      "summary": "Provides createUnstructuredPrompt behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:transform",
+      "type": "function",
+      "name": "transform",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        161,
+        207
+      ],
+      "summary": "Provides transform behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:buildOrMergeNode",
+      "type": "function",
+      "name": "buildOrMergeNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        209,
+        228
+      ],
+      "summary": "Provides buildOrMergeNode behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:getJsonResult",
+      "type": "function",
+      "name": "getJsonResult",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        230,
+        258
+      ],
+      "summary": "Provides getJsonResult behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:summarizeParsedResponse",
+      "type": "function",
+      "name": "summarizeParsedResponse",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        260,
+        272
+      ],
+      "summary": "Provides summarizeParsedResponse behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:extractPropertiesForSummary",
+      "type": "function",
+      "name": "extractPropertiesForSummary",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        282,
+        299
+      ],
+      "summary": "Provides extractPropertiesForSummary behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:getBacktickText",
+      "type": "function",
+      "name": "getBacktickText",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        301,
+        322
+      ],
+      "summary": "Provides getBacktickText behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:extractProperties",
+      "type": "function",
+      "name": "extractProperties",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        324,
+        339
+      ],
+      "summary": "Provides extractProperties behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:asText",
+      "type": "function",
+      "name": "asText",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        348,
+        364
+      ],
+      "summary": "Provides asText behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:validateNodePropertyContract",
+      "type": "function",
+      "name": "validateNodePropertyContract",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "lineRange": [
+        366,
+        405
+      ],
+      "summary": "Provides validateNodePropertyContract behavior in LLMGraphTransformerExt.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "type": "file",
+      "name": "SpringAiGraphExtractionClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:SpringAiGraphExtractionClient",
+      "type": "class",
+      "name": "SpringAiGraphExtractionClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        24,
+        219
+      ],
+      "summary": "Represents SpringAiGraphExtractionClient in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:SpringAiGraphExtractionClient",
+      "type": "function",
+      "name": "SpringAiGraphExtractionClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        36,
+        42
+      ],
+      "summary": "Provides SpringAiGraphExtractionClient behavior in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:extract",
+      "type": "function",
+      "name": "extract",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        44,
+        134
+      ],
+      "summary": "Provides extract behavior in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:extractJsonPayload",
+      "type": "function",
+      "name": "extractJsonPayload",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        136,
+        161
+      ],
+      "summary": "Provides extractJsonPayload behavior in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:logUnknownExtractionFields",
+      "type": "function",
+      "name": "logUnknownExtractionFields",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        181,
+        200
+      ],
+      "summary": "Provides logUnknownExtractionFields behavior in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:collectUnknownFields",
+      "type": "function",
+      "name": "collectUnknownFields",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "lineRange": [
+        202,
+        218
+      ],
+      "summary": "Provides collectUnknownFields behavior in SpringAiGraphExtractionClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "type": "file",
+      "name": "SpringAiLangChain4jChatModelAdapter.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:SpringAiLangChain4jChatModelAdapter",
+      "type": "class",
+      "name": "SpringAiLangChain4jChatModelAdapter",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "lineRange": [
+        18,
+        68
+      ],
+      "summary": "Represents SpringAiLangChain4jChatModelAdapter in SpringAiLangChain4jChatModelAdapter.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:SpringAiLangChain4jChatModelAdapter",
+      "type": "function",
+      "name": "SpringAiLangChain4jChatModelAdapter",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "lineRange": [
+        23,
+        29
+      ],
+      "summary": "Provides SpringAiLangChain4jChatModelAdapter behavior in SpringAiLangChain4jChatModelAdapter.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:doChat",
+      "type": "function",
+      "name": "doChat",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "lineRange": [
+        31,
+        55
+      ],
+      "summary": "Provides doChat behavior in SpringAiLangChain4jChatModelAdapter.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:toPrompt",
+      "type": "function",
+      "name": "toPrompt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "lineRange": [
+        57,
+        67
+      ],
+      "summary": "Provides toPrompt behavior in SpringAiLangChain4jChatModelAdapter.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "file",
+      "name": "LogSanitizer.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/logging/LogSanitizer.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:LogSanitizer",
+      "type": "class",
+      "name": "LogSanitizer",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "lineRange": [
+        3,
+        32
+      ],
+      "summary": "Represents LogSanitizer in LogSanitizer.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:LogSanitizer",
+      "type": "function",
+      "name": "LogSanitizer",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "lineRange": [
+        7,
+        8
+      ],
+      "summary": "Provides LogSanitizer behavior in LogSanitizer.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:length",
+      "type": "function",
+      "name": "length",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "lineRange": [
+        10,
+        12
+      ],
+      "summary": "Provides length behavior in LogSanitizer.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:preview",
+      "type": "function",
+      "name": "preview",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "Provides preview behavior in LogSanitizer.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:elapsedMillis",
+      "type": "function",
+      "name": "elapsedMillis",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "lineRange": [
+        29,
+        31
+      ],
+      "summary": "Provides elapsedMillis behavior in LogSanitizer.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "file",
+      "name": "AiModelCallObservation.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:AiModelCallObservation",
+      "type": "class",
+      "name": "AiModelCallObservation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "lineRange": [
+        6,
+        69
+      ],
+      "summary": "Represents AiModelCallObservation in AiModelCallObservation.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:AiModelCallObservation",
+      "type": "function",
+      "name": "AiModelCallObservation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "lineRange": [
+        15,
+        29
+      ],
+      "summary": "Provides AiModelCallObservation behavior in AiModelCallObservation.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:highCardinalityAttribute",
+      "type": "function",
+      "name": "highCardinalityAttribute",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "lineRange": [
+        36,
+        44
+      ],
+      "summary": "Provides highCardinalityAttribute behavior in AiModelCallObservation.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:success",
+      "type": "function",
+      "name": "success",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "lineRange": [
+        46,
+        53
+      ],
+      "summary": "Provides success behavior in AiModelCallObservation.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:error",
+      "type": "function",
+      "name": "error",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "lineRange": [
+        55,
+        68
+      ],
+      "summary": "Provides error behavior in AiModelCallObservation.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "file",
+      "name": "AiObservationService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiObservationService.java with 1 class(es) and 31 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:AiObservationService",
+      "type": "class",
+      "name": "AiObservationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        24,
+        422
+      ],
+      "summary": "Represents AiObservationService in AiObservationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:AiObservationService",
+      "type": "function",
+      "name": "AiObservationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        59,
+        71
+      ],
+      "summary": "Provides AiObservationService behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startWorkflow",
+      "type": "function",
+      "name": "startWorkflow",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        73,
+        80
+      ],
+      "summary": "Provides startWorkflow behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startChatModelCall",
+      "type": "function",
+      "name": "startChatModelCall",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        82,
+        92
+      ],
+      "summary": "Provides startChatModelCall behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startEmbeddingModelCall",
+      "type": "function",
+      "name": "startEmbeddingModelCall",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        94,
+        104
+      ],
+      "summary": "Provides startEmbeddingModelCall behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:contentAttributes",
+      "type": "function",
+      "name": "contentAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        106,
+        123
+      ],
+      "summary": "Provides contentAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:langfuseInputAttributes",
+      "type": "function",
+      "name": "langfuseInputAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        125,
+        133
+      ],
+      "summary": "Provides langfuseInputAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:langfuseOutputAttributes",
+      "type": "function",
+      "name": "langfuseOutputAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        135,
+        143
+      ],
+      "summary": "Provides langfuseOutputAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:enabled",
+      "type": "function",
+      "name": "enabled",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        145,
+        147
+      ],
+      "summary": "Provides enabled behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:recordModelCall",
+      "type": "function",
+      "name": "recordModelCall",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        149,
+        178
+      ],
+      "summary": "Provides recordModelCall behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:failureCategory",
+      "type": "function",
+      "name": "failureCategory",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        180,
+        199
+      ],
+      "summary": "Provides failureCategory behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startModelCall",
+      "type": "function",
+      "name": "startModelCall",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        201,
+        226
+      ],
+      "summary": "Provides startModelCall behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startObservation",
+      "type": "function",
+      "name": "startObservation",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        228,
+        238
+      ],
+      "summary": "Provides startObservation behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addTraceInputOutputAttributes",
+      "type": "function",
+      "name": "addTraceInputOutputAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        265,
+        274
+      ],
+      "summary": "Provides addTraceInputOutputAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addTraceSpanInputOutputAttributes",
+      "type": "function",
+      "name": "addTraceSpanInputOutputAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        276,
+        285
+      ],
+      "summary": "Provides addTraceSpanInputOutputAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addSpanInputOutputAttributes",
+      "type": "function",
+      "name": "addSpanInputOutputAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        287,
+        296
+      ],
+      "summary": "Provides addSpanInputOutputAttributes behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:isInputOutputAttribute",
+      "type": "function",
+      "name": "isInputOutputAttribute",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        298,
+        307
+      ],
+      "summary": "Provides isInputOutputAttribute behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:modelTags",
+      "type": "function",
+      "name": "modelTags",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        316,
+        331
+      ],
+      "summary": "Provides modelTags behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:recordTokenCounter",
+      "type": "function",
+      "name": "recordTokenCounter",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        342,
+        352
+      ],
+      "summary": "Provides recordTokenCounter behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:truncate",
+      "type": "function",
+      "name": "truncate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        375,
+        384
+      ],
+      "summary": "Provides truncate behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:truncateInputOutput",
+      "type": "function",
+      "name": "truncateInputOutput",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "lineRange": [
+        393,
+        402
+      ],
+      "summary": "Provides truncateInputOutput behavior in AiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "file",
+      "name": "AiTokenUsage.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiTokenUsage.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "type": "file",
+      "name": "SpringAiCypherGenerationClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:SpringAiCypherGenerationClient",
+      "type": "class",
+      "name": "SpringAiCypherGenerationClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "lineRange": [
+        17,
+        124
+      ],
+      "summary": "Represents SpringAiCypherGenerationClient in SpringAiCypherGenerationClient.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:SpringAiCypherGenerationClient",
+      "type": "function",
+      "name": "SpringAiCypherGenerationClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "lineRange": [
+        25,
+        31
+      ],
+      "summary": "Provides SpringAiCypherGenerationClient behavior in SpringAiCypherGenerationClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:generate",
+      "type": "function",
+      "name": "generate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "lineRange": [
+        33,
+        111
+      ],
+      "summary": "Provides generate behavior in SpringAiCypherGenerationClient.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "type": "file",
+      "name": "LangChain4jSchemaGenerationService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:LangChain4jSchemaGenerationService",
+      "type": "class",
+      "name": "LangChain4jSchemaGenerationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        36,
+        415
+      ],
+      "summary": "Represents LangChain4jSchemaGenerationService in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:LangChain4jSchemaGenerationService",
+      "type": "function",
+      "name": "LangChain4jSchemaGenerationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        60,
+        66
+      ],
+      "summary": "Provides LangChain4jSchemaGenerationService behavior in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:generate",
+      "type": "function",
+      "name": "generate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        68,
+        134
+      ],
+      "summary": "Provides generate behavior in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:generateExample",
+      "type": "function",
+      "name": "generateExample",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        136,
+        205
+      ],
+      "summary": "Provides generateExample behavior in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:inferSchema",
+      "type": "function",
+      "name": "inferSchema",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        207,
+        250
+      ],
+      "summary": "Provides inferSchema behavior in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:buildKeyPropertyWarnings",
+      "type": "function",
+      "name": "buildKeyPropertyWarnings",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "lineRange": [
+        364,
+        413
+      ],
+      "summary": "Provides buildKeyPropertyWarnings behavior in LangChain4jSchemaGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "file",
+      "name": "TestAiObservationService.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/TestAiObservationService.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:TestAiObservationService",
+      "type": "class",
+      "name": "TestAiObservationService",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "lineRange": [
+        8,
+        22
+      ],
+      "summary": "Represents TestAiObservationService in TestAiObservationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:TestAiObservationService",
+      "type": "function",
+      "name": "TestAiObservationService",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "lineRange": [
+        10,
+        11
+      ],
+      "summary": "Provides TestAiObservationService behavior in TestAiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:noop",
+      "type": "function",
+      "name": "noop",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "lineRange": [
+        13,
+        21
+      ],
+      "summary": "Provides noop behavior in TestAiObservationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "type": "file",
+      "name": "AiObservabilityClientPathTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java with 1 class(es) and 16 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:AiObservabilityClientPathTest",
+      "type": "class",
+      "name": "AiObservabilityClientPathTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        38,
+        327
+      ],
+      "summary": "Represents AiObservabilityClientPathTest in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:graphExtractionPopulatesLangfuseInputOutput",
+      "type": "function",
+      "name": "graphExtractionPopulatesLangfuseInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        40,
+        59
+      ],
+      "summary": "Provides graphExtractionPopulatesLangfuseInputOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:graphExtractionParseFailureStillPopulatesLangfuseOutput",
+      "type": "function",
+      "name": "graphExtractionParseFailureStillPopulatesLangfuseOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        61,
+        83
+      ],
+      "summary": "Provides graphExtractionParseFailureStillPopulatesLangfuseOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:cypherGenerationPopulatesLangfuseInputOutput",
+      "type": "function",
+      "name": "cypherGenerationPopulatesLangfuseInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        85,
+        104
+      ],
+      "summary": "Provides cypherGenerationPopulatesLangfuseInputOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:cypherGenerationParseFailureStillPopulatesLangfuseOutput",
+      "type": "function",
+      "name": "cypherGenerationParseFailureStillPopulatesLangfuseOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        106,
+        128
+      ],
+      "summary": "Provides cypherGenerationParseFailureStillPopulatesLangfuseOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:embeddingPopulatesLangfuseInputOutputWithSummaryOutput",
+      "type": "function",
+      "name": "embeddingPopulatesLangfuseInputOutputWithSummaryOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        130,
+        151
+      ],
+      "summary": "Provides embeddingPopulatesLangfuseInputOutputWithSummaryOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:schemaExampleGenerationPopulatesLangfuseInputOutput",
+      "type": "function",
+      "name": "schemaExampleGenerationPopulatesLangfuseInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        153,
+        165
+      ],
+      "summary": "Provides schemaExampleGenerationPopulatesLangfuseInputOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:langChain4jChatAdapterPopulatesLangfuseInputOutput",
+      "type": "function",
+      "name": "langChain4jChatAdapterPopulatesLangfuseInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        167,
+        181
+      ],
+      "summary": "Provides langChain4jChatAdapterPopulatesLangfuseInputOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:assertModelObservationHasInputOutput",
+      "type": "function",
+      "name": "assertModelObservationHasInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        183,
+        202
+      ],
+      "summary": "Provides assertModelObservationHasInputOutput behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:service",
+      "type": "function",
+      "name": "service",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        213,
+        226
+      ],
+      "summary": "Provides service behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:appProperties",
+      "type": "function",
+      "name": "appProperties",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        228,
+        237
+      ],
+      "summary": "Provides appProperties behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:embeddingModel",
+      "type": "function",
+      "name": "embeddingModel",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        266,
+        281
+      ],
+      "summary": "Provides embeddingModel behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:schema",
+      "type": "function",
+      "name": "schema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "lineRange": [
+        283,
+        296
+      ],
+      "summary": "Provides schema behavior in AiObservabilityClientPathTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:SpringAiEmbeddingClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:SpringAiEmbeddingClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java:embed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:LLMGraphTransformerExt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:LLMGraphTransformerExt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:createUnstructuredPrompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:transform",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:buildOrMergeNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:getJsonResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:summarizeParsedResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:extractPropertiesForSummary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:getBacktickText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:extractProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:asText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java:validateNodePropertyContract",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:SpringAiGraphExtractionClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:SpringAiGraphExtractionClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:extract",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:extractJsonPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:logUnknownExtractionFields",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java:collectUnknownFields",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:SpringAiLangChain4jChatModelAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:SpringAiLangChain4jChatModelAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:doChat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java:toPrompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:LogSanitizer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:LogSanitizer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:length",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:preview",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java:elapsedMillis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:AiModelCallObservation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:AiModelCallObservation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:highCardinalityAttribute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:success",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java:error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:AiObservationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:AiObservationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startWorkflow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startChatModelCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startEmbeddingModelCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:contentAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:langfuseInputAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:langfuseOutputAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:enabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:recordModelCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:failureCategory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startModelCall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:startObservation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addTraceInputOutputAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addTraceSpanInputOutputAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:addSpanInputOutputAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:isInputOutputAttribute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:modelTags",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:recordTokenCounter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:truncate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java:truncateInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:SpringAiCypherGenerationClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:SpringAiCypherGenerationClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/NodeKeySupport.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:LangChain4jSchemaGenerationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:LangChain4jSchemaGenerationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:generateExample",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:inferSchema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java:buildKeyPropertyWarnings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:TestAiObservationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:TestAiObservationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java:noop",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/SpringAiEmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/llm/SpringAiLangChain4jChatModelAdapter.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:AiObservabilityClientPathTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:graphExtractionPopulatesLangfuseInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:graphExtractionParseFailureStillPopulatesLangfuseOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:cypherGenerationPopulatesLangfuseInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:cypherGenerationParseFailureStillPopulatesLangfuseOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:embeddingPopulatesLangfuseInputOutputWithSummaryOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:schemaExampleGenerationPopulatesLangfuseInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:langChain4jChatAdapterPopulatesLangfuseInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:assertModelObservationHasInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:service",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:appProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:embeddingModel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservabilityClientPathTest.java:schema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

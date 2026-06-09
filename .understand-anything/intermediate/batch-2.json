@@ -1,0 +1,2359 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "file",
+      "name": "AppProperties.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/config/AppProperties.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "type": "file",
+      "name": "QueryController.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/controller/QueryController.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:QueryController",
+      "type": "class",
+      "name": "QueryController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        37,
+        276
+      ],
+      "summary": "Represents QueryController in QueryController.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:QueryController",
+      "type": "function",
+      "name": "QueryController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        49,
+        61
+      ],
+      "summary": "Provides QueryController behavior in QueryController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:generate",
+      "type": "function",
+      "name": "generate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        63,
+        109
+      ],
+      "summary": "Provides generate behavior in QueryController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        111,
+        161
+      ],
+      "summary": "Provides validate behavior in QueryController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:execute",
+      "type": "function",
+      "name": "execute",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        163,
+        198
+      ],
+      "summary": "Provides execute behavior in QueryController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:ask",
+      "type": "function",
+      "name": "ask",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "lineRange": [
+        200,
+        275
+      ],
+      "summary": "Provides ask behavior in QueryController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "type": "file",
+      "name": "ChunkingService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/document/ChunkingService.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:ChunkingService",
+      "type": "class",
+      "name": "ChunkingService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "lineRange": [
+        9,
+        53
+      ],
+      "summary": "Represents ChunkingService in ChunkingService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:ChunkingService",
+      "type": "function",
+      "name": "ChunkingService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "lineRange": [
+        15,
+        17
+      ],
+      "summary": "Provides ChunkingService behavior in ChunkingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:split",
+      "type": "function",
+      "name": "split",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "lineRange": [
+        19,
+        45
+      ],
+      "summary": "Provides split behavior in ChunkingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:tokenEstimate",
+      "type": "function",
+      "name": "tokenEstimate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "lineRange": [
+        47,
+        52
+      ],
+      "summary": "Provides tokenEstimate behavior in ChunkingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "file",
+      "name": "GeneratedQueryResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryAskResponse.java",
+      "type": "file",
+      "name": "QueryAskResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryAskResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryAskResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequest.java",
+      "type": "file",
+      "name": "QueryExecuteRequest.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryExecuteRequest.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "file",
+      "name": "QueryExecutionResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java",
+      "type": "file",
+      "name": "QueryGenerateRequest.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidateRequest.java",
+      "type": "file",
+      "name": "QueryValidateRequest.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidateRequest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryValidateRequest.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "type": "file",
+      "name": "QueryValidationResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "file",
+      "name": "QueryRejectedException.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/error/QueryRejectedException.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:QueryRejectedException",
+      "type": "class",
+      "name": "QueryRejectedException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "lineRange": [
+        5,
+        17
+      ],
+      "summary": "Represents QueryRejectedException in QueryRejectedException.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:QueryRejectedException",
+      "type": "function",
+      "name": "QueryRejectedException",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "lineRange": [
+        9,
+        12
+      ],
+      "summary": "Provides QueryRejectedException behavior in QueryRejectedException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:getErrors",
+      "type": "function",
+      "name": "getErrors",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "Provides getErrors behavior in QueryRejectedException.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "file",
+      "name": "AiObservationScope.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiObservationScope.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:AiObservationScope",
+      "type": "class",
+      "name": "AiObservationScope",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        6,
+        48
+      ],
+      "summary": "Represents AiObservationScope in AiObservationScope.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:AiObservationScope",
+      "type": "function",
+      "name": "AiObservationScope",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "Provides AiObservationScope behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:success",
+      "type": "function",
+      "name": "success",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        21,
+        23
+      ],
+      "summary": "Provides success behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:error",
+      "type": "function",
+      "name": "error",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        25,
+        29
+      ],
+      "summary": "Provides error behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:highCardinalityAttribute",
+      "type": "function",
+      "name": "highCardinalityAttribute",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        31,
+        35
+      ],
+      "summary": "Provides highCardinalityAttribute behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:highCardinalityAttributes",
+      "type": "function",
+      "name": "highCardinalityAttributes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        37,
+        41
+      ],
+      "summary": "Provides highCardinalityAttributes behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:close",
+      "type": "function",
+      "name": "close",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "lineRange": [
+        43,
+        47
+      ],
+      "summary": "Provides close behavior in AiObservationScope.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "file",
+      "name": "AiWorkflowContext.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "type": "file",
+      "name": "CypherExecutionService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherExecutionService.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:CypherExecutionService",
+      "type": "class",
+      "name": "CypherExecutionService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "lineRange": [
+        22,
+        175
+      ],
+      "summary": "Represents CypherExecutionService in CypherExecutionService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:CypherExecutionService",
+      "type": "function",
+      "name": "CypherExecutionService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "lineRange": [
+        30,
+        38
+      ],
+      "summary": "Provides CypherExecutionService behavior in CypherExecutionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:execute",
+      "type": "function",
+      "name": "execute",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "lineRange": [
+        40,
+        88
+      ],
+      "summary": "Provides execute behavior in CypherExecutionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:toValidationResponse",
+      "type": "function",
+      "name": "toValidationResponse",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "lineRange": [
+        90,
+        99
+      ],
+      "summary": "Provides toValidationResponse behavior in CypherExecutionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:normalizeValue",
+      "type": "function",
+      "name": "normalizeValue",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "lineRange": [
+        109,
+        174
+      ],
+      "summary": "Provides normalizeValue behavior in CypherExecutionService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "type": "file",
+      "name": "CypherGenerationService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherGenerationService.java with 1 class(es) and 4 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:CypherGenerationService",
+      "type": "class",
+      "name": "CypherGenerationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "lineRange": [
+        26,
+        141
+      ],
+      "summary": "Represents CypherGenerationService in CypherGenerationService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:CypherGenerationService",
+      "type": "function",
+      "name": "CypherGenerationService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "lineRange": [
+        38,
+        54
+      ],
+      "summary": "Provides CypherGenerationService behavior in CypherGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:generate",
+      "type": "function",
+      "name": "generate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "lineRange": [
+        56,
+        115
+      ],
+      "summary": "Provides generate behavior in CypherGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:toValidationResponse",
+      "type": "function",
+      "name": "toValidationResponse",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "lineRange": [
+        117,
+        126
+      ],
+      "summary": "Provides toValidationResponse behavior in CypherGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:resolveCypherGenerationClient",
+      "type": "function",
+      "name": "resolveCypherGenerationClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "lineRange": [
+        128,
+        140
+      ],
+      "summary": "Provides resolveCypherGenerationClient behavior in CypherGenerationService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "type": "file",
+      "name": "LocalFilesystemBinaryStorageService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java with 1 class(es) and 6 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:LocalFilesystemBinaryStorageService",
+      "type": "class",
+      "name": "LocalFilesystemBinaryStorageService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        12,
+        69
+      ],
+      "summary": "Represents LocalFilesystemBinaryStorageService in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:LocalFilesystemBinaryStorageService",
+      "type": "function",
+      "name": "LocalFilesystemBinaryStorageService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        18,
+        20
+      ],
+      "summary": "Provides LocalFilesystemBinaryStorageService behavior in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:store",
+      "type": "function",
+      "name": "store",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        22,
+        41
+      ],
+      "summary": "Provides store behavior in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:read",
+      "type": "function",
+      "name": "read",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        43,
+        48
+      ],
+      "summary": "Provides read behavior in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:resolvePath",
+      "type": "function",
+      "name": "resolvePath",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        50,
+        53
+      ],
+      "summary": "Provides resolvePath behavior in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:delete",
+      "type": "function",
+      "name": "delete",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "lineRange": [
+        55,
+        61
+      ],
+      "summary": "Provides delete behavior in LocalFilesystemBinaryStorageService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "type": "file",
+      "name": "CypherExecutionIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:CypherExecutionIntegrationTest",
+      "type": "class",
+      "name": "CypherExecutionIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "lineRange": [
+        20,
+        144
+      ],
+      "summary": "Represents CypherExecutionIntegrationTest in CypherExecutionIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:executesValidatedReadOnlyQuery",
+      "type": "function",
+      "name": "executesValidatedReadOnlyQuery",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "lineRange": [
+        44,
+        72
+      ],
+      "summary": "Provides executesValidatedReadOnlyQuery behavior in CypherExecutionIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:returnsNodeDataAsSerializableMapWhenReturningNodeVariable",
+      "type": "function",
+      "name": "returnsNodeDataAsSerializableMapWhenReturningNodeVariable",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "lineRange": [
+        74,
+        113
+      ],
+      "summary": "Provides returnsNodeDataAsSerializableMapWhenReturningNodeVariable behavior in CypherExecutionIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:rejectsInvalidQueryBeforeExecution",
+      "type": "function",
+      "name": "rejectsInvalidQueryBeforeExecution",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "lineRange": [
+        115,
+        143
+      ],
+      "summary": "Provides rejectsInvalidQueryBeforeExecution behavior in CypherExecutionIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "type": "file",
+      "name": "QueryControllerTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/controller/QueryControllerTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:QueryControllerTest",
+      "type": "class",
+      "name": "QueryControllerTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "lineRange": [
+        23,
+        109
+      ],
+      "summary": "Represents QueryControllerTest in QueryControllerTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:askOrchestratesGenerateThenExecute",
+      "type": "function",
+      "name": "askOrchestratesGenerateThenExecute",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "lineRange": [
+        25,
+        68
+      ],
+      "summary": "Provides askOrchestratesGenerateThenExecute behavior in QueryControllerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:askRejectsWhenGeneratedQueryIsInvalid",
+      "type": "function",
+      "name": "askRejectsWhenGeneratedQueryIsInvalid",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "lineRange": [
+        70,
+        97
+      ],
+      "summary": "Provides askRejectsWhenGeneratedQueryIsInvalid behavior in QueryControllerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:props",
+      "type": "function",
+      "name": "props",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "lineRange": [
+        99,
+        108
+      ],
+      "summary": "Provides props behavior in QueryControllerTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "type": "file",
+      "name": "ChunkingServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java:ChunkingServiceTest",
+      "type": "class",
+      "name": "ChunkingServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "lineRange": [
+        10,
+        35
+      ],
+      "summary": "Represents ChunkingServiceTest in ChunkingServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java:props",
+      "type": "function",
+      "name": "props",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "lineRange": [
+        25,
+        34
+      ],
+      "summary": "Provides props behavior in ChunkingServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "type": "file",
+      "name": "SpringAiGraphExtractionClientTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java with 1 class(es) and 7 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:SpringAiGraphExtractionClientTest",
+      "type": "class",
+      "name": "SpringAiGraphExtractionClientTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        19,
+        168
+      ],
+      "summary": "Represents SpringAiGraphExtractionClientTest in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extract_ignoresUnknownFieldsInModelResponse",
+      "type": "function",
+      "name": "extract_ignoresUnknownFieldsInModelResponse",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        21,
+        62
+      ],
+      "summary": "Provides extract_ignoresUnknownFieldsInModelResponse behavior in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:validationStillFailsForSchemaViolationWithUnknownFieldsPresent",
+      "type": "function",
+      "name": "validationStillFailsForSchemaViolationWithUnknownFieldsPresent",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        64,
+        98
+      ],
+      "summary": "Provides validationStillFailsForSchemaViolationWithUnknownFieldsPresent behavior in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extract_promptContainsAllowedRelationshipTriplesAndOmitRule",
+      "type": "function",
+      "name": "extract_promptContainsAllowedRelationshipTriplesAndOmitRule",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        100,
+        118
+      ],
+      "summary": "Provides extract_promptContainsAllowedRelationshipTriplesAndOmitRule behavior in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:schema",
+      "type": "function",
+      "name": "schema",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        138,
+        151
+      ],
+      "summary": "Provides schema behavior in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extractPromptText",
+      "type": "function",
+      "name": "extractPromptText",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "lineRange": [
+        153,
+        167
+      ],
+      "summary": "Provides extractPromptText behavior in SpringAiGraphExtractionClientTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "type": "file",
+      "name": "AiObservationServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java with 1 class(es) and 18 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:AiObservationServiceTest",
+      "type": "class",
+      "name": "AiObservationServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        21,
+        336
+      ],
+      "summary": "Represents AiObservationServiceTest in AiObservationServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:disabledModeDoesNotRecordModelMetrics",
+      "type": "function",
+      "name": "disabledModeDoesNotRecordModelMetrics",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        23,
+        37
+      ],
+      "summary": "Provides disabledModeDoesNotRecordModelMetrics behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesUseRecognizedKeysAndFullContentByDefault",
+      "type": "function",
+      "name": "langfuseInputOutputAttributesUseRecognizedKeysAndFullContentByDefault",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        58,
+        69
+      ],
+      "summary": "Provides langfuseInputOutputAttributesUseRecognizedKeysAndFullContentByDefault behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesUseSanitizedValuesWhenInputOutputContentDisabled",
+      "type": "function",
+      "name": "langfuseInputOutputAttributesUseSanitizedValuesWhenInputOutputContentDisabled",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        71,
+        80
+      ],
+      "summary": "Provides langfuseInputOutputAttributesUseSanitizedValuesWhenInputOutputContentDisabled behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesCanExceedGenericAttributeMaxLength",
+      "type": "function",
+      "name": "langfuseInputOutputAttributesCanExceedGenericAttributeMaxLength",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        91,
+        106
+      ],
+      "summary": "Provides langfuseInputOutputAttributesCanExceedGenericAttributeMaxLength behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:modelCallRecordsObservationInputOutputAndParentTraceInputOutput",
+      "type": "function",
+      "name": "modelCallRecordsObservationInputOutputAndParentTraceInputOutput",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        108,
+        148
+      ],
+      "summary": "Provides modelCallRecordsObservationInputOutputAndParentTraceInputOutput behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:successfulModelCallRecordsCountersTimerAndTokenUsage",
+      "type": "function",
+      "name": "successfulModelCallRecordsCountersTimerAndTokenUsage",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        150,
+        169
+      ],
+      "summary": "Provides successfulModelCallRecordsCountersTimerAndTokenUsage behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:failedModelCallRecordsFailureCategory",
+      "type": "function",
+      "name": "failedModelCallRecordsFailureCategory",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        171,
+        188
+      ],
+      "summary": "Provides failedModelCallRecordsFailureCategory behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:service",
+      "type": "function",
+      "name": "service",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        222,
+        231
+      ],
+      "summary": "Provides service behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:appProperties",
+      "type": "function",
+      "name": "appProperties",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "lineRange": [
+        262,
+        271
+      ],
+      "summary": "Provides appProperties behavior in AiObservationServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "type": "file",
+      "name": "CypherExecutionServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java with 1 class(es) and 4 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:CypherExecutionServiceTest",
+      "type": "class",
+      "name": "CypherExecutionServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "lineRange": [
+        19,
+        94
+      ],
+      "summary": "Represents CypherExecutionServiceTest in CypherExecutionServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:executesValidatedQueryAndMapsRows",
+      "type": "function",
+      "name": "executesValidatedQueryAndMapsRows",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "lineRange": [
+        21,
+        46
+      ],
+      "summary": "Provides executesValidatedQueryAndMapsRows behavior in CypherExecutionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:rejectsExecutionWhenValidationFails",
+      "type": "function",
+      "name": "rejectsExecutionWhenValidationFails",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "lineRange": [
+        48,
+        62
+      ],
+      "summary": "Provides rejectsExecutionWhenValidationFails behavior in CypherExecutionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:propagatesAllValidationErrorsInOriginalOrder",
+      "type": "function",
+      "name": "propagatesAllValidationErrorsInOriginalOrder",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "lineRange": [
+        64,
+        82
+      ],
+      "summary": "Provides propagatesAllValidationErrorsInOriginalOrder behavior in CypherExecutionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:props",
+      "type": "function",
+      "name": "props",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "lineRange": [
+        84,
+        93
+      ],
+      "summary": "Provides props behavior in CypherExecutionServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "type": "file",
+      "name": "LocalFilesystemBinaryStorageServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java with 1 class(es) and 1 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java:LocalFilesystemBinaryStorageServiceTest",
+      "type": "class",
+      "name": "LocalFilesystemBinaryStorageServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "lineRange": [
+        12,
+        41
+      ],
+      "summary": "Represents LocalFilesystemBinaryStorageServiceTest in LocalFilesystemBinaryStorageServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java:generatesFileUriAndReadsBackBytes",
+      "type": "function",
+      "name": "generatesFileUriAndReadsBackBytes",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "lineRange": [
+        17,
+        40
+      ],
+      "summary": "Provides generatesFileUriAndReadsBackBytes behavior in LocalFilesystemBinaryStorageServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryAskResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecuteRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:QueryController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:QueryController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:validate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:execute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java:ask",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:ChunkingService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:ChunkingService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:split",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java:tokenEstimate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:QueryRejectedException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:QueryRejectedException",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java:getErrors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:AiObservationScope",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:AiObservationScope",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:success",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:highCardinalityAttribute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:highCardinalityAttributes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java:close",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:CypherExecutionService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:CypherExecutionService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:execute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:toValidationResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java:normalizeValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaParser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:CypherGenerationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:CypherGenerationService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:generate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:toValidationResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java:resolveCypherGenerationClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:LocalFilesystemBinaryStorageService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:LocalFilesystemBinaryStorageService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:store",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:read",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:resolvePath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java:delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:CypherExecutionIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:executesValidatedReadOnlyQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:returnsNodeDataAsSerializableMapWhenReturningNodeVariable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/CypherExecutionIntegrationTest.java:rejectsInvalidQueryBeforeExecution",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryAskResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryGenerateRequest.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryValidationResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherValidationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:QueryControllerTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:askOrchestratesGenerateThenExecute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:askRejectsWhenGeneratedQueryIsInvalid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/controller/QueryControllerTest.java:props",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java:ChunkingServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java:props",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:SpringAiGraphExtractionClientTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extract_ignoresUnknownFieldsInModelResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:validationStillFailsForSchemaViolationWithUnknownFieldsPresent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extract_promptContainsAllowedRelationshipTriplesAndOmitRule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:schema",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/graph/SpringAiGraphExtractionClientTest.java:extractPromptText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:AiObservationServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:disabledModeDoesNotRecordModelMetrics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesUseRecognizedKeysAndFullContentByDefault",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesUseSanitizedValuesWhenInputOutputContentDisabled",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:langfuseInputOutputAttributesCanExceedGenericAttributeMaxLength",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:modelCallRecordsObservationInputOutputAndParentTraceInputOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:successfulModelCallRecordsCountersTimerAndTokenUsage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:failedModelCallRecordsFailureCategory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:service",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/observability/AiObservationServiceTest.java:appProperties",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/QueryRejectedException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/QueryValidationResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:CypherExecutionServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:executesValidatedQueryAndMapsRows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:rejectsExecutionWhenValidationFails",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:propagatesAllValidationErrorsInOriginalOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/CypherExecutionServiceTest.java:props",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java:LocalFilesystemBinaryStorageServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java:generatesFileUriAndReadsBackBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java",
+      "language": "java",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "language": "java",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "language": "java",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java",
+      "language": "java",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java",
+      "language": "java",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "language": "java",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java",
+      "language": "java",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaValidationResponse.java",
+      "language": "java",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/dto/ValidateSchemaRequest.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaBootstrapService.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java",
+      "language": "java",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaControllerTest.java",
+      "language": "java",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaValidationResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/ValidateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaValidationResponse.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/dto/ValidateSchemaRequest.java": [],
+    "src/main/java/io/github/vfedoriv/graphrag/service/SchemaBootstrapService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java"
+    ],
+    "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java"
+    ],
+    "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaControllerTest.java": [
+      "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaFromFileRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaDetailsResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationResult.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaGenerationWarning.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaResponse.java",
+      "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateSchemaRequest.java",
+      "src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaGenerationService.java",
+      "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java"
+    ]
+  }
+}

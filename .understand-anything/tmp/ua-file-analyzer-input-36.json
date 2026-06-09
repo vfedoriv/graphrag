@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "src/main/resources/application-langfuse.properties",
+      "language": "properties",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application-lm_studio.properties",
+      "language": "properties",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application-openai.properties",
+      "language": "properties",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/main/resources/application.properties",
+      "language": "properties",
+      "sizeLines": 54,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    "src/main/resources/application-langfuse.properties": [],
+    "src/main/resources/application-lm_studio.properties": [],
+    "src/main/resources/application-openai.properties": [],
+    "src/main/resources/application.properties": []
+  }
+}

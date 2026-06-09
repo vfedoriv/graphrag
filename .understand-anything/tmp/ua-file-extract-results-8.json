@@ -1,0 +1,412 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 107,
+      "nonEmptyLines": 77,
+      "sections": [
+        {
+          "heading": "AGENTS.md",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Stack",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Commands",
+          "level": 2,
+          "line": 14
+        },
+        {
+          "heading": "Architecture",
+          "level": 2,
+          "line": 45
+        },
+        {
+          "heading": "Profiles",
+          "level": 2,
+          "line": 68
+        },
+        {
+          "heading": "Key Files",
+          "level": 2,
+          "line": 75
+        },
+        {
+          "heading": "Testing",
+          "level": 2,
+          "line": 84
+        },
+        {
+          "heading": "OpenSpec Workflow",
+          "level": 2,
+          "line": 90
+        },
+        {
+          "heading": "Commit & Pull Request Guidelines",
+          "level": 2,
+          "line": 96
+        },
+        {
+          "heading": "Design Constraints",
+          "level": 2,
+          "line": 100
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 137,
+      "nonEmptyLines": 98,
+      "sections": [
+        {
+          "heading": "CLAUDE.md",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Tech Stack",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Commands",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Architecture",
+          "level": 2,
+          "line": 48
+        },
+        {
+          "heading": "Layers",
+          "level": 3,
+          "line": 50
+        },
+        {
+          "heading": "Four Main Controllers",
+          "level": 3,
+          "line": 58
+        },
+        {
+          "heading": "Core Services",
+          "level": 3,
+          "line": 67
+        },
+        {
+          "heading": "Document Ingestion Pipeline",
+          "level": 3,
+          "line": 79
+        },
+        {
+          "heading": "Query / Q&A Pipeline",
+          "level": 3,
+          "line": 90
+        },
+        {
+          "heading": "LLM Client Interfaces",
+          "level": 3,
+          "line": 96
+        },
+        {
+          "heading": "Spring Profiles",
+          "level": 2,
+          "line": 100
+        },
+        {
+          "heading": "Configuration",
+          "level": 2,
+          "line": 109
+        },
+        {
+          "heading": "Testing Approach",
+          "level": 2,
+          "line": 120
+        },
+        {
+          "heading": "Key Design Decisions",
+          "level": 2,
+          "line": 126
+        },
+        {
+          "heading": "Documentation Hygiene",
+          "level": 2,
+          "line": 135
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 15
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 719,
+      "nonEmptyLines": 552,
+      "sections": [
+        {
+          "heading": "GraphRAG",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Goal and Scope",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "Implemented Scope",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "Main Architecture",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "Process Flows",
+          "level": 2,
+          "line": 97
+        },
+        {
+          "heading": "Schema lifecycle",
+          "level": 3,
+          "line": 99
+        },
+        {
+          "heading": "Document ingestion and processing",
+          "level": 3,
+          "line": 116
+        },
+        {
+          "heading": "Q&A (`/ask`) execution flow",
+          "level": 3,
+          "line": 137
+        },
+        {
+          "heading": "Tech Stack",
+          "level": 2,
+          "line": 154
+        },
+        {
+          "heading": "Data Model",
+          "level": 2,
+          "line": 164
+        },
+        {
+          "heading": "Runtime Profiles",
+          "level": 2,
+          "line": 190
+        },
+        {
+          "heading": "Default profile",
+          "level": 3,
+          "line": 192
+        },
+        {
+          "heading": "`openai` profile",
+          "level": 3,
+          "line": 198
+        },
+        {
+          "heading": "`lm_studio` profile",
+          "level": 3,
+          "line": 207
+        },
+        {
+          "heading": "OpenAPI / Swagger",
+          "level": 2,
+          "line": 217
+        },
+        {
+          "heading": "Configuration",
+          "level": 2,
+          "line": 224
+        },
+        {
+          "heading": "Schema Format",
+          "level": 2,
+          "line": 262
+        },
+        {
+          "heading": "Local Run",
+          "level": 2,
+          "line": 309
+        },
+        {
+          "heading": "AI Observability",
+          "level": 2,
+          "line": 339
+        },
+        {
+          "heading": "Local Langfuse",
+          "level": 3,
+          "line": 349
+        },
+        {
+          "heading": "Content Capture",
+          "level": 3,
+          "line": 411
+        },
+        {
+          "heading": "Schema Bootstrap",
+          "level": 2,
+          "line": 429
+        },
+        {
+          "heading": "Breaking Migration Note (YAML to JSON)",
+          "level": 2,
+          "line": 433
+        },
+        {
+          "heading": "REST API",
+          "level": 2,
+          "line": 444
+        },
+        {
+          "heading": "Schemas",
+          "level": 3,
+          "line": 448
+        },
+        {
+          "heading": "Knowledge Bases",
+          "level": 3,
+          "line": 466
+        },
+        {
+          "heading": "Documents",
+          "level": 3,
+          "line": 474
+        },
+        {
+          "heading": "Queries",
+          "level": 3,
+          "line": 483
+        },
+        {
+          "heading": "Request Contracts (Core)",
+          "level": 2,
+          "line": 490
+        },
+        {
+          "heading": "Minimal End-to-End Flow",
+          "level": 2,
+          "line": 536
+        },
+        {
+          "heading": "Processing Flow",
+          "level": 2,
+          "line": 590
+        },
+        {
+          "heading": "Query Safety Model",
+          "level": 2,
+          "line": 612
+        },
+        {
+          "heading": "Error Model",
+          "level": 2,
+          "line": 620
+        },
+        {
+          "heading": "Testing",
+          "level": 2,
+          "line": 631
+        },
+        {
+          "heading": "Notes and Constraints",
+          "level": 2,
+          "line": 659
+        },
+        {
+          "heading": "Design Decisions",
+          "level": 2,
+          "line": 666
+        },
+        {
+          "heading": "Production Readiness Checklist",
+          "level": 2,
+          "line": 674
+        },
+        {
+          "heading": "Reference Links",
+          "level": 2,
+          "line": 712
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 38
+      }
+    },
+    {
+      "path": "compose.yaml",
+      "language": "yaml",
+      "fileCategory": "infra",
+      "totalLines": 168,
+      "nonEmptyLines": 161,
+      "sections": [
+        {
+          "heading": "services",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "volumes",
+          "level": 1,
+          "line": 158
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "mvnw.cmd",
+      "language": "batch",
+      "fileCategory": "script",
+      "totalLines": 189,
+      "nonEmptyLines": 165,
+      "metrics": {}
+    },
+    {
+      "path": "pom.xml",
+      "language": "xml",
+      "fileCategory": "config",
+      "totalLines": 288,
+      "nonEmptyLines": 280,
+      "metrics": {}
+    }
+  ]
+}

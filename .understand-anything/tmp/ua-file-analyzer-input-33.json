@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/design.md",
+      "language": "markdown",
+      "sizeLines": 64,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/proposal.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-06-04-improve-test-coverage/tasks.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-06-04-improve-test-coverage/.openspec.yaml": [],
+    "openspec/changes/archive/2026-06-04-improve-test-coverage/design.md": [],
+    "openspec/changes/archive/2026-06-04-improve-test-coverage/proposal.md": [],
+    "openspec/changes/archive/2026-06-04-improve-test-coverage/tasks.md": []
+  }
+}

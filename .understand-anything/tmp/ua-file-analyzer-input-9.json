@@ -1,0 +1,35 @@
+{
+  "projectRoot": "/home/vitaliy/workspace/graphrag",
+  "batchFiles": [
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md",
+      "language": "markdown",
+      "sizeLines": 53,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md",
+      "language": "markdown",
+      "sizeLines": 26,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml": [],
+    "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md": [],
+    "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md": [],
+    "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md": []
+  }
+}

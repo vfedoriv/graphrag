@@ -1,0 +1,3148 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "type": "file",
+      "name": "DocumentController.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/controller/DocumentController.java with 1 class(es) and 8 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:DocumentController",
+      "type": "class",
+      "name": "DocumentController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        30,
+        208
+      ],
+      "summary": "Represents DocumentController in DocumentController.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:DocumentController",
+      "type": "function",
+      "name": "DocumentController",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        39,
+        45
+      ],
+      "summary": "Provides DocumentController behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:uploadDocument",
+      "type": "function",
+      "name": "uploadDocument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        47,
+        82
+      ],
+      "summary": "Provides uploadDocument behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:replaceDocument",
+      "type": "function",
+      "name": "replaceDocument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        84,
+        108
+      ],
+      "summary": "Provides replaceDocument behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:deleteDocument",
+      "type": "function",
+      "name": "deleteDocument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        110,
+        124
+      ],
+      "summary": "Provides deleteDocument behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:listKnowledgeBaseDocuments",
+      "type": "function",
+      "name": "listKnowledgeBaseDocuments",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        126,
+        140
+      ],
+      "summary": "Provides listKnowledgeBaseDocuments behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:processDocument",
+      "type": "function",
+      "name": "processDocument",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        142,
+        168
+      ],
+      "summary": "Provides processDocument behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:getDocumentChunks",
+      "type": "function",
+      "name": "getDocumentChunks",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        170,
+        190
+      ],
+      "summary": "Provides getDocumentChunks behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:toResponse",
+      "type": "function",
+      "name": "toResponse",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "lineRange": [
+        192,
+        207
+      ],
+      "summary": "Provides toResponse behavior in DocumentController.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "file",
+      "name": "DocumentChunkNode.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java with 1 class(es) and 14 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:DocumentChunkNode",
+      "type": "class",
+      "name": "DocumentChunkNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        7,
+        74
+      ],
+      "summary": "Represents DocumentChunkNode in DocumentChunkNode.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getId",
+      "type": "function",
+      "name": "getId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        19,
+        21
+      ],
+      "summary": "Provides getId behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setId",
+      "type": "function",
+      "name": "setId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        23,
+        25
+      ],
+      "summary": "Provides setId behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getDocumentId",
+      "type": "function",
+      "name": "getDocumentId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        27,
+        29
+      ],
+      "summary": "Provides getDocumentId behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setDocumentId",
+      "type": "function",
+      "name": "setDocumentId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        31,
+        33
+      ],
+      "summary": "Provides setDocumentId behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getChunkIndex",
+      "type": "function",
+      "name": "getChunkIndex",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        35,
+        37
+      ],
+      "summary": "Provides getChunkIndex behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setChunkIndex",
+      "type": "function",
+      "name": "setChunkIndex",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        39,
+        41
+      ],
+      "summary": "Provides setChunkIndex behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getText",
+      "type": "function",
+      "name": "getText",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        43,
+        45
+      ],
+      "summary": "Provides getText behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setText",
+      "type": "function",
+      "name": "setText",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        47,
+        49
+      ],
+      "summary": "Provides setText behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getTokenEstimate",
+      "type": "function",
+      "name": "getTokenEstimate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        51,
+        53
+      ],
+      "summary": "Provides getTokenEstimate behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setTokenEstimate",
+      "type": "function",
+      "name": "setTokenEstimate",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        55,
+        57
+      ],
+      "summary": "Provides setTokenEstimate behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getEmbedding",
+      "type": "function",
+      "name": "getEmbedding",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        59,
+        61
+      ],
+      "summary": "Provides getEmbedding behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setEmbedding",
+      "type": "function",
+      "name": "setEmbedding",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        63,
+        65
+      ],
+      "summary": "Provides setEmbedding behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getMetadata",
+      "type": "function",
+      "name": "getMetadata",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        67,
+        69
+      ],
+      "summary": "Provides getMetadata behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setMetadata",
+      "type": "function",
+      "name": "setMetadata",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "lineRange": [
+        71,
+        73
+      ],
+      "summary": "Provides setMetadata behavior in DocumentChunkNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "file",
+      "name": "DocumentStatus.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/DocumentStatus.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "file",
+      "name": "DocumentUploadNode.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java with 1 class(es) and 23 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:DocumentUploadNode",
+      "type": "class",
+      "name": "DocumentUploadNode",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        8,
+        117
+      ],
+      "summary": "Represents DocumentUploadNode in DocumentUploadNode.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getId",
+      "type": "function",
+      "name": "getId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        26,
+        28
+      ],
+      "summary": "Provides getId behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setId",
+      "type": "function",
+      "name": "setId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        30,
+        32
+      ],
+      "summary": "Provides setId behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getVersion",
+      "type": "function",
+      "name": "getVersion",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        34,
+        36
+      ],
+      "summary": "Provides getVersion behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getKnowledgeBaseId",
+      "type": "function",
+      "name": "getKnowledgeBaseId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        38,
+        40
+      ],
+      "summary": "Provides getKnowledgeBaseId behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setKnowledgeBaseId",
+      "type": "function",
+      "name": "setKnowledgeBaseId",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        42,
+        44
+      ],
+      "summary": "Provides setKnowledgeBaseId behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getOriginalFilename",
+      "type": "function",
+      "name": "getOriginalFilename",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        46,
+        48
+      ],
+      "summary": "Provides getOriginalFilename behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setOriginalFilename",
+      "type": "function",
+      "name": "setOriginalFilename",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        50,
+        52
+      ],
+      "summary": "Provides setOriginalFilename behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getContentType",
+      "type": "function",
+      "name": "getContentType",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        54,
+        56
+      ],
+      "summary": "Provides getContentType behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setContentType",
+      "type": "function",
+      "name": "setContentType",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        58,
+        60
+      ],
+      "summary": "Provides setContentType behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getSizeBytes",
+      "type": "function",
+      "name": "getSizeBytes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        62,
+        64
+      ],
+      "summary": "Provides getSizeBytes behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setSizeBytes",
+      "type": "function",
+      "name": "setSizeBytes",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        66,
+        68
+      ],
+      "summary": "Provides setSizeBytes behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getSha256",
+      "type": "function",
+      "name": "getSha256",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        70,
+        72
+      ],
+      "summary": "Provides getSha256 behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setSha256",
+      "type": "function",
+      "name": "setSha256",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        74,
+        76
+      ],
+      "summary": "Provides setSha256 behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getContentUri",
+      "type": "function",
+      "name": "getContentUri",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        78,
+        80
+      ],
+      "summary": "Provides getContentUri behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setContentUri",
+      "type": "function",
+      "name": "setContentUri",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        82,
+        84
+      ],
+      "summary": "Provides setContentUri behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getStatus",
+      "type": "function",
+      "name": "getStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        86,
+        88
+      ],
+      "summary": "Provides getStatus behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setStatus",
+      "type": "function",
+      "name": "setStatus",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        90,
+        92
+      ],
+      "summary": "Provides setStatus behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getUploadedAt",
+      "type": "function",
+      "name": "getUploadedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        94,
+        96
+      ],
+      "summary": "Provides getUploadedAt behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setUploadedAt",
+      "type": "function",
+      "name": "setUploadedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        98,
+        100
+      ],
+      "summary": "Provides setUploadedAt behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getProcessedAt",
+      "type": "function",
+      "name": "getProcessedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        102,
+        104
+      ],
+      "summary": "Provides getProcessedAt behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setProcessedAt",
+      "type": "function",
+      "name": "setProcessedAt",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        106,
+        108
+      ],
+      "summary": "Provides setProcessedAt behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getErrorMessage",
+      "type": "function",
+      "name": "getErrorMessage",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        110,
+        112
+      ],
+      "summary": "Provides getErrorMessage behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setErrorMessage",
+      "type": "function",
+      "name": "setErrorMessage",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "lineRange": [
+        114,
+        116
+      ],
+      "summary": "Provides setErrorMessage behavior in DocumentUploadNode.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "type": "file",
+      "name": "DocumentChunkResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "type": "file",
+      "name": "DocumentUploadResponse.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "file",
+      "name": "EmbeddingClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "file",
+      "name": "GraphExtractionClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "file",
+      "name": "GraphExtractionResult.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "type": "file",
+      "name": "CypherGenerationClient.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/query/CypherGenerationClient.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "type": "file",
+      "name": "GeneratedCypher.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/query/GeneratedCypher.java.",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "type": "file",
+      "name": "DocumentChunkRepository.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java:DocumentChunkRepository",
+      "type": "class",
+      "name": "DocumentChunkRepository",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "lineRange": [
+        7,
+        12
+      ],
+      "summary": "Represents DocumentChunkRepository in DocumentChunkRepository.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "file",
+      "name": "DocumentUploadRepository.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java:DocumentUploadRepository",
+      "type": "class",
+      "name": "DocumentUploadRepository",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "lineRange": [
+        8,
+        13
+      ],
+      "summary": "Represents DocumentUploadRepository in DocumentUploadRepository.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "type": "file",
+      "name": "DocumentProcessingService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/DocumentProcessingService.java with 1 class(es) and 10 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:DocumentProcessingService",
+      "type": "class",
+      "name": "DocumentProcessingService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        33,
+        259
+      ],
+      "summary": "Represents DocumentProcessingService in DocumentProcessingService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:DocumentProcessingService",
+      "type": "function",
+      "name": "DocumentProcessingService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        53,
+        81
+      ],
+      "summary": "Provides DocumentProcessingService behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:process",
+      "type": "function",
+      "name": "process",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        83,
+        85
+      ],
+      "summary": "Provides process behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:getDocumentChunks",
+      "type": "function",
+      "name": "getDocumentChunks",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        192,
+        197
+      ],
+      "summary": "Provides getDocumentChunks behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:ensureVectorIndex",
+      "type": "function",
+      "name": "ensureVectorIndex",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        212,
+        226
+      ],
+      "summary": "Provides ensureVectorIndex behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:createChunkRelationship",
+      "type": "function",
+      "name": "createChunkRelationship",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        228,
+        237
+      ],
+      "summary": "Provides createChunkRelationship behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:resolveEmbeddingClient",
+      "type": "function",
+      "name": "resolveEmbeddingClient",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "lineRange": [
+        246,
+        258
+      ],
+      "summary": "Provides resolveEmbeddingClient behavior in DocumentProcessingService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "file",
+      "name": "DocumentUploadService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/DocumentUploadService.java with 1 class(es) and 15 function(s).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:DocumentUploadService",
+      "type": "class",
+      "name": "DocumentUploadService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        27,
+        342
+      ],
+      "summary": "Represents DocumentUploadService in DocumentUploadService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:DocumentUploadService",
+      "type": "function",
+      "name": "DocumentUploadService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        35,
+        43
+      ],
+      "summary": "Provides DocumentUploadService behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:upload",
+      "type": "function",
+      "name": "upload",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        45,
+        97
+      ],
+      "summary": "Provides upload behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:sha256",
+      "type": "function",
+      "name": "sha256",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        99,
+        107
+      ],
+      "summary": "Provides sha256 behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:readContent",
+      "type": "function",
+      "name": "readContent",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        109,
+        116
+      ],
+      "summary": "Provides readContent behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:listByKnowledgeBase",
+      "type": "function",
+      "name": "listByKnowledgeBase",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        118,
+        123
+      ],
+      "summary": "Provides listByKnowledgeBase behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:localPath",
+      "type": "function",
+      "name": "localPath",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        125,
+        131
+      ],
+      "summary": "Provides localPath behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:replace",
+      "type": "function",
+      "name": "replace",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        133,
+        189
+      ],
+      "summary": "Provides replace behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:delete",
+      "type": "function",
+      "name": "delete",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        191,
+        207
+      ],
+      "summary": "Provides delete behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:deletePrimaryContent",
+      "type": "function",
+      "name": "deletePrimaryContent",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        233,
+        249
+      ],
+      "summary": "Provides deletePrimaryContent behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:deletePreviousContent",
+      "type": "function",
+      "name": "deletePreviousContent",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        251,
+        266
+      ],
+      "summary": "Provides deletePreviousContent behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:cleanupDerivedArtifacts",
+      "type": "function",
+      "name": "cleanupDerivedArtifacts",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "lineRange": [
+        268,
+        323
+      ],
+      "summary": "Provides cleanupDerivedArtifacts behavior in DocumentUploadService.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "type": "file",
+      "name": "BinaryStorageService.java",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/storage/BinaryStorageService.java with 1 class(es).",
+      "tags": [
+        "code",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java:BinaryStorageService",
+      "type": "class",
+      "name": "BinaryStorageService",
+      "filePath": "src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "lineRange": [
+        8,
+        17
+      ],
+      "summary": "Represents BinaryStorageService in BinaryStorageService.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "type": "file",
+      "name": "DocumentProcessingIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java:DocumentProcessingIntegrationTest",
+      "type": "class",
+      "name": "DocumentProcessingIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "lineRange": [
+        30,
+        214
+      ],
+      "summary": "Represents DocumentProcessingIntegrationTest in DocumentProcessingIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java:persistsChunksCreatesVectorIndexAndSupportsVectorSearch",
+      "type": "function",
+      "name": "persistsChunksCreatesVectorIndexAndSupportsVectorSearch",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "lineRange": [
+        64,
+        161
+      ],
+      "summary": "Provides persistsChunksCreatesVectorIndexAndSupportsVectorSearch behavior in DocumentProcessingIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "type": "file",
+      "name": "DocumentUploadIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java with 1 class(es) and 8 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:DocumentUploadIntegrationTest",
+      "type": "class",
+      "name": "DocumentUploadIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        22,
+        206
+      ],
+      "summary": "Represents DocumentUploadIntegrationTest in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:persistsMetadataAndSkipsDuplicateHashWithinKnowledgeBase",
+      "type": "function",
+      "name": "persistsMetadataAndSkipsDuplicateHashWithinKnowledgeBase",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        58,
+        70
+      ],
+      "summary": "Provides persistsMetadataAndSkipsDuplicateHashWithinKnowledgeBase behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:replacementPreservesIdResetsMetadataAndClearsDerivedArtifacts",
+      "type": "function",
+      "name": "replacementPreservesIdResetsMetadataAndClearsDerivedArtifacts",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        72,
+        105
+      ],
+      "summary": "Provides replacementPreservesIdResetsMetadataAndClearsDerivedArtifacts behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:replacementRejectsDuplicateContentFromAnotherDocument",
+      "type": "function",
+      "name": "replacementRejectsDuplicateContentFromAnotherDocument",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        107,
+        127
+      ],
+      "summary": "Provides replacementRejectsDuplicateContentFromAnotherDocument behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:deletionRemovesDocumentStorageAndDerivedArtifactsWithoutAffectingOtherDocuments",
+      "type": "function",
+      "name": "deletionRemovesDocumentStorageAndDerivedArtifactsWithoutAffectingOtherDocuments",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        129,
+        151
+      ],
+      "summary": "Provides deletionRemovesDocumentStorageAndDerivedArtifactsWithoutAffectingOtherDocuments behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:createDerivedArtifacts",
+      "type": "function",
+      "name": "createDerivedArtifacts",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        153,
+        172
+      ],
+      "summary": "Provides createDerivedArtifacts behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:assertDocumentArtifacts",
+      "type": "function",
+      "name": "assertDocumentArtifacts",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "lineRange": [
+        174,
+        205
+      ],
+      "summary": "Provides assertDocumentArtifacts behavior in DocumentUploadIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "type": "file",
+      "name": "EndToEndMvpFlowIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java:EndToEndMvpFlowIntegrationTest",
+      "type": "class",
+      "name": "EndToEndMvpFlowIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "lineRange": [
+        36,
+        169
+      ],
+      "summary": "Represents EndToEndMvpFlowIntegrationTest in EndToEndMvpFlowIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java:completesSynchronousFlowFromSchemaToAsk",
+      "type": "function",
+      "name": "completesSynchronousFlowFromSchemaToAsk",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "lineRange": [
+        72,
+        108
+      ],
+      "summary": "Provides completesSynchronousFlowFromSchemaToAsk behavior in EndToEndMvpFlowIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "type": "file",
+      "name": "EndToEndMvpFlowMvcIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java with 1 class(es) and 2 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java:EndToEndMvpFlowMvcIntegrationTest",
+      "type": "class",
+      "name": "EndToEndMvpFlowMvcIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "lineRange": [
+        33,
+        200
+      ],
+      "summary": "Represents EndToEndMvpFlowMvcIntegrationTest in EndToEndMvpFlowMvcIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java:completesFlowViaRestEndpoints",
+      "type": "function",
+      "name": "completesFlowViaRestEndpoints",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "lineRange": [
+        63,
+        139
+      ],
+      "summary": "Provides completesFlowViaRestEndpoints behavior in EndToEndMvpFlowMvcIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "type": "file",
+      "name": "GraphExtractionCleanupIntegrationTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java with 1 class(es) and 5 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:GraphExtractionCleanupIntegrationTest",
+      "type": "class",
+      "name": "GraphExtractionCleanupIntegrationTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "lineRange": [
+        30,
+        443
+      ],
+      "summary": "Represents GraphExtractionCleanupIntegrationTest in GraphExtractionCleanupIntegrationTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry",
+      "type": "function",
+      "name": "removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "lineRange": [
+        63,
+        166
+      ],
+      "summary": "Provides removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry behavior in GraphExtractionCleanupIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:removesMultipleFailedRunsAfterLaterSuccessfulRetry",
+      "type": "function",
+      "name": "removesMultipleFailedRunsAfterLaterSuccessfulRetry",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "lineRange": [
+        168,
+        212
+      ],
+      "summary": "Provides removesMultipleFailedRunsAfterLaterSuccessfulRetry behavior in GraphExtractionCleanupIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships",
+      "type": "function",
+      "name": "overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "lineRange": [
+        214,
+        297
+      ],
+      "summary": "Provides overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships behavior in GraphExtractionCleanupIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:schemaJson",
+      "type": "function",
+      "name": "schemaJson",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "lineRange": [
+        299,
+        321
+      ],
+      "summary": "Provides schemaJson behavior in GraphExtractionCleanupIntegrationTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "type": "file",
+      "name": "DocumentProcessingServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java with 1 class(es) and 3 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:DocumentProcessingServiceTest",
+      "type": "class",
+      "name": "DocumentProcessingServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "lineRange": [
+        37,
+        186
+      ],
+      "summary": "Represents DocumentProcessingServiceTest in DocumentProcessingServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:orchestratesParsingChunkingAndEmbedding",
+      "type": "function",
+      "name": "orchestratesParsingChunkingAndEmbedding",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "lineRange": [
+        61,
+        103
+      ],
+      "summary": "Provides orchestratesParsingChunkingAndEmbedding behavior in DocumentProcessingServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:keepsLatestSavedEntityAcrossStatusTransitions",
+      "type": "function",
+      "name": "keepsLatestSavedEntityAcrossStatusTransitions",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "lineRange": [
+        105,
+        174
+      ],
+      "summary": "Provides keepsLatestSavedEntityAcrossStatusTransitions behavior in DocumentProcessingServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:props",
+      "type": "function",
+      "name": "props",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "lineRange": [
+        176,
+        185
+      ],
+      "summary": "Provides props behavior in DocumentProcessingServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "type": "file",
+      "name": "DocumentUploadServiceTest.java",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "summary": "Implements io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java with 1 class(es) and 4 function(s).",
+      "tags": [
+        "code",
+        "java",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:DocumentUploadServiceTest",
+      "type": "class",
+      "name": "DocumentUploadServiceTest",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "lineRange": [
+        24,
+        93
+      ],
+      "summary": "Represents DocumentUploadServiceTest in DocumentUploadServiceTest.java.",
+      "tags": [
+        "class",
+        "java"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:skipsDuplicateByKnowledgeBaseAndHash",
+      "type": "function",
+      "name": "skipsDuplicateByKnowledgeBaseAndHash",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "lineRange": [
+        42,
+        57
+      ],
+      "summary": "Provides skipsDuplicateByKnowledgeBaseAndHash behavior in DocumentUploadServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:tracksFailedStatusWhenStorageFails",
+      "type": "function",
+      "name": "tracksFailedStatusWhenStorageFails",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "lineRange": [
+        59,
+        71
+      ],
+      "summary": "Provides tracksFailedStatusWhenStorageFails behavior in DocumentUploadServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:persistsUploadedMetadataAndContentUri",
+      "type": "function",
+      "name": "persistsUploadedMetadataAndContentUri",
+      "filePath": "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "lineRange": [
+        73,
+        92
+      ],
+      "summary": "Provides persistsUploadedMetadataAndContentUri behavior in DocumentUploadServiceTest.java.",
+      "tags": [
+        "function",
+        "java"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:DocumentController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:DocumentController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:uploadDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:replaceDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:deleteDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:listKnowledgeBaseDocuments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:processDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:getDocumentChunks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java:toResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:DocumentChunkNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getDocumentId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setDocumentId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getChunkIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setChunkIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getTokenEstimate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setTokenEstimate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getEmbedding",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setEmbedding",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:getMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java:setMetadata",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:DocumentUploadNode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getKnowledgeBaseId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setKnowledgeBaseId",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getOriginalFilename",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setOriginalFilename",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getContentType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setContentType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getSizeBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setSizeBytes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getSha256",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setSha256",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getContentUri",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setContentUri",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getUploadedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setUploadedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getProcessedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setProcessedAt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:getErrorMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java:setErrorMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/dto/DocumentUploadResponse.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/schema/SchemaDocument.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java:DocumentChunkRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java:DocumentUploadRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/logging/LogSanitizer.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationScope.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/observability/AiWorkflowContext.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:DocumentProcessingService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:DocumentProcessingService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:process",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:getDocumentChunks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:ensureVectorIndex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:createChunkRelationship",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java:resolveEmbeddingClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/NotFoundException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:DocumentUploadService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:DocumentUploadService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:upload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:sha256",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:readContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:listByKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:localPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:replace",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:deletePrimaryContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:deletePreviousContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "target": "function:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java:cleanupDerivedArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "target": "class:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java:BinaryStorageService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java:DocumentProcessingIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java:persistsChunksCreatesVectorIndexAndSupportsVectorSearch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/error/ConflictException.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:DocumentUploadIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:persistsMetadataAndSkipsDuplicateHashWithinKnowledgeBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:replacementPreservesIdResetsMetadataAndClearsDerivedArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:replacementRejectsDuplicateContentFromAnotherDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:deletionRemovesDocumentStorageAndDerivedArtifactsWithoutAffectingOtherDocuments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:createDerivedArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java:assertDocumentArtifacts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/GeneratedQueryResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/dto/QueryExecutionResponse.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherExecutionService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/CypherGenerationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java:EndToEndMvpFlowIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java:completesSynchronousFlowFromSchemaToAsk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/CypherGenerationClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/query/GeneratedCypher.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java:EndToEndMvpFlowMvcIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java:completesFlowViaRestEndpoints",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/graph/GraphExtractionResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:GraphExtractionCleanupIntegrationTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:removesMultipleFailedRunsAfterLaterSuccessfulRetry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java:schemaJson",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/embedding/EmbeddingClient.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentChunkRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "file:src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:DocumentProcessingServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:orchestratesParsingChunkingAndEmbedding",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:keepsLatestSavedEntityAcrossStatusTransitions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java:props",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "file:src/main/java/io/github/vfedoriv/graphrag/storage/BinaryStorageService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "class:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:DocumentUploadServiceTest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:skipsDuplicateByKnowledgeBaseAndHash",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:tracksFailedStatusWhenStorageFails",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java",
+      "target": "function:src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java:persistsUploadedMetadataAndContentUri",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}
