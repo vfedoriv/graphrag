@@ -2680,8 +2680,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/HybridSearchIntegrationTest.java": {
-    "mtime": 1781112086.2223122,
-    "ast_hash": "6008a23f875b2675bac6b1fc76cb75a1",
+    "mtime": 1781112934.9923484,
+    "ast_hash": "4c94b296ee7e0bc53663a63354347c67",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/dto/HybridSearchRequestValidationTest.java": {
@@ -2715,8 +2715,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/add-hybrid-search-endpoint/tasks.md": {
-    "mtime": 1781112535.4673045,
-    "ast_hash": "5914941a642a7fc8907365eb32ac18a9",
+    "mtime": 1781112547.7555513,
+    "ast_hash": "c84b696dcd15a48e9acdf5a37e6d0cbc",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-10-add-architecture-boundary-tests/.openspec.yaml": {

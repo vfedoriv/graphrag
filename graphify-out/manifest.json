@@ -445,9 +445,9 @@
     "semantic_hash": "7804c74c0f9d591e575d07619e994a0d"
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java": {
-    "mtime": 1780854901.1648755,
-    "ast_hash": "49bfb6627ecdf38cc5e167cbe0de7169",
-    "semantic_hash": "49bfb6627ecdf38cc5e167cbe0de7169"
+    "mtime": 1781115229.0421174,
+    "ast_hash": "1840c65f182aceb9b6a73c52520daea4",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/package-info.java": {
     "mtime": 1778080990.8131819,
@@ -555,9 +555,9 @@
     "semantic_hash": "a553df238ed04e1dd90ce4f39a05da90"
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java": {
-    "mtime": 1780854901.2918785,
-    "ast_hash": "a523de5b24423bcff288b306fbf24b0e",
-    "semantic_hash": "a523de5b24423bcff288b306fbf24b0e"
+    "mtime": 1781115232.924198,
+    "ast_hash": "7fc78ece4b2aa4e8103d66a672736af5",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/package-info.java": {
     "mtime": 1778080990.8141818,
@@ -845,9 +845,9 @@
     "semantic_hash": "9c107838dbd601b4cde5bafd3d7bd4d5"
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java": {
-    "mtime": 1780855032.0417528,
-    "ast_hash": "dc8e67d26ac9bb9af6b2e10b1898e234",
-    "semantic_hash": "dc8e67d26ac9bb9af6b2e10b1898e234"
+    "mtime": 1781115247.5445006,
+    "ast_hash": "81270a4b0809679dd1bf158c8c29c20b",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java": {
     "mtime": 1781112193.574453,
@@ -2694,31 +2694,6 @@
     "ast_hash": "a5ba7f162f6ae4f4a1bd727144d024f1",
     "semantic_hash": ""
   },
-  "openspec/changes/add-hybrid-search-endpoint/.openspec.yaml": {
-    "mtime": 1781111649.2356906,
-    "ast_hash": "5b16868bf1deabfa5fe7a41a32c6185c",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-hybrid-search-endpoint/design.md": {
-    "mtime": 1781111723.8951495,
-    "ast_hash": "ebd07f0a556f7790ef1e9722a0b9025b",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-hybrid-search-endpoint/proposal.md": {
-    "mtime": 1781111677.1732357,
-    "ast_hash": "6ea76410b66a8a9981731e410dcd6bd5",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-hybrid-search-endpoint/specs/hybrid-search/spec.md": {
-    "mtime": 1781111724.1521544,
-    "ast_hash": "3441329da3dcb0bbe0e42bf8c127b26d",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-hybrid-search-endpoint/tasks.md": {
-    "mtime": 1781112547.7555513,
-    "ast_hash": "c84b696dcd15a48e9acdf5a37e6d0cbc",
-    "semantic_hash": ""
-  },
   "openspec/changes/archive/2026-06-10-add-architecture-boundary-tests/.openspec.yaml": {
     "mtime": 1781105962.8179471,
     "ast_hash": "5b16868bf1deabfa5fe7a41a32c6185c",
@@ -2747,6 +2722,36 @@
   "openspec/specs/architecture-boundary-governance/spec.md": {
     "mtime": 1781108880.8970413,
     "ast_hash": "5d2cbf13659e344ea418604e36994888",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-add-hybrid-search-endpoint/.openspec.yaml": {
+    "mtime": 1781111649.2356906,
+    "ast_hash": "5b16868bf1deabfa5fe7a41a32c6185c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-add-hybrid-search-endpoint/design.md": {
+    "mtime": 1781111723.8951495,
+    "ast_hash": "ebd07f0a556f7790ef1e9722a0b9025b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-add-hybrid-search-endpoint/proposal.md": {
+    "mtime": 1781111677.1732357,
+    "ast_hash": "6ea76410b66a8a9981731e410dcd6bd5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-add-hybrid-search-endpoint/specs/hybrid-search/spec.md": {
+    "mtime": 1781111724.1521544,
+    "ast_hash": "3441329da3dcb0bbe0e42bf8c127b26d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-add-hybrid-search-endpoint/tasks.md": {
+    "mtime": 1781112547.7555513,
+    "ast_hash": "c84b696dcd15a48e9acdf5a37e6d0cbc",
+    "semantic_hash": ""
+  },
+  "openspec/specs/hybrid-search/spec.md": {
+    "mtime": 1781113126.3322089,
+    "ast_hash": "7d689bab488372ff6cd90d14778d6e0d",
     "semantic_hash": ""
   }
 }

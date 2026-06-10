@@ -59,11 +59,11 @@ public class SchemaRegistryService {
             throw new SchemaValidationException(errors);
         }
 
-        schemaRepository.findByNameAndVersion(doc.name(), doc.version()).ifPresent(existing -> {
+        if (schemaRepository.existsByNameAndVersion(doc.name(), doc.version())) {
             throw new ConflictException(
                 "Schema version is immutable and already exists for name=" + doc.name() + ", version=" + doc.version()
             );
-        });
+        }
 
         SchemaDefinitionNode node = new SchemaDefinitionNode();
         node.setId(UUID.randomUUID().toString());

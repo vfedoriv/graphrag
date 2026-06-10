@@ -27,6 +27,64 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 class SchemaRegistryServiceTest {
 
     @Test
+    void createSchemaPersistsNewSchemaWhenIdentityDoesNotExist() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        String json = schemaJson("contracts", 1, "Contract");
+        when(schemaParser.parse(json)).thenReturn(schemaDocument("contracts", 1));
+        when(schemaValidator.validate(any())).thenReturn(List.of());
+        when(schemaRepository.existsByNameAndVersion("contracts", 1)).thenReturn(false);
+        when(schemaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        SchemaDefinitionNode created = service.createSchema(json, SchemaSourceType.PREDEFINED);
+
+        assertThat(created.getName()).isEqualTo("contracts");
+        assertThat(created.getVersion()).isEqualTo(1);
+        assertThat(created.getContent()).isEqualTo(json);
+        assertThat(created.getContentHash()).hasSize(64);
+        verify(schemaRepository).save(any(SchemaDefinitionNode.class));
+    }
+
+    @Test
+    void createSchemaRejectsExistingIdentityWithoutSaving() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        String json = schemaJson("contracts", 1, "Contract");
+        when(schemaParser.parse(json)).thenReturn(schemaDocument("contracts", 1));
+        when(schemaValidator.validate(any())).thenReturn(List.of());
+        when(schemaRepository.existsByNameAndVersion("contracts", 1)).thenReturn(true);
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        assertThatThrownBy(() -> service.createSchema(json, SchemaSourceType.PREDEFINED))
+            .isInstanceOf(ConflictException.class)
+            .hasMessage("Schema version is immutable and already exists for name=contracts, version=1");
+        verify(schemaRepository, never()).save(any());
+    }
+
+    @Test
     void listSchemasByKnowledgeBaseReturnsAssociatedSchemas() {
         SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
