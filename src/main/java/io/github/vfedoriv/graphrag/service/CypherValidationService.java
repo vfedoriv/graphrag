@@ -1,15 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,22 +24,16 @@ public class CypherValidationService {
         "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "ExtractedEntity", "ExtractedRelation"
     );
     private final AppProperties appProperties;
-    private final KnowledgeBaseRepository knowledgeBaseRepository;
-    private final SchemaDefinitionRepository schemaDefinitionRepository;
-    private final SchemaParser schemaParser;
+    private final ActiveSchemaResolver activeSchemaResolver;
     private final Neo4jClient neo4jClient;
 
     public CypherValidationService(
         AppProperties appProperties,
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        SchemaDefinitionRepository schemaDefinitionRepository,
-        SchemaParser schemaParser,
+        ActiveSchemaResolver activeSchemaResolver,
         Neo4jClient neo4jClient
     ) {
         this.appProperties = appProperties;
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.schemaDefinitionRepository = schemaDefinitionRepository;
-        this.schemaParser = schemaParser;
+        this.activeSchemaResolver = activeSchemaResolver;
         this.neo4jClient = neo4jClient;
     }
 
@@ -56,14 +44,8 @@ public class CypherValidationService {
             LogSanitizer.length(cypher),
             parameters == null ? 0 : parameters.size()
         );
-        KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
-            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
-        if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
-            throw new IllegalStateException("No active schema for knowledge base: " + knowledgeBaseId);
-        }
-        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
-            .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
-        QueryValidationResult result = validate(schemaParser.parse(schemaNode.getContent()), cypher, parameters);
+        ActiveSchemaContext schemaContext = activeSchemaResolver.resolve(knowledgeBaseId);
+        QueryValidationResult result = validate(schemaContext.schema(), cypher, parameters);
         log.info(
             "Cypher validation completed for knowledge base: knowledgeBaseId={}, valid={}, errorCount={}",
             knowledgeBaseId,

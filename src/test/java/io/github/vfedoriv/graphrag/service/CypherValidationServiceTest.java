@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
@@ -156,6 +157,21 @@ class CypherValidationServiceTest {
     }
 
     @Test
+    void resolvesActiveSchemaForKnowledgeBaseValidation() {
+        stubExplain();
+        ActiveSchemaResolver resolver = org.mockito.Mockito.mock(ActiveSchemaResolver.class);
+        SchemaDefinitionNode schemaDefinition = new SchemaDefinitionNode();
+        schemaDefinition.setId("schema-1");
+        schemaDefinition.setName("contracts");
+        when(resolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schemaDefinition, schema()));
+
+        QueryValidationResult result = service(resolver).validate("kb-1", "MATCH (n:Contract) RETURN n LIMIT 5", Map.of());
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).isEmpty();
+    }
+
+    @Test
     void marksInvalidWhenExplainFails() {
         doThrow(new IllegalArgumentException("Invalid input"))
             .when(neo4jClient).query(org.mockito.ArgumentMatchers.startsWith("EXPLAIN "));
@@ -166,6 +182,10 @@ class CypherValidationServiceTest {
     }
 
     private CypherValidationService service() {
+        return service(org.mockito.Mockito.mock(ActiveSchemaResolver.class));
+    }
+
+    private CypherValidationService service(ActiveSchemaResolver activeSchemaResolver) {
         return new CypherValidationService(
             new AppProperties(
                 new AppProperties.Neo4j("neo4j"),
@@ -175,9 +195,7 @@ class CypherValidationServiceTest {
                 new AppProperties.Query(200, 15, true, List.of("CREATE", "MERGE", "DELETE")),
                 new AppProperties.Extraction(40, 80, 2)
             ),
-            org.mockito.Mockito.mock(io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository.class),
-            org.mockito.Mockito.mock(io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository.class),
-            new SchemaParser(),
+            activeSchemaResolver,
             neo4jClient
         );
     }

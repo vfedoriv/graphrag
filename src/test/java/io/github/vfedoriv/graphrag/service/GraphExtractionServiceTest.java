@@ -14,18 +14,15 @@ import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -39,9 +36,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 class GraphExtractionServiceTest {
 
     @Mock
-    private KnowledgeBaseRepository knowledgeBaseRepository;
-    @Mock
-    private SchemaDefinitionRepository schemaDefinitionRepository;
+    private ActiveSchemaResolver activeSchemaResolver;
     @Mock
     private ExtractionRunRepository extractionRunRepository;
     @Mock
@@ -57,7 +52,7 @@ class GraphExtractionServiceTest {
     void keepsCompletedStatusWhenCleanupFails() {
         GraphExtractionClient extractionClient = (schema, chunkText) -> new GraphExtractionResult(List.of(), List.of());
         GraphExtractionService service = serviceWithClient(extractionClient);
-        mockKnowledgeBaseAndSchema();
+        mockActiveSchema();
         when(validationService.validate(any(), any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().doThrow(new RuntimeException("cleanup boom"))
             .when(neo4jClient)
@@ -79,7 +74,7 @@ class GraphExtractionServiceTest {
             throw new IllegalStateException();
         };
         GraphExtractionService service = serviceWithClient(extractionClient);
-        mockKnowledgeBaseAndSchema();
+        mockActiveSchema();
 
         try {
             service.extract(document(), List.of(chunk()), false);
@@ -105,7 +100,7 @@ class GraphExtractionServiceTest {
         );
         GraphExtractionClient extractionClient = (schema, chunkText) -> raw;
         GraphExtractionService service = serviceWithClient(extractionClient);
-        mockKnowledgeBaseAndSchema();
+        mockActiveSchema();
         when(validationService.validate(any(), any())).thenReturn(sanitized);
 
         service.extract(document(), List.of(chunk()), false);
@@ -123,9 +118,7 @@ class GraphExtractionServiceTest {
     private GraphExtractionService serviceWithClient(GraphExtractionClient extractionClient) {
         when(graphExtractionClientProvider.orderedStream()).thenReturn(java.util.stream.Stream.of(extractionClient));
         return new GraphExtractionService(
-            knowledgeBaseRepository,
-            schemaDefinitionRepository,
-            new SchemaParser(),
+            activeSchemaResolver,
             extractionRunRepository,
             validationService,
             graphWriteService,
@@ -135,16 +128,11 @@ class GraphExtractionServiceTest {
         );
     }
 
-    private void mockKnowledgeBaseAndSchema() {
-        KnowledgeBaseNode kb = new KnowledgeBaseNode();
-        kb.setId("kb-1");
-        kb.setActiveSchemaId("schema-1");
-        when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(kb));
-
+    private void mockActiveSchema() {
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-1");
         schema.setName("contracts");
-        schema.setContent("""
+        SchemaDocument schemaDocument = new SchemaParser().parse("""
             {
               "name": "contracts",
               "version": 1,
@@ -152,7 +140,7 @@ class GraphExtractionServiceTest {
               "relationships": []
             }
             """);
-        when(schemaDefinitionRepository.findById("schema-1")).thenReturn(Optional.of(schema));
+        when(activeSchemaResolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schema, schemaDocument));
     }
 
     private DocumentUploadNode document() {

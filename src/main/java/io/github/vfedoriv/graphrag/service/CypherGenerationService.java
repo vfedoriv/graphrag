@@ -1,11 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
@@ -13,10 +10,7 @@ import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
 import io.github.vfedoriv.graphrag.query.GeneratedCypher;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -28,26 +22,20 @@ import org.springframework.stereotype.Service;
 public class CypherGenerationService {
 
     private final AppProperties appProperties;
-    private final KnowledgeBaseRepository knowledgeBaseRepository;
-    private final SchemaDefinitionRepository schemaDefinitionRepository;
-    private final SchemaParser schemaParser;
+    private final ActiveSchemaResolver activeSchemaResolver;
     private final ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider;
     private final CypherValidationService cypherValidationService;
     private final AiObservationService aiObservationService;
 
     public CypherGenerationService(
         AppProperties appProperties,
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        SchemaDefinitionRepository schemaDefinitionRepository,
-        SchemaParser schemaParser,
+        ActiveSchemaResolver activeSchemaResolver,
         ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider,
         CypherValidationService cypherValidationService,
         AiObservationService aiObservationService
     ) {
         this.appProperties = appProperties;
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.schemaDefinitionRepository = schemaDefinitionRepository;
-        this.schemaParser = schemaParser;
+        this.activeSchemaResolver = activeSchemaResolver;
         this.cypherGenerationClientProvider = cypherGenerationClientProvider;
         this.cypherValidationService = cypherValidationService;
         this.aiObservationService = aiObservationService;
@@ -61,21 +49,15 @@ public class CypherGenerationService {
             LogSanitizer.length(prompt),
             LogSanitizer.preview(prompt)
         );
-        KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
-            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
-        if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
-            throw new IllegalStateException("No active schema for knowledge base: " + knowledgeBaseId);
-        }
-        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
-            .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
-        SchemaDocument schema = schemaParser.parse(schemaNode.getContent());
+        ActiveSchemaContext schemaContext = activeSchemaResolver.resolve(knowledgeBaseId);
+        SchemaDocument schema = schemaContext.schema();
 
         try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
             AiObservationService.WORKFLOW_CYPHER_GENERATION,
             schema.name(),
             Map.of(
                 "knowledge_base.id", String.valueOf(knowledgeBaseId),
-                "schema.id", String.valueOf(schemaNode.getId()),
+                "schema.id", String.valueOf(schemaContext.schemaDefinitionId()),
                 "ai.user_prompt.length", String.valueOf(LogSanitizer.length(prompt))
             )
         ))) {

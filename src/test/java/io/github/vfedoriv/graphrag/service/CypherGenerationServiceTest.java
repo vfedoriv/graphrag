@@ -5,19 +5,16 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
 import io.github.vfedoriv.graphrag.query.GeneratedCypher;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,8 +24,7 @@ class CypherGenerationServiceTest {
 
     @Test
     void mapsGeneratedQueryAndValidation() {
-        KnowledgeBaseRepository kbRepo = Mockito.mock(KnowledgeBaseRepository.class);
-        SchemaDefinitionRepository schemaRepo = Mockito.mock(SchemaDefinitionRepository.class);
+        ActiveSchemaResolver activeSchemaResolver = Mockito.mock(ActiveSchemaResolver.class);
         CypherValidationService validationService = Mockito.mock(CypherValidationService.class);
         CypherGenerationClient generationClient = (schema, prompt, maxRows) -> new GeneratedCypher(
             "MATCH (n:Contract) RETURN n",
@@ -67,12 +63,10 @@ class CypherGenerationServiceTest {
             }
         };
 
-        KnowledgeBaseNode kb = new KnowledgeBaseNode();
-        kb.setId("kb-1");
-        kb.setActiveSchemaId("schema-1");
-        SchemaDefinitionNode schema = new SchemaDefinitionNode();
-        schema.setId("schema-1");
-        schema.setContent("""
+        SchemaDefinitionNode schemaDefinition = new SchemaDefinitionNode();
+        schemaDefinition.setId("schema-1");
+        schemaDefinition.setName("contracts");
+        SchemaDocument schema = new SchemaParser().parse("""
             {
               "name": "contracts",
               "version": 1,
@@ -86,17 +80,14 @@ class CypherGenerationServiceTest {
               "relationships": []
             }
             """);
-        when(kbRepo.findById("kb-1")).thenReturn(Optional.of(kb));
-        when(schemaRepo.findById("schema-1")).thenReturn(Optional.of(schema));
+        when(activeSchemaResolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schemaDefinition, schema));
         when(validationService.validate(Mockito.any(io.github.vfedoriv.graphrag.schema.SchemaDocument.class), Mockito.anyString(), Mockito.anyMap())).thenReturn(
             new QueryValidationResult(true, "MATCH (n:Contract) RETURN n LIMIT $__limit", Map.of("__limit", 200), List.of())
         );
 
         CypherGenerationService service = new CypherGenerationService(
             props(),
-            kbRepo,
-            schemaRepo,
-            new SchemaParser(),
+            activeSchemaResolver,
             provider,
             validationService,
             TestAiObservationService.noop()

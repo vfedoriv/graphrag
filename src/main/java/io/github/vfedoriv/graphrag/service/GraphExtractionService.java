@@ -4,9 +4,6 @@ import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
@@ -16,10 +13,7 @@ import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +27,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GraphExtractionService {
 
-    private final KnowledgeBaseRepository knowledgeBaseRepository;
-    private final SchemaDefinitionRepository schemaDefinitionRepository;
-    private final SchemaParser schemaParser;
+    private final ActiveSchemaResolver activeSchemaResolver;
     private final ExtractionRunRepository extractionRunRepository;
     private final GraphExtractionValidationService validationService;
     private final GraphWriteService graphWriteService;
@@ -44,9 +36,7 @@ public class GraphExtractionService {
     private final AiObservationService aiObservationService;
 
     public GraphExtractionService(
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        SchemaDefinitionRepository schemaDefinitionRepository,
-        SchemaParser schemaParser,
+        ActiveSchemaResolver activeSchemaResolver,
         ExtractionRunRepository extractionRunRepository,
         GraphExtractionValidationService validationService,
         GraphWriteService graphWriteService,
@@ -54,9 +44,7 @@ public class GraphExtractionService {
         Neo4jClient neo4jClient,
         AiObservationService aiObservationService
     ) {
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.schemaDefinitionRepository = schemaDefinitionRepository;
-        this.schemaParser = schemaParser;
+        this.activeSchemaResolver = activeSchemaResolver;
         this.extractionRunRepository = extractionRunRepository;
         this.validationService = validationService;
         this.graphWriteService = graphWriteService;
@@ -73,14 +61,8 @@ public class GraphExtractionService {
             document.getKnowledgeBaseId(),
             chunks.size()
         );
-        KnowledgeBaseNode kb = knowledgeBaseRepository.findById(document.getKnowledgeBaseId())
-            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + document.getKnowledgeBaseId()));
-        if (kb.getActiveSchemaId() == null || kb.getActiveSchemaId().isBlank()) {
-            throw new IllegalStateException("No active schema for knowledge base: " + kb.getId());
-        }
-        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(kb.getActiveSchemaId())
-            .orElseThrow(() -> new NotFoundException("Schema not found: " + kb.getActiveSchemaId()));
-        SchemaDocument schema = schemaParser.parse(schemaNode.getContent());
+        ActiveSchemaContext schemaContext = activeSchemaResolver.resolve(document.getKnowledgeBaseId());
+        SchemaDocument schema = schemaContext.schema();
 
         GraphExtractionClient client = resolveGraphExtractionClient();
         if (client == null) {
@@ -92,8 +74,8 @@ public class GraphExtractionService {
         ExtractionRunNode run = new ExtractionRunNode();
         run.setId(UUID.randomUUID().toString());
         run.setDocumentId(document.getId());
-        run.setSchemaId(schemaNode.getId());
-        run.setModel("chat:" + schemaNode.getName());
+        run.setSchemaId(schemaContext.schemaDefinitionId());
+        run.setModel("chat:" + schemaContext.schemaDefinition().getName());
         run.setStatus(ExtractionRunStatus.RUNNING);
         run.setStartedAt(Instant.now());
         extractionRunRepository.save(run);
@@ -105,79 +87,79 @@ public class GraphExtractionService {
             Map.of(
                 "document.id", String.valueOf(document.getId()),
                 "knowledge_base.id", String.valueOf(document.getKnowledgeBaseId()),
-                "schema.id", String.valueOf(schemaNode.getId()),
+                "schema.id", String.valueOf(schemaContext.schemaDefinitionId()),
                 "extraction_run.id", String.valueOf(run.getId()),
                 "document.chunk_count", String.valueOf(chunks.size())
             )
         ))) {
             try {
-            for (int i = 0; i < chunks.size(); i++) {
-                DocumentChunkNode chunk = chunks.get(i);
+                for (int i = 0; i < chunks.size(); i++) {
+                    DocumentChunkNode chunk = chunks.get(i);
+                    log.info(
+                        "Extracting chunk: runId={}, chunkId={}, chunkIndex={}/{} textLength={}",
+                        run.getId(),
+                        chunk.getId(),
+                        i + 1,
+                        chunks.size(),
+                        chunk.getText() == null ? 0 : chunk.getText().length()
+                    );
+                    GraphExtractionResult result = client.extract(schema, chunk.getText());
+                    log.info(
+                        "Chunk extraction returned payload: runId={}, chunkId={}, nodes={}, relationships={}",
+                        run.getId(),
+                        chunk.getId(),
+                        result.nodes().size(),
+                        result.relationships().size()
+                    );
+                    GraphExtractionResult validatedResult = validationService.validate(result, schema);
+                    workflow.highCardinalityAttribute("ai.graph.validated_nodes", String.valueOf(validatedResult.nodes().size()));
+                    workflow.highCardinalityAttribute("ai.graph.validated_relationships", String.valueOf(validatedResult.relationships().size()));
+                    graphWriteService.write(run.getId(), schemaContext.schemaDefinitionId(), document.getId(), chunk.getId(), schema, validatedResult);
+                }
+                run.setStatus(ExtractionRunStatus.COMPLETED);
+                run.setCompletedAt(Instant.now());
+                extractionRunRepository.save(run);
+                CleanupResult cleanupResult = CleanupResult.zero();
+                try {
+                    cleanupResult = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
+                } catch (Exception cleanupEx) {
+                    log.error(
+                        "Cleanup failed after successful extraction: runId={}, documentId={}, message={}",
+                        run.getId(),
+                        document.getId(),
+                        cleanupEx.getMessage(),
+                        cleanupEx
+                    );
+                }
                 log.info(
-                    "Extracting chunk: runId={}, chunkId={}, chunkIndex={}/{} textLength={}",
-                    run.getId(),
-                    chunk.getId(),
-                    i + 1,
-                    chunks.size(),
-                    chunk.getText() == null ? 0 : chunk.getText().length()
-                );
-                GraphExtractionResult result = client.extract(schema, chunk.getText());
-                log.info(
-                    "Chunk extraction returned payload: runId={}, chunkId={}, nodes={}, relationships={}",
-                    run.getId(),
-                    chunk.getId(),
-                    result.nodes().size(),
-                    result.relationships().size()
-                );
-                GraphExtractionResult validatedResult = validationService.validate(result, schema);
-                workflow.highCardinalityAttribute("ai.graph.validated_nodes", String.valueOf(validatedResult.nodes().size()));
-                workflow.highCardinalityAttribute("ai.graph.validated_relationships", String.valueOf(validatedResult.relationships().size()));
-                graphWriteService.write(run.getId(), schemaNode.getId(), document.getId(), chunk.getId(), schema, validatedResult);
-            }
-            run.setStatus(ExtractionRunStatus.COMPLETED);
-            run.setCompletedAt(Instant.now());
-            extractionRunRepository.save(run);
-            CleanupResult cleanupResult = CleanupResult.zero();
-            try {
-                cleanupResult = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
-            } catch (Exception cleanupEx) {
-                log.error(
-                    "Cleanup failed after successful extraction: runId={}, documentId={}, message={}",
+                    "Graph extraction completed: runId={}, documentId={}, chunks={}, allowOverwrite={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}, elapsedMs={}",
                     run.getId(),
                     document.getId(),
-                    cleanupEx.getMessage(),
-                    cleanupEx
+                    chunks.size(),
+                    allowOverwrite,
+                    cleanupResult.deletedRuns(),
+                    cleanupResult.deletedRelationships(),
+                    cleanupResult.deletedObsoleteExtractedNodes(),
+                    LogSanitizer.elapsedMillis(startNanos)
                 );
-            }
-            log.info(
-                "Graph extraction completed: runId={}, documentId={}, chunks={}, allowOverwrite={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}, elapsedMs={}",
-                run.getId(),
-                document.getId(),
-                chunks.size(),
-                allowOverwrite,
-                cleanupResult.deletedRuns(),
-                cleanupResult.deletedRelationships(),
-                cleanupResult.deletedObsoleteExtractedNodes(),
-                LogSanitizer.elapsedMillis(startNanos)
-            );
-            workflow.highCardinalityAttribute("ai.graph.deleted_runs", String.valueOf(cleanupResult.deletedRuns()));
-            workflow.highCardinalityAttribute("ai.graph.deleted_relationships", String.valueOf(cleanupResult.deletedRelationships()));
-            workflow.success();
-        } catch (Exception ex) {
-            workflow.error(ex);
-            run.setStatus(ExtractionRunStatus.FAILED);
-            run.setErrorMessage(GraphExtractionCleanupSupport.toNonBlankErrorMessage(ex));
-            run.setCompletedAt(Instant.now());
-            extractionRunRepository.save(run);
-            log.error(
-                "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, message={}",
-                run.getId(),
-                document.getId(),
-                LogSanitizer.elapsedMillis(startNanos),
-                ex.getMessage(),
-                ex
-            );
-            throw ex;
+                workflow.highCardinalityAttribute("ai.graph.deleted_runs", String.valueOf(cleanupResult.deletedRuns()));
+                workflow.highCardinalityAttribute("ai.graph.deleted_relationships", String.valueOf(cleanupResult.deletedRelationships()));
+                workflow.success();
+            } catch (Exception ex) {
+                workflow.error(ex);
+                run.setStatus(ExtractionRunStatus.FAILED);
+                run.setErrorMessage(GraphExtractionCleanupSupport.toNonBlankErrorMessage(ex));
+                run.setCompletedAt(Instant.now());
+                extractionRunRepository.save(run);
+                log.error(
+                    "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, message={}",
+                    run.getId(),
+                    document.getId(),
+                    LogSanitizer.elapsedMillis(startNanos),
+                    ex.getMessage(),
+                    ex
+                );
+                throw ex;
             }
         }
     }
