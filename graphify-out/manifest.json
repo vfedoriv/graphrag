@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/add-architecture-boundary-tests/tasks.md": {
-    "mtime": 1781106137.929585,
-    "ast_hash": "8e7e2bfd22d416a6dd4500b2a2d6f13c",
+    "mtime": 1781108800.0303812,
+    "ast_hash": "4aef51083f2b9f7a0a853fcd04aa961e",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml": {
@@ -2449,31 +2449,6 @@
     "ast_hash": "5ad8b738ce2fc2a2e3f0424a5e7a4b06",
     "semantic_hash": ""
   },
-  "openspec/changes/move-query-ask-orchestration/.openspec.yaml": {
-    "mtime": 1781105962.6079428,
-    "ast_hash": "5b16868bf1deabfa5fe7a41a32c6185c",
-    "semantic_hash": ""
-  },
-  "openspec/changes/move-query-ask-orchestration/design.md": {
-    "mtime": 1781106103.6558743,
-    "ast_hash": "e00180b7670e49a81b7ba37016c01630",
-    "semantic_hash": ""
-  },
-  "openspec/changes/move-query-ask-orchestration/proposal.md": {
-    "mtime": 1781106012.210975,
-    "ast_hash": "5fbd90e0d9c06c50ce2ae029659d235e",
-    "semantic_hash": ""
-  },
-  "openspec/changes/move-query-ask-orchestration/specs/query-ask-orchestration/spec.md": {
-    "mtime": 1781106103.8268778,
-    "ast_hash": "0d0aa10f5e4479cb5e6024c72224ea39",
-    "semantic_hash": ""
-  },
-  "openspec/changes/move-query-ask-orchestration/tasks.md": {
-    "mtime": 1781108232.6847298,
-    "ast_hash": "2b9a46df568622219ec702c519cb4554",
-    "semantic_hash": ""
-  },
   "openspec/config.yaml": {
     "mtime": 1778349205.3370364,
     "ast_hash": "9e3e7672b387a282583011181ab35f9a",
@@ -2652,6 +2627,41 @@
   "openspec/specs/graph-artifact-cleanup/spec.md": {
     "mtime": 1781107792.642682,
     "ast_hash": "31143e7c2dfaf506f148693f75f2a572",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/ArchitectureBoundaryTest.java": {
+    "mtime": 1781108627.2398336,
+    "ast_hash": "eb8ead367cc02193759c299e9dea73b8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/.openspec.yaml": {
+    "mtime": 1781105962.6079428,
+    "ast_hash": "5b16868bf1deabfa5fe7a41a32c6185c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/design.md": {
+    "mtime": 1781106103.6558743,
+    "ast_hash": "e00180b7670e49a81b7ba37016c01630",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/proposal.md": {
+    "mtime": 1781106012.210975,
+    "ast_hash": "5fbd90e0d9c06c50ce2ae029659d235e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/specs/query-ask-orchestration/spec.md": {
+    "mtime": 1781106103.8268778,
+    "ast_hash": "0d0aa10f5e4479cb5e6024c72224ea39",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/tasks.md": {
+    "mtime": 1781108232.6847298,
+    "ast_hash": "2b9a46df568622219ec702c519cb4554",
+    "semantic_hash": ""
+  },
+  "openspec/specs/query-ask-orchestration/spec.md": {
+    "mtime": 1781108323.2085896,
+    "ast_hash": "8024e50633f7b277e7545ee1d8cdce6f",
     "semantic_hash": ""
   }
 }
