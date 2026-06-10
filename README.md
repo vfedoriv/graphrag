@@ -57,6 +57,7 @@ Out of scope (current implementation):
   - read-only and schema-aware Cypher validation (`EXPLAIN`),
   - blocked keyword checks,
   - optional `LIMIT` injection,
+  - embedding-based chunk retrieval with bounded graph context,
   - execution endpoint,
   - combined `/ask` endpoint.
 - Error handling via RFC 7807-style `ProblemDetail`.
@@ -247,6 +248,13 @@ Key app properties:
   - `app.query.timeout-seconds=15`
   - `app.query.require-limit=true`
   - `app.query.blocked-keywords=CREATE,MERGE,SET,DELETE,DETACH,REMOVE,DROP,LOAD CSV,CALL`
+  - `app.query.hybrid-search-default-top-k=10`
+  - `app.query.hybrid-search-max-top-k=50`
+  - `app.query.hybrid-search-candidate-multiplier=4`
+  - `app.query.hybrid-search-max-candidates=200`
+  - `app.query.hybrid-search-default-graph-depth=1`
+  - `app.query.hybrid-search-max-graph-depth=2`
+  - `app.query.hybrid-search-include-chunk-text=true`
 - Extraction:
   - `app.extraction.max-entities-per-chunk=100`
   - `app.extraction.max-relationships-per-chunk=200`
@@ -486,6 +494,7 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/execute`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/hybrid-search`
 
 ## Request Contracts (Core)
 
@@ -532,6 +541,9 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - body: `{"cypher":"...", "parameters":{...}}`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
   - body: `{"prompt":"..."}`
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/hybrid-search`
+  - body: `{"query":"pump maintenance","topK":10,"graphDepth":1,"includeChunkText":true}`
+  - returns ranked chunk hits with source document metadata and bounded graph context (`entities`, `relationships`)
 
 ## Minimal End-to-End Flow
 
@@ -604,10 +616,9 @@ Document ingestion:
 
 Query flow:
 
-1. Generate Cypher from prompt and active schema.
-2. Validate read-only + schema references + syntax (`EXPLAIN`).
-3. Inject `LIMIT` when required and missing.
-4. Execute only if validation passed.
+1. `/queries/generate`, `/queries/validate`, `/queries/execute`, and `/queries/ask` use the active schema to generate and validate read-only Cypher before execution.
+2. `/queries/hybrid-search` embeds the query text, searches the existing `document_chunk_embedding` vector index, filters hits to the requested knowledge base, and expands bounded `MENTIONS` graph context.
+3. Hybrid search returns evidence-first results ordered by vector score, with optional chunk text and source document metadata.
 
 ## Query Safety Model
 

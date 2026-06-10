@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 5647 nodes, 7488 edges, 521 communities. Commit: bde333b</p>
+<p class="subtitle">Generated from graphify knowledge graph: 5772 nodes, 7710 edges, 529 communities. Commit: b4e6546</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,7 +88,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2264 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2341 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2829 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -100,9 +100,9 @@ flowchart LR
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>11 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>61 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>95 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>107 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>121 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_159_19BCAB60("Community 159<br/><small>15 nodes</small>")
     class COMMUNITY_159_19BCAB60 module;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2264</td><td><code>40, 4, 7, 5, 3, 14, 9, 388, 11, 143, 12, 20, 16, 127, 128, 0, 130, 131, 17, 18, 134, 135, 19, 27, 33, 133, 6, 8, 1, 141, 2, 24, 146, 21, 22, 23, 43, 10, 13, 25, 26, 35, 39, 138, 147, 29, 153, 172, 206, 28, 30, 144, 157, 179, 340, 36, 37, 44, 451, 342, 38, 343, 344, 42, 15, 32, 385, 386, 387, 145, 192, 447, 448, 46, 47, 48, 49, 52, 322, 323, 341, 452, 53, 54, 55, 57, 509, 511, 515, 58, 60, 61, 62, 63, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 66, 67, 446, 517, 519, 520, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2829</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 150, 151, 152, 155, 156, 160, 161, 162, 163, 247, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>61</td><td><code>123, 329, 347, 376, 377, 383</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>107</td><td><code>149, 158, 168, 180, 333, 334, 337, 59, 65, 380, 384, 445</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Community 311</td><td>7</td><td><code>311</code></td></tr><tr><td>Other</td><td>113</td><td><code>312, 313, 327, 330, 331, 332, 335, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 441, 442, 444</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2341</td><td><code>40, 5, 138, 6, 7, 4, 3, 8, 388, 11, 20, 9, 14, 143, 33, 12, 16, 1, 127, 128, 0, 130, 131, 17, 133, 134, 135, 19, 141, 18, 24, 2, 21, 13, 22, 43, 10, 147, 25, 26, 38, 39, 44, 29, 15, 153, 28, 30, 35, 144, 157, 206, 340, 23, 27, 36, 37, 451, 145, 32, 42, 146, 172, 192, 344, 46, 47, 48, 49, 52, 322, 323, 341, 342, 343, 53, 54, 55, 57, 384, 385, 386, 515, 58, 60, 61, 62, 63, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 66, 67, 446, 526, 527, 528, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2829</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 150, 151, 152, 155, 156, 160, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 447, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>95</td><td><code>123, 179, 329, 347, 445, 376, 377, 383, 452, 509</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Community 311</td><td>7</td><td><code>311</code></td></tr><tr><td>Other</td><td>113</td><td><code>312, 313, 327, 330, 331, 332, 335, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 441, 442, 444</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>5647 nodes · 7488 edges · 521 communities (461 shown, 60 thin omitted)</li>
-      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 706 edges (avg confidence: 0.8)</li>
+      <li>5772 nodes · 7710 edges · 529 communities (466 shown, 63 thin omitted)</li>
+      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 726 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2264 nodes and 4368 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2341 nodes and 4547 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2264 nodes, 4368 edges)
+    %% Section: Extraction Pipeline (2341 nodes, 4547 edges)
     subgraph extract_pipeline_graphrag_controller_DocumentCon_662f1a6e["graphrag/controller/DocumentController.java"]
         controller_documentcontroller_documentcontroller_6d0cb00b("DocumentController<br/><small>graphrag/controller/DocumentController.java</small>")
         controller_documentcontroller_documentcontroller_acb766e2("deleteDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
@@ -181,18 +181,16 @@ flowchart LR
         config_openapiconfig_openapiconfig_c70d619d("OpenApiConfig<br/><small>graphrag/config/OpenApiConfig.java</small>")
         config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5("graphragOpenApi()<br/><small>graphrag/config/OpenApiConfig.java</small>")
     end
-    subgraph extract_pipeline_graphrag_controller_SchemaContr_931c6171["graphrag/controller/SchemaController.java"]
-        controller_schemacontroller_def755be("SchemaController.java")
-        controller_schemacontroller_schemacontroller_4c740e38("SchemaController<br/><small>graphrag/controller/SchemaController.java</small>")
-    end
     subgraph extract_pipeline_vfedoriv_graphrag_GraphragAppli_62b8432e["vfedoriv/graphrag/GraphragApplication.java"]
         graphrag_graphragapplication_graphragapplication_ca8d408d("GraphragApplication<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
         graphrag_graphragapplication_graphragapplication_e971e69e("main()<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
     end
     controller_querycontroller_71438120("QueryController.java")
+    controller_schemacontroller_def755be("SchemaController.java")
     domain_documentuploadnode_documentuploadnode_8c92fc32("DocumentUploadNode<br/><small>graphrag/domain/DocumentUploadNode.java</small>")
     domain_schemadefinitionnode_schemadefinitionnode_76d1e312("SchemaDefinitionNode<br/><small>graphrag/domain/SchemaDefinitionNode.java</small>")
     observability_aiobservationservice_aiobservation_f83bee78("AiObservationService<br/><small>graphrag/observability/AiObservationService.java</small>")
+    service_hybridsearchservice_hybridsearchservice_b9c68c82("HybridSearchService<br/><small>graphrag/service/HybridSearchService.java</small>")
     graphrag_graphragapplication_graphragapplication_ca8d408d -->|method| graphrag_graphragapplication_graphragapplication_e971e69e
     config_aiobservationconfiguration_aiobservationc_a4879645 -->|method| config_aiobservationconfiguration_aiobservationc_b7762de3
     config_openapiconfig_openapiconfig_c70d619d -->|method| config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5
@@ -201,7 +199,7 @@ flowchart LR
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_066004a1
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_4dcc64fa
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_7dff1881
-    %% Omitted for readability: 2246 nodes, 0 edges
+    %% Omitted for readability: 2323 nodes, 0 edges
     class controller_documentcontroller_documentcontroller_6d0cb00b klass;
     class controller_documentcontroller_documentcontroller_acb766e2 function;
     class controller_documentcontroller_documentcontroller_b8aa33ef function;
@@ -212,14 +210,14 @@ flowchart LR
     class config_aiobservationconfiguration_aiobservationc_b7762de3 entry;
     class config_openapiconfig_openapiconfig_c70d619d api;
     class config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5 api;
-    class controller_schemacontroller_def755be klass;
-    class controller_schemacontroller_schemacontroller_4c740e38 klass;
     class graphrag_graphragapplication_graphragapplication_ca8d408d klass;
     class graphrag_graphragapplication_graphragapplication_e971e69e function;
     class controller_querycontroller_71438120 klass;
+    class controller_schemacontroller_def755be klass;
     class domain_documentuploadnode_documentuploadnode_8c92fc32 klass;
     class domain_schemadefinitionnode_schemadefinitionnode_76d1e312 klass;
     class observability_aiobservationservice_aiobservation_f83bee78 klass;
+    class service_hybridsearchservice_hybridsearchservice_b9c68c82 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -492,15 +490,15 @@ flowchart LR
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>51 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>48 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
+<tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>34 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>33 nodes</td></tr>
 <tr><td><code>graphrag/error/GlobalExceptionHandler.java</code></td><td>32 nodes</td></tr>
 <tr><td><code>graphrag/service/LangChain4jSchemaGenerationService.java</code></td><td>32 nodes</td></tr>
-<tr><td><code>graphrag/service/DocumentProcessingService.java</code></td><td>30 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1303, contains x720, method x708, imports x517. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1366, method x741, contains x725, imports x545. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2016,12 +2014,12 @@ flowchart LR
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around observability, monitoring, changes, openspec, mostly in specs/ai-observability-monitoring/spec.md, archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md, specs/schema-list-by-knowledge-base/spec.md. This section covers 61 nodes and 55 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around changes, openspec, add, observability, mostly in specs/ai-observability-monitoring/spec.md, specs/hybrid-search/spec.md, archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md. This section covers 95 nodes and 85 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (61 nodes, 55 edges)
+    %% Section: Serving API (95 nodes, 85 edges)
     subgraph serve_api_specs_ai_observability_monitoring_spec_e3ed4285["specs/ai-observability-monitoring/spec.md"]
         openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_lan_9a9d55c6("Requirement: Langfuse is available as a...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
@@ -2031,36 +2029,31 @@ flowchart LR
         ai_observability_monitoring_spec_requirement_pro_82449c3e("Requirement: Prompt and response captur...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_ai_30a4917c("Requirement: AI tracing can be enabled...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_das_8106ca31("Requirement: Dashboard-stable trace att...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
-        ai_observability_monitoring_spec_requirement_obs_3a6fcd80("Requirement: Observability setup is doc...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
-    end
-    subgraph serve_api_specs_schema_list_by_knowledge_base_sp_58f39219["specs/schema-list-by-knowledge-base/spec.md"]
-        schema_list_by_knowledge_base_spec_added_require_a72b4902("ADDED Requirements<br/><small>specs/schema-list-by-knowledge-base/spec.md</small>")
-        openspec_changes_archive_2026_05_30_add_kb_schem_01cbf619("Requirement: List schemas by knowledge...<br/><small>specs/schema-list-by-knowledge-base/spec.md</small>")
-        openspec_changes_archive_2026_05_30_add_kb_schem_5d76df58("Requirement: Preserve response and erro...<br/><small>specs/schema-list-by-knowledge-base/spec.md</small>")
-    end
-    subgraph serve_api_archive_2026_05_30_add_kb_schemas_list_fd4a7513["archive/2026-05-30-add-kb-schemas-list-endpoint/design.md"]
-        node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea("design.md")
-        node_2026_05_30_add_kb_schemas_list_endpoint_des_e6f37ca2("Context<br/><small>archive/2026-05-30-add-kb-schemas-list-endpoint/design.md</small>")
     end
     subgraph serve_api_archive_2026_05_30_add_kb_schemas_list_f2fb6c3b["archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md"]
         node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332("proposal.md")
         node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797("Capabilities<br/><small>archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md</small>")
     end
+    subgraph serve_api_changes_add_hybrid_search_endpoint_pro_d2eab364["changes/add-hybrid-search-endpoint/proposal.md"]
+        add_hybrid_search_endpoint_proposal_82708839("proposal.md")
+        add_hybrid_search_endpoint_proposal_capabilities_7715ec70("Capabilities<br/><small>changes/add-hybrid-search-endpoint/proposal.md</small>")
+    end
+    node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea("design.md")
     node_2026_05_30_add_kb_schemas_list_endpoint_tas_0c451f43("tasks.md")
     node_2026_06_07_add_schema_update_delete_endpoin_98f0b22a("tasks.md")
-    node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea -->|contains| node_2026_05_30_add_kb_schemas_list_endpoint_des_e6f37ca2
+    add_hybrid_search_endpoint_design_ef4c3489("design.md")
+    add_hybrid_search_endpoint_tasks_3af09bbb("tasks.md")
+    hybrid_search_spec_added_requirements_ca7f0135("ADDED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
+    add_hybrid_search_endpoint_proposal_82708839 -->|contains| add_hybrid_search_endpoint_proposal_capabilities_7715ec70
     node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332 -->|contains| node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797
-    schema_list_by_knowledge_base_spec_added_require_a72b4902 -->|contains| openspec_changes_archive_2026_05_30_add_kb_schem_01cbf619
-    schema_list_by_knowledge_base_spec_added_require_a72b4902 -->|contains| openspec_changes_archive_2026_05_30_add_kb_schem_5d76df58
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_ai_30a4917c
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_bus_93f052c4
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_das_8106ca31
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_lan_9a9d55c6
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_7a367b9e
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_6b621205
-    openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_obs_3a6fcd80
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_pro_82449c3e
-    %% Omitted for readability: 43 nodes, 0 edges
+    %% Omitted for readability: 77 nodes, 0 edges
     class openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 concept;
     class ai_observability_monitoring_spec_requirement_lan_9a9d55c6 concept;
     class ai_observability_monitoring_spec_requirement_bus_93f052c4 concept;
@@ -2069,16 +2062,16 @@ flowchart LR
     class ai_observability_monitoring_spec_requirement_pro_82449c3e concept;
     class ai_observability_monitoring_spec_requirement_ai_30a4917c concept;
     class ai_observability_monitoring_spec_requirement_das_8106ca31 concept;
-    class ai_observability_monitoring_spec_requirement_obs_3a6fcd80 concept;
-    class schema_list_by_knowledge_base_spec_added_require_a72b4902 concept;
-    class openspec_changes_archive_2026_05_30_add_kb_schem_01cbf619 concept;
-    class openspec_changes_archive_2026_05_30_add_kb_schem_5d76df58 concept;
-    class node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea concept;
-    class node_2026_05_30_add_kb_schemas_list_endpoint_des_e6f37ca2 concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332 concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797 concept;
+    class add_hybrid_search_endpoint_proposal_82708839 concept;
+    class add_hybrid_search_endpoint_proposal_capabilities_7715ec70 concept;
+    class node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_tas_0c451f43 concept;
     class node_2026_06_07_add_schema_update_delete_endpoin_98f0b22a concept;
+    class add_hybrid_search_endpoint_design_ef4c3489 concept;
+    class add_hybrid_search_endpoint_tasks_3af09bbb concept;
+    class hybrid_search_spec_added_requirements_ca7f0135 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2348,28 +2341,30 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>32 nodes</td></tr>
+<tr><td><code>specs/hybrid-search/spec.md</code></td><td>17 nodes</td></tr>
+<tr><td><code>changes/add-hybrid-search-endpoint/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>specs/schema-list-by-knowledge-base/spec.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>changes/add-hybrid-search-endpoint/design.md</code></td><td>5 nodes</td></tr>
+<tr><td><code>changes/add-hybrid-search-endpoint/tasks.md</code></td><td>5 nodes</td></tr>
 <tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/design.md</code></td><td>5 nodes</td></tr>
-<tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/tasks.md</code></td><td>5 nodes</td></tr>
-<tr><td><code>archive/2026-06-07-add-schema-update-delete-endpoints/tasks.md</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x55. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x85. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 9. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around openspec, test, coverage, specmd, mostly in specs/service-helper-utilities/spec.md, specs/test-coverage-governance/spec.md, specs/test-coverage-governance/spec.md. This section covers 107 nodes and 96 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around openspec, test, specmd, specs, mostly in specs/service-helper-utilities/spec.md, specs/test-coverage-governance/spec.md, specs/test-coverage-governance/spec.md. This section covers 121 nodes and 109 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (107 nodes, 96 edges)
+    %% Section: Tests &amp; Fixtures (121 nodes, 109 edges)
     subgraph tests_fixtures_fixtures_schemas_contracts_v1_jso_0151a128["fixtures/schemas/contracts-v1.json"]
         schemas_contracts_v1_787c5b2d("contracts-v1.json")
         schemas_contracts_v1_description_38fe21e1("description<br/><small>fixtures/schemas/contracts-v1.json</small>")
@@ -2385,11 +2380,13 @@ flowchart LR
         documents_contract_sample_supply_obligations_bb3c6786("Supply Obligations<br/><small>fixtures/documents/contract-sample.txt</small>")
         documents_contract_sample_supplier_b2d8e911("Supplier<br/><small>fixtures/documents/contract-sample.txt</small>")
     end
+    subgraph tests_fixtures_specs_architecture_boundary_gover_dd7b0a90["specs/architecture-boundary-governance/spec.md"]
+        architecture_boundary_governance_spec_added_requ_d7e18d3f("ADDED Requirements<br/><small>specs/architecture-boundary-governance/spec.md</small>")
+        architecture_boundary_governance_spec_requiremen_be99db7e("Requirements<br/><small>specs/architecture-boundary-governance/spec.md</small>")
+    end
     node_2026_06_04_improve_test_coverage_design_5fcfc09d("design.md")
     node_2026_06_04_improve_test_coverage_proposal_667761db("proposal.md")
     node_2026_06_04_improve_test_coverage_tasks_43ecde26("tasks.md")
-    add_architecture_boundary_tests_design_7cfcfcfa("design.md")
-    architecture_boundary_governance_spec_added_requ_d7e18d3f("ADDED Requirements<br/><small>specs/architecture-boundary-governance/spec.md</small>")
     service_helper_utilities_spec_requirements_e77edb41("Requirements<br/><small>specs/service-helper-utilities/spec.md</small>")
     test_coverage_governance_spec_added_requirements_8fa473e0("ADDED Requirements<br/><small>specs/test-coverage-governance/spec.md</small>")
     documents_contract_sample_acme_corp_a79f55fa -->|relates| documents_contract_sample_supplier_b2d8e911
@@ -2399,7 +2396,7 @@ flowchart LR
     schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_relationships_52113e18
     schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_version_b55fa889
     documents_contract_sample_supplier_b2d8e911 -->|relates| documents_contract_sample_supply_obligations_bb3c6786
-    %% Omitted for readability: 89 nodes, 0 edges
+    %% Omitted for readability: 103 nodes, 0 edges
     class schemas_contracts_v1_787c5b2d test;
     class schemas_contracts_v1_description_38fe21e1 test;
     class schemas_contracts_v1_name_6edd32a8 test;
@@ -2411,11 +2408,11 @@ flowchart LR
     class documents_contract_sample_pricing_d516e3c8 test;
     class documents_contract_sample_supply_obligations_bb3c6786 test;
     class documents_contract_sample_supplier_b2d8e911 test;
+    class architecture_boundary_governance_spec_added_requ_d7e18d3f concept;
+    class architecture_boundary_governance_spec_requiremen_be99db7e concept;
     class node_2026_06_04_improve_test_coverage_design_5fcfc09d concept;
     class node_2026_06_04_improve_test_coverage_proposal_667761db concept;
     class node_2026_06_04_improve_test_coverage_tasks_43ecde26 concept;
-    class add_architecture_boundary_tests_design_7cfcfcfa concept;
-    class architecture_boundary_governance_spec_added_requ_d7e18d3f concept;
     class service_helper_utilities_spec_requirements_e77edb41 concept;
     class test_coverage_governance_spec_added_requirements_8fa473e0 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -2689,16 +2686,16 @@ flowchart LR
       <tr><td><code>specs/service-helper-utilities/spec.md</code></td><td>18 nodes</td></tr>
 <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>16 nodes</td></tr>
 <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>14 nodes</td></tr>
+<tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>12 nodes</td></tr>
-<tr><td><code>changes/add-architecture-boundary-tests/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-improve-test-coverage/design.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-improve-test-coverage/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>fixtures/documents/contract-sample.txt</code></td><td>6 nodes</td></tr>
+<tr><td><code>archive/2026-06-10-add-architecture-boundary-tests/proposal.md</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x90, references x4, relates x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x103, references x4, relates x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3953,18 +3950,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>5647</td></tr>
-      <tr><td>Edges</td><td>7488</td></tr>
+      <tr><td>Nodes</td><td>5772</td></tr>
+      <tr><td>Edges</td><td>7710</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>521</td></tr>
+      <tr><td>Communities</td><td>529</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>6782</td></tr>
-      <tr><td>INFERRED</td><td>706</td></tr>
+      <tr><td>EXTRACTED</td><td>6984</td></tr>
+      <tr><td>INFERRED</td><td>726</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -3972,7 +3969,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-10 16:26 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-10 17:36 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

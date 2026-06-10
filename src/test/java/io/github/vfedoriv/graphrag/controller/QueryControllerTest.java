@@ -5,6 +5,11 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.dto.HybridSearchGraphContext;
+import io.github.vfedoriv.graphrag.dto.HybridSearchHit;
+import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
+import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
+import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
@@ -12,6 +17,7 @@ import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
+import io.github.vfedoriv.graphrag.service.HybridSearchService;
 import io.github.vfedoriv.graphrag.service.QueryAskService;
 import java.nio.file.Path;
 import java.util.List;
@@ -55,12 +61,50 @@ class QueryControllerTest {
             Mockito.mock(CypherGenerationService.class),
             Mockito.mock(CypherValidationService.class),
             Mockito.mock(CypherExecutionService.class),
-            queryAskService
+            queryAskService,
+            Mockito.mock(HybridSearchService.class)
         );
         QueryAskResponse response = controller.ask("kb-1", new QueryGenerateRequest("list contracts"));
 
         assertThat(response).isSameAs(expected);
         Mockito.verify(queryAskService).ask("kb-1", "list contracts");
+    }
+
+    @Test
+    void hybridSearchDelegatesToHybridSearchService() {
+        HybridSearchService hybridSearchService = Mockito.mock(HybridSearchService.class);
+        HybridSearchRequest request = new HybridSearchRequest("find renewal terms", 5, 1, true);
+        HybridSearchResponse expected = new HybridSearchResponse(
+            request.query(),
+            5,
+            1,
+            true,
+            List.of(new HybridSearchHit(
+                "chunk-1",
+                "doc-1",
+                0,
+                0.91,
+                "renewal terms",
+                new HybridSearchSource("doc-1", "contract.txt", "text/plain", 12L, "{}"),
+                new HybridSearchGraphContext(List.of(), List.of())
+            )),
+            1,
+            3L
+        );
+        when(hybridSearchService.search("kb-1", request)).thenReturn(expected);
+
+        QueryController controller = new QueryController(
+            props(),
+            Mockito.mock(CypherGenerationService.class),
+            Mockito.mock(CypherValidationService.class),
+            Mockito.mock(CypherExecutionService.class),
+            Mockito.mock(QueryAskService.class),
+            hybridSearchService
+        );
+        HybridSearchResponse response = controller.hybridSearch("kb-1", request);
+
+        assertThat(response).isSameAs(expected);
+        Mockito.verify(hybridSearchService).search("kb-1", request);
     }
 
     private AppProperties props() {
@@ -69,7 +113,7 @@ class QueryControllerTest {
             new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
             new AppProperties.Storage(Path.of("var/documents")),
             new AppProperties.Chunking(800, 80, 4000),
-            new AppProperties.Query(200, 15, true, List.of("CREATE", "MERGE", "DELETE")),
+            new AppProperties.Query(200, 15, true, List.of("CREATE", "MERGE", "DELETE"), 10, 50, 4, 200, 1, 2, true),
             new AppProperties.Extraction(40, 80, 2)
         );
     }

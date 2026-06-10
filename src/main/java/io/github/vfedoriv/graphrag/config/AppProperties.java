@@ -51,8 +51,32 @@ public record AppProperties(
         @Min(1) int maxRows,
         @Min(1) int timeoutSeconds,
         boolean requireLimit,
-        @NotEmpty List<@NotBlank String> blockedKeywords
+        @NotEmpty List<@NotBlank String> blockedKeywords,
+        @Min(1) int hybridSearchDefaultTopK,
+        @Min(1) int hybridSearchMaxTopK,
+        @Min(1) int hybridSearchCandidateMultiplier,
+        @Min(1) int hybridSearchMaxCandidates,
+        @Min(0) int hybridSearchDefaultGraphDepth,
+        @Min(0) int hybridSearchMaxGraphDepth,
+        boolean hybridSearchIncludeChunkText
     ) {
+        public Query {
+            if (hybridSearchDefaultTopK == 0) {
+                hybridSearchDefaultTopK = 10;
+            }
+            if (hybridSearchMaxTopK == 0) {
+                hybridSearchMaxTopK = 50;
+            }
+            if (hybridSearchCandidateMultiplier == 0) {
+                hybridSearchCandidateMultiplier = 4;
+            }
+            if (hybridSearchMaxCandidates == 0) {
+                hybridSearchMaxCandidates = 200;
+            }
+            if (hybridSearchMaxGraphDepth == 0 && hybridSearchDefaultGraphDepth > 0) {
+                hybridSearchMaxGraphDepth = hybridSearchDefaultGraphDepth;
+            }
+        }
     }
 
     public record Extraction(

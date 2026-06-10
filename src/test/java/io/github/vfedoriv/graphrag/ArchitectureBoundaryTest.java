@@ -31,6 +31,7 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".service.DocumentProcessingService",
             BASE_PACKAGE + ".service.GraphArtifactCleanupService",
             BASE_PACKAGE + ".service.GraphExtractionService",
+            BASE_PACKAGE + ".service.HybridSearchService",
             BASE_PACKAGE + ".service.KnowledgeBaseService",
             BASE_PACKAGE + ".service.SchemaRegistryService"
     );

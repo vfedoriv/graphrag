@@ -5,6 +5,8 @@ import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
 import io.github.vfedoriv.graphrag.dto.QueryExecuteRequest;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
+import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
@@ -13,6 +15,7 @@ import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
+import io.github.vfedoriv.graphrag.service.HybridSearchService;
 import io.github.vfedoriv.graphrag.service.QueryAskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,19 +43,22 @@ public class QueryController {
     private final CypherValidationService cypherValidationService;
     private final CypherExecutionService cypherExecutionService;
     private final QueryAskService queryAskService;
+    private final HybridSearchService hybridSearchService;
 
     public QueryController(
         AppProperties appProperties,
         CypherGenerationService cypherGenerationService,
         CypherValidationService cypherValidationService,
         CypherExecutionService cypherExecutionService,
-        QueryAskService queryAskService
+        QueryAskService queryAskService,
+        HybridSearchService hybridSearchService
     ) {
         this.appProperties = appProperties;
         this.cypherGenerationService = cypherGenerationService;
         this.cypherValidationService = cypherValidationService;
         this.cypherExecutionService = cypherExecutionService;
         this.queryAskService = queryAskService;
+        this.hybridSearchService = hybridSearchService;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/generate")
@@ -220,5 +226,52 @@ public class QueryController {
             LogSanitizer.preview(request.prompt())
         );
         return queryAskService.ask(knowledgeBaseId, request.prompt());
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/hybrid-search")
+    @Operation(summary = "Hybrid search", description = "Embeds a search query, retrieves ranked document chunks, and expands graph context.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Hybrid search results returned",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = HybridSearchResponse.class)
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema()))
+    })
+    public HybridSearchResponse hybridSearch(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Natural language search text and retrieval bounds.",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = HybridSearchRequest.class),
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    value = "{\"query\":\"Acme renewal terms\",\"topK\":10,\"graphDepth\":1,\"includeChunkText\":true}"
+                )
+            )
+        )
+        @Valid @RequestBody HybridSearchRequest request
+    ) {
+        log.info(
+            "Hybrid search request: knowledgeBaseId={}, queryLength={}, queryPreview={}, topK={}, graphDepth={}, includeChunkText={}",
+            knowledgeBaseId,
+            LogSanitizer.length(request.query()),
+            LogSanitizer.preview(request.query()),
+            request.topK(),
+            request.graphDepth(),
+            request.includeChunkText()
+        );
+        HybridSearchResponse response = hybridSearchService.search(knowledgeBaseId, request);
+        log.info(
+            "Hybrid search completed: knowledgeBaseId={}, hitCount={}, executionTimeMs={}",
+            knowledgeBaseId,
+            response.hitCount(),
+            response.executionTimeMs()
+        );
+        return response;
     }
 }
