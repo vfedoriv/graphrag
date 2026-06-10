@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>graphrag — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 1597 nodes, 3675 edges, 123 communities. Commit: 0000b79</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#extract-pipeline">Extraction Pipeline</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1569 nodes</small>")
+    class EXTRACT_PIPELINE_5F350230 module;
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>16 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>12 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    EXTRACT_PIPELINE_5F350230 -.-> BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -.-> TESTS_FIXTURES_B84B1DCC
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Extraction Pipeline</td><td>1569</td><td><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 52, 53, 54, 55, 56, 57, 58, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>16</td><td><code>50, 51</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>12</td><td><code>59, 65</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Tests &amp; Fixtures</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>1597 nodes · 3675 edges · 123 communities (111 shown, 12 thin omitted)</li>
+      <li>Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 673 edges (avg confidence: 0.8)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `AiObservationService` - 32 edges</li>
+      <li>2. `Properties` - 28 edges</li>
+      <li>3. `DocumentUploadNode` - 24 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Extraction Pipeline ====== -->
+<h2 id="extract-pipeline">2. Extraction Pipeline</h2>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java, graphrag/observability/AiObservationServiceTest.java. This section covers 1569 nodes and 3650 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Extraction Pipeline (1569 nodes, 3650 edges)
+    subgraph extract_pipeline_graphrag_controller_DocumentCon_662f1a6e["graphrag/controller/DocumentController.java"]
+        controller_documentcontroller_documentcontroller_6d0cb00b("DocumentController<br/><small>graphrag/controller/DocumentController.java</small>")
+        controller_documentcontroller_documentcontroller_acb766e2("deleteDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
+        controller_documentcontroller_documentcontroller_b8aa33ef("DocumentController()<br/><small>graphrag/controller/DocumentController.java</small>")
+        controller_documentcontroller_documentcontroller_066004a1("getDocumentChunks()<br/><small>graphrag/controller/DocumentController.java</small>")
+        controller_documentcontroller_documentcontroller_4dcc64fa("listKnowledgeBaseDocuments()<br/><small>graphrag/controller/DocumentController.java</small>")
+        controller_documentcontroller_documentcontroller_7dff1881("processDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
+    end
+    subgraph extract_pipeline_graphrag_config_AiObservationCo_5eca5d51["graphrag/config/AiObservationConfiguration.java"]
+        config_aiobservationconfiguration_aiobservationc_a4879645("AiObservationConfiguration<br/><small>graphrag/config/AiObservationConfiguration.java</small>")
+        config_aiobservationconfiguration_aiobservationc_b7762de3("suppressSpringAiClientObservationsForLangfuse()<br/><small>graphrag/config/AiObservationConfiguration.java</small>")
+    end
+    subgraph extract_pipeline_graphrag_config_OpenApiConfig_j_93657c61["graphrag/config/OpenApiConfig.java"]
+        config_openapiconfig_openapiconfig_c70d619d("OpenApiConfig<br/><small>graphrag/config/OpenApiConfig.java</small>")
+        config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5("graphragOpenApi()<br/><small>graphrag/config/OpenApiConfig.java</small>")
+    end
+    subgraph extract_pipeline_graphrag_controller_SchemaContr_931c6171["graphrag/controller/SchemaController.java"]
+        controller_schemacontroller_def755be("SchemaController.java")
+        controller_schemacontroller_schemacontroller_4c740e38("SchemaController<br/><small>graphrag/controller/SchemaController.java</small>")
+    end
+    subgraph extract_pipeline_vfedoriv_graphrag_GraphragAppli_62b8432e["vfedoriv/graphrag/GraphragApplication.java"]
+        graphrag_graphragapplication_graphragapplication_ca8d408d("GraphragApplication<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
+        graphrag_graphragapplication_graphragapplication_e971e69e("main()<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
+    end
+    controller_querycontroller_71438120("QueryController.java")
+    domain_documentuploadnode_documentuploadnode_8c92fc32("DocumentUploadNode<br/><small>graphrag/domain/DocumentUploadNode.java</small>")
+    domain_schemadefinitionnode_schemadefinitionnode_76d1e312("SchemaDefinitionNode<br/><small>graphrag/domain/SchemaDefinitionNode.java</small>")
+    observability_aiobservationservice_aiobservation_f83bee78("AiObservationService<br/><small>graphrag/observability/AiObservationService.java</small>")
+    graphrag_graphragapplication_graphragapplication_ca8d408d -->|method| graphrag_graphragapplication_graphragapplication_e971e69e
+    config_aiobservationconfiguration_aiobservationc_a4879645 -->|method| config_aiobservationconfiguration_aiobservationc_b7762de3
+    config_openapiconfig_openapiconfig_c70d619d -->|method| config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5
+    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_acb766e2
+    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_b8aa33ef
+    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_066004a1
+    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_4dcc64fa
+    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_7dff1881
+    %% Omitted for readability: 1551 nodes, 0 edges
+    class controller_documentcontroller_documentcontroller_6d0cb00b klass;
+    class controller_documentcontroller_documentcontroller_acb766e2 function;
+    class controller_documentcontroller_documentcontroller_b8aa33ef function;
+    class controller_documentcontroller_documentcontroller_066004a1 function;
+    class controller_documentcontroller_documentcontroller_4dcc64fa function;
+    class controller_documentcontroller_documentcontroller_7dff1881 function;
+    class config_aiobservationconfiguration_aiobservationc_a4879645 klass;
+    class config_aiobservationconfiguration_aiobservationc_b7762de3 entry;
+    class config_openapiconfig_openapiconfig_c70d619d api;
+    class config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5 api;
+    class controller_schemacontroller_def755be klass;
+    class controller_schemacontroller_schemacontroller_4c740e38 klass;
+    class graphrag_graphragapplication_graphragapplication_ca8d408d klass;
+    class graphrag_graphragapplication_graphragapplication_e971e69e function;
+    class controller_querycontroller_71438120 klass;
+    class domain_documentuploadnode_documentuploadnode_8c92fc32 klass;
+    class domain_schemadefinitionnode_schemadefinitionnode_76d1e312 klass;
+    class observability_aiobservationservice_aiobservation_f83bee78 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>GraphExtractionValidationException</code><br><small style="color:var(--muted)">graphrag/error/GlobalExceptionHandler.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>GraphExtractionValidationService.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>GraphExtractionValidationServiceTest.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationServiceTest.java</small></td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>GraphExtractionSupport.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>Map</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>SchemaDocument</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>buildSchemaIndex()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>endpointMatchesKeptNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>fillEndpointKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br>+11 more</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>.GraphExtractionSupport()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.buildSchemaIndex()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>relationshipTriple()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>shouldDropInvalidRelationshipTriple()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupportTest.java</small><br><code>shouldDropWhenEndpointDoesNotMatchKeptNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupportTest.java</small><br>+3 more</td>
+  <td>.buildSchemaIndex() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>SchemaDocument</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>GraphExtractionSupport.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>SchemaDocument node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>SchemaIndex</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SchemaIndex node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>.normalizeNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>filterNodes()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small><br><code>isBlankValue()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br>+5 more</td>
+  <td>.normalizeNode() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>ExtractedNode</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ExtractedNode node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>NodeDefinition</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NodeDefinition node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.normalizeRelationship()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>fillEndpointKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>filterRelationships()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small><br>+3 more</td>
+  <td>.normalizeRelationship() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>ExtractedRelationship</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ExtractedRelationship node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>GraphExtractionSupport.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>List node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.relationshipDropReason()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>endpointMatchesKeptNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>filterRelationships()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small><br>+6 more</td>
+  <td>.relationshipDropReason() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.hasCompleteRequiredKeys()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>relationshipDropReason()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>filterNodes()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small><br><code>isBlankValue()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>.hasCompleteRequiredKeys() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Map</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>GraphExtractionSupport.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Map node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Object</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Object node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.repairNodeKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>normalizeNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>firstNonBlank()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small></td>
+  <td>.repairNodeKey() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.sanitizedPropertyNames()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>logDroppedNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>logDroppedRelationship()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td>.sanitizedPropertyNames() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.relationshipTriple()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>buildSchemaIndex()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>relationshipDropReason()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>logDroppedRelationship()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td>.relationshipTriple() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.isBlankValue()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>hasCompleteRequiredKeys()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>normalizeNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>fillEndpointKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>filterNodes()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>firstNonBlank()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br>+2 more</td>
+  <td>.isBlankValue() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.firstNonBlank()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>isBlankValue()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>repairNodeKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.firstNonBlank() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.fillEndpointKey()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>isBlankValue()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>normalizeRelationship()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small><br><code>Properties</code><br><small style="color:var(--muted)">graphrag/config/AiModelProfilePropertiesTest.java</small></td>
+  <td>.fillEndpointKey() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.endpointMatchesKeptNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>relationshipDropReason()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>keysMatch()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>Properties</code><br><small style="color:var(--muted)">graphrag/config/AiModelProfilePropertiesTest.java</small></td>
+  <td>.endpointMatchesKeptNode() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>.keysMatch()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>endpointMatchesKeptNode()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small><br><code>GraphExtractionSupport</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionSupport.java</small></td>
+  <td><code>get()</code><br><small style="color:var(--muted)">graphrag/service/KnowledgeBaseService.java</small></td>
+  <td>.keysMatch() node in graphrag/graph/GraphExtractionSupport.java.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>GraphExtractionValidationService.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>GraphExtractionValidationException</code><br><small style="color:var(--muted)">graphrag/error/GlobalExceptionHandler.java</small></td>
+  <td><code>AppProperties</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>List</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>Map</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br>+1 more</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>GraphExtractionValidationService</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>enforcePayloadLimits()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>filterNodes()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br><code>filterRelationships()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small><br>+11 more</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.GraphExtractionValidationService()</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphExtractionValidationService</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>AppProperties</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>GraphExtractionValidationService.java</code><br><small style="color:var(--muted)">graphrag/graph/GraphExtractionValidationService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>AppProperties node in graphrag/graph/GraphExtractionValidationService.java.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>51 nodes</td></tr>
+<tr><td><code>graphrag/controller/SchemaController.java</code></td><td>48 nodes</td></tr>
+<tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
+<tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>33 nodes</td></tr>
+<tr><td><code>graphrag/error/GlobalExceptionHandler.java</code></td><td>32 nodes</td></tr>
+<tr><td><code>graphrag/service/LangChain4jSchemaGenerationService.java</code></td><td>32 nodes</td></tr>
+<tr><td><code>graphrag/service/DocumentProcessingService.java</code></td><td>30 nodes</td></tr>
+<tr><td><code>graphrag/domain/DocumentUploadNode.java</code></td><td>29 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1258, method x678, imports x507, calls x378. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Graph Build ====== -->
+<h2 id="build-graph">3. Graph Build</h2>
+<p>Graph Build groups implementation around v1json, resources, schemas, cmms, mostly in resources/schemas/cmms-v1.json, resources/schemas/legal-contracts-v1.json. This section covers 16 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (16 nodes, 14 edges)
+    subgraph build_graph_resources_schemas_cmms_v1_json_5eaffe45["resources/schemas/cmms-v1.json"]
+        schemas_cmms_v1_a82af429("cmms-v1.json")
+        schemas_cmms_v1_description_7261deff("description<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_indexes_e61d0719("indexes<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_name_094f5fc5("name<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_nodes_bd7c971d("nodes<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_relationships_13f3361c("relationships<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_vectorindexes_bab8c8e8("vectorIndexes<br/><small>resources/schemas/cmms-v1.json</small>")
+        schemas_cmms_v1_version_dd8699d3("version<br/><small>resources/schemas/cmms-v1.json</small>")
+    end
+    subgraph build_graph_resources_schemas_legal_contracts_v1_16e8e164["resources/schemas/legal-contracts-v1.json"]
+        schemas_legal_contracts_v1_654de78b("legal-contracts-v1.json")
+        schemas_legal_contracts_v1_description_59532828("description<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_indexes_51deaed8("indexes<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_name_85f36618("name<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_nodes_fa00ee31("nodes<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_relationships_de05d20f("relationships<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_vectorindexes_ee939698("vectorIndexes<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+        schemas_legal_contracts_v1_version_aa7e14f3("version<br/><small>resources/schemas/legal-contracts-v1.json</small>")
+    end
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_description_7261deff
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_indexes_e61d0719
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_name_094f5fc5
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_nodes_bd7c971d
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_relationships_13f3361c
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_vectorindexes_bab8c8e8
+    schemas_cmms_v1_a82af429 -->|contains| schemas_cmms_v1_version_dd8699d3
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_description_59532828
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_indexes_51deaed8
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_name_85f36618
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_nodes_fa00ee31
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_relationships_de05d20f
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_vectorindexes_ee939698
+    schemas_legal_contracts_v1_654de78b -->|contains| schemas_legal_contracts_v1_version_aa7e14f3
+    class schemas_cmms_v1_a82af429 function;
+    class schemas_cmms_v1_description_7261deff function;
+    class schemas_cmms_v1_indexes_e61d0719 function;
+    class schemas_cmms_v1_name_094f5fc5 function;
+    class schemas_cmms_v1_nodes_bd7c971d function;
+    class schemas_cmms_v1_relationships_13f3361c function;
+    class schemas_cmms_v1_vectorindexes_bab8c8e8 function;
+    class schemas_cmms_v1_version_dd8699d3 function;
+    class schemas_legal_contracts_v1_654de78b function;
+    class schemas_legal_contracts_v1_description_59532828 function;
+    class schemas_legal_contracts_v1_indexes_51deaed8 function;
+    class schemas_legal_contracts_v1_name_85f36618 function;
+    class schemas_legal_contracts_v1_nodes_fa00ee31 function;
+    class schemas_legal_contracts_v1_relationships_de05d20f function;
+    class schemas_legal_contracts_v1_vectorindexes_ee939698 function;
+    class schemas_legal_contracts_v1_version_aa7e14f3 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>cmms-v1.json</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>cmms-v1.json node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>name</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>name node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>version</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>version node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>description</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>description node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>nodes</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>nodes node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>relationships</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>relationships node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>indexes</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>indexes node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>vectorIndexes</code><br><small style="color:var(--muted)">resources/schemas/cmms-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>vectorIndexes node in resources/schemas/cmms-v1.json.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>legal-contracts-v1.json</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>legal-contracts-v1.json node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>name</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>name node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>version</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>version node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>description</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>description node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>nodes</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>nodes node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>relationships</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>relationships node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>indexes</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>indexes node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>vectorIndexes</code><br><small style="color:var(--muted)">resources/schemas/legal-contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>vectorIndexes node in resources/schemas/legal-contracts-v1.json.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>resources/schemas/cmms-v1.json</code></td><td>8 nodes</td></tr>
+<tr><td><code>resources/schemas/legal-contracts-v1.json</code></td><td>8 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">4. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around test, resources, fixtures, contract, mostly in fixtures/documents/contract-sample.txt, fixtures/schemas/contracts-v1.json. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (12 nodes, 11 edges)
+    subgraph tests_fixtures_fixtures_documents_contract_sampl_b1f6db96["fixtures/documents/contract-sample.txt"]
+        documents_contract_sample_master_supply_agreemen_864faf1e("Master Supply Agreement<br/><small>fixtures/documents/contract-sample.txt</small>")
+        documents_contract_sample_acme_corp_a79f55fa("Acme Corp<br/><small>fixtures/documents/contract-sample.txt</small>")
+        documents_contract_sample_supplier_b2d8e911("Supplier<br/><small>fixtures/documents/contract-sample.txt</small>")
+        documents_contract_sample_contract_c_100_9308dfb7("Contract C-100<br/><small>fixtures/documents/contract-sample.txt</small>")
+        documents_contract_sample_pricing_d516e3c8("Pricing<br/><small>fixtures/documents/contract-sample.txt</small>")
+        documents_contract_sample_supply_obligations_bb3c6786("Supply Obligations<br/><small>fixtures/documents/contract-sample.txt</small>")
+    end
+    subgraph tests_fixtures_fixtures_schemas_contracts_v1_jso_0151a128["fixtures/schemas/contracts-v1.json"]
+        schemas_contracts_v1_787c5b2d("contracts-v1.json")
+        schemas_contracts_v1_description_38fe21e1("description<br/><small>fixtures/schemas/contracts-v1.json</small>")
+        schemas_contracts_v1_name_6edd32a8("name<br/><small>fixtures/schemas/contracts-v1.json</small>")
+        schemas_contracts_v1_nodes_d3bfccac("nodes<br/><small>fixtures/schemas/contracts-v1.json</small>")
+        schemas_contracts_v1_relationships_52113e18("relationships<br/><small>fixtures/schemas/contracts-v1.json</small>")
+        schemas_contracts_v1_version_b55fa889("version<br/><small>fixtures/schemas/contracts-v1.json</small>")
+    end
+    documents_contract_sample_master_supply_agreemen_864faf1e -->|references| documents_contract_sample_acme_corp_a79f55fa
+    documents_contract_sample_master_supply_agreemen_864faf1e -->|references| documents_contract_sample_contract_c_100_9308dfb7
+    documents_contract_sample_master_supply_agreemen_864faf1e -->|references| documents_contract_sample_pricing_d516e3c8
+    documents_contract_sample_master_supply_agreemen_864faf1e -->|references| documents_contract_sample_supply_obligations_bb3c6786
+    documents_contract_sample_acme_corp_a79f55fa -->|relates| documents_contract_sample_supplier_b2d8e911
+    schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_description_38fe21e1
+    schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_name_6edd32a8
+    schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_nodes_d3bfccac
+    schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_relationships_52113e18
+    schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_version_b55fa889
+    documents_contract_sample_supplier_b2d8e911 -->|relates| documents_contract_sample_supply_obligations_bb3c6786
+    class documents_contract_sample_master_supply_agreemen_864faf1e concept;
+    class documents_contract_sample_acme_corp_a79f55fa test;
+    class documents_contract_sample_supplier_b2d8e911 test;
+    class documents_contract_sample_contract_c_100_9308dfb7 test;
+    class documents_contract_sample_pricing_d516e3c8 test;
+    class documents_contract_sample_supply_obligations_bb3c6786 test;
+    class schemas_contracts_v1_787c5b2d test;
+    class schemas_contracts_v1_description_38fe21e1 test;
+    class schemas_contracts_v1_name_6edd32a8 test;
+    class schemas_contracts_v1_nodes_d3bfccac test;
+    class schemas_contracts_v1_relationships_52113e18 test;
+    class schemas_contracts_v1_version_b55fa889 test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Master Supply Agreement</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Master Supply Agreement.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Contract C-100</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Contract C-100 node in fixtures/documents/contract-sample.txt.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Acme Corp</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Acme Corp node in fixtures/documents/contract-sample.txt.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Supplier</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supplier node in fixtures/documents/contract-sample.txt.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Supply Obligations</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supply Obligations node in fixtures/documents/contract-sample.txt.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Pricing</code><br><small style="color:var(--muted)">fixtures/documents/contract-sample.txt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Pricing node in fixtures/documents/contract-sample.txt.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>contracts-v1.json</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>contracts-v1.json node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>name</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>name node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>version</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>version node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>description</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>description node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>nodes</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>nodes node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>relationships</code><br><small style="color:var(--muted)">fixtures/schemas/contracts-v1.json</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>relationships node in fixtures/schemas/contracts-v1.json.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>fixtures/documents/contract-sample.txt</code></td><td>6 nodes</td></tr>
+<tr><td><code>fixtures/schemas/contracts-v1.json</code></td><td>6 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x5, references x4, relates x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="hyperedges">Group Relationships (Hyperedges)</h2>
+<div class="grid">
+
+  <div class="card">
+    <h4>Agreement Scope</h4>
+    <p><code>form</code> — 3 participants</p>
+    <ul>
+      <li><code>documents_contract_sample_master_supply_agreement</code></li>
+      <li><code>documents_contract_sample_supply_obligations</code></li>
+      <li><code>documents_contract_sample_pricing</code></li>
+    </ul>
+  </div>
+</div>
+<hr>
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>1597</td></tr>
+      <tr><td>Edges</td><td>3675</td></tr>
+      <tr><td>Hyperedges</td><td>1</td></tr>
+      <tr><td>Communities</td><td>123</td></tr>
+      <tr><td>Documented Sections</td><td>3</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>3002</td></tr>
+      <tr><td>INFERRED</td><td>673</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>graphrag — Architecture Documentation</p>
+  <p>Generated: 2026-06-10 12:10 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

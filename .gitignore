@@ -1,5 +1,7 @@
 target/
 var/
+graphify-out/cost.json
+graphify-out/cache/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
