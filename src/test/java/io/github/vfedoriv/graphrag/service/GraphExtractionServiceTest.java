@@ -2,7 +2,9 @@ package io.github.vfedoriv.graphrag.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -47,6 +49,8 @@ class GraphExtractionServiceTest {
     private ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Neo4jClient neo4jClient;
+    @Mock
+    private GraphArtifactCleanupService graphArtifactCleanupService;
 
     @Test
     void keepsCompletedStatusWhenCleanupFails() {
@@ -54,9 +58,9 @@ class GraphExtractionServiceTest {
         GraphExtractionService service = serviceWithClient(extractionClient);
         mockActiveSchema();
         when(validationService.validate(any(), any())).thenAnswer(inv -> inv.getArgument(0));
-        lenient().doThrow(new RuntimeException("cleanup boom"))
-            .when(neo4jClient)
-            .query(argThat((String query) -> query.contains("current:ExtractionRun")));
+        doThrow(new RuntimeException("cleanup boom"))
+            .when(graphArtifactCleanupService)
+            .cleanupRunsAfterSuccessfulExtraction(eq("doc-1"), anyString(), eq(false));
 
         service.extract(document(), List.of(chunk()), false);
 
@@ -117,6 +121,9 @@ class GraphExtractionServiceTest {
 
     private GraphExtractionService serviceWithClient(GraphExtractionClient extractionClient) {
         when(graphExtractionClientProvider.orderedStream()).thenReturn(java.util.stream.Stream.of(extractionClient));
+        lenient()
+            .when(graphArtifactCleanupService.cleanupRunsAfterSuccessfulExtraction(anyString(), anyString(), org.mockito.Mockito.anyBoolean()))
+            .thenReturn(GraphArtifactCleanupService.ExtractionRunCleanupResult.zero());
         return new GraphExtractionService(
             activeSchemaResolver,
             extractionRunRepository,
@@ -124,6 +131,7 @@ class GraphExtractionServiceTest {
             graphWriteService,
             graphExtractionClientProvider,
             neo4jClient,
+            graphArtifactCleanupService,
             TestAiObservationService.noop()
         );
     }

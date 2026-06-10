@@ -33,6 +33,7 @@ public class GraphExtractionService {
     private final GraphWriteService graphWriteService;
     private final ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
     private final Neo4jClient neo4jClient;
+    private final GraphArtifactCleanupService graphArtifactCleanupService;
     private final AiObservationService aiObservationService;
 
     public GraphExtractionService(
@@ -42,6 +43,7 @@ public class GraphExtractionService {
         GraphWriteService graphWriteService,
         ObjectProvider<GraphExtractionClient> graphExtractionClientProvider,
         Neo4jClient neo4jClient,
+        GraphArtifactCleanupService graphArtifactCleanupService,
         AiObservationService aiObservationService
     ) {
         this.activeSchemaResolver = activeSchemaResolver;
@@ -50,6 +52,7 @@ public class GraphExtractionService {
         this.graphWriteService = graphWriteService;
         this.graphExtractionClientProvider = graphExtractionClientProvider;
         this.neo4jClient = neo4jClient;
+        this.graphArtifactCleanupService = graphArtifactCleanupService;
         this.aiObservationService = aiObservationService;
     }
 
@@ -119,9 +122,14 @@ public class GraphExtractionService {
                 run.setStatus(ExtractionRunStatus.COMPLETED);
                 run.setCompletedAt(Instant.now());
                 extractionRunRepository.save(run);
-                CleanupResult cleanupResult = CleanupResult.zero();
+                GraphArtifactCleanupService.ExtractionRunCleanupResult cleanupResult =
+                    GraphArtifactCleanupService.ExtractionRunCleanupResult.zero();
                 try {
-                    cleanupResult = cleanupRunsAfterCompletion(document.getId(), run.getId(), allowOverwrite);
+                    cleanupResult = graphArtifactCleanupService.cleanupRunsAfterSuccessfulExtraction(
+                        document.getId(),
+                        run.getId(),
+                        allowOverwrite
+                    );
                 } catch (Exception cleanupEx) {
                     log.error(
                         "Cleanup failed after successful extraction: runId={}, documentId={}, message={}",
@@ -191,67 +199,4 @@ public class GraphExtractionService {
             .orElse(clients.getFirst());
     }
 
-    private CleanupResult cleanupRunsAfterCompletion(String documentId, String runId, boolean allowOverwrite) {
-        Map<String, Object> cleanupRow = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
-            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
-            WHERE failed.id <> current.id
-            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(completed:ExtractionRun {status: 'COMPLETED'})
-            WHERE $allowOverwrite = true AND completed.id <> current.id
-            WITH [run IN collect(DISTINCT failed) WHERE run IS NOT NULL] AS failedRuns,
-                 [run IN collect(DISTINCT completed) WHERE run IS NOT NULL] AS completedRuns
-            WITH failedRuns + completedRuns AS runsToDelete
-            WITH runsToDelete, [run IN runsToDelete | run.id] AS runIds
-            OPTIONAL MATCH ()-[graphRel]-()
-            WHERE graphRel.sourceDocumentId = $documentId AND graphRel.extractionRunId IN runIds
-            WITH runsToDelete, runIds, collect(DISTINCT graphRel) AS graphRelationships
-            FOREACH (graphRel IN graphRelationships | DELETE graphRel)
-            WITH runsToDelete, runIds, size(graphRelationships) AS deletedGraphRelationshipCount
-            UNWIND CASE WHEN size(runsToDelete) = 0 THEN [null] ELSE runsToDelete END AS runToDelete
-            OPTIONAL MATCH (runToDelete)-[runRel]-()
-            WITH runsToDelete, runIds, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
-            FOREACH (run IN runsToDelete | DETACH DELETE run)
-            WITH size(runsToDelete) AS deletedRuns, deletedGraphRelationshipCount + deletedRunRelationshipCount AS deletedRelationshipCount
-            OPTIONAL MATCH (obsoleteNode)
-            WHERE deletedRuns > 0
-                AND obsoleteNode.sourceDocumentId = $documentId
-                AND NOT obsoleteNode:ExtractionRun
-                AND NOT obsoleteNode:DocumentUpload
-                AND NOT obsoleteNode:DocumentChunk
-                AND NOT obsoleteNode:KnowledgeBase
-                AND NOT obsoleteNode:SchemaDefinition
-                AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
-            WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
-            FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
-            RETURN
-                deletedRuns AS deletedRuns,
-                deletedRelationshipCount AS deletedRelationships,
-                size(obsoleteNodes) AS deletedObsoleteExtractedNodes
-            """)
-            .bind(documentId).to("documentId")
-            .bind(runId).to("runId")
-            .bind(allowOverwrite).to("allowOverwrite")
-            .fetch()
-            .one()
-            .orElse(null);
-        if (cleanupRow == null) {
-            log.warn("Cleanup returned no row: runId={}, documentId={}", runId, documentId);
-            return CleanupResult.zero();
-        }
-        return new CleanupResult(
-            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns")),
-            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRelationships")),
-            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
-        );
-    }
-
-    private record CleanupResult(
-        long deletedRuns,
-        long deletedRelationships,
-        long deletedObsoleteExtractedNodes
-    ) {
-        private static CleanupResult zero() {
-            return new CleanupResult(0L, 0L, 0L);
-        }
-    }
 }

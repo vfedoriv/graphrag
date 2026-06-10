@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 5566 nodes, 7361 edges, 509 communities. Commit: 1ff801a</p>
+<p class="subtitle">Generated from graphify knowledge graph: 5591 nodes, 7398 edges, 519 communities. Commit: 85844d9</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2219 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2232 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2805 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2817 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>109 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2219</td><td><code>40, 5, 4, 7, 0, 3, 14, 18, 8, 9, 13, 12, 20, 11, 42, 6, 1, 16, 127, 128, 130, 131, 17, 133, 134, 135, 19, 138, 141, 24, 2, 21, 39, 23, 10, 143, 144, 145, 22, 25, 26, 29, 146, 147, 153, 30, 15, 157, 27, 33, 44, 37, 172, 35, 38, 179, 32, 43, 28, 192, 45, 46, 206, 36, 47, 48, 49, 52, 322, 323, 340, 341, 344, 53, 54, 55, 57, 350, 352, 58, 60, 61, 62, 63, 64, 371, 385, 388, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 66, 67, 446, 447, 448, 449, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2805</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 150, 151, 152, 155, 156, 160, 161, 162, 163, 164, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 342, 345, 346, 351, 353, 354, 355, 356, 357, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 386, 389, 391, 433, 434, 435, 436, 437, 439, 440, 443, 450, 451, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>109</td><td><code>132, 139, 201, 264, 316, 317, 343, 368, 387, 438, 452, 455</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>61</td><td><code>123, 329, 347, 376, 377, 383</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>107</td><td><code>149, 158, 168, 180, 333, 334, 337, 59, 65, 380, 384, 445</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Community 311</td><td>7</td><td><code>311</code></td></tr><tr><td>Other</td><td>113</td><td><code>312, 313, 327, 330, 331, 332, 335, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 441, 442, 444</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2232</td><td><code>40, 4, 6, 3, 7, 14, 10, 12, 20, 11, 16, 127, 25, 128, 22, 0, 130, 131, 17, 18, 15, 27, 134, 135, 19, 5, 133, 138, 8, 9, 141, 24, 1, 2, 21, 45, 13, 23, 143, 145, 146, 26, 44, 147, 29, 39, 153, 172, 206, 30, 157, 33, 37, 342, 352, 386, 388, 36, 451, 35, 38, 509, 179, 32, 42, 28, 144, 192, 46, 511, 512, 47, 48, 49, 52, 322, 323, 340, 341, 514, 53, 54, 55, 57, 344, 350, 515, 58, 60, 61, 62, 63, 64, 371, 385, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 517, 66, 67, 43, 446, 447, 448, 449, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2817</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 150, 151, 152, 155, 156, 160, 161, 162, 163, 252, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>109</td><td><code>132, 139, 201, 264, 316, 317, 343, 368, 387, 438, 452, 455</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>61</td><td><code>123, 329, 347, 376, 377, 383</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>107</td><td><code>149, 158, 168, 180, 333, 334, 337, 59, 65, 380, 384, 445</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Community 311</td><td>7</td><td><code>311</code></td></tr><tr><td>Other</td><td>113</td><td><code>312, 313, 327, 330, 331, 332, 335, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 441, 442, 444</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>5566 nodes · 7361 edges · 509 communities (449 shown, 60 thin omitted)</li>
-      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 689 edges (avg confidence: 0.8)</li>
+      <li>5591 nodes · 7398 edges · 519 communities (458 shown, 61 thin omitted)</li>
+      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 698 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2219 nodes and 4274 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2232 nodes and 4300 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2219 nodes, 4274 edges)
+    %% Section: Extraction Pipeline (2232 nodes, 4300 edges)
     subgraph extract_pipeline_graphrag_controller_DocumentCon_662f1a6e["graphrag/controller/DocumentController.java"]
         controller_documentcontroller_documentcontroller_6d0cb00b("DocumentController<br/><small>graphrag/controller/DocumentController.java</small>")
         controller_documentcontroller_documentcontroller_acb766e2("deleteDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
@@ -201,7 +201,7 @@ flowchart LR
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_066004a1
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_4dcc64fa
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_7dff1881
-    %% Omitted for readability: 2201 nodes, 0 edges
+    %% Omitted for readability: 2214 nodes, 0 edges
     class controller_documentcontroller_documentcontroller_6d0cb00b klass;
     class controller_documentcontroller_documentcontroller_acb766e2 function;
     class controller_documentcontroller_documentcontroller_b8aa33ef function;
@@ -500,19 +500,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1269, contains x716, method x689, imports x506. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1281, contains x717, method x694, imports x508. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2805 nodes and 2613 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2817 nodes and 2624 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (2805 nodes, 2613 edges)
+    %% Section: Graph Build (2817 nodes, 2624 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -546,7 +546,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_domain_graph_3f1cce63 -->|contains| understand_anything_domain_graph_edges_b8252148
-    %% Omitted for readability: 2787 nodes, 0 edges
+    %% Omitted for readability: 2799 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -845,7 +845,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2613. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2624. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3951,18 +3951,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>5566</td></tr>
-      <tr><td>Edges</td><td>7361</td></tr>
+      <tr><td>Nodes</td><td>5591</td></tr>
+      <tr><td>Edges</td><td>7398</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>509</td></tr>
+      <tr><td>Communities</td><td>519</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>6672</td></tr>
-      <tr><td>INFERRED</td><td>689</td></tr>
+      <tr><td>EXTRACTED</td><td>6700</td></tr>
+      <tr><td>INFERRED</td><td>698</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -3970,7 +3970,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-10 15:54 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-10 16:07 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
