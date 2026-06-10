@@ -8,15 +8,12 @@ import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
-import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
-import io.github.vfedoriv.graphrag.observability.AiObservationScope;
-import io.github.vfedoriv.graphrag.observability.AiObservationService;
-import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
+import io.github.vfedoriv.graphrag.service.QueryAskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,8 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,20 +39,20 @@ public class QueryController {
     private final CypherGenerationService cypherGenerationService;
     private final CypherValidationService cypherValidationService;
     private final CypherExecutionService cypherExecutionService;
-    private final AiObservationService aiObservationService;
+    private final QueryAskService queryAskService;
 
     public QueryController(
         AppProperties appProperties,
         CypherGenerationService cypherGenerationService,
         CypherValidationService cypherValidationService,
         CypherExecutionService cypherExecutionService,
-        AiObservationService aiObservationService
+        QueryAskService queryAskService
     ) {
         this.appProperties = appProperties;
         this.cypherGenerationService = cypherGenerationService;
         this.cypherValidationService = cypherValidationService;
         this.cypherExecutionService = cypherExecutionService;
-        this.aiObservationService = aiObservationService;
+        this.queryAskService = queryAskService;
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/generate")
@@ -224,53 +219,6 @@ public class QueryController {
             LogSanitizer.length(request.prompt()),
             LogSanitizer.preview(request.prompt())
         );
-        Map<String, String> attributes = new LinkedHashMap<>();
-        attributes.put("knowledge_base.id", knowledgeBaseId);
-        attributes.put("query.prompt.length", String.valueOf(LogSanitizer.length(request.prompt())));
-        try (AiObservationScope workflow = aiObservationService.startWorkflow(
-            new AiWorkflowContext(AiObservationService.WORKFLOW_QUERY, null, attributes)
-        )) {
-            try {
-                GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, request.prompt());
-                workflow.highCardinalityAttribute("query.validation.valid", String.valueOf(generated.validation().valid()));
-                workflow.highCardinalityAttribute("query.validation.error_count", String.valueOf(generated.validation().errors().size()));
-                workflow.highCardinalityAttribute("query.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
-                if (!generated.validation().valid()) {
-                    log.info(
-                        "Ask query generated invalid Cypher: knowledgeBaseId={}, errorCount={}",
-                        knowledgeBaseId,
-                        generated.validation().errors().size()
-                    );
-                    QueryRejectedException exception = new QueryRejectedException(generated.validation().errors());
-                    workflow.error(exception);
-                    throw exception;
-                }
-                QueryExecutionResponse execution = cypherExecutionService.execute(
-                    knowledgeBaseId,
-                    generated.validation().cypher(),
-                    generated.validation().parameters()
-                );
-                workflow.highCardinalityAttribute("query.execution.row_count", String.valueOf(execution.rowCount()));
-                workflow.highCardinalityAttribute("query.execution.time_ms", String.valueOf(execution.executionTimeMs()));
-                workflow.success();
-                log.info(
-                    "Ask query completed: knowledgeBaseId={}, rowCount={}, executionTimeMs={}",
-                    knowledgeBaseId,
-                    execution.rowCount(),
-                    execution.executionTimeMs()
-                );
-                return new QueryAskResponse(generated, execution);
-            } catch (QueryRejectedException e) {
-                throw e;
-            } catch (RuntimeException e) {
-                workflow.error(e);
-                log.warn(
-                    "Ask query failed: knowledgeBaseId={}, message={}",
-                    knowledgeBaseId,
-                    LogSanitizer.preview(e.getMessage())
-                );
-                throw e;
-            }
-        }
+        return queryAskService.ask(knowledgeBaseId, request.prompt());
     }
 }
