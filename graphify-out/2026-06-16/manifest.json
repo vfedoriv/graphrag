@@ -40,9 +40,9 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java": {
-    "mtime": 1781636931.9117775,
-    "ast_hash": "b0f9e92eaec9fee9f6a135785269c15d",
-    "semantic_hash": ""
+    "mtime": 1780854901.4328816,
+    "ast_hash": "67123f935c2f627393cdd329243e3941",
+    "semantic_hash": "67123f935c2f627393cdd329243e3941"
   },
   "src/main/java/io/github/vfedoriv/graphrag/controller/package-info.java": {
     "mtime": 1778080990.8131819,
@@ -135,9 +135,9 @@
     "semantic_hash": "97c4b3416f3f9a6b8cee55c465e5feeb"
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java": {
-    "mtime": 1781636903.1205804,
-    "ast_hash": "36ba4b54394d5183cfc1253f7506da75",
-    "semantic_hash": ""
+    "mtime": 1778788288.6722922,
+    "ast_hash": "6e876b0fce58d6c1ae6a01f95ca6d98e",
+    "semantic_hash": "6e876b0fce58d6c1ae6a01f95ca6d98e"
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/DocumentChunkResponse.java": {
     "mtime": 1778080990.8131819,
@@ -445,8 +445,8 @@
     "semantic_hash": "7804c74c0f9d591e575d07619e994a0d"
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDefinitionRepository.java": {
-    "mtime": 1781636903.2455814,
-    "ast_hash": "f09f222a87fbd247cd24ea82108313c7",
+    "mtime": 1781115229.0421174,
+    "ast_hash": "1840c65f182aceb9b6a73c52520daea4",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/package-info.java": {
@@ -555,8 +555,8 @@
     "semantic_hash": "a553df238ed04e1dd90ce4f39a05da90"
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaRegistryService.java": {
-    "mtime": 1781636919.7186909,
-    "ast_hash": "fcfb9ae66c5d5f001b9c2c076cc8d3f2",
+    "mtime": 1781115232.924198,
+    "ast_hash": "7fc78ece4b2aa4e8103d66a672736af5",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/package-info.java": {
@@ -635,14 +635,14 @@
     "semantic_hash": "4cbdf5392f3c956dbb0d9c3b9c3dc52c"
   },
   "src/test/java/io/github/vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java": {
-    "mtime": 1781637059.9199533,
-    "ast_hash": "489d631d119dda5562f8a2ee535613c8",
-    "semantic_hash": ""
+    "mtime": 1780602538.4814856,
+    "ast_hash": "02eb337e095fe26cf2c99cef120bc800",
+    "semantic_hash": "02eb337e095fe26cf2c99cef120bc800"
   },
   "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java": {
-    "mtime": 1781637009.098432,
-    "ast_hash": "875e6c80b223ec55577ac98475763d17",
-    "semantic_hash": ""
+    "mtime": 1780855017.9844463,
+    "ast_hash": "111580cf113c2b5d4edab7a9ee61f9b3",
+    "semantic_hash": "111580cf113c2b5d4edab7a9ee61f9b3"
   },
   "src/test/java/io/github/vfedoriv/graphrag/TestAiObservationService.java": {
     "mtime": 1780555806.7428472,
@@ -680,9 +680,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaControllerTest.java": {
-    "mtime": 1781636958.1979806,
-    "ast_hash": "5421f810b6b0623ac9e27dc803a55306",
-    "semantic_hash": ""
+    "mtime": 1780854987.4877796,
+    "ast_hash": "b9d913ae7da0f74d6c0f5d94f20da839",
+    "semantic_hash": "b9d913ae7da0f74d6c0f5d94f20da839"
   },
   "src/test/java/io/github/vfedoriv/graphrag/document/ChunkingServiceTest.java": {
     "mtime": 1781112194.0274622,
@@ -845,8 +845,8 @@
     "semantic_hash": "9c107838dbd601b4cde5bafd3d7bd4d5"
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/SchemaRegistryServiceTest.java": {
-    "mtime": 1781636989.7622519,
-    "ast_hash": "251b9c4fe465581ce6f75980e41e5945",
+    "mtime": 1781115247.5445006,
+    "ast_hash": "81270a4b0809679dd1bf158c8c29c20b",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java": {
@@ -2752,36 +2752,6 @@
   "openspec/specs/hybrid-search/spec.md": {
     "mtime": 1781113126.3322089,
     "ast_hash": "7d689bab488372ff6cd90d14778d6e0d",
-    "semantic_hash": ""
-  },
-  "UA_SECURITY.md": {
-    "mtime": 1781537849.530287,
-    "ast_hash": "701ae6e070126ae1524b019beb9faf74",
-    "semantic_hash": ""
-  },
-  "openspec/changes/associate-created-schemas-with-knowledge-base/.openspec.yaml": {
-    "mtime": 1781636380.3332746,
-    "ast_hash": "b2b5f1d6d51f1aaa1d35b900f1889ae4",
-    "semantic_hash": ""
-  },
-  "openspec/changes/associate-created-schemas-with-knowledge-base/design.md": {
-    "mtime": 1781636458.9483807,
-    "ast_hash": "7fccf546a6e0bd29f7810c6e24f6844d",
-    "semantic_hash": ""
-  },
-  "openspec/changes/associate-created-schemas-with-knowledge-base/proposal.md": {
-    "mtime": 1781636413.5431635,
-    "ast_hash": "74d1b6d369e14f86ce14ed9a730de5d1",
-    "semantic_hash": ""
-  },
-  "openspec/changes/associate-created-schemas-with-knowledge-base/specs/schema-list-by-knowledge-base/spec.md": {
-    "mtime": 1781636459.153386,
-    "ast_hash": "53034ce3bb4f0af21c0562ca0e271785",
-    "semantic_hash": ""
-  },
-  "openspec/changes/associate-created-schemas-with-knowledge-base/tasks.md": {
-    "mtime": 1781637306.7602913,
-    "ast_hash": "bad53b2f2d75ccf38c3a8e9c67745dbd",
     "semantic_hash": ""
   }
 }

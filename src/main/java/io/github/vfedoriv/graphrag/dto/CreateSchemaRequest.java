@@ -11,6 +11,8 @@ public record CreateSchemaRequest(
     )
     @NotBlank String content,
     @Schema(description = "Schema source classification.", example = "GENERATED")
-    SchemaSourceType sourceType
+    SchemaSourceType sourceType,
+    @Schema(description = "Optional knowledge base identifier to associate the created schema with.", example = "kb-demo")
+    String knowledgeBaseId
 ) {
 }

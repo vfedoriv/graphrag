@@ -11,6 +11,7 @@ import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -164,6 +165,62 @@ class SchemaRegistryIntegrationTest {
     }
 
     @Test
+    void createSchemaWithKnowledgeBaseAssociatesWithoutActivating() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        saveKnowledgeBase("kb-create-association");
+
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(
+            schemaJson("contracts-create-association"),
+            SchemaSourceType.GENERATED,
+            "kb-create-association"
+        );
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-create-association").orElseThrow();
+        SchemaDefinitionNode reloaded = schemaRegistryService.getSchema(schema.getId());
+
+        assertThat(kb.getActiveSchemaId()).isNull();
+        assertThat(reloaded.getStatus()).isEqualTo(SchemaStatus.INACTIVE);
+        assertThat(usesSchemaRelationCount("kb-create-association")).isEqualTo(1L);
+        assertThat(usesSchemaTargetCount("kb-create-association", schema.getId())).isEqualTo(1L);
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-create-association"))
+            .extracting(SchemaDefinitionNode::getId)
+            .containsExactly(schema.getId());
+    }
+
+    @Test
+    void attachSchemaAssociatesExistingSchemaIdempotentlyWithoutActivating() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        saveKnowledgeBase("kb-attach");
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-attach"), SchemaSourceType.PREDEFINED);
+
+        schemaRegistryService.attachSchema("kb-attach", schema.getId());
+        schemaRegistryService.attachSchema("kb-attach", schema.getId());
+
+        KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-attach").orElseThrow();
+        SchemaDefinitionNode reloaded = schemaRegistryService.getSchema(schema.getId());
+
+        assertThat(kb.getActiveSchemaId()).isNull();
+        assertThat(reloaded.getStatus()).isEqualTo(SchemaStatus.INACTIVE);
+        assertThat(usesSchemaRelationCount("kb-attach")).isEqualTo(1L);
+        assertThat(usesSchemaTargetCount("kb-attach", schema.getId())).isEqualTo(1L);
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-attach"))
+            .extracting(SchemaDefinitionNode::getId)
+            .containsExactly(schema.getId());
+    }
+
+    @Test
+    void createSchemaWithoutKnowledgeBaseRemainsGlobal() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        saveKnowledgeBase("kb-global-regression");
+
+        schemaRegistryService.createSchema(schemaJson("contracts-global-regression"), SchemaSourceType.GENERATED);
+
+        assertThat(schemaRegistryService.listSchemas()).extracting(SchemaDefinitionNode::getName).contains("contracts-global-regression");
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-global-regression")).isEmpty();
+        assertThat(usesSchemaRelationCount("kb-global-regression")).isZero();
+    }
+
+    @Test
     void updatesInactiveSchemaContentAndHash() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 
@@ -283,5 +340,13 @@ class SchemaRegistryIntegrationTest {
             .fetchAs(Long.class)
             .one()
             .orElse(0L);
+    }
+
+    private void saveKnowledgeBase(String knowledgeBaseId) {
+        KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
+        knowledgeBase.setId(knowledgeBaseId);
+        knowledgeBase.setName(knowledgeBaseId);
+        knowledgeBase.setCreatedAt(Instant.now());
+        knowledgeBaseRepository.save(knowledgeBase);
     }
 }

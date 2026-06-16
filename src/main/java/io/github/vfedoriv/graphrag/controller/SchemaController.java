@@ -88,11 +88,12 @@ public class SchemaController {
     })
     public SchemaResponse createSchema(@Valid @RequestBody CreateSchemaRequest request) {
         log.info(
-            "Create schema request: sourceType={}, contentLength={}",
+            "Create schema request: sourceType={}, knowledgeBaseId={}, contentLength={}",
             request.sourceType(),
+            request.knowledgeBaseId(),
             LogSanitizer.length(request.content())
         );
-        SchemaResponse response = toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType()));
+        SchemaResponse response = toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType(), request.knowledgeBaseId()));
         log.info(
             "Create schema completed: schemaId={}, name={}, version={}, status={}",
             response.id(),
@@ -369,6 +370,21 @@ public class SchemaController {
         log.info("Activate schema request: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         schemaRegistryService.activateSchema(knowledgeBaseId, schemaId);
         log.info("Activate schema completed: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/attach")
+    @Operation(summary = "Attach schema to knowledge base", description = "Associates a schema with a knowledge base without activating it.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Schema attached"),
+        @ApiResponse(responseCode = "404", description = "Schema or knowledge base not found", content = @Content(schema = @Schema()))
+    })
+    public void attachSchema(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Schema identifier to attach") @PathVariable String schemaId
+    ) {
+        log.info("Attach schema request: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+        schemaRegistryService.attachSchema(knowledgeBaseId, schemaId);
+        log.info("Attach schema completed: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
     }
 
     private SchemaResponse toResponse(SchemaDefinitionNode node) {

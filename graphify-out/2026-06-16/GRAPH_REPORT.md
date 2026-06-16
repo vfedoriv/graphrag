@@ -1,16 +1,16 @@
-# Graph Report - graphrag  (2026-06-16)
+# Graph Report - graphrag  (2026-06-10)
 
 ## Corpus Check
-- 520 files · ~411,243 words
+- 515 files · ~407,948 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 5868 nodes · 7906 edges · 531 communities (473 shown, 58 thin omitted)
-- Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 754 edges (avg confidence: 0.8)
+- 5791 nodes · 7741 edges · 522 communities (463 shown, 59 thin omitted)
+- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 730 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dfe87199`
+- Built from commit: `833e7aac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -354,7 +354,6 @@
 - [[_COMMUNITY_Community 383|Community 383]]
 - [[_COMMUNITY_Community 384|Community 384]]
 - [[_COMMUNITY_Community 385|Community 385]]
-- [[_COMMUNITY_Community 386|Community 386]]
 - [[_COMMUNITY_Community 387|Community 387]]
 - [[_COMMUNITY_Community 388|Community 388]]
 - [[_COMMUNITY_Community 389|Community 389]]
@@ -413,14 +412,12 @@
 - [[_COMMUNITY_Community 442|Community 442]]
 - [[_COMMUNITY_Community 443|Community 443]]
 - [[_COMMUNITY_Community 444|Community 444]]
-- [[_COMMUNITY_Community 445|Community 445]]
 - [[_COMMUNITY_Community 446|Community 446]]
 - [[_COMMUNITY_Community 447|Community 447]]
 - [[_COMMUNITY_Community 448|Community 448]]
 - [[_COMMUNITY_Community 449|Community 449]]
 - [[_COMMUNITY_Community 450|Community 450]]
 - [[_COMMUNITY_Community 451|Community 451]]
-- [[_COMMUNITY_Community 452|Community 452]]
 - [[_COMMUNITY_Community 453|Community 453]]
 - [[_COMMUNITY_Community 454|Community 454]]
 - [[_COMMUNITY_Community 455|Community 455]]
@@ -471,7 +468,6 @@
 - [[_COMMUNITY_Community 500|Community 500]]
 - [[_COMMUNITY_Community 501|Community 501]]
 - [[_COMMUNITY_Community 502|Community 502]]
-- [[_COMMUNITY_Community 509|Community 509]]
 - [[_COMMUNITY_Community 510|Community 510]]
 - [[_COMMUNITY_Community 511|Community 511]]
 - [[_COMMUNITY_Community 512|Community 512]]
@@ -481,11 +477,6 @@
 - [[_COMMUNITY_Community 516|Community 516]]
 - [[_COMMUNITY_Community 517|Community 517]]
 - [[_COMMUNITY_Community 518|Community 518]]
-- [[_COMMUNITY_Community 526|Community 526]]
-- [[_COMMUNITY_Community 527|Community 527]]
-- [[_COMMUNITY_Community 528|Community 528]]
-- [[_COMMUNITY_Community 529|Community 529]]
-- [[_COMMUNITY_Community 530|Community 530]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `importMap` - 363 edges
@@ -504,10 +495,8 @@
   src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java →   _Bridges community 15 → community 42_
 - `SpringAiCypherGenerationClient` --implements--> `CypherGenerationClient`  [EXTRACTED]
   src/main/java/io/github/vfedoriv/graphrag/query/SpringAiCypherGenerationClient.java →   _Bridges community 27 → community 38_
-- `LangChain4jSchemaGenerationService` --implements--> `SchemaGenerationService`  [EXTRACTED]
-  src/main/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationService.java →   _Bridges community 388 → community 3_
 - `LocalFilesystemBinaryStorageService` --implements--> `BinaryStorageService`  [EXTRACTED]
-  src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java →   _Bridges community 9 → community 36_
+  src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java →   _Bridges community 38 → community 36_
 
 ## Import Cycles
 - None detected.
@@ -515,66 +504,66 @@
 ## Hyperedges (group relationships)
 - **Agreement Scope** — documents_contract_sample_master_supply_agreement, documents_contract_sample_supply_obligations, documents_contract_sample_pricing [EXTRACTED 1.00]
 
-## Communities (531 total, 58 thin omitted)
+## Communities (522 total, 59 thin omitted)
 
 ### Community 0 - "Graph Extraction Validation Services"
-Cohesion: 0.12
-Nodes (16): ADDED Requirements, Requirement: List schemas by knowledge base, Scenario: Return empty list when no schemas are associated, Scenario: Return schemas associated with knowledge base, MODIFIED Requirements, Requirement: Associate created schema with knowledge base, Requirement: Attach existing schema to knowledge base, Scenario: Attach existing schema (+8 more)
+Cohesion: 0.18
+Nodes (12): GraphExtractionValidationService, GraphExtractionValidationException, AppProperties, ExtractedNode, ExtractedRelationship, GraphExtractionResult, List, Map (+4 more)
 
 ### Community 1 - "Schema Registry Service Tests"
-Cohesion: 0.16
+Cohesion: 0.17
 Nodes (10): SchemaDefinitionRepository, SchemaRegistryServiceTest, List, Query, SchemaDefinitionNode, String, SchemaDefinitionNode, SchemaDocument (+2 more)
 
 ### Community 2 - "Knowledge Base Integration Controllers"
 Cohesion: 0.05
-Nodes (34): ApplicationArguments, ApplicationRunner, AppPropertiesTest, TestConfiguration, CypherExecutionIntegrationTest, CypherValidationIntegrationTest, GraphragApplication, KnowledgeBaseControllerIntegrationTest (+26 more)
+Nodes (31): ApplicationArguments, ApplicationRunner, AppPropertiesTest, TestConfiguration, CypherExecutionIntegrationTest, CypherValidationIntegrationTest, GraphragApplication, KnowledgeBaseControllerIntegrationTest (+23 more)
 
 ### Community 3 - "Schema Controllers"
 Cohesion: 0.12
-Nodes (29): SchemaController, CreateSchemaRequest, GenerateSchemaExampleRequest, GenerateSchemaExampleResponse, GenerateSchemaFromFileRequest, GenerateSchemaRequest, GenerateSchemaResponse, SchemaDetailsResponse (+21 more)
+Nodes (29): SchemaController, CreateSchemaRequest, GenerateSchemaExampleRequest, GenerateSchemaExampleResponse, GenerateSchemaFromFileRequest, GenerateSchemaRequest, GenerateSchemaResponse, RequestBody (+21 more)
 
 ### Community 4 - "Query Controllers"
-Cohesion: 0.16
-Nodes (22): QueryController, HybridSearchService, Prompt, QueryAskService, QueryExecuteRequest, QueryGenerateRequest, QueryValidateRequest, ApiResponse (+14 more)
+Cohesion: 0.09
+Nodes (32): QueryController, QueryControllerTest, SpringAiGraphExtractionClientTest, HybridSearchHit, HybridSearchService, Prompt, QueryAskService, QueryExecuteRequest (+24 more)
 
 ### Community 5 - "Document Integration Controllers"
-Cohesion: 0.08
-Nodes (32): ChatModel, ChatRequest, ChatResponse, Document, LLMGraphTransformerExt, LLMGraphTransformerExtTest, SpringAiGraphExtractionClientTest, SpringAiLangChain4jChatModelAdapter (+24 more)
+Cohesion: 0.05
+Nodes (43): ChatModel, ChatRequest, ChatResponse, Document, LLMGraphTransformerExt, LLMGraphTransformerExtTest, GraphEdge, DocumentControllerIntegrationTest (+35 more)
 
 ### Community 6 - "Ai Observation Services"
-Cohesion: 0.18
-Nodes (13): CapturingObservationHandler, AiObservabilityClientPathTest, String, AiObservationScope, AiObservationService, AppProperties, CapturedObservation, ChatModel (+5 more)
+Cohesion: 0.17
+Nodes (14): CapturingObservationHandler, AiObservabilityClientPathTest, CapturingObservationHandler, AiObservationService, AppProperties, CapturedObservation, ChatModel, Context (+6 more)
 
 ### Community 7 - "Knowledge Base Repositories"
 Cohesion: 0.06
 Nodes (29): ChunkingService, ChunkingServiceTest, Pattern, CypherParsingSupport, CypherParsingSupportTest, CypherSchemaSupport, CypherSchemaSupportTest, CypherValidationService (+21 more)
 
 ### Community 8 - "Knowledge Base Controllers"
-Cohesion: 0.10
-Nodes (26): KnowledgeBaseController, CreateKnowledgeBaseRequest, KnowledgeBaseResponse, KnowledgeBaseService, KnowledgeBaseRepository, RequestBody, KnowledgeBaseService, ApiResponse (+18 more)
+Cohesion: 0.21
+Nodes (15): KnowledgeBaseController, CreateKnowledgeBaseRequest, KnowledgeBaseResponse, KnowledgeBaseService, ApiResponse, ApiResponses, DeleteMapping, GetMapping (+7 more)
 
 ### Community 9 - "Binary Storage Services"
-Cohesion: 0.12
-Nodes (19): GraphWriteService, ExtractedNode, ExtractedRelationship, GraphExtractionResult, List, Map, Neo4jClient, NodeDefinition (+11 more)
+Cohesion: 0.22
+Nodes (12): GraphWriteService, ExtractedNode, ExtractedRelationship, GraphExtractionResult, List, Map, Neo4jClient, NodeDefinition (+4 more)
 
 ### Community 10 - "Ai Observation Services"
 Cohesion: 0.22
 Nodes (11): SpringAiGraphExtractionClient, GraphExtractionClient, AiObservationService, ChatModel, GraphExtractionResult, JsonNode, ObjectProvider, Override (+3 more)
 
 ### Community 11 - "Document Processing Service Tests"
-Cohesion: 0.13
-Nodes (9): DocumentUploadNode, DocumentProcessingServiceTest, DocumentUploadServiceTest, DocumentStatus, Instant, Long, String, Test (+1 more)
+Cohesion: 0.14
+Nodes (7): DocumentUploadNode, DocumentProcessingServiceTest, DocumentStatus, Instant, Long, String, Test
 
 ### Community 12 - "Http Servlet Requests"
 Cohesion: 0.17
 Nodes (16): BindException, ConstraintViolationException, GlobalExceptionHandler, GlobalExceptionHandlerTest, ExceptionHandler, HttpMessageConversionException, HttpServletRequest, HttpStatus (+8 more)
 
 ### Community 13 - "Graph Write Service Tests"
-Cohesion: 0.16
-Nodes (13): GraphWriteServiceTest, firstLong(), fromResponse(), hasAny(), invoke(), none(), toLong(), Override (+5 more)
+Cohesion: 0.21
+Nodes (12): GraphWriteServiceTest, firstLong(), fromResponse(), hasAny(), invoke(), none(), toLong(), AiTokenUsage (+4 more)
 
 ### Community 14 - "Ai Observation Services"
-Cohesion: 0.14
+Cohesion: 0.16
 Nodes (15): AiModelCallObservation, Iterable, AiObservationService, Override, String, Throwable, AiModelCallContext, AiTokenUsage (+7 more)
 
 ### Community 15 - "Knowledge Base Repositories"
@@ -598,12 +587,12 @@ Cohesion: 0.10
 Nodes (13): ConflictException, GraphExtractionValidationException, NotFoundException, QueryRejectedException, RuntimeException, SchemaValidationException, String, String (+5 more)
 
 ### Community 20 - "Ai Observation Service Tests"
-Cohesion: 0.14
-Nodes (15): Metadata, AiObservationServiceTest, getCompletionTokens(), getMetadata(), getPromptTokens(), getTotalTokens(), getUsage(), SimpleMeterRegistry (+7 more)
+Cohesion: 0.10
+Nodes (20): Metadata, AiObservationServiceTest, CapturingObservationHandler, getCompletionTokens(), getMetadata(), getPromptTokens(), getTotalTokens(), getUsage() (+12 more)
 
 ### Community 21 - "Extraction Run Node Nodes"
-Cohesion: 0.16
-Nodes (4): ExtractionRunNode, ExtractionRunStatus, Instant, String
+Cohesion: 0.21
+Nodes (3): ExtractionRunNode, Instant, String
 
 ### Community 22 - "Graph Node Nodes"
 Cohesion: 0.16
@@ -614,8 +603,8 @@ Cohesion: 0.15
 Nodes (12): ConflictException, DocumentProcessingIntegrationTest, FakeEmbeddingConfig, SchemaBootstrapService, SchemaRegistryService, AfterEach, Bean, Double (+4 more)
 
 ### Community 24 - "Cypher Validation Service Tests"
-Cohesion: 0.17
-Nodes (9): HybridSearchGraphEntity, HybridSearchGraphRelationship, AppProperties, EmbeddingClient, HybridSearchRequest, HybridSearchResponse, Integer, Neo4jClient (+1 more)
+Cohesion: 0.29
+Nodes (5): CypherValidationServiceTest, ActiveSchemaResolver, CypherValidationService, SchemaDocument, Test
 
 ### Community 25 - "Node Definition Nodes"
 Cohesion: 0.25
@@ -626,12 +615,12 @@ Cohesion: 0.18
 Nodes (10): GraphExtractionCleanupIntegrationTest, RetryFailureThenSuccessConfig, AfterEach, Bean, Double, EmbeddingClient, GraphExtractionClient, List (+2 more)
 
 ### Community 27 - "Schema Generation Services"
-Cohesion: 0.27
-Nodes (8): SpringAiCypherGenerationClient, AiObservationService, ChatModel, GeneratedCypher, ObjectProvider, Override, SchemaDocument, String
+Cohesion: 0.10
+Nodes (15): LogSanitizer, LogSanitizerTest, SpringAiCypherGenerationClient, Override, String, AiObservationService, ChatModel, GeneratedCypher (+7 more)
 
 ### Community 28 - "Cypher Generation Service Tests"
-Cohesion: 0.06
-Nodes (26): DocumentControllerIntegrationTest, DeterministicAiTestConfig, EndToEndMvpFlowIntegrationTest, DeterministicAiTestConfig, EndToEndMvpFlowMvcIntegrationTest, TestDocumentStorage, AfterEach, BeforeEach (+18 more)
+Cohesion: 0.20
+Nodes (10): DeterministicAiTestConfig, EndToEndMvpFlowIntegrationTest, AfterEach, Bean, CypherGenerationClient, Double, EmbeddingClient, GraphExtractionClient (+2 more)
 
 ### Community 29 - "Graph Extraction Validation Tests"
 Cohesion: 0.27
@@ -646,36 +635,36 @@ Cohesion: 0.01
 Nodes (363): importMap, AGENTS.md, CLAUDE.md, .codex/settings.local.json, .codex/skills/openspec-apply-change/SKILL.md, .codex/skills/openspec-archive-change/SKILL.md, .codex/skills/openspec-explore/SKILL.md, .codex/skills/openspec-propose/SKILL.md (+355 more)
 
 ### Community 32 - "Ai Observation Services"
-Cohesion: 0.21
+Cohesion: 0.23
 Nodes (9): SpringAiEmbeddingClient, EmbeddingClient, AiObservationService, Double, EmbeddingModel, List, ObjectProvider, Override (+1 more)
 
 ### Community 33 - "Cypher Execution Services"
-Cohesion: 0.07
-Nodes (28): GraphExtractionSupport, GraphExtractionSupportTest, GraphExtractionValidationService, GraphExtractionValidationException, LogSanitizer, LogSanitizerTest, ExtractedNode, ExtractedRelationship (+20 more)
+Cohesion: 0.17
+Nodes (12): GraphExtractionSupport, GraphExtractionSupportTest, ExtractedNode, ExtractedRelationship, List, Map, NodeDefinition, Object (+4 more)
 
 ### Community 34 - "Chunking Service Tests"
 Cohesion: 0.01
 Nodes (363): importMap, AGENTS.md, CLAUDE.md, .codex/settings.local.json, .codex/skills/openspec-apply-change/SKILL.md, .codex/skills/openspec-archive-change/SKILL.md, .codex/skills/openspec-explore/SKILL.md, .codex/skills/openspec-propose/SKILL.md (+355 more)
 
 ### Community 35 - "Document Upload Integration Tests"
-Cohesion: 0.26
+Cohesion: 0.28
 Nodes (5): DocumentUploadIntegrationTest, AfterEach, BeforeEach, String, Test
 
 ### Community 36 - "Document Upload Service Tests"
-Cohesion: 0.31
-Nodes (6): BinaryStorageService, Optional, DocumentUploadRepository, DocumentUploadNode, List, String
+Cohesion: 0.23
+Nodes (8): BinaryStorageService, Optional, DocumentUploadRepository, DocumentUploadServiceTest, DocumentUploadNode, List, String, Test
 
 ### Community 37 - "Graph Extraction Service Tests"
-Cohesion: 0.28
-Nodes (8): GraphExtractionValidationService, GraphWriteService, GraphExtractionServiceTest, DocumentChunkNode, DocumentUploadNode, GraphExtractionClient, GraphExtractionService, Test
+Cohesion: 0.34
+Nodes (6): GraphExtractionServiceTest, DocumentChunkNode, DocumentUploadNode, GraphExtractionClient, GraphExtractionService, Test
 
 ### Community 38 - "Graph Extraction Cleanup Support"
 Cohesion: 0.07
-Nodes (24): ActiveSchemaContext, CypherGenerationClient, KnowledgeBaseNode, ActiveSchemaResolver, ActiveSchemaResolverTest, CypherGenerationServiceTest, CypherValidationServiceTest, Instant (+16 more)
+Nodes (27): ActiveSchemaContext, CypherGenerationClient, KnowledgeBaseNode, NotFoundException, ActiveSchemaResolver, ActiveSchemaResolverTest, CypherGenerationServiceTest, Instant (+19 more)
 
 ### Community 39 - "Extraction Run Repositories"
-Cohesion: 0.20
-Nodes (12): GraphExtractionService, ActiveSchemaResolver, AiObservationService, DocumentChunkNode, DocumentUploadNode, ExtractionRunRepository, GraphArtifactCleanupService, GraphExtractionClient (+4 more)
+Cohesion: 0.16
+Nodes (14): GraphExtractionValidationService, GraphWriteService, GraphExtractionService, ActiveSchemaResolver, AiObservationService, DocumentChunkNode, DocumentUploadNode, ExtractionRunRepository (+6 more)
 
 ### Community 40 - "Iterable"
 Cohesion: 0.01
@@ -686,8 +675,8 @@ Cohesion: 0.05
 Nodes (38): AI Observability, Breaking Migration Note (YAML to JSON), Configuration, Content Capture, Data Model, Default profile, Design Decisions, Document ingestion and processing (+30 more)
 
 ### Community 42 - "Ai Observation Services"
-Cohesion: 0.29
-Nodes (6): AiObservationScope, AiWorkflowContext, QueryAskServiceTest, Override, QueryValidationResponse, Test
+Cohesion: 0.15
+Nodes (13): AiObservationScope, AiWorkflowContext, QueryAskService, QueryAskServiceTest, Override, AiObservationScope, AiObservationService, CypherExecutionService (+5 more)
 
 ### Community 43 - "Node Accumulator Nodes"
 Cohesion: 0.16
@@ -714,8 +703,8 @@ Cohesion: 0.32
 Nodes (5): GraphragApplicationTests, LightweightContext, Bean, String, Test
 
 ### Community 49 - "Capturing Observation Handler Observability"
-Cohesion: 0.30
-Nodes (3): Properties, LangChain4jSchemaGenerationServiceTest, Test
+Cohesion: 0.21
+Nodes (10): KnowledgeBaseRepository, KnowledgeBaseService, KnowledgeBaseNode, List, KnowledgeBaseNode, KnowledgeBaseRepository, List, Neo4jClient (+2 more)
 
 ### Community 50 - "cmms v1 json"
 Cohesion: 0.25
@@ -726,7 +715,7 @@ Cohesion: 0.25
 Nodes (7): description, indexes, name, nodes, relationships, vectorIndexes, version
 
 ### Community 52 - "Extraction Run Repositories"
-Cohesion: 0.39
+Cohesion: 0.38
 Nodes (5): ExtractionRunNode, ExtractionRunRepository, List, Query, String
 
 ### Community 53 - "Ai Observation Services"
@@ -826,8 +815,8 @@ Cohesion: 0.08
 Nodes (24): document-management Specification, Purpose, Requirements, Requirement: Document can be deleted, Requirement: Document can be updated by replacement upload, Requirement: Document cleanup is scoped to the target document, Requirement: Document replacement clears derived artifacts, Requirement: Document responses expose local source path (+16 more)
 
 ### Community 133 - "Community 133"
-Cohesion: 0.21
-Nodes (12): SchemaValidator, SchemaRegistryService, KnowledgeBaseNode, KnowledgeBaseRepository, List, Neo4jClient, SchemaDefinitionNode, SchemaDefinitionRepository (+4 more)
+Cohesion: 0.20
+Nodes (12): SchemaValidator, SchemaRegistryService, SchemaSourceType, KnowledgeBaseRepository, List, Neo4jClient, SchemaDefinitionNode, SchemaDefinitionRepository (+4 more)
 
 ### Community 134 - "Community 134"
 Cohesion: 0.08
@@ -846,8 +835,8 @@ Cohesion: 0.08
 Nodes (23): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+15 more)
 
 ### Community 138 - "Community 138"
-Cohesion: 0.39
-Nodes (5): HybridSearchService, List, Map, Object, String
+Cohesion: 0.06
+Nodes (33): FakeEmbeddingConfig, HybridSearchIntegrationTest, HybridSearchGraphEntity, HybridSearchGraphRelationship, GraphExtractionCleanupSupport, GraphExtractionCleanupSupportTest, HybridSearchService, HybridSearchServiceTest (+25 more)
 
 ### Community 139 - "Community 139"
 Cohesion: 0.09
@@ -866,7 +855,7 @@ Cohesion: 0.10
 Nodes (19): contains, imports, tested_by, issues, class, config, document, file (+11 more)
 
 ### Community 143 - "Community 143"
-Cohesion: 0.23
+Cohesion: 0.19
 Nodes (4): SchemaControllerTest, JsonNode, String, Test
 
 ### Community 144 - "Community 144"
@@ -874,8 +863,8 @@ Cohesion: 0.33
 Nodes (6): Dependency, ArchitectureBoundaryTest, JavaClass, Set, String, Test
 
 ### Community 145 - "Community 145"
-Cohesion: 0.20
-Nodes (6): AutoCloseable, AiObservationScope, Map, Observation, Scope, Throwable
+Cohesion: 0.19
+Nodes (7): AutoCloseable, AiObservationScope, Map, Observation, Scope, String, Throwable
 
 ### Community 146 - "Community 146"
 Cohesion: 0.42
@@ -1250,8 +1239,8 @@ Cohesion: 0.22
 Nodes (9): openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/.openspec.yaml, classes, contentHash, exports, filePath, functions, hasStructuralAnalysis, imports (+1 more)
 
 ### Community 240 - "Community 240"
-Cohesion: 0.13
-Nodes (14): files, openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/proposal.md, openspec/changes/archive/2026-05-15-overwrite-completed-extraction/.openspec.yaml, generatedAt, gitCommitHash, classes, contentHash, exports (+6 more)
+Cohesion: 0.22
+Nodes (9): openspec/changes/archive/2026-05-13-include-schema-content-in-get-schema/proposal.md, classes, contentHash, exports, filePath, functions, hasStructuralAnalysis, imports (+1 more)
 
 ### Community 241 - "Community 241"
 Cohesion: 0.22
@@ -1650,16 +1639,16 @@ Cohesion: 0.29
 Nodes (6): MODIFIED Requirements, Requirement: Schema references are validated by Cypher context, Scenario: Relationship type is not treated as label, Scenario: Single active schema is used for validation scope, Scenario: Unknown node label is rejected, Scenario: Valid node label is accepted
 
 ### Community 340 - "Community 340"
-Cohesion: 0.21
-Nodes (11): CypherGenerationService, ActiveSchemaResolver, AiObservationService, AppProperties, CypherGenerationClient, CypherValidationService, GeneratedQueryResponse, ObjectProvider (+3 more)
+Cohesion: 0.22
+Nodes (10): CypherGenerationService, ActiveSchemaResolver, AiObservationService, AppProperties, CypherGenerationClient, CypherValidationService, GeneratedQueryResponse, ObjectProvider (+2 more)
 
 ### Community 341 - "Community 341"
 Cohesion: 0.29
 Nodes (6): Capabilities, Impact, Modified Capabilities, New Capabilities, What Changes, Why
 
 ### Community 342 - "Community 342"
-Cohesion: 0.12
-Nodes (7): SchemaDefinitionNode, SchemaFormat, SchemaStatus, SchemaDefinitionNode, Instant, SchemaSourceType, String
+Cohesion: 0.14
+Nodes (6): SchemaDefinitionNode, SchemaFormat, SchemaStatus, SchemaDefinitionNode, Instant, String
 
 ### Community 343 - "Community 343"
 Cohesion: 0.29
@@ -1679,7 +1668,7 @@ Nodes (6): MODIFIED Requirements, Requirement: Node keys are declared properties
 
 ### Community 347 - "Community 347"
 Cohesion: 0.29
-Nodes (6): ADDED Requirements, Requirement: List schemas by knowledge base, Requirement: Preserve response and error conventions, Scenario: Return empty list when no schemas are associated, Scenario: Return schemas associated with knowledge base, Scenario: Unknown knowledge base returns not found problem
+Nodes (6): Requirement: List schemas by knowledge base, Requirement: Preserve response and error conventions, Scenario: Return empty list when no schemas are associated, Scenario: Return schemas associated with knowledge base, Scenario: Unknown knowledge base returns not found problem, ADDED Requirements
 
 ### Community 348 - "Community 348"
 Cohesion: 0.33
@@ -1829,21 +1818,13 @@ Nodes (4): 1. API Contract, 2. Registry Service, 3. Repository Support, 4. Tests
 Cohesion: 0.40
 Nodes (4): 1. API And Configuration, 2. Retrieval Implementation, 3. Validation And Error Handling, 4. Tests And Documentation
 
-### Community 385 - "Community 385"
-Cohesion: 0.31
-Nodes (7): HybridSearchServiceTest, AppProperties, Double, EmbeddingClient, List, ObjectProvider, Test
-
-### Community 386 - "Community 386"
-Cohesion: 0.18
-Nodes (6): GraphExtractionCleanupSupport, GraphExtractionCleanupSupportTest, Exception, Object, String, Test
-
 ### Community 387 - "Community 387"
 Cohesion: 0.29
 Nodes (6): Capabilities, Impact, Modified Capabilities, New Capabilities, What Changes, Why
 
 ### Community 388 - "Community 388"
-Cohesion: 0.12
-Nodes (16): GraphEdge, RelationshipDefinition, SchemaGenerationWarning, LangChain4jSchemaGenerationService, NodeAccumulator, RelationshipAccumulator, AiObservationService, ChatModel (+8 more)
+Cohesion: 0.10
+Nodes (18): Properties, RelationshipDefinition, SchemaGenerationService, SchemaGenerationWarning, LangChain4jSchemaGenerationService, NodeAccumulator, RelationshipAccumulator, LangChain4jSchemaGenerationServiceTest (+10 more)
 
 ### Community 389 - "Community 389"
 Cohesion: 0.40
@@ -2069,17 +2050,13 @@ Nodes (3): 1. Response Normalization, 2. Test Coverage, 3. Verification
 Cohesion: 0.50
 Nodes (3): 1. Align public documentation, 2. Align contributor guidance, 3. Verify consistency
 
-### Community 445 - "Community 445"
-Cohesion: 0.15
-Nodes (12): 1. LLM analysis traffic, 2. Package manager traffic, 3. Dashboard browser traffic, 4. Generated local artifacts, 5. Auto-update behavior, Evidence Checked, Final Assessment, Main Conclusion (+4 more)
-
 ### Community 446 - "Community 446"
 Cohesion: 0.50
 Nodes (3): 1. Cleanup Component, 2. Service Integration, 3. Verification
 
 ### Community 447 - "Community 447"
-Cohesion: 0.26
-Nodes (6): FakeEmbeddingConfig, HybridSearchIntegrationTest, Bean, BeforeEach, EmbeddingClient, Test
+Cohesion: 0.33
+Nodes (5): files, openspec/changes/archive/2026-05-15-overwrite-completed-extraction/.openspec.yaml, generatedAt, gitCommitHash, version
 
 ### Community 448 - "Community 448"
 Cohesion: 0.40
@@ -2097,10 +2074,6 @@ Nodes (3): gitCommitHash, projectRoot, sourceFilePaths
 Cohesion: 0.31
 Nodes (8): DocumentArtifactCleanupResult, ExtractionRunCleanupResult, GraphArtifactCleanupService, zero(), Map, Neo4jClient, Object, String
 
-### Community 452 - "Community 452"
-Cohesion: 0.28
-Nodes (6): QueryAskService, AiObservationService, CypherExecutionService, CypherGenerationService, QueryAskResponse, String
-
 ### Community 453 - "Community 453"
 Cohesion: 0.50
 Nodes (3): For /graphify add, For --watch, graphify reference: add a URL and watch a folder
@@ -2116,10 +2089,6 @@ Nodes (3): For /graphify explain, For /graphify path, graphify reference: query,
 ### Community 456 - "Community 456"
 Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
-
-### Community 509 - "Community 509"
-Cohesion: 0.43
-Nodes (4): QueryControllerTest, HybridSearchHit, AppProperties, Test
 
 ### Community 510 - "Community 510"
 Cohesion: 0.17
@@ -2149,45 +2118,25 @@ Nodes (3): 1. Test Dependency And Baseline, 2. Boundary Rules, 3. Verification
 Cohesion: 0.50
 Nodes (3): 1. Resolver Contract, 2. Consumer Refactor, 3. Verification
 
-### Community 526 - "Community 526"
-Cohesion: 0.32
-Nodes (5): CapturingObservationHandler, CapturedObservation, Context, Override, String
-
-### Community 527 - "Community 527"
-Cohesion: 0.29
-Nodes (6): Capabilities, Impact, Modified Capabilities, New Capabilities, What Changes, Why
-
-### Community 528 - "Community 528"
-Cohesion: 0.40
-Nodes (4): Context, Decisions, Goals / Non-Goals, Risks / Trade-offs
-
-### Community 529 - "Community 529"
-Cohesion: 0.40
-Nodes (4): 1. API Contract, 2. Backend Behavior, 3. Tests, 4. Verification
-
-### Community 530 - "Community 530"
-Cohesion: 0.60
-Nodes (3): CapturingObservationHandler, Context, Override
-
 ## Knowledge Gaps
-- **3383 isolated node(s):** `PreToolUse`, `allow`, `primaryBuildTool`, `testFramework`, `database` (+3378 more)
+- **3349 isolated node(s):** `PreToolUse`, `allow`, `primaryBuildTool`, `testFramework`, `database` (+3344 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **58 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **59 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `files` connect `Community 240` to `Community 256`, `Community 257`, `Community 258`, `Community 259`, `Community 260`, `Community 261`, `Community 262`, `Community 164`, `Community 209`, `Community 210`, `Community 211`, `Community 212`, `Community 213`, `Community 214`, `Community 215`, `Community 216`, `Community 217`, `Community 218`, `Community 219`, `Community 220`, `Community 221`, `Community 222`, `Community 223`, `Community 224`, `Community 225`, `Community 226`, `Community 227`, `Community 228`, `Community 229`, `Community 230`, `Community 231`, `Community 232`, `Community 233`, `Community 234`, `Community 235`, `Community 236`, `Community 237`, `Community 238`, `Community 239`, `Community 241`, `Community 242`, `Community 243`, `Community 244`, `Community 245`, `Community 246`, `Community 247`, `Community 248`, `Community 249`, `Community 250`, `Community 251`, `Community 252`, `Community 253`, `Community 254`, `Community 255`?**
+- **Why does `files` connect `Community 447` to `Community 256`, `Community 257`, `Community 258`, `Community 259`, `Community 260`, `Community 261`, `Community 262`, `Community 164`, `Community 209`, `Community 210`, `Community 211`, `Community 212`, `Community 213`, `Community 214`, `Community 215`, `Community 216`, `Community 217`, `Community 218`, `Community 219`, `Community 220`, `Community 221`, `Community 222`, `Community 223`, `Community 224`, `Community 225`, `Community 226`, `Community 227`, `Community 228`, `Community 229`, `Community 230`, `Community 231`, `Community 232`, `Community 233`, `Community 234`, `Community 235`, `Community 236`, `Community 237`, `Community 238`, `Community 239`, `Community 240`, `Community 241`, `Community 242`, `Community 243`, `Community 244`, `Community 245`, `Community 246`, `Community 247`, `Community 248`, `Community 249`, `Community 250`, `Community 251`, `Community 252`, `Community 253`, `Community 254`, `Community 255`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **Why does `importMap` connect `Chunking Service Tests` to `Community 357`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `exportsByPath` connect `Iterable` to `Community 353`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `AiObservationScope` connect `Community 145` to `Ai Observation Services`?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **What connects `PreToolUse`, `allow`, `primaryBuildTool` to the rest of the system?**
-  _3383 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Graph Extraction Validation Services` be split into smaller, more focused modules?**
-  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
+  _3349 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Knowledge Base Integration Controllers` be split into smaller, more focused modules?**
-  _Cohesion score 0.05016797312430011 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05403508771929825 - nodes in this community are weakly interconnected._
 - **Should `Schema Controllers` be split into smaller, more focused modules?**
-  _Cohesion score 0.12056737588652482 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11840888066604996 - nodes in this community are weakly interconnected._
+- **Should `Query Controllers` be split into smaller, more focused modules?**
+  _Cohesion score 0.08862745098039215 - nodes in this community are weakly interconnected._

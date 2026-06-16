@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.dto.CreateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
@@ -253,14 +254,15 @@ class SchemaControllerTest {
         schema.setStatus(SchemaStatus.ACTIVE);
         schema.setCreatedAt(Instant.parse("2026-05-03T10:12:00Z"));
 
-        when(registryService.createSchema(Mockito.anyString(), Mockito.any())).thenReturn(schema);
+        when(registryService.createSchema(Mockito.anyString(), Mockito.any(), Mockito.any())).thenReturn(schema);
         when(registryService.listSchemas()).thenReturn(List.of(schema));
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         SchemaResponse created = controller.createSchema(
-            new io.github.vfedoriv.graphrag.dto.CreateSchemaRequest(
+            new CreateSchemaRequest(
                 "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
-                SchemaSourceType.PREDEFINED
+                SchemaSourceType.PREDEFINED,
+                "kb-01"
             )
         );
         List<SchemaResponse> listed = controller.listSchemas();
@@ -270,6 +272,24 @@ class SchemaControllerTest {
         assertThat(listed.getFirst()).isInstanceOf(SchemaResponse.class);
         assertThat(Arrays.stream(SchemaResponse.class.getDeclaredMethods()).map(method -> method.getName()))
             .doesNotContain("content");
+        verify(registryService).createSchema(
+            "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
+            SchemaSourceType.PREDEFINED,
+            "kb-01"
+        );
+    }
+
+    @Test
+    void attachSchemaDelegatesToRegistryService() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService);
+
+        controller.attachSchema("kb-01", "schema-01");
+
+        verify(registryService).attachSchema("kb-01", "schema-01");
     }
 
     @Test

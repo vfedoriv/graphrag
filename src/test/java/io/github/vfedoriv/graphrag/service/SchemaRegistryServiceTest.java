@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaFormat;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
@@ -82,6 +83,64 @@ class SchemaRegistryServiceTest {
             .isInstanceOf(ConflictException.class)
             .hasMessage("Schema version is immutable and already exists for name=contracts, version=1");
         verify(schemaRepository, never()).save(any());
+    }
+
+    @Test
+    void createSchemaWithKnowledgeBaseAssociatesSavedSchema() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        String json = schemaJson("contracts", 1, "Contract");
+        KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
+        knowledgeBase.setId("kb-01");
+        when(knowledgeBaseRepository.findById("kb-01")).thenReturn(Optional.of(knowledgeBase));
+        when(schemaParser.parse(json)).thenReturn(schemaDocument("contracts", 1));
+        when(schemaValidator.validate(any())).thenReturn(List.of());
+        when(schemaRepository.existsByNameAndVersion("contracts", 1)).thenReturn(false);
+        when(schemaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        SchemaDefinitionNode created = service.createSchema(json, SchemaSourceType.GENERATED, "kb-01");
+
+        assertThat(created.getName()).isEqualTo("contracts");
+        verify(knowledgeBaseRepository).findById("kb-01");
+        verify(schemaRepository).associateWithKnowledgeBase("kb-01", created.getId());
+    }
+
+    @Test
+    void createSchemaWithMissingKnowledgeBaseThrowsWithoutSaving() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        when(knowledgeBaseRepository.findById("missing-kb")).thenReturn(Optional.empty());
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        assertThatThrownBy(() -> service.createSchema(schemaJson("contracts", 1, "Contract"), SchemaSourceType.GENERATED, "missing-kb"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Knowledge base not found: missing-kb");
+        verify(schemaParser, never()).parse(any());
+        verify(schemaRepository, never()).save(any());
+        verify(schemaRepository, never()).associateWithKnowledgeBase(any(), any());
     }
 
     @Test
@@ -161,6 +220,85 @@ class SchemaRegistryServiceTest {
         assertThatThrownBy(() -> service.listSchemasByKnowledgeBase("missing-kb"))
             .isInstanceOf(NotFoundException.class)
             .hasMessage("Knowledge base not found: missing-kb");
+    }
+
+    @Test
+    void attachSchemaAssociatesExistingSchemaWithoutSavingSchemaOrKnowledgeBase() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        SchemaDefinitionNode schema = schemaNode("schema-01", "contracts", 1);
+        KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
+        knowledgeBase.setId("kb-01");
+        when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schema));
+        when(knowledgeBaseRepository.findById("kb-01")).thenReturn(Optional.of(knowledgeBase));
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        service.attachSchema("kb-01", "schema-01");
+
+        verify(schemaRepository).associateWithKnowledgeBase("kb-01", "schema-01");
+        verify(schemaRepository, never()).save(any());
+        verify(knowledgeBaseRepository, never()).save(any());
+    }
+
+    @Test
+    void attachSchemaThrowsWhenSchemaMissing() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        when(schemaRepository.findById("missing-schema")).thenReturn(Optional.empty());
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        assertThatThrownBy(() -> service.attachSchema("kb-01", "missing-schema"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Schema not found: missing-schema");
+        verify(knowledgeBaseRepository, never()).findById(any());
+        verify(schemaRepository, never()).associateWithKnowledgeBase(any(), any());
+    }
+
+    @Test
+    void attachSchemaThrowsWhenKnowledgeBaseMissing() {
+        SchemaParser schemaParser = Mockito.mock(SchemaParser.class);
+        SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
+        SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
+        KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+
+        when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
+        when(knowledgeBaseRepository.findById("missing-kb")).thenReturn(Optional.empty());
+
+        SchemaRegistryService service = new SchemaRegistryService(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            neo4jClient
+        );
+
+        assertThatThrownBy(() -> service.attachSchema("missing-kb", "schema-01"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("Knowledge base not found: missing-kb");
+        verify(schemaRepository, never()).associateWithKnowledgeBase(any(), any());
     }
 
     @Test

@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 5791 nodes, 7741 edges, 522 communities. Commit: 833e7aa</p>
+<p class="subtitle">Generated from graphify knowledge graph: 5868 nodes, 7906 edges, 531 communities. Commit: dfe8719</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -71,13 +71,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
+    <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#community-159">Community 159</a>
     <a href="#community-178">Community 178</a>
     <a href="#community-203">Community 203</a>
     <a href="#community-306">Community 306</a>
     <a href="#community-310">Community 310</a>
-    <a href="#community-311">Community 311</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2342 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2372 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2829 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2846 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>121 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -102,6 +102,8 @@ flowchart LR
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>113 nodes</small>")
     class SERVE_API_35EC8E86 module;
+    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>13 nodes</small>")
+    class SECURITY_GLOBAL_5B9C6A04 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>121 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_159_19BCAB60("Community 159<br/><small>15 nodes</small>")
@@ -114,9 +116,7 @@ flowchart LR
     class COMMUNITY_306_770E6206 module;
     COMMUNITY_310_C2F7331D("Community 310<br/><small>7 nodes</small>")
     class COMMUNITY_310_C2F7331D module;
-    COMMUNITY_311_15A0153B("Community 311<br/><small>7 nodes</small>")
-    class COMMUNITY_311_15A0153B module;
-    OTHER_D0941E68("Other<br/><small>113 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>137 nodes</small>")
     class OTHER_D0941E68 module;
     BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2342</td><td><code>40, 5, 2, 138, 7, 38, 4, 3, 14, 11, 20, 388, 27, 12, 33, 16, 6, 1, 127, 128, 0, 130, 131, 133, 134, 135, 17, 19, 143, 18, 42, 8, 9, 141, 24, 342, 13, 22, 23, 43, 10, 21, 25, 26, 147, 29, 39, 49, 153, 30, 144, 157, 206, 28, 36, 145, 340, 37, 451, 35, 32, 15, 172, 192, 46, 146, 47, 48, 322, 323, 341, 52, 53, 54, 55, 57, 515, 58, 60, 61, 62, 63, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 66, 67, 446, 68, 69, 70, 71, 72, 385, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2829</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 150, 151, 152, 155, 156, 160, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 447, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>113</td><td><code>123, 44, 179, 329, 343, 347, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Community 311</td><td>7</td><td><code>311</code></td></tr><tr><td>Other</td><td>113</td><td><code>312, 313, 327, 330, 331, 332, 335, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 441, 442, 444</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2372</td><td><code>40, 2, 33, 5, 38, 7, 28, 3, 14, 11, 8, 1, 9, 12, 342, 6, 16, 20, 127, 4, 128, 388, 130, 131, 133, 134, 135, 17, 19, 13, 18, 141, 21, 22, 23, 43, 10, 25, 26, 147, 29, 138, 153, 30, 39, 144, 157, 206, 24, 340, 37, 143, 35, 385, 451, 49, 32, 386, 27, 42, 447, 145, 15, 172, 192, 36, 46, 146, 452, 47, 48, 509, 52, 526, 322, 323, 341, 53, 54, 55, 57, 515, 58, 60, 61, 62, 63, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 530, 66, 67, 446, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2846</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 0, 150, 151, 152, 155, 156, 160, 161, 162, 163, 240, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>113</td><td><code>123, 44, 179, 329, 343, 347, 344, 376, 377, 383, 384</code></td></tr><tr><td>Security &amp; Global Graph</td><td>13</td><td><code>445</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Other</td><td>137</td><td><code>311, 312, 313, 327, 330, 331, 332, 335, 527, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 528, 529, 441, 442, 444</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>5791 nodes · 7741 edges · 522 communities (463 shown, 59 thin omitted)</li>
-      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 730 edges (avg confidence: 0.8)</li>
+      <li>5868 nodes · 7906 edges · 531 communities (473 shown, 58 thin omitted)</li>
+      <li>Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 754 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2342 nodes and 4561 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2372 nodes and 4684 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2342 nodes, 4561 edges)
+    %% Section: Extraction Pipeline (2372 nodes, 4684 edges)
     subgraph extract_pipeline_graphrag_controller_DocumentCon_662f1a6e["graphrag/controller/DocumentController.java"]
         controller_documentcontroller_documentcontroller_6d0cb00b("DocumentController<br/><small>graphrag/controller/DocumentController.java</small>")
         controller_documentcontroller_documentcontroller_acb766e2("deleteDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
@@ -181,16 +181,18 @@ flowchart LR
         config_openapiconfig_openapiconfig_c70d619d("OpenApiConfig<br/><small>graphrag/config/OpenApiConfig.java</small>")
         config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5("graphragOpenApi()<br/><small>graphrag/config/OpenApiConfig.java</small>")
     end
+    subgraph extract_pipeline_graphrag_controller_SchemaContr_931c6171["graphrag/controller/SchemaController.java"]
+        controller_schemacontroller_def755be("SchemaController.java")
+        controller_schemacontroller_schemacontroller_4c740e38("SchemaController<br/><small>graphrag/controller/SchemaController.java</small>")
+    end
     subgraph extract_pipeline_vfedoriv_graphrag_GraphragAppli_62b8432e["vfedoriv/graphrag/GraphragApplication.java"]
         graphrag_graphragapplication_graphragapplication_ca8d408d("GraphragApplication<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
         graphrag_graphragapplication_graphragapplication_e971e69e("main()<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
     end
     controller_querycontroller_71438120("QueryController.java")
-    controller_schemacontroller_def755be("SchemaController.java")
     domain_documentuploadnode_documentuploadnode_8c92fc32("DocumentUploadNode<br/><small>graphrag/domain/DocumentUploadNode.java</small>")
-    domain_schemadefinitionnode_schemadefinitionnode_76d1e312("SchemaDefinitionNode<br/><small>graphrag/domain/SchemaDefinitionNode.java</small>")
     observability_aiobservationservice_aiobservation_f83bee78("AiObservationService<br/><small>graphrag/observability/AiObservationService.java</small>")
-    service_hybridsearchservice_hybridsearchservice_b9c68c82("HybridSearchService<br/><small>graphrag/service/HybridSearchService.java</small>")
+    service_schemaregistryservicetest_schemaregistry_85e2c045("SchemaRegistryServiceTest<br/><small>graphrag/service/SchemaRegistryServiceTest.java</small>")
     graphrag_graphragapplication_graphragapplication_ca8d408d -->|method| graphrag_graphragapplication_graphragapplication_e971e69e
     config_aiobservationconfiguration_aiobservationc_a4879645 -->|method| config_aiobservationconfiguration_aiobservationc_b7762de3
     config_openapiconfig_openapiconfig_c70d619d -->|method| config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5
@@ -199,7 +201,7 @@ flowchart LR
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_066004a1
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_4dcc64fa
     controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_7dff1881
-    %% Omitted for readability: 2324 nodes, 0 edges
+    %% Omitted for readability: 2354 nodes, 0 edges
     class controller_documentcontroller_documentcontroller_6d0cb00b klass;
     class controller_documentcontroller_documentcontroller_acb766e2 function;
     class controller_documentcontroller_documentcontroller_b8aa33ef function;
@@ -210,14 +212,14 @@ flowchart LR
     class config_aiobservationconfiguration_aiobservationc_b7762de3 entry;
     class config_openapiconfig_openapiconfig_c70d619d api;
     class config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5 api;
+    class controller_schemacontroller_def755be klass;
+    class controller_schemacontroller_schemacontroller_4c740e38 klass;
     class graphrag_graphragapplication_graphragapplication_ca8d408d klass;
     class graphrag_graphragapplication_graphragapplication_e971e69e function;
     class controller_querycontroller_71438120 klass;
-    class controller_schemacontroller_def755be klass;
     class domain_documentuploadnode_documentuploadnode_8c92fc32 klass;
-    class domain_schemadefinitionnode_schemadefinitionnode_76d1e312 klass;
     class observability_aiobservationservice_aiobservation_f83bee78 klass;
-    class service_hybridsearchservice_hybridsearchservice_b9c68c82 klass;
+    class service_schemaregistryservicetest_schemaregistry_85e2c045 test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -488,7 +490,7 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>.understand-anything/intermediate/batches.json</code></td><td>173 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>51 nodes</td></tr>
-<tr><td><code>graphrag/controller/SchemaController.java</code></td><td>48 nodes</td></tr>
+<tr><td><code>graphrag/controller/SchemaController.java</code></td><td>49 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>34 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>33 nodes</td></tr>
@@ -498,19 +500,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1366, method x743, contains x725, imports x549. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1401, method x770, contains x725, imports x551. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2829 nodes and 2635 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2846 nodes and 2651 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (2829 nodes, 2635 edges)
+    %% Section: Graph Build (2846 nodes, 2651 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -544,7 +546,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_domain_graph_3f1cce63 -->|contains| understand_anything_domain_graph_edges_b8252148
-    %% Omitted for readability: 2811 nodes, 0 edges
+    %% Omitted for readability: 2828 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -843,7 +845,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2635. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2651. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2358,8 +2360,196 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
+<!-- ====== 9. Security & Global Graph ====== -->
+<h2 id="security-global">9. Security &amp; Global Graph</h2>
+<p>Security &amp; Global Graph groups implementation around securitymd, traffic, understand, anything, mostly in UA_SECURITY.md. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Security &amp; Global Graph (13 nodes, 12 edges)
+    ua_security_understand_anything_plugin_security_3b3fc833("Understand Anything Plugin Security Review<br/><small>UA_SECURITY.md</small>")
+    ua_security_what_can_still_leave_the_machine_b7f2fde0("What Can Still Leave The Machine<br/><small>UA_SECURITY.md</small>")
+    ua_security_ec001317("UA_SECURITY.md")
+    ua_security_evidence_checked_2d31e836("Evidence Checked<br/><small>UA_SECURITY.md</small>")
+    ua_security_final_assessment_25251a1d("Final Assessment<br/><small>UA_SECURITY.md</small>")
+    ua_security_main_conclusion_65c793e5("Main Conclusion<br/><small>UA_SECURITY.md</small>")
+    ua_security_1_llm_analysis_traffic_19dc511b("1. LLM analysis traffic<br/><small>UA_SECURITY.md</small>")
+    ua_security_2_package_manager_traffic_133dd04f("2. Package manager traffic<br/><small>UA_SECURITY.md</small>")
+    ua_security_3_dashboard_browser_traffic_d4e45e77("3. Dashboard browser traffic<br/><small>UA_SECURITY.md</small>")
+    ua_security_4_generated_local_artifacts_0148605b("4. Generated local artifacts<br/><small>UA_SECURITY.md</small>")
+    ua_security_5_auto_update_behavior_c96edeb3("5. Auto-update behavior<br/><small>UA_SECURITY.md</small>")
+    ua_security_recommended_use_927270c3("Recommended Use<br/><small>UA_SECURITY.md</small>")
+    ua_security_risks_outside_usual_codex_activity_29d43894("Risks Outside Usual Codex Activity<br/><small>UA_SECURITY.md</small>")
+    ua_security_ec001317 -->|contains| ua_security_understand_anything_plugin_security_3b3fc833
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_evidence_checked_2d31e836
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_final_assessment_25251a1d
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_main_conclusion_65c793e5
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_recommended_use_927270c3
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_risks_outside_usual_codex_activity_29d43894
+    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_what_can_still_leave_the_machine_b7f2fde0
+    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_1_llm_analysis_traffic_19dc511b
+    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_2_package_manager_traffic_133dd04f
+    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_3_dashboard_browser_traffic_d4e45e77
+    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_4_generated_local_artifacts_0148605b
+    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_5_auto_update_behavior_c96edeb3
+    class ua_security_understand_anything_plugin_security_3b3fc833 concept;
+    class ua_security_what_can_still_leave_the_machine_b7f2fde0 concept;
+    class ua_security_ec001317 concept;
+    class ua_security_evidence_checked_2d31e836 concept;
+    class ua_security_final_assessment_25251a1d concept;
+    class ua_security_main_conclusion_65c793e5 concept;
+    class ua_security_1_llm_analysis_traffic_19dc511b concept;
+    class ua_security_2_package_manager_traffic_133dd04f concept;
+    class ua_security_3_dashboard_browser_traffic_d4e45e77 concept;
+    class ua_security_4_generated_local_artifacts_0148605b concept;
+    class ua_security_5_auto_update_behavior_c96edeb3 concept;
+    class ua_security_recommended_use_927270c3 concept;
+    class ua_security_risks_outside_usual_codex_activity_29d43894 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>UA_SECURITY.md</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing UA_SECURITY.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Understand Anything Plugin Security Review</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Understand Anything Plugin Security Review.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Main Conclusion</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Main Conclusion.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Evidence Checked</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Evidence Checked.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>What Can Still Leave The Machine</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Can Still Leave The Machine.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>1. LLM analysis traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. LLM analysis traffic.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>2. Package manager traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Package manager traffic.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3. Dashboard browser traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Dashboard browser traffic.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>4. Generated local artifacts</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Generated local artifacts.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>5. Auto-update behavior</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Auto-update behavior.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Risks Outside Usual Codex Activity</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Risks Outside Usual Codex Activity.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Recommended Use</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Recommended Use.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Final Assessment</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Final Assessment.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>UA_SECURITY.md</code></td><td>13 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
 <p>Tests &amp; Fixtures groups implementation around openspec, test, specmd, specs, mostly in specs/service-helper-utilities/spec.md, specs/test-coverage-governance/spec.md, specs/test-coverage-governance/spec.md. This section covers 121 nodes and 109 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2701,8 +2891,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. Community 159 ====== -->
-<h2 id="community-159">10. Community 159</h2>
+<!-- ====== 11. Community 159 ====== -->
+<h2 id="community-159">11. Community 159</h2>
 <p>Community 159 groups implementation around add, designmd, openspec, changes, mostly in archive/2026-06-04-add-ai-observability-monitoring/design.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2911,8 +3101,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 11. Community 178 ====== -->
-<h2 id="community-178">11. Community 178</h2>
+<!-- ====== 12. Community 178 ====== -->
+<h2 id="community-178">12. Community 178</h2>
 <p>Community 178 groups implementation around agentsmd, stack, commands, architecture, mostly in AGENTS.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3088,8 +3278,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. Community 203 ====== -->
-<h2 id="community-203">12. Community 203</h2>
+<!-- ====== 13. Community 203 ====== -->
+<h2 id="community-203">13. Community 203</h2>
 <p>Community 203 groups implementation around langfuse, designmd, openspec, changes, mostly in archive/2026-06-04-fix-langfuse-llm-io-capture/design.md. This section covers 9 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3232,8 +3422,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 13. Community 306 ====== -->
-<h2 id="community-306">13. Community 306</h2>
+<!-- ====== 14. Community 306 ====== -->
+<h2 id="community-306">14. Community 306</h2>
 <p>Community 306 groups implementation around proposalmd, changes, openspec, archive, mostly in archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3354,8 +3544,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. Community 310 ====== -->
-<h2 id="community-310">14. Community 310</h2>
+<!-- ====== 15. Community 310 ====== -->
+<h2 id="community-310">15. Community 310</h2>
 <p>Community 310 groups implementation around designmd, openspec, changes, archive, mostly in archive/2026-05-15-overwrite-completed-extraction/design.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3476,34 +3666,51 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. Community 311 ====== -->
-<h2 id="community-311">15. Community 311</h2>
-<p>Community 311 groups implementation around proposalmd, changes, openspec, archive, mostly in archive/2026-05-15-overwrite-completed-extraction/proposal.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-overwrite-completed-extraction/proposal.md, archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md, archive/2026-05-16-fix-cypher-validation-patterns/proposal.md. This section covers 137 nodes and 113 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 311 (7 nodes, 6 edges)
+    %% Section: Other (137 nodes, 113 edges)
+    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
     node_2026_05_15_overwrite_completed_extraction_p_168e9394("proposal.md")
-    node_2026_05_15_overwrite_completed_extraction_p_ddcfbfbd("Capabilities<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_9ee073af("Impact<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_3b79919f("What Changes<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_20f77150("Why<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_6132c0fa("Modified Capabilities<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_aff25355("New Capabilities<br/><small>archive/2026-05-15-overwrite-completed-extraction/proposal.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394 -->|contains| node_2026_05_15_overwrite_completed_extraction_p_ddcfbfbd
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394 -->|contains| node_2026_05_15_overwrite_completed_extraction_p_9ee073af
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394 -->|contains| node_2026_05_15_overwrite_completed_extraction_p_3b79919f
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394 -->|contains| node_2026_05_15_overwrite_completed_extraction_p_20f77150
-    node_2026_05_15_overwrite_completed_extraction_p_ddcfbfbd -->|contains| node_2026_05_15_overwrite_completed_extraction_p_6132c0fa
-    node_2026_05_15_overwrite_completed_extraction_p_ddcfbfbd -->|contains| node_2026_05_15_overwrite_completed_extraction_p_aff25355
+    node_2026_05_15_overwrite_completed_extraction_t_6540f7eb("tasks.md")
+    node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895("design.md")
+    node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2("proposal.md")
+    node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0("design.md")
+    node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60("proposal.md")
+    node_2026_05_20_tolerate_invalid_extraction_elem_89103371("proposal.md")
+    node_2026_05_20_tolerate_invalid_extraction_elem_97855c09("tasks.md")
+    node_2026_06_03_sync_docs_with_current_implement_b862ea70("design.md")
+    node_2026_06_03_sync_docs_with_current_implement_ddda4372("proposal.md")
+    node_2026_06_04_add_ai_observability_monitoring_32ac9df7("proposal.md")
+    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
+    node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5("proposal.md")
+    node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5("tasks.md")
+    node_2026_06_06_extend_document_operations_desig_3ceb874e("design.md")
+    node_2026_06_06_extend_document_operations_propo_2a50e1ad("proposal.md")
+    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
+    %% Omitted for readability: 119 nodes, 0 edges
+    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
     class node_2026_05_15_overwrite_completed_extraction_p_168e9394 concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_ddcfbfbd concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_9ee073af concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_3b79919f concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_20f77150 concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_6132c0fa concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_aff25355 concept;
+    class node_2026_05_15_overwrite_completed_extraction_t_6540f7eb concept;
+    class node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895 concept;
+    class node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2 concept;
+    class node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0 concept;
+    class node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60 concept;
+    class node_2026_05_20_tolerate_invalid_extraction_elem_89103371 concept;
+    class node_2026_05_20_tolerate_invalid_extraction_elem_97855c09 concept;
+    class node_2026_06_03_sync_docs_with_current_implement_b862ea70 concept;
+    class node_2026_06_03_sync_docs_with_current_implement_ddda4372 concept;
+    class node_2026_06_04_add_ai_observability_monitoring_32ac9df7 concept;
+    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
+    class node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5 concept;
+    class node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5 concept;
+    class node_2026_06_06_extend_document_operations_desig_3ceb874e concept;
+    class node_2026_06_06_extend_document_operations_propo_2a50e1ad concept;
+    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3581,6 +3788,190 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Impact.</td>
 </tr>
+<tr>
+  <td>8</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -3589,344 +3980,18 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>archive/2026-05-15-overwrite-completed-extraction/proposal.md</code></td><td>7 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md, archive/2026-05-16-fix-cypher-validation-patterns/proposal.md, archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md. This section covers 113 nodes and 93 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (113 nodes, 93 edges)
-    subgraph other_archive_2026_05_15_tolerate_invalid_relati_46d3e485["archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md"]
-        node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2("proposal.md")
-        node_2026_05_15_tolerate_invalid_relationship_tr_3eccd2d0("Capabilities<br/><small>archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small>")
-    end
-    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
-    node_2026_05_15_overwrite_completed_extraction_t_6540f7eb("tasks.md")
-    node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895("design.md")
-    node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0("design.md")
-    node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60("proposal.md")
-    node_2026_05_20_tolerate_invalid_extraction_elem_89103371("proposal.md")
-    node_2026_05_20_tolerate_invalid_extraction_elem_97855c09("tasks.md")
-    node_2026_06_03_sync_docs_with_current_implement_b862ea70("design.md")
-    node_2026_06_03_sync_docs_with_current_implement_ddda4372("proposal.md")
-    node_2026_06_04_add_ai_observability_monitoring_32ac9df7("proposal.md")
-    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
-    node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5("proposal.md")
-    node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5("tasks.md")
-    node_2026_06_06_extend_document_operations_desig_3ceb874e("design.md")
-    node_2026_06_06_extend_document_operations_propo_2a50e1ad("proposal.md")
-    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
-    node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2 -->|contains| node_2026_05_15_tolerate_invalid_relationship_tr_3eccd2d0
-    %% Omitted for readability: 95 nodes, 0 edges
-    class node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2 concept;
-    class node_2026_05_15_tolerate_invalid_relationship_tr_3eccd2d0 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
-    class node_2026_05_15_overwrite_completed_extraction_t_6540f7eb concept;
-    class node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895 concept;
-    class node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0 concept;
-    class node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60 concept;
-    class node_2026_05_20_tolerate_invalid_extraction_elem_89103371 concept;
-    class node_2026_05_20_tolerate_invalid_extraction_elem_97855c09 concept;
-    class node_2026_06_03_sync_docs_with_current_implement_b862ea70 concept;
-    class node_2026_06_03_sync_docs_with_current_implement_ddda4372 concept;
-    class node_2026_06_04_add_ai_observability_monitoring_32ac9df7 concept;
-    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
-    class node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5 concept;
-    class node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5 concept;
-    class node_2026_06_06_extend_document_operations_desig_3ceb874e concept;
-    class node_2026_06_06_extend_document_operations_propo_2a50e1ad concept;
-    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-06-04-add-ai-observability-monitoring/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-06-04-add-ai-observability-monitoring/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-add-ai-observability-monitoring/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-fix-langfuse-llm-io-capture/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-06-extend-document-operations/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-06-04-add-ai-observability-monitoring/tasks.md</code></td><td>6 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x93. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x113. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3951,18 +4016,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>5791</td></tr>
-      <tr><td>Edges</td><td>7741</td></tr>
+      <tr><td>Nodes</td><td>5868</td></tr>
+      <tr><td>Edges</td><td>7906</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>522</td></tr>
+      <tr><td>Communities</td><td>531</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>7011</td></tr>
-      <tr><td>INFERRED</td><td>730</td></tr>
+      <tr><td>EXTRACTED</td><td>7152</td></tr>
+      <tr><td>INFERRED</td><td>754</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -3970,7 +4035,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-10 18:16 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-16 19:15 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

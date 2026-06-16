@@ -51,7 +51,21 @@ public class SchemaRegistryService {
 
     @Transactional
     public SchemaDefinitionNode createSchema(String json, SchemaSourceType sourceType) {
-        log.info("Creating schema: sourceType={}, contentLength={}", sourceType, json == null ? 0 : json.length());
+        return createSchema(json, sourceType, null);
+    }
+
+    @Transactional
+    public SchemaDefinitionNode createSchema(String json, SchemaSourceType sourceType, String knowledgeBaseId) {
+        log.info(
+            "Creating schema: sourceType={}, knowledgeBaseId={}, contentLength={}",
+            sourceType,
+            knowledgeBaseId,
+            json == null ? 0 : json.length()
+        );
+        if (knowledgeBaseId != null) {
+            rejectBlankKnowledgeBaseId(knowledgeBaseId);
+            requireKnowledgeBase(knowledgeBaseId);
+        }
         SchemaDocument doc = schemaParser.parse(json);
         List<String> errors = schemaValidator.validate(doc);
         if (!errors.isEmpty()) {
@@ -76,7 +90,17 @@ public class SchemaRegistryService {
         node.setStatus(SchemaStatus.INACTIVE);
         node.setCreatedAt(Instant.now());
         SchemaDefinitionNode saved = schemaRepository.save(node);
-        log.info("Schema created: schemaId={}, name={}, version={}, sourceType={}", saved.getId(), saved.getName(), saved.getVersion(), saved.getSourceType());
+        if (knowledgeBaseId != null) {
+            schemaRepository.associateWithKnowledgeBase(knowledgeBaseId, saved.getId());
+        }
+        log.info(
+            "Schema created: schemaId={}, name={}, version={}, sourceType={}, knowledgeBaseId={}",
+            saved.getId(),
+            saved.getName(),
+            saved.getVersion(),
+            saved.getSourceType(),
+            knowledgeBaseId
+        );
         return saved;
     }
 
@@ -188,6 +212,16 @@ public class SchemaRegistryService {
     }
 
     @Transactional
+    public void attachSchema(String knowledgeBaseId, String schemaId) {
+        log.info("Attaching schema: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+        rejectBlankKnowledgeBaseId(knowledgeBaseId);
+        getSchema(schemaId);
+        requireKnowledgeBase(knowledgeBaseId);
+        schemaRepository.associateWithKnowledgeBase(knowledgeBaseId, schemaId);
+        log.info("Schema attached: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+    }
+
+    @Transactional
     public void deleteSchema(String schemaId) {
         log.info("Deleting schema: schemaId={}", schemaId);
         SchemaDefinitionNode schema = schemaRepository.findById(schemaId)
@@ -201,6 +235,17 @@ public class SchemaRegistryService {
     private void rejectIfActive(String schemaId, String messagePrefix) {
         if (schemaRepository.existsActiveKnowledgeBaseReference(schemaId)) {
             throw new ConflictException(messagePrefix + schemaId);
+        }
+    }
+
+    private KnowledgeBaseNode requireKnowledgeBase(String knowledgeBaseId) {
+        return knowledgeBaseRepository.findById(knowledgeBaseId)
+            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
+    }
+
+    private void rejectBlankKnowledgeBaseId(String knowledgeBaseId) {
+        if (knowledgeBaseId.isBlank()) {
+            throw new IllegalArgumentException("knowledgeBaseId must not be blank");
         }
     }
 

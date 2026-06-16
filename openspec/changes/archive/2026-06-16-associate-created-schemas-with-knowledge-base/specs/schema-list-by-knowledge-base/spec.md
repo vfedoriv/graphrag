@@ -1,8 +1,5 @@
-# schema-list-by-knowledge-base Specification
+## ADDED Requirements
 
-## Purpose
-TBD - created by archiving change add-kb-schemas-list-endpoint. Update Purpose after archive.
-## Requirements
 ### Requirement: Associate created schema with knowledge base
 The system SHALL allow clients to create a schema and associate it with an existing knowledge base without activating the schema.
 
@@ -50,6 +47,8 @@ The system SHALL allow clients to associate an existing schema with an existing 
 - **THEN** the system rejects the request using `ProblemDetail`
 - **AND** no knowledge-base association is persisted
 
+## MODIFIED Requirements
+
 ### Requirement: List schemas by knowledge base
 The system SHALL provide a `GET` API operation that returns schemas associated with a specific knowledge base identifier, including schemas associated by creation, attachment, or activation.
 
@@ -76,11 +75,3 @@ The system SHALL provide a `GET` API operation that returns schemas associated w
 - **WHEN** a client calls the endpoint with a valid knowledge base identifier that has no associated schemas
 - **THEN** the system returns `200 OK`
 - **AND** the response body contains an empty list
-
-### Requirement: Preserve response and error conventions
-The system MUST return schema list items using the established schema response contract and MUST use RFC 7807 `ProblemDetail` for errors.
-
-#### Scenario: Unknown knowledge base returns not found problem
-- **WHEN** a client calls the endpoint with a knowledge base identifier that does not exist
-- **THEN** the system returns the existing not-found error behavior as `ProblemDetail`
-- **AND** the response does not include a partial list payload
