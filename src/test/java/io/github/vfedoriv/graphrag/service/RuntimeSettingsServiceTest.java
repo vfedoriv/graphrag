@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.env.MockEnvironment;
 
 class RuntimeSettingsServiceTest {
 
@@ -45,6 +46,8 @@ class RuntimeSettingsServiceTest {
         service.update("app.ai.observability.model-name-tag-enabled", false);
 
         assertThat(maxRows.source()).isEqualTo("override");
+        assertThat(maxRows.updateMode()).isEqualTo("live");
+        assertThat(maxRows.liveApplied()).isTrue();
         assertThat(service.query().maxRows()).isEqualTo(25);
         assertThat(service.query().blockedKeywords()).containsExactly("CREATE", "MERGE");
         assertThat(service.chunking().maxCharacters()).isEqualTo(1200);
@@ -54,11 +57,70 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
-    void rejectsNonAllowlistedAndInvalidSettingUpdatesWithoutPersisting() {
+    void listsExpandedCatalogWithUpdateModesAndProfileResolvedDefaults() {
+        RuntimeSettingsService service = service(new LinkedHashMap<>());
+
+        Map<String, RuntimeSettingResponse> settings = settingsByKey(service);
+
+        assertThat(settings).containsKeys(
+            "spring.application.name",
+            "logging.level.root",
+            "spring.ai.model.chat",
+            "spring.autoconfigure.exclude",
+            "spring.neo4j.uri",
+            "app.storage.documents-root",
+            "spring.servlet.multipart.max-file-size",
+            "management.tracing.enabled",
+            "management.opentelemetry.tracing.export.otlp.endpoint",
+            "app.model.base-url",
+            "spring.ai.openai.base-url"
+        );
+        assertThat(settings.get("spring.application.name").currentValue()).isEqualTo("graphrag-test");
+        assertThat(settings.get("logging.level.root").updateMode()).isEqualTo("read-only");
+        assertThat(settings.get("spring.neo4j.uri").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("app.model.base-url").updateMode()).isEqualTo("profile-managed");
+        assertThat(settings.get("app.query.max-rows").updateMode()).isEqualTo("live");
+    }
+
+    @Test
+    void rejectsReadOnlyAndClearRequestsWithoutPersisting() {
         Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
         RuntimeSettingsService service = service(store);
 
         assertThatThrownBy(() -> service.update("spring.neo4j.uri", "bolt://other"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("restart-required");
+        assertThatThrownBy(() -> service.clear("spring.neo4j.uri"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("restart-required");
+
+        assertThat(store).isEmpty();
+    }
+
+    @Test
+    void masksSensitiveValuesInCurrentAndDefaultResponses() {
+        RuntimeSettingsService service = service(new LinkedHashMap<>());
+
+        Map<String, RuntimeSettingResponse> settings = settingsByKey(service);
+
+        assertMasked(settings.get("app.model.api-key"));
+        assertMasked(settings.get("spring.ai.openai.api-key"));
+        assertMasked(settings.get("spring.neo4j.authentication.password"));
+        assertMasked(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization"));
+        assertThat(settings.get("app.model.api-key").currentValue().toString()).doesNotContain("secret");
+        assertThat(settings.get("app.model.api-key").defaultValue().toString()).doesNotContain("secret");
+        assertThat(settings.get("spring.neo4j.authentication.password").currentValue().toString()).doesNotContain("neo4j-secret");
+        assertThat(settings.get("spring.neo4j.authentication.password").defaultValue().toString()).doesNotContain("neo4j-secret");
+        assertThat(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization").currentValue().toString()).doesNotContain("Basic raw-secret");
+        assertThat(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization").defaultValue().toString()).doesNotContain("Basic raw-secret");
+    }
+
+    @Test
+    void rejectsNonAllowlistedAndInvalidSettingUpdatesWithoutPersisting() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        assertThatThrownBy(() -> service.update("spring.neo4j.pool.max-connection-pool-size", 10))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("not allowlisted");
         assertThatThrownBy(() -> service.update("app.query.max-rows", 0))
@@ -98,7 +160,54 @@ class RuntimeSettingsServiceTest {
             store.remove(invocation.getArgument(0));
             return null;
         }).when(repository).deleteById(anyString());
-        return new RuntimeSettingsService(repository, appProperties(), observabilityProperties());
+        return new RuntimeSettingsService(repository, appProperties(), observabilityProperties(), environment());
+    }
+
+    private Map<String, RuntimeSettingResponse> settingsByKey(RuntimeSettingsService service) {
+        Map<String, RuntimeSettingResponse> settings = new LinkedHashMap<>();
+        for (RuntimeSettingResponse setting : service.list()) {
+            settings.put(setting.key(), setting);
+        }
+        return settings;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void assertMasked(RuntimeSettingResponse setting) {
+        assertThat(setting.sensitive()).isTrue();
+        assertThat(setting.updateMode()).isEqualTo("sensitive-read-only");
+        assertThat((Map<String, Object>) setting.currentValue()).containsEntry("configured", true).containsEntry("masked", true);
+        assertThat((Map<String, Object>) setting.defaultValue()).containsEntry("configured", true).containsEntry("masked", true);
+    }
+
+    private MockEnvironment environment() {
+        return new MockEnvironment()
+            .withProperty("spring.application.name", "graphrag-test")
+            .withProperty("logging.level.root", "INFO")
+            .withProperty("spring.ai.model.chat", "openai")
+            .withProperty("spring.ai.model.embedding", "openai")
+            .withProperty("spring.autoconfigure.exclude", "")
+            .withProperty("spring.neo4j.uri", "bolt://localhost:7687")
+            .withProperty("spring.neo4j.authentication.username", "neo4j")
+            .withProperty("spring.neo4j.authentication.password", "neo4j-secret")
+            .withProperty("spring.servlet.multipart.max-file-size", "100MB")
+            .withProperty("spring.servlet.multipart.max-request-size", "100MB")
+            .withProperty("management.endpoints.web.exposure.include", "health,metrics")
+            .withProperty("management.endpoint.health.probes.enabled", "true")
+            .withProperty("management.tracing.enabled", "true")
+            .withProperty("management.tracing.export.otlp.enabled", "true")
+            .withProperty("management.tracing.sampling.probability", "1.0")
+            .withProperty("management.opentelemetry.tracing.export.otlp.endpoint", "http://localhost:3000/api/public/otel/v1/traces")
+            .withProperty("management.opentelemetry.tracing.export.otlp.headers.Authorization", "Basic raw-secret")
+            .withProperty("management.opentelemetry.tracing.export.otlp.headers.x-langfuse-ingestion-version", "4")
+            .withProperty("spring.ai.openai.base-url", "https://api.openai.com/v1")
+            .withProperty("spring.ai.openai.api-key", "secret")
+            .withProperty("spring.ai.openai.embedding.options.model", "text-embedding-3-small")
+            .withProperty("spring.ai.openai.chat.options.model", "gpt-5-mini")
+            .withProperty("spring.ai.openai.timeout", "600s")
+            .withProperty("spring.ai.openai.chat.timeout", "600s")
+            .withProperty("spring.ai.openai.embedding.timeout", "300s")
+            .withProperty("spring.ai.chat.observations.log-prompt", "true")
+            .withProperty("spring.ai.chat.observations.log-completion", "true");
     }
 
     private AppProperties appProperties() {

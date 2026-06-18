@@ -64,7 +64,7 @@ Key services:
 - `CypherExecutionService`
 - `SchemaBootstrapService` (loads bootstrap schemas on startup)
 - `AiObservationService` (AI workflow spans, model call metrics, privacy-controlled content metadata)
-- `RuntimeSettingsService` (allowlisted live runtime setting overrides + typed accessors)
+- `RuntimeSettingsService` (allowlisted live runtime setting overrides, expanded read-only configuration catalog + typed accessors)
 - `AiProfileService` (OpenAI-compatible AI profile CRUD, write-only API keys, default profile seeding)
 - `AiRuntimeModelFactory` (profile/revision-scoped Spring AI OpenAI chat and embedding clients)
 
@@ -76,6 +76,8 @@ Key services:
 - `langfuse`: enables AI observability and exports OTLP traces to local Langfuse defaults
 
 At startup the default AI profile is seeded from `app.model.*` when no default exists. New knowledge bases receive the default profile. Document processing, extraction, Cypher generation, `/ask`, hybrid search, and KB-scoped schema generation resolve the active knowledge-base AI profile at runtime. Profile API keys are write-only and must not be returned by read APIs.
+
+Runtime settings expose live mutable overrides only for query, hybrid search, chunking, extraction, and AI observability settings. The list API also exposes read-only, restart-required, profile-managed, and sensitive-read-only entries for relevant `application.properties` groups such as application identity, logging, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Profile-resolved startup properties are reported as defaults; read-only/startup-bound settings cannot be updated or cleared through runtime overrides. Use AI profile APIs for provider behavior changes instead of raw `app.model.*` or `spring.ai.openai.*` edits. API keys, Neo4j passwords, and OTLP authorization headers must remain masked in read responses.
 
 ## Key Files
 
@@ -110,7 +112,7 @@ Use short imperative commit messages such as `add schema activation panel`. Keep
 - Extraction must stay constrained to active schema labels/relationship types
 - Query execution is read-only and validated before run
 - Do not use the Java `var` keyword; declare the concrete variable type explicitly.
-- Runtime setting overrides must stay allowlisted, validated, and typed; do not add ad hoc stringly-typed setting reads in feature services.
+- Runtime setting overrides must stay allowlisted, validated, and typed; do not add ad hoc stringly-typed setting reads in feature services. Read-only catalog additions must declare update mode, live-apply status, sensitivity, and rejection reason.
 - Knowledge-base AI profile changes must reject embedding model/dimension incompatibility once chunks exist and must leave the previous active profile unchanged on failure.
 
 ## graphify

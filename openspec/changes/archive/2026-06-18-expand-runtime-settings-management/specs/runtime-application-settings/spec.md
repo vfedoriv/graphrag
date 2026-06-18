@@ -1,8 +1,33 @@
-# runtime-application-settings Specification
+## ADDED Requirements
 
-## Purpose
-TBD - created by archiving change add-runtime-settings-ai-profiles. Update Purpose after archive.
-## Requirements
+### Requirement: Runtime settings catalog covers application property groups
+The system SHALL expose a catalog entry for each relevant backend-owned application property group with explicit update semantics.
+
+#### Scenario: Client lists expanded settings catalog
+- **WHEN** a client requests the runtime settings list
+- **THEN** the response includes catalog entries for application identity, logging, Spring AI bootstrap switches, AI provider startup defaults, Neo4j connection and database settings, document storage root, multipart upload limits, query settings, chunking settings, extraction settings, AI observability settings, actuator and tracing settings, OpenTelemetry exporter settings, and Spring auto-configuration controls
+- **AND** each entry declares whether it is live-mutable, startup-bound, profile-managed, read-only, or sensitive read-only
+
+#### Scenario: Active profiles override startup defaults
+- **WHEN** a property value is supplied by an active Spring profile such as `openai`, `lm_studio`, or `langfuse`
+- **THEN** the runtime settings list reports the profile-resolved startup value as the default for that setting
+
+### Requirement: Sensitive runtime setting values are masked
+The system SHALL prevent secret configuration values from being returned in runtime setting read responses.
+
+#### Scenario: Client lists sensitive settings
+- **WHEN** a client requests the runtime settings list
+- **THEN** sensitive entries such as AI API keys, Neo4j passwords, and OTLP authorization headers are marked sensitive
+- **AND** their current and default values do not contain the raw configured secret
+- **AND** the response indicates whether the secret is configured when that can be reported without exposing the secret
+
+#### Scenario: Client attempts to update sensitive startup-bound setting
+- **WHEN** a client submits an update for a sensitive startup-bound setting through the runtime settings API
+- **THEN** the system rejects the update
+- **AND** no persisted runtime setting override is changed
+
+## MODIFIED Requirements
+
 ### Requirement: Runtime settings are exposed through an allowlisted API
 The system SHALL expose application settings only through an explicit allowlist of backend-owned settings, including mutable live settings and read-only configuration inventory entries.
 
@@ -72,30 +97,3 @@ The system SHALL use configured startup properties as defaults when no persisted
 - **WHEN** a client clears a setting that is allowlisted only for read-only visibility
 - **THEN** the system rejects the request
 - **AND** no persisted runtime setting override is changed
-
-### Requirement: Runtime settings catalog covers application property groups
-The system SHALL expose a catalog entry for each relevant backend-owned application property group with explicit update semantics.
-
-#### Scenario: Client lists expanded settings catalog
-- **WHEN** a client requests the runtime settings list
-- **THEN** the response includes catalog entries for application identity, logging, Spring AI bootstrap switches, AI provider startup defaults, Neo4j connection and database settings, document storage root, multipart upload limits, query settings, chunking settings, extraction settings, AI observability settings, actuator and tracing settings, OpenTelemetry exporter settings, and Spring auto-configuration controls
-- **AND** each entry declares whether it is live-mutable, startup-bound, profile-managed, read-only, or sensitive read-only
-
-#### Scenario: Active profiles override startup defaults
-- **WHEN** a property value is supplied by an active Spring profile such as `openai`, `lm_studio`, or `langfuse`
-- **THEN** the runtime settings list reports the profile-resolved startup value as the default for that setting
-
-### Requirement: Sensitive runtime setting values are masked
-The system SHALL prevent secret configuration values from being returned in runtime setting read responses.
-
-#### Scenario: Client lists sensitive settings
-- **WHEN** a client requests the runtime settings list
-- **THEN** sensitive entries such as AI API keys, Neo4j passwords, and OTLP authorization headers are marked sensitive
-- **AND** their current and default values do not contain the raw configured secret
-- **AND** the response indicates whether the secret is configured when that can be reported without exposing the secret
-
-#### Scenario: Client attempts to update sensitive startup-bound setting
-- **WHEN** a client submits an update for a sensitive startup-bound setting through the runtime settings API
-- **THEN** the system rejects the update
-- **AND** no persisted runtime setting override is changed
-

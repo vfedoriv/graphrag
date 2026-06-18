@@ -77,7 +77,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`CypherExecutionService`** — read-only Cypher execution.
 - **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
 - **`AiObservationService`** — AI workflow spans, model call metrics, token counters, and privacy-controlled content metadata.
-- **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides with typed live accessors.
+- **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides, expanded read-only configuration catalog, and typed live accessors.
 - **`AiProfileService`** — OpenAI-compatible profile CRUD, default profile seeding from `app.model.*`, API-key masking, and profile cache invalidation.
 - **`AiRuntimeModelFactory`** — profile/revision-scoped Spring AI OpenAI chat and embedding model creation.
 
@@ -115,6 +115,8 @@ AI profiles are also resolved at runtime per knowledge base. Document processing
 
 Startup model properties under `app.model.*` seed the persisted default AI profile when no default profile exists. New knowledge bases are assigned that default profile. Runtime setting overrides are persisted in Neo4j and may change allowlisted query, hybrid search, chunking, extraction, and AI observability behavior without restart.
 
+The runtime settings list also exposes profile-resolved startup defaults for read-only, restart-required, profile-managed, and sensitive-read-only configuration inventory. Covered groups include application identity, logging, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Startup-bound entries cannot be updated or cleared through runtime overrides. AI provider behavior changes go through AI profile management, not raw `app.model.*` or `spring.ai.openai.*` updates. API keys, Neo4j passwords, and OTLP authorization headers are masked in read responses.
+
 ## Configuration
 
 Key config files:
@@ -139,7 +141,7 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 - **Schema-driven extraction:** LLM is explicitly constrained to only extract node labels and relationship types defined in the active schema.
 - **Provider-agnostic AI:** storage, embedding, generation, and extraction are all behind interfaces to allow swapping providers or using mocks.
 - **Profile-scoped AI:** knowledge bases carry an active AI profile; profile changes are rejected when embedding model or dimension metadata is incompatible with existing chunks.
-- **Live settings with an allowlist:** runtime overrides must go through `RuntimeSettingsService` typed accessors, not ad hoc property reads.
+- **Live settings with an allowlist:** runtime overrides must go through `RuntimeSettingsService` typed accessors, not ad hoc property reads; read-only catalog entries expose update mode, live-apply status, sensitivity, and rejection reasons without making startup-bound infrastructure mutable.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
 - **No Java `var`:** declare concrete variable types explicitly instead of using the `var` keyword.
 

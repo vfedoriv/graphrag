@@ -12,6 +12,10 @@ public record RuntimeSettingResponse(
     boolean mutable,
     boolean liveApplied,
     boolean sensitive,
-    Map<String, Object> constraints
+    Map<String, Object> constraints,
+    String updateMode,
+    String reason,
+    String label,
+    String description
 ) {
 }

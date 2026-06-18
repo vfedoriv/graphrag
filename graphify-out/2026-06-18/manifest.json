@@ -2430,8 +2430,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/ai-observability-monitoring/spec.md": {
-    "mtime": 1780589023.3400352,
-    "ast_hash": "bb2f4adb8526d1bd05c9f57e7d7e8a47",
+    "mtime": 1781788076.206863,
+    "ast_hash": "f3666cfa6a11119e3d4d405d0077f73e",
     "semantic_hash": ""
   },
   "openspec/specs/cypher-validation/spec.md": {
@@ -2445,8 +2445,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/documentation-alignment/spec.md": {
-    "mtime": 1780509634.7430584,
-    "ast_hash": "8be7f5f8501b85d20cdf165b8f306372",
+    "mtime": 1781788076.3978696,
+    "ast_hash": "8f55f2eedf8c28443e156a414bae6df1",
     "semantic_hash": ""
   },
   "openspec/specs/extraction-run-cleanup/spec.md": {
@@ -2485,8 +2485,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/schema-generation-with-examples/spec.md": {
-    "mtime": 1779280671.172297,
-    "ast_hash": "8f5240f60933502e932112ac2de25344",
+    "mtime": 1781788038.9015865,
+    "ast_hash": "e4f7fd272baa1a039dcf79aad2d35930",
     "semantic_hash": ""
   },
   "openspec/specs/schema-json-format-enforcement/spec.md": {
@@ -2750,8 +2750,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/hybrid-search/spec.md": {
-    "mtime": 1781113126.3322089,
-    "ast_hash": "7d689bab488372ff6cd90d14778d6e0d",
+    "mtime": 1781788076.5668752,
+    "ast_hash": "d50976b29bb80030f0c678d919d750b2",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/controller/AiProfileController.java": {
@@ -2844,56 +2844,6 @@
     "ast_hash": "a5d711f7e2081c962e5c60ae4a30ab57",
     "semantic_hash": ""
   },
-  "openspec/changes/add-runtime-settings-ai-profiles/.openspec.yaml": {
-    "mtime": 1781781746.5057313,
-    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/design.md": {
-    "mtime": 1781781834.413549,
-    "ast_hash": "209e92f1c341cb176db7a31b28f5d12c",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/proposal.md": {
-    "mtime": 1781781776.4482908,
-    "ast_hash": "1877c798901c89e61c090afc59d557d2",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/ai-observability-monitoring/spec.md": {
-    "mtime": 1781781898.5988822,
-    "ast_hash": "8f7073e3715714d67f9b1e54a66479b7",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/ai-profile-management/spec.md": {
-    "mtime": 1781781898.1548862,
-    "ast_hash": "905ef8cd258d4d6c1a6c576dcc92b590",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/documentation-alignment/spec.md": {
-    "mtime": 1781781898.731881,
-    "ast_hash": "64ddcbfe2039383fd71c1272d629c1c8",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/hybrid-search/spec.md": {
-    "mtime": 1781781898.3038847,
-    "ast_hash": "b047db6291f8eb44045017d6d6dbde9c",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781781898.0058875,
-    "ast_hash": "268597b1252d057748b9464d46a39cbc",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/specs/schema-generation-with-examples/spec.md": {
-    "mtime": 1781781898.4478836,
-    "ast_hash": "769eaa4d2ef4125905050c3d766e00d2",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-runtime-settings-ai-profiles/tasks.md": {
-    "mtime": 1781787534.7113857,
-    "ast_hash": "8ec61e391cf732be72e5f7e66243829e",
-    "semantic_hash": ""
-  },
   "openspec/changes/archive/2026-06-16-associate-created-schemas-with-knowledge-base/.openspec.yaml": {
     "mtime": 1781636380.3332746,
     "ast_hash": "b2b5f1d6d51f1aaa1d35b900f1889ae4",
@@ -2937,6 +2887,66 @@
   "src/test/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsServiceTest.java": {
     "mtime": 1781787435.5964913,
     "ast_hash": "59258f2b6771b87a989f3a0411e9e5f7",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/.openspec.yaml": {
+    "mtime": 1781781746.5057313,
+    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/design.md": {
+    "mtime": 1781781834.413549,
+    "ast_hash": "209e92f1c341cb176db7a31b28f5d12c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/proposal.md": {
+    "mtime": 1781781776.4482908,
+    "ast_hash": "1877c798901c89e61c090afc59d557d2",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/ai-observability-monitoring/spec.md": {
+    "mtime": 1781781898.5988822,
+    "ast_hash": "8f7073e3715714d67f9b1e54a66479b7",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/ai-profile-management/spec.md": {
+    "mtime": 1781781898.1548862,
+    "ast_hash": "905ef8cd258d4d6c1a6c576dcc92b590",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/documentation-alignment/spec.md": {
+    "mtime": 1781781898.731881,
+    "ast_hash": "64ddcbfe2039383fd71c1272d629c1c8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/hybrid-search/spec.md": {
+    "mtime": 1781781898.3038847,
+    "ast_hash": "b047db6291f8eb44045017d6d6dbde9c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781781898.0058875,
+    "ast_hash": "268597b1252d057748b9464d46a39cbc",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/specs/schema-generation-with-examples/spec.md": {
+    "mtime": 1781781898.4478836,
+    "ast_hash": "769eaa4d2ef4125905050c3d766e00d2",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/tasks.md": {
+    "mtime": 1781787534.7113857,
+    "ast_hash": "8ec61e391cf732be72e5f7e66243829e",
+    "semantic_hash": ""
+  },
+  "openspec/specs/ai-profile-management/spec.md": {
+    "mtime": 1781788038.9005866,
+    "ast_hash": "166af3d97bce918d85f3028d4bdcd892",
+    "semantic_hash": ""
+  },
+  "openspec/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781788038.9015865,
+    "ast_hash": "49724cd03b7f81a284fede8af49d3f2c",
     "semantic_hash": ""
   }
 }

@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 6349 nodes, 8985 edges, 569 communities. Commit: 449d206</p>
+<p class="subtitle">Generated from graphify knowledge graph: 6431 nodes, 9128 edges, 564 communities. Commit: 8308701</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -76,8 +76,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#community-178">Community 178</a>
     <a href="#community-532">Community 532</a>
     <a href="#community-203">Community 203</a>
-    <a href="#community-306">Community 306</a>
-    <a href="#community-310">Community 310</a>
+    <a href="#community-145">Community 145</a>
+    <a href="#community-192">Community 192</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,17 +88,17 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2704 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2734 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2883 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>121 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>32 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>38 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>60 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>43 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>68 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>168 nodes</small>")
     class SERVE_API_35EC8E86 module;
@@ -112,11 +112,11 @@ flowchart LR
     class COMMUNITY_532_110F4261 module;
     COMMUNITY_203_F3C978EB("Community 203<br/><small>9 nodes</small>")
     class COMMUNITY_203_F3C978EB module;
-    COMMUNITY_306_770E6206("Community 306<br/><small>7 nodes</small>")
-    class COMMUNITY_306_770E6206 module;
-    COMMUNITY_310_C2F7331D("Community 310<br/><small>7 nodes</small>")
-    class COMMUNITY_310_C2F7331D module;
-    OTHER_D0941E68("Other<br/><small>157 nodes</small>")
+    COMMUNITY_145_B7BFBB08("Community 145<br/><small>7 nodes</small>")
+    class COMMUNITY_145_B7BFBB08 module;
+    COMMUNITY_192_6615B99A("Community 192<br/><small>7 nodes</small>")
+    class COMMUNITY_192_6615B99A module;
+    OTHER_D0941E68("Other<br/><small>178 nodes</small>")
     class OTHER_D0941E68 module;
     BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2704</td><td><code>40, 2, 63, 4, 38, 3, 7, 14, 11, 12, 1, 20, 6, 22, 16, 127, 25, 128, 133, 33, 509, 551, 130, 131, 8, 134, 135, 143, 17, 19, 5, 340, 9, 10, 141, 147, 18, 24, 21, 342, 544, 13, 138, 23, 26, 388, 447, 29, 43, 552, 153, 28, 30, 39, 452, 533, 553, 144, 157, 206, 37, 554, 32, 36, 529, 15, 27, 385, 451, 527, 536, 555, 35, 386, 49, 537, 557, 538, 556, 145, 42, 53, 560, 562, 192, 46, 47, 534, 54, 559, 564, 146, 48, 52, 526, 530, 322, 323, 341, 55, 57, 515, 561, 58, 60, 61, 62, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 568, 66, 67, 446, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>32</td><td><code>268, 266, 270, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>43</td><td><code>531, 528, 453, 456, 500</code></td></tr><tr><td>Serving API</td><td>168</td><td><code>123, 172, 445, 44, 179, 329, 343, 347, 539, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 532</td><td>10</td><td><code>532</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Other</td><td>157</td><td><code>311, 312, 313, 327, 330, 331, 332, 335, 535, 565, 566, 348, 349, 567, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2734</td><td><code>40, 33, 63, 2, 4, 25, 8, 3, 7, 14, 11, 12, 20, 1, 9, 6, 16, 32, 388, 127, 342, 128, 133, 551, 130, 131, 17, 447, 134, 135, 18, 19, 5, 141, 24, 38, 10, 147, 21, 544, 138, 23, 509, 13, 26, 39, 15, 43, 552, 153, 28, 30, 35, 452, 553, 560, 144, 157, 206, 554, 143, 27, 36, 37, 451, 527, 555, 42, 529, 49, 556, 557, 22, 53, 67, 46, 47, 385, 533, 537, 54, 146, 48, 52, 530, 322, 323, 341, 55, 57, 515, 526, 559, 561, 58, 60, 61, 62, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 568, 66, 446, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>38</td><td><code>268, 266, 270, 386, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>68</td><td><code>29, 531, 528, 453, 456, 500</code></td></tr><tr><td>Serving API</td><td>168</td><td><code>123, 172, 445, 44, 179, 329, 343, 347, 539, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 532</td><td>10</td><td><code>532</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 145</td><td>7</td><td><code>145</code></td></tr><tr><td>Community 192</td><td>7</td><td><code>192</code></td></tr><tr><td>Other</td><td>178</td><td><code>306, 310, 311, 312, 313, 327, 330, 331, 332, 335, 340, 535, 565, 566, 348, 349, 567, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>6349 nodes · 8985 edges · 569 communities (512 shown, 57 thin omitted)</li>
-      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 980 edges (avg confidence: 0.8)</li>
+      <li>6431 nodes · 9128 edges · 564 communities (508 shown, 56 thin omitted)</li>
+      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1002 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2704 nodes and 5624 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/service/RuntimeSettingsService.java. This section covers 2734 nodes and 5720 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2704 nodes, 5624 edges)
+    %% Section: Extraction Pipeline (2734 nodes, 5720 edges)
     subgraph extract_pipeline_graphrag_controller_AiProfileCo_1c2efa25["graphrag/controller/AiProfileController.java"]
         controller_aiprofilecontroller_aiprofilecontroll_9865a5ff("AiProfileController<br/><small>graphrag/controller/AiProfileController.java</small>")
         controller_aiprofilecontroller_aiprofilecontroll_34e19c16("AiProfileController()<br/><small>graphrag/controller/AiProfileController.java</small>")
@@ -199,7 +199,7 @@ flowchart LR
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_c928302c
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_eedcff7f
-    %% Omitted for readability: 2686 nodes, 0 edges
+    %% Omitted for readability: 2716 nodes, 0 edges
     class controller_aiprofilecontroller_aiprofilecontroll_9865a5ff klass;
     class controller_aiprofilecontroller_aiprofilecontroll_34e19c16 function;
     class controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf function;
@@ -488,8 +488,8 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>.understand-anything/intermediate/batches.json</code></td><td>173 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
+<tr><td><code>graphrag/service/RuntimeSettingsService.java</code></td><td>55 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>53 nodes</td></tr>
-<tr><td><code>graphrag/service/RuntimeSettingsService.java</code></td><td>45 nodes</td></tr>
 <tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>35 nodes</td></tr>
@@ -498,7 +498,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1716, method x933, contains x743, imports x640. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1745, method x948, contains x747, imports x644. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1196,19 +1196,21 @@ flowchart LR
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around specmd, documentation, alignment, openspec, mostly in specs/documentation-alignment/spec.md, specs/documentation-alignment/spec.md, graphify/references/exports.md. This section covers 32 nodes and 28 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around specmd, documentation, alignment, openspec, mostly in specs/documentation-alignment/spec.md, specs/documentation-alignment/spec.md, graphify/references/exports.md. This section covers 38 nodes and 33 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (32 nodes, 28 edges)
+    %% Section: Outputs &amp; Docs (38 nodes, 33 edges)
     subgraph outputs_docs_specs_documentation_alignment_spec_8af68c7a["specs/documentation-alignment/spec.md"]
         documentation_alignment_spec_added_requirements_ffbcb27a("ADDED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
         documentation_alignment_spec_requirements_3e090460("Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_899561e4("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
         documentation_alignment_spec_documentation_align_995cd9fa("documentation-alignment Specification<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_changes_archive_2026_06_18_add_runtime_ef657ce9("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_specs_documentation_alignment_spec_md_d_bae1d98d("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
-        documentation_alignment_spec_modified_requiremen_8cb36d3c("MODIFIED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_797529bf("MODIFIED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_da49ccf0("MODIFIED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_specs_documentation_alignment_spec_md_d_3ec2839b("Requirement: Contributor guidance stays...<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1("Requirement: Contributor guidance stays...<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_specs_documentation_alignment_spec_md_d_f471f2fd("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
@@ -1221,30 +1223,29 @@ flowchart LR
         references_exports_step_7_neo4j_export_only_if_n_4506a260("Step 7 - Neo4j export (only if --neo4j...<br/><small>graphify/references/exports.md</small>")
         references_exports_step_7b_svg_export_only_if_sv_f5c26580("Step 7b - SVG export (only if --svg flag)<br/><small>graphify/references/exports.md</small>")
         references_exports_step_7c_graphml_export_only_i_4cc5e08c("Step 7c - GraphML export (only if --gra...<br/><small>graphify/references/exports.md</small>")
-        references_exports_step_7d_mcp_server_only_if_mc_bc22e883("Step 7d - MCP server (only if --mcp flag)<br/><small>graphify/references/exports.md</small>")
-        references_exports_step_8_token_reduction_benchm_d4b739be("Step 8 - Token reduction benchmark (onl...<br/><small>graphify/references/exports.md</small>")
     end
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_6b_wiki_only_if_wiki_fla_f09198df
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7_neo4j_export_only_if_n_4506a260
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7b_svg_export_only_if_sv_f5c26580
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7c_graphml_export_only_i_4cc5e08c
-    references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7d_mcp_server_only_if_mc_bc22e883
-    references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_8_token_reduction_benchm_d4b739be
     documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1
     documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_36ed6a7f
     documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_6c742bb5
-    documentation_alignment_spec_modified_requiremen_8cb36d3c -->|contains| openspec_changes_archive_2026_06_18_add_runtime_ef657ce9
+    openspec_changes_archive_2026_06_18_add_runtime_da49ccf0 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_ef657ce9
+    openspec_changes_expand_runtime_settings_managem_797529bf -->|contains| openspec_changes_expand_runtime_settings_managem_899561e4
     documentation_alignment_spec_documentation_align_995cd9fa -->|contains| documentation_alignment_spec_requirements_3e090460
     documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_3ec2839b
     documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_f471f2fd
     documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_bae1d98d
-    %% Omitted for readability: 14 nodes, 0 edges
+    %% Omitted for readability: 20 nodes, 0 edges
     class documentation_alignment_spec_added_requirements_ffbcb27a concept;
     class documentation_alignment_spec_requirements_3e090460 concept;
+    class openspec_changes_expand_runtime_settings_managem_899561e4 concept;
     class documentation_alignment_spec_documentation_align_995cd9fa concept;
     class openspec_changes_archive_2026_06_18_add_runtime_ef657ce9 concept;
     class openspec_specs_documentation_alignment_spec_md_d_bae1d98d concept;
-    class documentation_alignment_spec_modified_requiremen_8cb36d3c concept;
+    class openspec_changes_expand_runtime_settings_managem_797529bf concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_da49ccf0 concept;
     class openspec_specs_documentation_alignment_spec_md_d_3ec2839b concept;
     class openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1 concept;
     class openspec_specs_documentation_alignment_spec_md_d_f471f2fd concept;
@@ -1255,8 +1256,6 @@ flowchart LR
     class references_exports_step_7_neo4j_export_only_if_n_4506a260 concept;
     class references_exports_step_7b_svg_export_only_if_sv_f5c26580 concept;
     class references_exports_step_7c_graphml_export_only_i_4cc5e08c concept;
-    class references_exports_step_7d_mcp_server_only_if_mc_bc22e883 concept;
-    class references_exports_step_8_token_reduction_benchm_d4b739be concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1528,12 +1527,13 @@ flowchart LR
       <tr><td><code>specs/documentation-alignment/spec.md</code></td><td>11 nodes</td></tr>
 <tr><td><code>graphify/references/exports.md</code></td><td>8 nodes</td></tr>
 <tr><td><code>specs/documentation-alignment/spec.md</code></td><td>8 nodes</td></tr>
+<tr><td><code>specs/documentation-alignment/spec.md</code></td><td>6 nodes</td></tr>
 <tr><td><code>specs/documentation-alignment/spec.md</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x28. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x33. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1890,67 +1890,62 @@ flowchart LR
 
 <!-- ====== 7. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around runtime, settings, specmd, application, mostly in specs/runtime-application-settings/spec.md, specs/runtime-application-settings/spec.md, graphify/references/add-watch.md. This section covers 43 nodes and 38 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around runtime, settings, specmd, application, mostly in specs/runtime-application-settings/spec.md, specs/runtime-application-settings/spec.md, specs/runtime-application-settings/spec.md. This section covers 68 nodes and 62 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (43 nodes, 38 edges)
+    %% Section: Ingestion &amp; Updates (68 nodes, 62 edges)
     subgraph ingest_cache_update_specs_runtime_application_se_ca694f53["specs/runtime-application-settings/spec.md"]
-        runtime_application_settings_spec_added_requirem_d90ec4e8("ADDED Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_e15b5b3e("ADDED Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_ef857917("Requirement: Safe runtime settings appl...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        runtime_application_settings_spec_modified_requi_6e8271b2("MODIFIED Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
         runtime_application_settings_spec_requirements_643b3bab("Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
         openspec_changes_archive_2026_06_18_add_runtime_1b807e69("Requirement: Safe runtime settings appl...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_541506f2("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_9b359899("Requirement: Runtime settings fall back...<br/><small>specs/runtime-application-settings/spec.md</small>")
         openspec_specs_runtime_application_settings_spec_9e08aadd("Requirement: Safe runtime settings appl...<br/><small>specs/runtime-application-settings/spec.md</small>")
-        openspec_changes_archive_2026_06_18_add_runtime_90825c5f("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
-        openspec_changes_archive_2026_06_18_add_runtime_3515615f("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_042f2196("ADDED Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
         openspec_specs_runtime_application_settings_spec_c0f519f4("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_90825c5f("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_expand_runtime_settings_managem_5f85cb35("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
         openspec_specs_runtime_application_settings_spec_8040d742("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_3515615f("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        runtime_application_settings_spec_requirement_ru_f9070292("Requirement: Runtime settings catalog c...<br/><small>specs/runtime-application-settings/spec.md</small>")
         openspec_specs_runtime_application_settings_spec_2bc0c14b("Requirement: Runtime settings fall back...<br/><small>specs/runtime-application-settings/spec.md</small>")
-        openspec_changes_archive_2026_06_18_add_runtime_8b112ccd("Requirement: Runtime settings fall back...<br/><small>specs/runtime-application-settings/spec.md</small>")
-        runtime_application_settings_spec_runtime_applic_df80e214("runtime-application-settings Specification<br/><small>specs/runtime-application-settings/spec.md</small>")
     end
-    subgraph ingest_cache_update_graphify_references_add_watc_ad4a876c["graphify/references/add-watch.md"]
-        references_add_watch_graphify_reference_add_a_ur_df000dfb("graphify reference: add a URL and watch...<br/><small>graphify/references/add-watch.md</small>")
-        references_add_watch_for_watch_6ae398fb("For --watch<br/><small>graphify/references/add-watch.md</small>")
-        references_add_watch_for_graphify_add_4d2c1e86("For /graphify add<br/><small>graphify/references/add-watch.md</small>")
-        references_add_watch_a882e130("add-watch.md")
-    end
-    subgraph ingest_cache_update_graphify_references_transcri_94aa8e73["graphify/references/transcribe.md"]
-        references_transcribe_graphify_reference_transcr_aa389265("graphify reference: transcribe video an...<br/><small>graphify/references/transcribe.md</small>")
-        references_transcribe_step_2_5_transcribe_video_21771e20("Step 2.5 - Transcribe video / audio fil...<br/><small>graphify/references/transcribe.md</small>")
-    end
+    references_add_watch_graphify_reference_add_a_ur_df000dfb("graphify reference: add a URL and watch...<br/><small>graphify/references/add-watch.md</small>")
     references_update_graphify_reference_incremental_e7189a5d("graphify reference: incremental update...<br/><small>graphify/references/update.md</small>")
-    references_add_watch_a882e130 -->|contains| references_add_watch_graphify_reference_add_a_ur_df000dfb
-    references_add_watch_graphify_reference_add_a_ur_df000dfb -->|contains| references_add_watch_for_graphify_add_4d2c1e86
-    references_add_watch_graphify_reference_add_a_ur_df000dfb -->|contains| references_add_watch_for_watch_6ae398fb
-    references_transcribe_graphify_reference_transcr_aa389265 -->|contains| references_transcribe_step_2_5_transcribe_video_21771e20
-    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_90825c5f
-    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_3515615f
-    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_8b112ccd
-    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_1b807e69
-    runtime_application_settings_spec_runtime_applic_df80e214 -->|contains| runtime_application_settings_spec_requirements_643b3bab
+    openspec_changes_archive_2026_06_18_add_runtime_e15b5b3e -->|contains| openspec_changes_archive_2026_06_18_add_runtime_90825c5f
+    openspec_changes_archive_2026_06_18_add_runtime_e15b5b3e -->|contains| openspec_changes_archive_2026_06_18_add_runtime_3515615f
+    openspec_changes_archive_2026_06_18_add_runtime_e15b5b3e -->|contains| openspec_changes_archive_2026_06_18_add_runtime_1b807e69
+    openspec_changes_expand_runtime_settings_managem_042f2196 -->|contains| runtime_application_settings_spec_requirement_ru_f9070292
+    runtime_application_settings_spec_modified_requi_6e8271b2 -->|contains| openspec_changes_expand_runtime_settings_managem_541506f2
+    runtime_application_settings_spec_modified_requi_6e8271b2 -->|contains| openspec_changes_expand_runtime_settings_managem_5f85cb35
+    runtime_application_settings_spec_modified_requi_6e8271b2 -->|contains| openspec_changes_expand_runtime_settings_managem_9b359899
+    runtime_application_settings_spec_modified_requi_6e8271b2 -->|contains| openspec_changes_expand_runtime_settings_managem_ef857917
     runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_c0f519f4
     runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_8040d742
     runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_2bc0c14b
     runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_9e08aadd
-    %% Omitted for readability: 25 nodes, 0 edges
-    class runtime_application_settings_spec_added_requirem_d90ec4e8 concept;
+    %% Omitted for readability: 50 nodes, 0 edges
+    class openspec_changes_archive_2026_06_18_add_runtime_e15b5b3e concept;
+    class openspec_changes_expand_runtime_settings_managem_ef857917 concept;
+    class runtime_application_settings_spec_modified_requi_6e8271b2 concept;
     class runtime_application_settings_spec_requirements_643b3bab concept;
     class openspec_changes_archive_2026_06_18_add_runtime_1b807e69 concept;
+    class openspec_changes_expand_runtime_settings_managem_541506f2 concept;
+    class openspec_changes_expand_runtime_settings_managem_9b359899 concept;
     class openspec_specs_runtime_application_settings_spec_9e08aadd concept;
-    class openspec_changes_archive_2026_06_18_add_runtime_90825c5f concept;
-    class openspec_changes_archive_2026_06_18_add_runtime_3515615f concept;
+    class openspec_changes_expand_runtime_settings_managem_042f2196 concept;
     class openspec_specs_runtime_application_settings_spec_c0f519f4 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_90825c5f concept;
+    class openspec_changes_expand_runtime_settings_managem_5f85cb35 concept;
     class openspec_specs_runtime_application_settings_spec_8040d742 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_3515615f concept;
+    class runtime_application_settings_spec_requirement_ru_f9070292 concept;
     class openspec_specs_runtime_application_settings_spec_2bc0c14b concept;
-    class openspec_changes_archive_2026_06_18_add_runtime_8b112ccd concept;
-    class runtime_application_settings_spec_runtime_applic_df80e214 concept;
     class references_add_watch_graphify_reference_add_a_ur_df000dfb concept;
-    class references_add_watch_for_watch_6ae398fb concept;
-    class references_add_watch_for_graphify_add_4d2c1e86 concept;
-    class references_add_watch_a882e130 concept;
-    class references_transcribe_graphify_reference_transcr_aa389265 concept;
-    class references_transcribe_step_2_5_transcribe_video_21771e20 concept;
     class references_update_graphify_reference_incremental_e7189a5d concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -1983,142 +1978,6 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
-  <td><code>runtime-application-settings Specification</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing runtime-application-settings Specification.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Purpose.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirements.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Requirement: Runtime settings are exposed through an allowlisted API</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Runtime settings are exposed through an allowlisted API.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Scenario: Client lists runtime settings</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Client lists runtime settings.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Scenario: Client requests a non-allowlisted setting update</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Client requests a non-allowlisted setting update.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>Requirement: Runtime setting updates are validated and persisted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Runtime setting updates are validated and persisted.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Scenario: Valid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Valid setting update is submitted.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>Scenario: Invalid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Invalid setting update is submitted.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Requirement: Safe runtime settings apply without restart</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Safe runtime settings apply without restart.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>Scenario: Query limit setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Query limit setting changes.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Scenario: Extraction or chunking setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Extraction or chunking setting changes.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>Scenario: Startup-bound setting is represented</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Startup-bound setting is represented.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>Requirement: Runtime settings fall back to startup defaults</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Runtime settings fall back to startup defaults.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>Scenario: No override exists</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: No override exists.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>Scenario: Override is cleared</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Override is cleared.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing spec.md.</td>
-</tr>
-<tr>
-  <td>19</td>
   <td><code>ADDED Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2126,7 +1985,63 @@ flowchart LR
   <td>Documentation node describing ADDED Requirements.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>3</td>
+  <td><code>Requirement: Runtime settings catalog covers application property groups</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime settings catalog covers application property groups.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Scenario: Client lists expanded settings catalog</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client lists expanded settings catalog.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Scenario: Active profiles override startup defaults</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Active profiles override startup defaults.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Requirement: Sensitive runtime setting values are masked</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Sensitive runtime setting values are masked.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Scenario: Client lists sensitive settings</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client lists sensitive settings.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Scenario: Client attempts to update sensitive startup-bound setting</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client attempts to update sensitive startup-bound setting.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>MODIFIED Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MODIFIED Requirements.</td>
+</tr>
+<tr>
+  <td>10</td>
   <td><code>Requirement: Runtime settings are exposed through an allowlisted API</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2134,7 +2049,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Runtime settings are exposed through an allowlisted API.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>11</td>
   <td><code>Scenario: Client lists runtime settings</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2142,7 +2057,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Client lists runtime settings.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>12</td>
   <td><code>Scenario: Client requests a non-allowlisted setting update</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2150,7 +2065,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Client requests a non-allowlisted setting update.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>13</td>
   <td><code>Requirement: Runtime setting updates are validated and persisted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2158,7 +2073,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Runtime setting updates are validated and persisted.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>14</td>
   <td><code>Scenario: Valid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2166,7 +2081,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Valid setting update is submitted.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>15</td>
   <td><code>Scenario: Invalid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2174,7 +2089,15 @@ flowchart LR
   <td>Documentation node describing Scenario: Invalid setting update is submitted.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>16</td>
+  <td><code>Scenario: Read-only setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Read-only setting update is submitted.</td>
+</tr>
+<tr>
+  <td>17</td>
   <td><code>Requirement: Safe runtime settings apply without restart</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2182,7 +2105,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Safe runtime settings apply without restart.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>18</td>
   <td><code>Scenario: Query limit setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2190,7 +2113,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Query limit setting changes.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>19</td>
   <td><code>Scenario: Extraction or chunking setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2198,7 +2121,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Extraction or chunking setting changes.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>20</td>
   <td><code>Scenario: Startup-bound setting is represented</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2206,12 +2129,84 @@ flowchart LR
   <td>Documentation node describing Scenario: Startup-bound setting is represented.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>21</td>
+  <td><code>Scenario: AI provider defaults are profile-managed</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: AI provider defaults are profile-managed.</td>
+</tr>
+<tr>
+  <td>22</td>
   <td><code>Requirement: Runtime settings fall back to startup defaults</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Documentation node describing Requirement: Runtime settings fall back to startup defaults.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Scenario: No override exists</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: No override exists.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Scenario: Override is cleared</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Override is cleared.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Scenario: Clear is requested for read-only setting</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Clear is requested for read-only setting.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>runtime-application-settings Specification</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing runtime-application-settings Specification.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Purpose.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirements.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Requirement: Runtime settings are exposed through an allowlisted API</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime settings are exposed through an allowlisted API.</td>
 </tr>
 </table>
 
@@ -2220,7 +2215,8 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>17 nodes</td></tr>
+      <tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>25 nodes</td></tr>
+<tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>graphify/references/add-watch.md</code></td><td>4 nodes</td></tr>
 <tr><td><code>graphify/references/update.md</code></td><td>4 nodes</td></tr>
@@ -2229,7 +2225,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x38. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x62. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3605,34 +3601,295 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. Community 306 ====== -->
-<h2 id="community-306">14. Community 306</h2>
-<p>Community 306 groups implementation around proposalmd, changes, openspec, archive, mostly in archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 14. Community 145 ====== -->
+<h2 id="community-145">14. Community 145</h2>
+<p>Community 145 groups implementation around designmd, openspec, changes, expand, mostly in changes/expand-runtime-settings-management/design.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 306 (7 nodes, 6 edges)
+    %% Section: Community 145 (7 nodes, 6 edges)
+    expand_runtime_settings_management_design_de7a21c6("design.md")
+    expand_runtime_settings_management_design_contex_22ccf04d("Context<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_decisi_708b497d("Decisions<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_goals_882e4435("Goals / Non-Goals<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_migrat_e56c8d79("Migration Plan<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_open_q_f87c142d("Open Questions<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_risks_9145ca3e("Risks / Trade-offs<br/><small>changes/expand-runtime-settings-management/design.md</small>")
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_contex_22ccf04d
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_decisi_708b497d
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_goals_882e4435
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_migrat_e56c8d79
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_open_q_f87c142d
+    expand_runtime_settings_management_design_de7a21c6 -->|contains| expand_runtime_settings_management_design_risks_9145ca3e
+    class expand_runtime_settings_management_design_de7a21c6 concept;
+    class expand_runtime_settings_management_design_contex_22ccf04d concept;
+    class expand_runtime_settings_management_design_decisi_708b497d concept;
+    class expand_runtime_settings_management_design_goals_882e4435 concept;
+    class expand_runtime_settings_management_design_migrat_e56c8d79 concept;
+    class expand_runtime_settings_management_design_open_q_f87c142d concept;
+    class expand_runtime_settings_management_design_risks_9145ca3e concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>design.md</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing design.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Context</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Context.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Goals / Non-Goals.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Decisions</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Decisions.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Risks / Trade-offs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Migration Plan</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Migration Plan.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Open Questions</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Open Questions.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>changes/expand-runtime-settings-management/design.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 15. Community 192 ====== -->
+<h2 id="community-192">15. Community 192</h2>
+<p>Community 192 groups implementation around proposalmd, changes, openspec, expand, mostly in changes/expand-runtime-settings-management/proposal.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 192 (7 nodes, 6 edges)
+    expand_runtime_settings_management_proposal_e0b82e7a("proposal.md")
+    expand_runtime_settings_management_proposal_capa_99a1f836("Capabilities<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_impa_47c313d3("Impact<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_what_abad54d6("What Changes<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_why_9a5fb7f6("Why<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_modi_09ca123d("Modified Capabilities<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_new_ccf38231("New Capabilities<br/><small>changes/expand-runtime-settings-management/proposal.md</small>")
+    expand_runtime_settings_management_proposal_e0b82e7a -->|contains| expand_runtime_settings_management_proposal_capa_99a1f836
+    expand_runtime_settings_management_proposal_e0b82e7a -->|contains| expand_runtime_settings_management_proposal_impa_47c313d3
+    expand_runtime_settings_management_proposal_e0b82e7a -->|contains| expand_runtime_settings_management_proposal_what_abad54d6
+    expand_runtime_settings_management_proposal_e0b82e7a -->|contains| expand_runtime_settings_management_proposal_why_9a5fb7f6
+    expand_runtime_settings_management_proposal_capa_99a1f836 -->|contains| expand_runtime_settings_management_proposal_modi_09ca123d
+    expand_runtime_settings_management_proposal_capa_99a1f836 -->|contains| expand_runtime_settings_management_proposal_new_ccf38231
+    class expand_runtime_settings_management_proposal_e0b82e7a concept;
+    class expand_runtime_settings_management_proposal_capa_99a1f836 concept;
+    class expand_runtime_settings_management_proposal_impa_47c313d3 concept;
+    class expand_runtime_settings_management_proposal_what_abad54d6 concept;
+    class expand_runtime_settings_management_proposal_why_9a5fb7f6 concept;
+    class expand_runtime_settings_management_proposal_modi_09ca123d concept;
+    class expand_runtime_settings_management_proposal_new_ccf38231 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">changes/expand-runtime-settings-management/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>changes/expand-runtime-settings-management/proposal.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md, archive/2026-05-15-overwrite-completed-extraction/design.md, archive/2026-05-15-overwrite-completed-extraction/proposal.md. This section covers 178 nodes and 148 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (178 nodes, 148 edges)
+    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
     node_2026_05_15_cleanup_stale_failed_extraction_11ee4545("proposal.md")
-    node_2026_05_15_cleanup_stale_failed_extraction_7d7b0c6c("Capabilities<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_8c04d758("Impact<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_a4534a1c("What Changes<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_c28f9496("Why<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_74878838("Modified Capabilities<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_a1988183("New Capabilities<br/><small>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small>")
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_7d7b0c6c
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_8c04d758
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_a4534a1c
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_c28f9496
-    node_2026_05_15_cleanup_stale_failed_extraction_7d7b0c6c -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_74878838
-    node_2026_05_15_cleanup_stale_failed_extraction_7d7b0c6c -->|contains| node_2026_05_15_cleanup_stale_failed_extraction_a1988183
+    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
+    node_2026_05_15_overwrite_completed_extraction_p_168e9394("proposal.md")
+    node_2026_05_15_overwrite_completed_extraction_t_6540f7eb("tasks.md")
+    node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895("design.md")
+    node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2("proposal.md")
+    node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0("design.md")
+    node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60("proposal.md")
+    node_2026_05_20_tolerate_invalid_extraction_elem_89103371("proposal.md")
+    node_2026_05_20_tolerate_invalid_extraction_elem_97855c09("tasks.md")
+    node_2026_06_03_sync_docs_with_current_implement_b862ea70("design.md")
+    node_2026_06_03_sync_docs_with_current_implement_ddda4372("proposal.md")
+    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
+    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07("design.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
+    expand_runtime_settings_management_tasks_1a655420("tasks.md")
+    %% Omitted for readability: 160 nodes, 0 edges
+    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
     class node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_7d7b0c6c concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_8c04d758 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_a4534a1c concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_c28f9496 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_74878838 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_a1988183 concept;
+    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
+    class node_2026_05_15_overwrite_completed_extraction_p_168e9394 concept;
+    class node_2026_05_15_overwrite_completed_extraction_t_6540f7eb concept;
+    class node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895 concept;
+    class node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2 concept;
+    class node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0 concept;
+    class node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60 concept;
+    class node_2026_05_20_tolerate_invalid_extraction_elem_89103371 concept;
+    class node_2026_05_20_tolerate_invalid_extraction_elem_97855c09 concept;
+    class node_2026_06_03_sync_docs_with_current_implement_b862ea70 concept;
+    class node_2026_06_03_sync_docs_with_current_implement_ddda4372 concept;
+    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
+    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
+    class expand_runtime_settings_management_tasks_1a655420 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3710,6 +3967,190 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Impact.</td>
 </tr>
+<tr>
+  <td>8</td>
+  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing design.md.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Context.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Goals / Non-Goals.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Decisions.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Risks / Trade-offs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Migration Plan</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Migration Plan.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Open Questions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Open Questions.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -3718,463 +4159,18 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</code></td><td>7 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 15. Community 310 ====== -->
-<h2 id="community-310">15. Community 310</h2>
-<p>Community 310 groups implementation around designmd, openspec, changes, archive, mostly in archive/2026-05-15-overwrite-completed-extraction/design.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Community 310 (7 nodes, 6 edges)
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
-    node_2026_05_15_overwrite_completed_extraction_d_1b328dcf("Context<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_34995dee("Decisions<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_967791f9("Goals / Non-Goals<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_5442f0e9("Migration Plan<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_cc0eb498("Open Questions<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_ec23edeb("Risks / Trade-offs<br/><small>archive/2026-05-15-overwrite-completed-extraction/design.md</small>")
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_1b328dcf
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_34995dee
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_967791f9
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_5442f0e9
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_cc0eb498
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e -->|contains| node_2026_05_15_overwrite_completed_extraction_d_ec23edeb
-    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_1b328dcf concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_34995dee concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_967791f9 concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_5442f0e9 concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_cc0eb498 concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_ec23edeb concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing design.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Context.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Goals / Non-Goals.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Decisions.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Risks / Trade-offs.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Migration Plan</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Migration Plan.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Open Questions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Open Questions.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>archive/2026-05-15-overwrite-completed-extraction/design.md</code></td><td>7 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-overwrite-completed-extraction/proposal.md, archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md, archive/2026-05-16-fix-cypher-validation-patterns/proposal.md. This section covers 157 nodes and 130 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (157 nodes, 130 edges)
-    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394("proposal.md")
-    node_2026_05_15_overwrite_completed_extraction_t_6540f7eb("tasks.md")
-    node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895("design.md")
-    node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2("proposal.md")
-    node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0("design.md")
-    node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60("proposal.md")
-    node_2026_05_20_tolerate_invalid_extraction_elem_89103371("proposal.md")
-    node_2026_05_20_tolerate_invalid_extraction_elem_97855c09("tasks.md")
-    node_2026_06_03_sync_docs_with_current_implement_b862ea70("design.md")
-    node_2026_06_03_sync_docs_with_current_implement_ddda4372("proposal.md")
-    node_2026_06_04_add_ai_observability_monitoring_32ac9df7("proposal.md")
-    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
-    node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5("proposal.md")
-    node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5("tasks.md")
-    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
-    node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07("design.md")
-    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
-    %% Omitted for readability: 139 nodes, 0 edges
-    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_168e9394 concept;
-    class node_2026_05_15_overwrite_completed_extraction_t_6540f7eb concept;
-    class node_2026_05_15_tolerate_invalid_relationship_tr_4f61e895 concept;
-    class node_2026_05_15_tolerate_invalid_relationship_tr_40b4abd2 concept;
-    class node_2026_05_16_fix_cypher_validation_patterns_d_483ad0c0 concept;
-    class node_2026_05_16_fix_cypher_validation_patterns_p_192a5d60 concept;
-    class node_2026_05_20_tolerate_invalid_extraction_elem_89103371 concept;
-    class node_2026_05_20_tolerate_invalid_extraction_elem_97855c09 concept;
-    class node_2026_06_03_sync_docs_with_current_implement_b862ea70 concept;
-    class node_2026_06_03_sync_docs_with_current_implement_ddda4372 concept;
-    class node_2026_06_04_add_ai_observability_monitoring_32ac9df7 concept;
-    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
-    class node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5 concept;
-    class node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5 concept;
-    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
-    class node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07 concept;
-    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>archive/2026-05-15-overwrite-completed-extraction/proposal.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>archive/2026-05-15-overwrite-completed-extraction/design.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>archive/2026-05-15-overwrite-completed-extraction/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-16-fix-cypher-validation-patterns/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-20-tolerate-invalid-extraction-elements/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-03-sync-docs-with-current-implementation/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-add-ai-observability-monitoring/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-06-04-fix-langfuse-llm-io-capture/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-06-06-extend-document-operations/proposal.md</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x130. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x148. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4199,18 +4195,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>6349</td></tr>
-      <tr><td>Edges</td><td>8985</td></tr>
+      <tr><td>Nodes</td><td>6431</td></tr>
+      <tr><td>Edges</td><td>9128</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>569</td></tr>
+      <tr><td>Communities</td><td>564</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>8005</td></tr>
-      <tr><td>INFERRED</td><td>980</td></tr>
+      <tr><td>EXTRACTED</td><td>8126</td></tr>
+      <tr><td>INFERRED</td><td>1002</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4218,7 +4214,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-18 13:07 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-18 13:34 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
