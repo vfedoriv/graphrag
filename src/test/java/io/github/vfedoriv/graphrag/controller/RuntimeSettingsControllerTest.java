@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.controller;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -10,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.error.GlobalExceptionHandler;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.List;
@@ -80,6 +80,72 @@ class RuntimeSettingsControllerTest {
                 .content("{\"value\":10}"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.detail").value("Runtime setting is not allowlisted: spring.neo4j.pool.max-connection-pool-size"));
+    }
+
+    @Test
+    void bulkUpdatesMutableSettingsAndReturnsUpdatedSettings() throws Exception {
+        when(service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.query.require-limit", false)
+        ))).thenReturn(List.of(
+            setting("app.query.max-rows", 25, false, true, "live"),
+            setting("app.query.require-limit", false, false, true, "live")
+        ));
+
+        mockMvc.perform(put("/api/v1/runtime-settings")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "updates": [
+                        {"key": "app.query.max-rows", "value": 25},
+                        {"key": "app.query.require-limit", "value": false}
+                      ]
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].key").value("app.query.max-rows"))
+            .andExpect(jsonPath("$[0].currentValue").value(25))
+            .andExpect(jsonPath("$[1].key").value("app.query.require-limit"))
+            .andExpect(jsonPath("$[1].currentValue").value(false));
+    }
+
+    @Test
+    void bulkUpdateRejectsInvalidRequests() throws Exception {
+        when(service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 30)
+        ))).thenThrow(new IllegalArgumentException("Bulk runtime setting update contains duplicate key: app.query.max-rows"));
+
+        mockMvc.perform(put("/api/v1/runtime-settings")
+                .contentType("application/json")
+                .content("{\"updates\":[]}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors.updates").exists());
+
+        mockMvc.perform(put("/api/v1/runtime-settings")
+                .contentType("application/json")
+                .content("{\"updates\":[{\"key\":\"\",\"value\":25}]}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors['updates[0].key']").exists());
+
+        mockMvc.perform(put("/api/v1/runtime-settings")
+                .contentType("application/json")
+                .content("{\"updates\":[{\"key\":\"app.query.max-rows\"}]}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors['updates[0].value']").exists());
+
+        mockMvc.perform(put("/api/v1/runtime-settings")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "updates": [
+                        {"key": "app.query.max-rows", "value": 25},
+                        {"key": "app.query.max-rows", "value": 30}
+                      ]
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("Bulk runtime setting update contains duplicate key: app.query.max-rows"));
     }
 
     private RuntimeSettingResponse setting(String key, Object value, boolean sensitive, boolean liveApplied, String updateMode) {

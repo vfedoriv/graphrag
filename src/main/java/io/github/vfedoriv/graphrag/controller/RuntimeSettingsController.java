@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.dto.BulkUpdateRuntimeSettingsRequest;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateRuntimeSettingRequest;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
@@ -34,6 +35,11 @@ public class RuntimeSettingsController {
         @Valid @RequestBody UpdateRuntimeSettingRequest request
     ) {
         return runtimeSettingsService.update(key, request.value());
+    }
+
+    @PutMapping
+    public List<RuntimeSettingResponse> updateSettings(@Valid @RequestBody BulkUpdateRuntimeSettingsRequest request) {
+        return runtimeSettingsService.update(request.updates());
     }
 
     @DeleteMapping("/{key}")

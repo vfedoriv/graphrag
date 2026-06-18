@@ -4,14 +4,17 @@ import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -58,6 +61,51 @@ public class RuntimeSettingsService {
         node.setUpdatedAt(Instant.now());
         repository.save(node);
         return toResponse(definition);
+    }
+
+    @Transactional
+    public List<RuntimeSettingResponse> update(List<RuntimeSettingUpdateRequest> updates) {
+        if (repository == null) {
+            throw new IllegalStateException("Runtime setting persistence is not configured");
+        }
+        if (updates == null || updates.isEmpty()) {
+            throw new IllegalArgumentException("Bulk runtime setting update must include at least one setting");
+        }
+
+        List<ParsedSettingUpdate> parsedUpdates = new ArrayList<>();
+        Set<String> seenKeys = new HashSet<>();
+        for (RuntimeSettingUpdateRequest update : updates) {
+            if (update == null) {
+                throw new IllegalArgumentException("Bulk runtime setting update entries must not be null");
+            }
+            String key = update.key();
+            if (key == null || key.isBlank()) {
+                throw new IllegalArgumentException("Bulk runtime setting update key must not be blank");
+            }
+            if (!seenKeys.add(key)) {
+                throw new IllegalArgumentException("Bulk runtime setting update contains duplicate key: " + key);
+            }
+            SettingDefinition definition = requireDefinition(key);
+            if (!definition.mutable()) {
+                throw new IllegalArgumentException(nonMutableMessage(definition));
+            }
+            Object parsed = definition.parse(update.value());
+            parsedUpdates.add(new ParsedSettingUpdate(definition, parsed));
+        }
+
+        Instant updatedAt = Instant.now();
+        for (ParsedSettingUpdate update : parsedUpdates) {
+            RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
+            node.setKey(update.definition().key());
+            node.setValue(update.definition().toStorage(update.value()));
+            node.setUpdatedAt(updatedAt);
+            repository.save(node);
+        }
+
+        return parsedUpdates.stream()
+            .map(ParsedSettingUpdate::definition)
+            .map(this::toResponse)
+            .toList();
     }
 
     @Transactional
@@ -466,6 +514,9 @@ public class RuntimeSettingsService {
         Object displayValue(Object value) {
             return displayMapper.apply(value);
         }
+    }
+
+    private record ParsedSettingUpdate(SettingDefinition definition, Object value) {
     }
 
     public record QuerySettings(

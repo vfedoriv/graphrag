@@ -12,6 +12,7 @@ import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -54,6 +55,29 @@ class RuntimeSettingsServiceTest {
         assertThat(service.extraction().maxRetries()).isEqualTo(4);
         assertThat(service.aiObservation().modelNameTagEnabled()).isFalse();
         assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("25");
+    }
+
+    @Test
+    void bulkUpdatePersistsAllSubmittedOverridesInRequestOrder() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        List<RuntimeSettingResponse> updated = service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.query.require-limit", false),
+            new RuntimeSettingUpdateRequest("app.query.blocked-keywords", List.of("CREATE", "MERGE"))
+        ));
+
+        assertThat(updated).extracting(RuntimeSettingResponse::key)
+            .containsExactly("app.query.max-rows", "app.query.require-limit", "app.query.blocked-keywords");
+        assertThat(updated).extracting(RuntimeSettingResponse::source)
+            .containsExactly("override", "override", "override");
+        assertThat(service.query().maxRows()).isEqualTo(25);
+        assertThat(service.query().requireLimit()).isFalse();
+        assertThat(service.query().blockedKeywords()).containsExactly("CREATE", "MERGE");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("25");
+        assertThat(store.get("app.query.require-limit").getValue()).isEqualTo("false");
+        assertThat(store.get("app.query.blocked-keywords").getValue()).isEqualTo("CREATE,MERGE");
     }
 
     @Test
@@ -134,6 +158,55 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void rejectsInvalidBulkUpdatesWithoutChangingOverrides() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        store.put("app.query.max-rows", override("app.query.max-rows", "50"));
+        RuntimeSettingsService service = service(store);
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.query.require-limit", "sometimes")
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("boolean");
+        assertThat(store).containsOnlyKeys("app.query.max-rows");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("50");
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("spring.neo4j.pool.max-connection-pool-size", 10)
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("not allowlisted");
+        assertThat(store).containsOnlyKeys("app.query.max-rows");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("50");
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("spring.neo4j.uri", "bolt://other")
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("restart-required");
+        assertThat(store).containsOnlyKeys("app.query.max-rows");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("50");
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 30)
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("duplicate key");
+        assertThat(store).containsOnlyKeys("app.query.max-rows");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("50");
+
+        assertThatThrownBy(() -> service.update(List.of()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("at least one setting");
+        assertThat(store).containsOnlyKeys("app.query.max-rows");
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("50");
+    }
+
+    @Test
     void clearingOverrideFallsBackToStartupDefault() {
         Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
         RuntimeSettingsService service = service(store);
@@ -161,6 +234,13 @@ class RuntimeSettingsServiceTest {
             return null;
         }).when(repository).deleteById(anyString());
         return new RuntimeSettingsService(repository, appProperties(), observabilityProperties(), environment());
+    }
+
+    private RuntimeSettingOverrideNode override(String key, String value) {
+        RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
+        node.setKey(key);
+        node.setValue(value);
+        return node;
     }
 
     private Map<String, RuntimeSettingResponse> settingsByKey(RuntimeSettingsService service) {
