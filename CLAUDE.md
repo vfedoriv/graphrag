@@ -63,6 +63,8 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, list, replace, delete, chunk retrieval, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
+| `RuntimeSettingsController` | List, update, and clear allowlisted runtime setting overrides |
+| `AiProfileController` | CRUD for OpenAI-compatible AI profiles with write-only API keys |
 
 ### Core Services
 
@@ -75,6 +77,9 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`CypherExecutionService`** — read-only Cypher execution.
 - **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
 - **`AiObservationService`** — AI workflow spans, model call metrics, token counters, and privacy-controlled content metadata.
+- **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides with typed live accessors.
+- **`AiProfileService`** — OpenAI-compatible profile CRUD, default profile seeding from `app.model.*`, API-key masking, and profile cache invalidation.
+- **`AiRuntimeModelFactory`** — profile/revision-scoped Spring AI OpenAI chat and embedding model creation.
 
 ### Document Ingestion Pipeline
 
@@ -97,6 +102,8 @@ Question → LLM Cypher generation → Multi-stage validation → Read-only exec
 
 `EmbeddingClient`, `CypherGenerationClient`, and `GraphExtractionClient` are interfaces. Real implementations are Spring beans swapped by profile. Tests inject deterministic mock implementations — the full E2E flow runs without any external API calls.
 
+AI profiles are also resolved at runtime per knowledge base. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, and knowledge-base-scoped schema generation use the active knowledge-base profile. Profile API keys are write-only: reads expose configured/masked metadata only.
+
 ## Spring Profiles
 
 | Profile | Effect |
@@ -105,6 +112,8 @@ Question → LLM Cypher generation → Multi-stage validation → Read-only exec
 | `openai` | Spring AI OpenAI enabled; requires `OPENAI_API_KEY` env var |
 | `lm_studio` | OpenAI-compatible; requires `LM_STUDIO_API_KEY=lm-studio` |
 | `langfuse` | Enables AI observability and exports OTLP traces to local Langfuse defaults |
+
+Startup model properties under `app.model.*` seed the persisted default AI profile when no default profile exists. New knowledge bases are assigned that default profile. Runtime setting overrides are persisted in Neo4j and may change allowlisted query, hybrid search, chunking, extraction, and AI observability behavior without restart.
 
 ## Configuration
 
@@ -129,6 +138,8 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 - **Document mutation cleanup:** replacing or deleting a document must remove its chunks, extraction runs, graph relationships, obsolete extracted nodes, and local binary content.
 - **Schema-driven extraction:** LLM is explicitly constrained to only extract node labels and relationship types defined in the active schema.
 - **Provider-agnostic AI:** storage, embedding, generation, and extraction are all behind interfaces to allow swapping providers or using mocks.
+- **Profile-scoped AI:** knowledge bases carry an active AI profile; profile changes are rejected when embedding model or dimension metadata is incompatible with existing chunks.
+- **Live settings with an allowlist:** runtime overrides must go through `RuntimeSettingsService` typed accessors, not ad hoc property reads.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
 - **No Java `var`:** declare concrete variable types explicitly instead of using the `var` keyword.
 

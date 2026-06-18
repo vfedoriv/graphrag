@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
@@ -19,7 +20,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 class GraphExtractionValidationServiceTest {
 
     private final GraphExtractionValidationService validationService =
-        new GraphExtractionValidationService(
+        new GraphExtractionValidationService(TestRuntimeSettings.from(
             new AppProperties(
                 new AppProperties.Neo4j("neo4j"),
                 new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
@@ -28,7 +29,7 @@ class GraphExtractionValidationServiceTest {
                 new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
                 new AppProperties.Extraction(40, 80, 2)
             )
-        );
+        ));
 
     @Test
     void rejectsNullPayload() {

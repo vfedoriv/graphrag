@@ -115,6 +115,71 @@ class KnowledgeBaseControllerIntegrationTest {
     }
 
     @Test
+    void createKnowledgeBaseSeedsDefaultProfileAndPersistsProfileAssignment() throws Exception {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+
+        mockMvc.perform(post("/api/v1/knowledge-bases")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "id": "kb-ai-profile",
+                      "name": "KB AI Profile"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("kb-ai-profile"))
+            .andExpect(jsonPath("$.activeAiProfileId").value("default"));
+
+        mockMvc.perform(get("/api/v1/knowledge-bases/{knowledgeBaseId}/ai-profile", "kb-ai-profile"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("default"))
+            .andExpect(jsonPath("$.apiKeyConfigured").isBoolean())
+            .andExpect(jsonPath("$.apiKey").doesNotExist());
+
+        mockMvc.perform(post("/api/v1/ai-profiles")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "id": "profile-alt",
+                      "name": "Alternate Profile",
+                      "baseUrl": "https://profiles.example/v1",
+                      "apiKey": "secret-profile-key",
+                      "chatModel": "chat-alt",
+                      "embeddingModel": "text-embedding-3-small",
+                      "embeddingDimensions": 1536,
+                      "timeoutSeconds": 30,
+                      "maxRetries": 1,
+                      "defaultProfile": false
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("profile-alt"))
+            .andExpect(jsonPath("$.apiKeyConfigured").value(true))
+            .andExpect(jsonPath("$.apiKeyMask").value("secr...-key"))
+            .andExpect(jsonPath("$.apiKey").doesNotExist());
+
+        mockMvc.perform(put("/api/v1/knowledge-bases/{knowledgeBaseId}/ai-profile", "kb-ai-profile")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "profileId": "profile-alt"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.activeAiProfileId").value("profile-alt"));
+
+        String persistedProfileId = neo4jClient.query("""
+            MATCH (kb:KnowledgeBase {id: $id})
+            RETURN kb.activeAiProfileId
+            """)
+            .bind("kb-ai-profile").to("id")
+            .fetchAs(String.class)
+            .one()
+            .orElse("");
+        assertThat(persistedProfileId).isEqualTo("profile-alt");
+    }
+
+    @Test
     void createKnowledgeBaseValidationFailureReturnsProblemDetails() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
 

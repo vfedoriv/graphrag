@@ -3,7 +3,9 @@ package io.github.vfedoriv.graphrag.graph;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.nio.file.Path;
 import java.util.List;
@@ -51,7 +53,11 @@ class SpringAiGraphExtractionClientTest {
             }
             """;
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)), TestAiObservationService.noop());
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
+            provider(chatModel(modelJson)),
+            TestAiObservationService.noop(),
+            new EmptyObjectProvider<>()
+        );
         GraphExtractionResult result = client.extract(schema(), "Contract C-1 has party Acme");
 
         assertThat(result.nodes()).hasSize(2);
@@ -78,9 +84,13 @@ class SpringAiGraphExtractionClientTest {
             }
             """;
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(chatModel(modelJson)), TestAiObservationService.noop());
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
+            provider(chatModel(modelJson)),
+            TestAiObservationService.noop(),
+            new EmptyObjectProvider<>()
+        );
         GraphExtractionResult parsed = client.extract(schema(), "bad node label");
-        GraphExtractionValidationService validationService = new GraphExtractionValidationService(
+        GraphExtractionValidationService validationService = new GraphExtractionValidationService(TestRuntimeSettings.from(
             new AppProperties(
                 new AppProperties.Neo4j("neo4j"),
                 new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
@@ -89,7 +99,7 @@ class SpringAiGraphExtractionClientTest {
                 new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
                 new AppProperties.Extraction(40, 80, 2)
             )
-        );
+        ));
 
         GraphExtractionResult validated = validationService.validate(parsed, schema());
 
@@ -109,7 +119,11 @@ class SpringAiGraphExtractionClientTest {
             }
         };
 
-        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(provider(model), TestAiObservationService.noop());
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
+            provider(model),
+            TestAiObservationService.noop(),
+            new EmptyObjectProvider<>()
+        );
         client.extract(schema(), "source text");
 
         assertThat(capturedPrompt.get()).contains("Allowed relationship triples (type|fromLabel|toLabel):");

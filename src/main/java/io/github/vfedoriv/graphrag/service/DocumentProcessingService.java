@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
@@ -43,12 +43,12 @@ public class DocumentProcessingService {
     private final DocumentParsingService documentParsingService;
     private final ChunkingService chunkingService;
     private final Neo4jClient neo4jClient;
-    private final AppProperties appProperties;
     private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
     private final ObjectProvider<EmbeddingModel> embeddingModelProvider;
     private final Environment environment;
     private final GraphExtractionService graphExtractionService;
     private final AiObservationService aiObservationService;
+    private final KnowledgeBaseService knowledgeBaseService;
 
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
@@ -58,12 +58,12 @@ public class DocumentProcessingService {
         DocumentParsingService documentParsingService,
         ChunkingService chunkingService,
         Neo4jClient neo4jClient,
-        AppProperties appProperties,
         ObjectProvider<EmbeddingClient> embeddingClientProvider,
         ObjectProvider<EmbeddingModel> embeddingModelProvider,
         Environment environment,
         GraphExtractionService graphExtractionService,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        KnowledgeBaseService knowledgeBaseService
     ) {
         this.documentUploadRepository = documentUploadRepository;
         this.documentChunkRepository = documentChunkRepository;
@@ -72,12 +72,12 @@ public class DocumentProcessingService {
         this.documentParsingService = documentParsingService;
         this.chunkingService = chunkingService;
         this.neo4jClient = neo4jClient;
-        this.appProperties = appProperties;
         this.embeddingClientProvider = embeddingClientProvider;
         this.embeddingModelProvider = embeddingModelProvider;
         this.environment = environment;
         this.graphExtractionService = graphExtractionService;
         this.aiObservationService = aiObservationService;
+        this.knowledgeBaseService = knowledgeBaseService;
     }
 
     public DocumentUploadNode process(String documentId) {
@@ -120,6 +120,7 @@ public class DocumentProcessingService {
             log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
             document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
+            AiProfileNode activeProfile = activeProfile(document.getKnowledgeBaseId());
             EmbeddingClient embeddingClient = resolveEmbeddingClient();
             if (embeddingClient == null) {
                 List<String> embeddingModelBeans = embeddingModelProvider.stream()
@@ -131,9 +132,9 @@ public class DocumentProcessingService {
                     Arrays.toString(environment.getActiveProfiles()),
                     environment.getProperty("spring.ai.model.embedding"),
                     embeddingModelBeans,
-                    appProperties.model().baseUrl(),
-                    appProperties.model().embeddingModel(),
-                    appProperties.model().embeddingDimensions()
+                    activeProfile.getBaseUrl(),
+                    activeProfile.getEmbeddingModel(),
+                    activeProfile.getEmbeddingDimensions()
                 );
                 throw new IllegalStateException("Embedding model is not configured for this profile");
             }
@@ -142,13 +143,13 @@ public class DocumentProcessingService {
                 documentId,
                 embeddingClient.getClass().getName()
             );
-            List<List<Double>> embeddings = embeddingClient.embed(chunks);
+            List<List<Double>> embeddings = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(chunks));
             log.info("Embedding request completed: documentId={}, vectors={}", documentId, embeddings.size());
             if (embeddings.size() != chunks.size()) {
                 throw new IllegalStateException("Embedding response size mismatch");
             }
 
-            ensureVectorIndex();
+            ensureVectorIndex(activeProfile.getEmbeddingDimensions());
             documentChunkRepository.deleteByDocumentId(documentId);
             for (int i = 0; i < chunks.size(); i++) {
                 DocumentChunkNode chunk = new DocumentChunkNode();
@@ -158,6 +159,8 @@ public class DocumentProcessingService {
                 chunk.setText(chunks.get(i));
                 chunk.setTokenEstimate(chunkingService.tokenEstimate(chunks.get(i)));
                 chunk.setEmbedding(embeddings.get(i));
+                chunk.setEmbeddingModel(activeProfile.getEmbeddingModel());
+                chunk.setEmbeddingDimensions(activeProfile.getEmbeddingDimensions());
                 chunk.setMetadata("{\"source\":\"" + safeJson(document.getOriginalFilename()) + "\"}");
                 documentChunkRepository.save(chunk);
                 createChunkRelationship(documentId, chunk.getId());
@@ -165,7 +168,11 @@ public class DocumentProcessingService {
             document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
             List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
             log.info("Starting graph extraction: documentId={}, persistedChunks={}", documentId, persistedChunks.size());
-            graphExtractionService.extract(document, persistedChunks, allowOverwrite);
+            DocumentUploadNode documentForExtraction = document;
+            AiProfileContext.withProfile(
+                activeProfile.getId(),
+                () -> graphExtractionService.extract(documentForExtraction, persistedChunks, allowOverwrite)
+            );
 
             document.setProcessedAt(Instant.now());
             log.info(
@@ -209,8 +216,12 @@ public class DocumentProcessingService {
         return documentUploadRepository.save(document);
     }
 
-    private void ensureVectorIndex() {
-        log.info("Ensuring vector index exists: index={}, dimensions={}", CHUNK_EMBEDDING_INDEX, appProperties.model().embeddingDimensions());
+    private AiProfileNode activeProfile(String knowledgeBaseId) {
+        return knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+    }
+
+    private void ensureVectorIndex(int embeddingDimensions) {
+        log.info("Ensuring vector index exists: index={}, dimensions={}", CHUNK_EMBEDDING_INDEX, embeddingDimensions);
         neo4jClient.query("""
             CREATE VECTOR INDEX %s IF NOT EXISTS
             FOR (c:DocumentChunk)
@@ -220,7 +231,7 @@ public class DocumentProcessingService {
               `vector.similarity_function`: 'cosine'
             }}
             """.formatted(CHUNK_EMBEDDING_INDEX))
-            .bind(appProperties.model().embeddingDimensions()).to("dimensions")
+            .bind(embeddingDimensions).to("dimensions")
             .run();
         log.info("Vector index ensured: index={}", CHUNK_EMBEDDING_INDEX);
     }

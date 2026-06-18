@@ -66,6 +66,24 @@ class HybridSearchIntegrationTest {
             .bind(DocumentProcessingService.CHUNK_EMBEDDING_INDEX).to("name")
             .run();
         neo4jClient.query("""
+            CREATE (:AiProfile {
+              id: 'default',
+              name: 'Default test profile',
+              baseUrl: 'https://api.openai.com/v1',
+              apiKey: '',
+              chatModel: 'gpt-5-mini',
+              embeddingModel: 'text-embedding-3-small',
+              embeddingDimensions: 3,
+              timeoutSeconds: 60,
+              maxRetries: 2,
+              defaultProfile: true,
+              revision: 1,
+              createdAt: datetime(),
+              updatedAt: datetime()
+            })
+            CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', activeAiProfileId: 'default', createdAt: datetime()})
+            CREATE (:KnowledgeBase {id: 'kb-2', name: 'KB 2', activeAiProfileId: 'default', createdAt: datetime()})
+            CREATE (:KnowledgeBase {id: 'kb-empty', name: 'Empty KB', activeAiProfileId: 'default', createdAt: datetime()})
             CREATE (doc1:DocumentUpload {id: 'doc-1', knowledgeBaseId: 'kb-1', originalFilename: 'contract-a.txt', contentType: 'text/plain', sizeBytes: 100})
             CREATE (doc2:DocumentUpload {id: 'doc-2', knowledgeBaseId: 'kb-1', originalFilename: 'contract-b.txt', contentType: 'text/plain', sizeBytes: 110})
             CREATE (doc3:DocumentUpload {id: 'doc-3', knowledgeBaseId: 'kb-1', originalFilename: 'maintenance.txt', contentType: 'text/plain', sizeBytes: 120})

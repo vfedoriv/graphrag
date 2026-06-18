@@ -1,5 +1,8 @@
-## ADDED Requirements
+# documentation-alignment Specification
 
+## Purpose
+Keep repository user and contributor documentation aligned with implemented public behavior and configuration defaults.
+## Requirements
 ### Requirement: Repository guidance reflects implemented API surface
 The repository SHALL document the currently implemented public API endpoints that are intended for contributor and consumer use, including schema, document, knowledge-base, and query workflows.
 
@@ -8,11 +11,15 @@ The repository SHALL document the currently implemented public API endpoints tha
 - **THEN** `README.md` MUST describe those endpoints and their supported request shapes consistently with the controllers
 
 ### Requirement: Repository guidance reflects implemented configuration defaults
-The repository SHALL document implementation-backed configuration defaults when those defaults materially affect local usage, processing behavior, or provider setup.
+The repository SHALL document implementation-backed configuration defaults when those defaults materially affect local usage, processing behavior, provider setup, runtime settings, or AI profile seeding.
 
 #### Scenario: Extraction limits change in application config
 - **WHEN** extraction limits or provider defaults are updated in application properties
 - **THEN** `README.md`, `AGENTS.md`, and `CLAUDE.md` MUST not retain conflicting values or stale descriptions for those documented settings
+
+#### Scenario: Runtime settings and AI profiles are added
+- **WHEN** the implementation exposes runtime settings or AI provider profile management
+- **THEN** `README.md`, `AGENTS.md`, and `CLAUDE.md` MUST describe the source of defaults, persistence behavior, live-apply behavior, secret masking behavior, and restart or compatibility limitations consistently where those facts are documented
 
 ### Requirement: Contributor guidance stays synchronized across repo instruction files
 The repository SHALL keep overlapping contributor guidance synchronized across `README.md`, `AGENTS.md`, and `CLAUDE.md` when the same implementation fact is presented in more than one file.

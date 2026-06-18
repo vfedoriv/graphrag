@@ -10,6 +10,8 @@ public record KnowledgeBaseResponse(
     String name,
     @Schema(description = "Currently active schema identifier.", example = "schema-01")
     String activeSchemaId,
+    @Schema(description = "Currently active AI profile identifier.", example = "default-openai")
+    String activeAiProfileId,
     @Schema(description = "Creation timestamp in UTC.", example = "2026-05-03T10:12:00Z")
     Instant createdAt
 ) {

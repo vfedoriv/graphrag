@@ -1,9 +1,11 @@
 package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateKnowledgeBaseRequest;
 import io.github.vfedoriv.graphrag.dto.KnowledgeBaseResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateKnowledgeBaseRequest;
+import io.github.vfedoriv.graphrag.dto.UpdateKnowledgeBaseAiProfileRequest;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -90,6 +92,23 @@ public class KnowledgeBaseController {
         return response;
     }
 
+    @GetMapping("/knowledge-bases/{knowledgeBaseId}/ai-profile")
+    @Operation(summary = "Get active AI profile", description = "Returns the AI profile assigned to a knowledge base.")
+    public AiProfileResponse getActiveAiProfile(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId
+    ) {
+        return knowledgeBaseService.getActiveAiProfile(knowledgeBaseId);
+    }
+
+    @PutMapping("/knowledge-bases/{knowledgeBaseId}/ai-profile")
+    @Operation(summary = "Update active AI profile", description = "Assigns an AI profile to a knowledge base.")
+    public KnowledgeBaseResponse updateActiveAiProfile(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody UpdateKnowledgeBaseAiProfileRequest request
+    ) {
+        return toResponse(knowledgeBaseService.updateActiveAiProfile(knowledgeBaseId, request.profileId()));
+    }
+
     @DeleteMapping("/knowledge-bases/{knowledgeBaseId}")
     @Operation(summary = "Delete knowledge base", description = "Deletes a knowledge base and its schema relationship edges.")
     @ApiResponses({
@@ -109,6 +128,7 @@ public class KnowledgeBaseController {
             node.getId(),
             node.getName(),
             node.getActiveSchemaId(),
+            node.getActiveAiProfileId(),
             node.getCreatedAt()
         );
     }

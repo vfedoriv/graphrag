@@ -5,6 +5,9 @@ import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
+import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +23,17 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
 
     private final ObjectProvider<ChatModel> chatModelProvider;
     private final AiObservationService aiObservationService;
+    private final ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public SpringAiCypherGenerationClient(
         ObjectProvider<ChatModel> chatModelProvider,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider
     ) {
         this.chatModelProvider = chatModelProvider;
         this.aiObservationService = aiObservationService;
+        this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
     }
 
     @Override
@@ -67,7 +73,7 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
             attributes
         )) {
             try {
-                ChatModel chatModel = chatModelProvider.getIfAvailable();
+                ChatModel chatModel = resolveChatModel();
                 if (chatModel == null) {
                     throw new IllegalStateException("ChatModel bean is not available in application context");
                 }
@@ -108,6 +114,15 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
             log.error("Cypher generation model call failed: schemaName={}, message={}", schema.name(), ex.getMessage(), ex);
             throw new IllegalArgumentException("Cypher generation response is invalid", ex);
         }
+    }
+
+    private ChatModel resolveChatModel() {
+        String profileId = AiProfileContext.activeProfileId();
+        AiRuntimeModelFactory factory = runtimeModelFactoryProvider.getIfAvailable();
+        if (profileId != null && factory != null) {
+            return factory.chatModel(profileId);
+        }
+        return chatModelProvider.getIfAvailable();
     }
 
     private String toJson(SchemaDocument schema) {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
@@ -36,7 +37,7 @@ class CypherExecutionServiceTest {
             .all())
             .thenReturn(List.of(Map.of("contractId", "C-1")));
 
-        CypherExecutionService service = new CypherExecutionService(props(), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
         QueryExecutionResponse response = service.execute("kb-1", "MATCH (c:Contract) RETURN c.contractId AS contractId", Map.of());
 
         assertThat(response.validation().valid()).isTrue();
@@ -52,7 +53,7 @@ class CypherExecutionServiceTest {
         when(validationService.validate("kb-1", "MATCH (c:Contract) DELETE c", Map.of()))
             .thenReturn(new QueryValidationResult(false, "MATCH (c:Contract) DELETE c", Map.of(), List.of("Blocked keyword")));
 
-        CypherExecutionService service = new CypherExecutionService(props(), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
 
         assertThatThrownBy(() -> service.execute("kb-1", "MATCH (c:Contract) DELETE c", Map.of()))
             .isInstanceOf(QueryRejectedException.class)
@@ -73,7 +74,7 @@ class CypherExecutionServiceTest {
                 List.of("Unknown label: Unknown", "Unknown property: missing")
             ));
 
-        CypherExecutionService service = new CypherExecutionService(props(), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
 
         assertThatThrownBy(() -> service.execute("kb-1", "MATCH (x:Unknown) RETURN x.missing", Map.of()))
             .isInstanceOf(QueryRejectedException.class)

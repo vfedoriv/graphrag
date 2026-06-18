@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -242,8 +244,7 @@ class AiObservationServiceTest {
         MockEnvironment environment = new MockEnvironment()
             .withProperty("spring.ai.model.chat", "openai")
             .withProperty("spring.ai.model.embedding", "openai");
-        return new AiObservationService(
-            new AiObservabilityProperties(
+        AiObservabilityProperties properties = new AiObservabilityProperties(
                 enabled,
                 contentCaptureEnabled,
                 maxAttributeLength,
@@ -251,11 +252,16 @@ class AiObservationServiceTest {
                 maxInputOutputLength,
                 true,
                 true
-            ),
+            );
+        AppProperties appProperties = appProperties();
+        return new AiObservationService(
+            properties,
             observationRegistry,
             meterRegistry,
-            appProperties(),
-            environment
+            appProperties,
+            environment,
+            TestRuntimeSettings.from(appProperties, properties),
+            new EmptyObjectProvider<>()
         );
     }
 

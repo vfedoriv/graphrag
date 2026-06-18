@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
@@ -23,16 +22,16 @@ public class CypherValidationService {
     private static final Set<String> INFRA_LABELS = Set.of(
         "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "ExtractedEntity", "ExtractedRelation"
     );
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
     private final ActiveSchemaResolver activeSchemaResolver;
     private final Neo4jClient neo4jClient;
 
     public CypherValidationService(
-        AppProperties appProperties,
+        RuntimeSettingsService runtimeSettingsService,
         ActiveSchemaResolver activeSchemaResolver,
         Neo4jClient neo4jClient
     ) {
-        this.appProperties = appProperties;
+        this.runtimeSettingsService = runtimeSettingsService;
         this.activeSchemaResolver = activeSchemaResolver;
         this.neo4jClient = neo4jClient;
     }
@@ -64,9 +63,10 @@ public class CypherValidationService {
         rejectBlockedKeywords(normalizedCypher, errors);
         validateSchemaReferences(schema, normalizedCypher, errors);
 
-        if (appProperties.query().requireLimit() && !LIMIT_PATTERN.matcher(normalizedCypher).find()) {
+        RuntimeSettingsService.QuerySettings settings = runtimeSettingsService.query();
+        if (settings.requireLimit() && !LIMIT_PATTERN.matcher(normalizedCypher).find()) {
             normalizedCypher = normalizedCypher + "\nLIMIT $__limit";
-            normalizedParameters.put("__limit", appProperties.query().maxRows());
+            normalizedParameters.put("__limit", settings.maxRows());
         }
 
         if (errors.isEmpty()) {
@@ -87,7 +87,7 @@ public class CypherValidationService {
 
     private void rejectBlockedKeywords(String cypher, List<String> errors) {
         String upper = cypher.toUpperCase(Locale.ROOT);
-        for (String keyword : appProperties.query().blockedKeywords()) {
+        for (String keyword : runtimeSettingsService.query().blockedKeywords()) {
             if (upper.contains(keyword.toUpperCase(Locale.ROOT))) {
                 errors.add("Blocked keyword detected: " + keyword);
             }

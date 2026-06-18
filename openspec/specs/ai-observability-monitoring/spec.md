@@ -27,19 +27,19 @@ The system SHALL populate non-empty Langfuse-compatible input and output fields 
 - **AND** the output value summarizes the embedding result without exporting raw vectors
 
 ### Requirement: Langfuse input and output respect content privacy controls
-The system SHALL keep Langfuse-compatible input and output fields non-empty while respecting configured content capture and length limits.
+The system SHALL keep Langfuse-compatible input and output fields non-empty while respecting runtime-configured content capture and length limits.
 
 #### Scenario: Full input and output capture is enabled
-- **WHEN** AI observability is enabled with input/output content capture enabled
+- **WHEN** AI observability is enabled with input/output content capture enabled through startup or runtime settings
 - **THEN** Langfuse-compatible input and output fields include prompt, input text, query, response text, or embedding summaries up to the configured input/output length limit
 
 #### Scenario: Full input and output capture is disabled
-- **WHEN** AI observability is enabled with input/output content capture disabled
+- **WHEN** AI observability is enabled with input/output content capture disabled through startup or runtime settings
 - **THEN** Langfuse-compatible input and output fields include sanitized previews, lengths, and hashes instead of full prompt, query, input text, or response content
 - **AND** those fields remain non-empty for successful internal model calls
 
 #### Scenario: Input or output exceeds configured length
-- **WHEN** a Langfuse-compatible input or output value is longer than the configured maximum input/output length
+- **WHEN** a Langfuse-compatible input or output value is longer than the runtime-configured maximum input/output length
 - **THEN** the exported value is truncated to the configured maximum
 
 ### Requirement: Missing Langfuse input and output coverage is testable
@@ -49,3 +49,15 @@ The system SHALL include automated regression coverage that verifies Langfuse-co
 - **WHEN** observability tests exercise graph extraction, Cypher generation, schema generation, embedding, and model adapter paths with mocked model responses
 - **THEN** the tests verify non-empty Langfuse-compatible input and output attributes on the model observation
 - **AND** the tests verify trace-level input and output propagation when the call runs inside a workflow observation
+
+### Requirement: AI observations include active profile metadata when enabled
+The system SHALL use active AI profile metadata for model/provider observation tags when model-name and provider tags are enabled.
+
+#### Scenario: Knowledge-base workflow uses active profile
+- **WHEN** a knowledge-base-scoped AI workflow emits model observation metadata
+- **THEN** the provider/profile metadata reflects the active AI profile used by that workflow
+- **AND** the model name metadata reflects the chat or embedding model used for that call when model name tags are enabled
+
+#### Scenario: Model name tags are disabled at runtime
+- **WHEN** runtime settings disable model name tags
+- **THEN** subsequent model observations do not expose active profile model names as model tags

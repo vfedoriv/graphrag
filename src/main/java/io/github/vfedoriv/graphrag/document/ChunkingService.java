@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.document;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ChunkingService {
 
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
 
-    public ChunkingService(AppProperties appProperties) {
-        this.appProperties = appProperties;
+    public ChunkingService(RuntimeSettingsService runtimeSettingsService) {
+        this.runtimeSettingsService = runtimeSettingsService;
     }
 
     public List<String> split(String text) {
@@ -22,8 +22,9 @@ public class ChunkingService {
             log.info("Chunking skipped: inputLength=0");
             return List.of();
         }
-        int maxChars = appProperties.chunking().maxCharacters();
-        int overlap = Math.min(appProperties.chunking().overlapTokens(), maxChars / 2);
+        RuntimeSettingsService.ChunkingSettings settings = runtimeSettingsService.chunking();
+        int maxChars = settings.maxCharacters();
+        int overlap = Math.min(settings.overlapTokens(), maxChars / 2);
         int step = Math.max(1, maxChars - overlap);
 
         List<String> chunks = new ArrayList<>();

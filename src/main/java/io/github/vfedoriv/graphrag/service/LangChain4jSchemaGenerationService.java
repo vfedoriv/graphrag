@@ -56,13 +56,19 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         """;
     private final ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider;
     private final AiObservationService aiObservationService;
+    private final ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
+    private final KnowledgeBaseService knowledgeBaseService;
 
     public LangChain4jSchemaGenerationService(
         ObjectProvider<org.springframework.ai.chat.model.ChatModel> springChatModelProvider,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider,
+        KnowledgeBaseService knowledgeBaseService
     ) {
         this.springChatModelProvider = springChatModelProvider;
         this.aiObservationService = aiObservationService;
+        this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
+        this.knowledgeBaseService = knowledgeBaseService;
     }
 
     @Override
@@ -134,6 +140,12 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     }
 
     @Override
+    public SchemaGenerationResult generate(String knowledgeBaseId, String name, int version, String description, String text, String example) {
+        String profileId = knowledgeBaseService.activeAiProfile(knowledgeBaseId).getId();
+        return AiProfileContext.withProfile(profileId, () -> generate(name, version, description, text, example));
+    }
+
+    @Override
     public String generateExample(String text, String userPrompt) {
         long startNanos = System.nanoTime();
         String userInstruction = (userPrompt == null || userPrompt.isBlank()) ? "" : "\nAdditional guidance:\n" + userPrompt;
@@ -202,6 +214,12 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
             log.debug("Schema example generation response: {}", response);
         }
         return response;
+    }
+
+    @Override
+    public String generateExample(String knowledgeBaseId, String text, String userPrompt) {
+        String profileId = knowledgeBaseService.activeAiProfile(knowledgeBaseId).getId();
+        return AiProfileContext.withProfile(profileId, () -> generateExample(text, userPrompt));
     }
 
     SchemaDocument inferSchema(String name, int version, String description, GraphDocument graphDocument) {
@@ -352,6 +370,13 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     }
 
     private org.springframework.ai.chat.model.ChatModel requireSpringChatModel() {
+        String profileId = AiProfileContext.activeProfileId();
+        AiRuntimeModelFactory factory = runtimeModelFactoryProvider.getIfAvailable();
+        if (profileId != null && factory != null) {
+            org.springframework.ai.chat.model.ChatModel model = factory.chatModel(profileId);
+            log.info("Schema generation resolved runtime chatModelClass={} profileId={}", model.getClass().getName(), profileId);
+            return model;
+        }
         org.springframework.ai.chat.model.ChatModel model = springChatModelProvider.getIfAvailable();
         if (model == null) {
             log.error("Spring AI ChatModel bean is missing for schema generation");

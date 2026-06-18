@@ -7,9 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
@@ -57,21 +59,26 @@ class DocumentProcessingServiceTest {
     private Environment environment;
     @Mock
     private GraphExtractionService graphExtractionService;
+    @Mock
+    private KnowledgeBaseService knowledgeBaseService;
 
     @Test
     void orchestratesParsingChunkingAndEmbedding() throws Exception {
-        ChunkingService chunkingService = new ChunkingService(props());
+        AppProperties appProperties = props();
+        ChunkingService chunkingService = new ChunkingService(TestRuntimeSettings.from(appProperties));
         EmbeddingClient embeddingClient = texts -> List.of(
             List.of(0.1, 0.2, 0.3),
             List.of(0.4, 0.5, 0.6)
         );
         DocumentUploadNode doc = new DocumentUploadNode();
         doc.setId("doc-1");
+        doc.setKnowledgeBaseId("kb-1");
         doc.setOriginalFilename("a.txt");
         doc.setContentType("text/plain");
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
@@ -88,12 +95,12 @@ class DocumentProcessingServiceTest {
             documentParsingService,
             chunkingService,
             neo4jClient,
-            props(),
             embeddingClientProvider,
             embeddingModelProvider,
             environment,
             graphExtractionService,
-            TestAiObservationService.noop()
+            TestAiObservationService.noop(),
+            knowledgeBaseService
         );
         DocumentUploadNode processed = service.process("doc-1");
 
@@ -104,18 +111,21 @@ class DocumentProcessingServiceTest {
 
     @Test
     void keepsLatestSavedEntityAcrossStatusTransitions() throws Exception {
-        ChunkingService chunkingService = new ChunkingService(props());
+        AppProperties appProperties = props();
+        ChunkingService chunkingService = new ChunkingService(TestRuntimeSettings.from(appProperties));
         EmbeddingClient embeddingClient = texts -> List.of(
             List.of(0.1, 0.2, 0.3),
             List.of(0.4, 0.5, 0.6)
         );
         DocumentUploadNode doc = new DocumentUploadNode();
         doc.setId("doc-1");
+        doc.setKnowledgeBaseId("kb-1");
         doc.setOriginalFilename("a.txt");
         doc.setContentType("text/plain");
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
@@ -160,12 +170,12 @@ class DocumentProcessingServiceTest {
             documentParsingService,
             chunkingService,
             neo4jClient,
-            props(),
             embeddingClientProvider,
             embeddingModelProvider,
             environment,
             graphExtractionService,
-            TestAiObservationService.noop()
+            TestAiObservationService.noop(),
+            knowledgeBaseService
         );
 
         DocumentUploadNode processed = service.process("doc-1");
@@ -182,5 +192,18 @@ class DocumentProcessingServiceTest {
             new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
             new AppProperties.Extraction(40, 80, 2)
         );
+    }
+
+    private AiProfileNode profile(AppProperties appProperties) {
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
+        profile.setBaseUrl(appProperties.model().baseUrl());
+        profile.setApiKey(appProperties.model().apiKey());
+        profile.setChatModel(appProperties.model().chatModel());
+        profile.setEmbeddingModel(appProperties.model().embeddingModel());
+        profile.setEmbeddingDimensions(appProperties.model().embeddingDimensions());
+        profile.setTimeoutSeconds(60);
+        profile.setMaxRetries(2);
+        return profile;
     }
 }

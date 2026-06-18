@@ -14,6 +14,8 @@ public class DocumentChunkNode {
     private String text;
     private int tokenEstimate;
     private List<Double> embedding;
+    private String embeddingModel;
+    private int embeddingDimensions;
     private String metadata;
 
     public String getId() {
@@ -62,6 +64,22 @@ public class DocumentChunkNode {
 
     public void setEmbedding(List<Double> embedding) {
         this.embedding = embedding;
+    }
+
+    public String getEmbeddingModel() {
+        return embeddingModel;
+    }
+
+    public void setEmbeddingModel(String embeddingModel) {
+        this.embeddingModel = embeddingModel;
+    }
+
+    public int getEmbeddingDimensions() {
+        return embeddingDimensions;
+    }
+
+    public void setEmbeddingDimensions(int embeddingDimensions) {
+        this.embeddingDimensions = embeddingDimensions;
     }
 
     public String getMetadata() {

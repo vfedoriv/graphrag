@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.graph;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GraphExtractionValidationService {
 
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public GraphExtractionValidationService(AppProperties appProperties) {
-        this.appProperties = appProperties;
+    public GraphExtractionValidationService(RuntimeSettingsService runtimeSettingsService) {
+        this.runtimeSettingsService = runtimeSettingsService;
     }
 
     public GraphExtractionResult validate(GraphExtractionResult result, SchemaDocument schema) {
@@ -69,10 +69,11 @@ public class GraphExtractionValidationService {
     }
 
     private void enforcePayloadLimits(GraphExtractionResult result) {
-        if (result.nodes().size() > appProperties.extraction().maxEntitiesPerChunk()) {
+        RuntimeSettingsService.ExtractionSettings settings = runtimeSettingsService.extraction();
+        if (result.nodes().size() > settings.maxEntitiesPerChunk()) {
             throw new GraphExtractionValidationException("Too many extracted entities for chunk");
         }
-        if (result.relationships().size() > appProperties.extraction().maxRelationshipsPerChunk()) {
+        if (result.relationships().size() > settings.maxRelationshipsPerChunk()) {
             throw new GraphExtractionValidationException("Too many extracted relationships for chunk");
         }
     }

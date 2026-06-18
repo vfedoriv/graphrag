@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 5868 nodes, 7906 edges, 531 communities. Commit: dfe8719</p>
+<p class="subtitle">Generated from graphify knowledge graph: 6349 nodes, 8985 edges, 569 communities. Commit: 449d206</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -71,10 +71,10 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
-    <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#community-159">Community 159</a>
     <a href="#community-178">Community 178</a>
+    <a href="#community-532">Community 532</a>
     <a href="#community-203">Community 203</a>
     <a href="#community-306">Community 306</a>
     <a href="#community-310">Community 310</a>
@@ -88,35 +88,35 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2372 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2704 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2846 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2883 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>121 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>24 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>32 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>60 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>11 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>43 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>113 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>168 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>13 nodes</small>")
-    class SECURITY_GLOBAL_5B9C6A04 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>121 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_159_19BCAB60("Community 159<br/><small>15 nodes</small>")
     class COMMUNITY_159_19BCAB60 module;
     COMMUNITY_178_FEA41A9A("Community 178<br/><small>12 nodes</small>")
     class COMMUNITY_178_FEA41A9A module;
+    COMMUNITY_532_110F4261("Community 532<br/><small>10 nodes</small>")
+    class COMMUNITY_532_110F4261 module;
     COMMUNITY_203_F3C978EB("Community 203<br/><small>9 nodes</small>")
     class COMMUNITY_203_F3C978EB module;
     COMMUNITY_306_770E6206("Community 306<br/><small>7 nodes</small>")
     class COMMUNITY_306_770E6206 module;
     COMMUNITY_310_C2F7331D("Community 310<br/><small>7 nodes</small>")
     class COMMUNITY_310_C2F7331D module;
-    OTHER_D0941E68("Other<br/><small>137 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>157 nodes</small>")
     class OTHER_D0941E68 module;
     BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2372</td><td><code>40, 2, 33, 5, 38, 7, 28, 3, 14, 11, 8, 1, 9, 12, 342, 6, 16, 20, 127, 4, 128, 388, 130, 131, 133, 134, 135, 17, 19, 13, 18, 141, 21, 22, 23, 43, 10, 25, 26, 147, 29, 138, 153, 30, 39, 144, 157, 206, 24, 340, 37, 143, 35, 385, 451, 49, 32, 386, 27, 42, 447, 145, 15, 172, 192, 36, 46, 146, 452, 47, 48, 509, 52, 526, 322, 323, 341, 53, 54, 55, 57, 515, 58, 60, 61, 62, 63, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 530, 66, 67, 446, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2846</td><td><code>31, 34, 41, 56, 73, 124, 125, 126, 129, 136, 140, 142, 148, 0, 150, 151, 152, 155, 156, 160, 161, 162, 163, 240, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>24</td><td><code>266, 268, 270</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>11</td><td><code>453, 456, 500</code></td></tr><tr><td>Serving API</td><td>113</td><td><code>123, 44, 179, 329, 343, 347, 344, 376, 377, 383, 384</code></td></tr><tr><td>Security &amp; Global Graph</td><td>13</td><td><code>445</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Other</td><td>137</td><td><code>311, 312, 313, 327, 330, 331, 332, 335, 527, 348, 349, 362, 364, 365, 366, 374, 378, 379, 381, 528, 529, 441, 442, 444</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2704</td><td><code>40, 2, 63, 4, 38, 3, 7, 14, 11, 12, 1, 20, 6, 22, 16, 127, 25, 128, 133, 33, 509, 551, 130, 131, 8, 134, 135, 143, 17, 19, 5, 340, 9, 10, 141, 147, 18, 24, 21, 342, 544, 13, 138, 23, 26, 388, 447, 29, 43, 552, 153, 28, 30, 39, 452, 533, 553, 144, 157, 206, 37, 554, 32, 36, 529, 15, 27, 385, 451, 527, 536, 555, 35, 386, 49, 537, 557, 538, 556, 145, 42, 53, 560, 562, 192, 46, 47, 534, 54, 559, 564, 146, 48, 52, 526, 530, 322, 323, 341, 55, 57, 515, 561, 58, 60, 61, 62, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 568, 66, 67, 446, 68, 69, 70, 71, 72, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>32</td><td><code>268, 266, 270, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>43</td><td><code>531, 528, 453, 456, 500</code></td></tr><tr><td>Serving API</td><td>168</td><td><code>123, 172, 445, 44, 179, 329, 343, 347, 539, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 532</td><td>10</td><td><code>532</code></td></tr><tr><td>Community 203</td><td>9</td><td><code>203</code></td></tr><tr><td>Community 306</td><td>7</td><td><code>306</code></td></tr><tr><td>Community 310</td><td>7</td><td><code>310</code></td></tr><tr><td>Other</td><td>157</td><td><code>311, 312, 313, 327, 330, 331, 332, 335, 535, 565, 566, 348, 349, 567, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>5868 nodes · 7906 edges · 531 communities (473 shown, 58 thin omitted)</li>
-      <li>Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 754 edges (avg confidence: 0.8)</li>
+      <li>6349 nodes · 8985 edges · 569 communities (512 shown, 57 thin omitted)</li>
+      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 980 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,19 +159,19 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2372 nodes and 4684 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/observability/AiObservationService.java, graphrag/controller/SchemaController.java. This section covers 2704 nodes and 5624 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2372 nodes, 4684 edges)
-    subgraph extract_pipeline_graphrag_controller_DocumentCon_662f1a6e["graphrag/controller/DocumentController.java"]
-        controller_documentcontroller_documentcontroller_6d0cb00b("DocumentController<br/><small>graphrag/controller/DocumentController.java</small>")
-        controller_documentcontroller_documentcontroller_acb766e2("deleteDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
-        controller_documentcontroller_documentcontroller_b8aa33ef("DocumentController()<br/><small>graphrag/controller/DocumentController.java</small>")
-        controller_documentcontroller_documentcontroller_066004a1("getDocumentChunks()<br/><small>graphrag/controller/DocumentController.java</small>")
-        controller_documentcontroller_documentcontroller_4dcc64fa("listKnowledgeBaseDocuments()<br/><small>graphrag/controller/DocumentController.java</small>")
-        controller_documentcontroller_documentcontroller_7dff1881("processDocument()<br/><small>graphrag/controller/DocumentController.java</small>")
+    %% Section: Extraction Pipeline (2704 nodes, 5624 edges)
+    subgraph extract_pipeline_graphrag_controller_AiProfileCo_1c2efa25["graphrag/controller/AiProfileController.java"]
+        controller_aiprofilecontroller_aiprofilecontroll_9865a5ff("AiProfileController<br/><small>graphrag/controller/AiProfileController.java</small>")
+        controller_aiprofilecontroller_aiprofilecontroll_34e19c16("AiProfileController()<br/><small>graphrag/controller/AiProfileController.java</small>")
+        controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf("create()<br/><small>graphrag/controller/AiProfileController.java</small>")
+        controller_aiprofilecontroller_aiprofilecontroll_c928302c("delete()<br/><small>graphrag/controller/AiProfileController.java</small>")
+        controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8("get()<br/><small>graphrag/controller/AiProfileController.java</small>")
+        controller_aiprofilecontroller_aiprofilecontroll_eedcff7f("list()<br/><small>graphrag/controller/AiProfileController.java</small>")
     end
     subgraph extract_pipeline_graphrag_config_AiObservationCo_5eca5d51["graphrag/config/AiObservationConfiguration.java"]
         config_aiobservationconfiguration_aiobservationc_a4879645("AiObservationConfiguration<br/><small>graphrag/config/AiObservationConfiguration.java</small>")
@@ -181,45 +181,43 @@ flowchart LR
         config_openapiconfig_openapiconfig_c70d619d("OpenApiConfig<br/><small>graphrag/config/OpenApiConfig.java</small>")
         config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5("graphragOpenApi()<br/><small>graphrag/config/OpenApiConfig.java</small>")
     end
-    subgraph extract_pipeline_graphrag_controller_SchemaContr_931c6171["graphrag/controller/SchemaController.java"]
-        controller_schemacontroller_def755be("SchemaController.java")
-        controller_schemacontroller_schemacontroller_4c740e38("SchemaController<br/><small>graphrag/controller/SchemaController.java</small>")
-    end
     subgraph extract_pipeline_vfedoriv_graphrag_GraphragAppli_62b8432e["vfedoriv/graphrag/GraphragApplication.java"]
         graphrag_graphragapplication_graphragapplication_ca8d408d("GraphragApplication<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
         graphrag_graphragapplication_graphragapplication_e971e69e("main()<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
     end
     controller_querycontroller_71438120("QueryController.java")
+    controller_schemacontroller_def755be("SchemaController.java")
+    domain_aiprofilenode_aiprofilenode_0d9b28fc("AiProfileNode<br/><small>graphrag/domain/AiProfileNode.java</small>")
     domain_documentuploadnode_documentuploadnode_8c92fc32("DocumentUploadNode<br/><small>graphrag/domain/DocumentUploadNode.java</small>")
     observability_aiobservationservice_aiobservation_f83bee78("AiObservationService<br/><small>graphrag/observability/AiObservationService.java</small>")
-    service_schemaregistryservicetest_schemaregistry_85e2c045("SchemaRegistryServiceTest<br/><small>graphrag/service/SchemaRegistryServiceTest.java</small>")
+    service_runtimesettingsservice_runtimesettingsse_cd89f19f("RuntimeSettingsService<br/><small>graphrag/service/RuntimeSettingsService.java</small>")
     graphrag_graphragapplication_graphragapplication_ca8d408d -->|method| graphrag_graphragapplication_graphragapplication_e971e69e
     config_aiobservationconfiguration_aiobservationc_a4879645 -->|method| config_aiobservationconfiguration_aiobservationc_b7762de3
     config_openapiconfig_openapiconfig_c70d619d -->|method| config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5
-    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_acb766e2
-    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_b8aa33ef
-    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_066004a1
-    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_4dcc64fa
-    controller_documentcontroller_documentcontroller_6d0cb00b -->|method| controller_documentcontroller_documentcontroller_7dff1881
-    %% Omitted for readability: 2354 nodes, 0 edges
-    class controller_documentcontroller_documentcontroller_6d0cb00b klass;
-    class controller_documentcontroller_documentcontroller_acb766e2 function;
-    class controller_documentcontroller_documentcontroller_b8aa33ef function;
-    class controller_documentcontroller_documentcontroller_066004a1 function;
-    class controller_documentcontroller_documentcontroller_4dcc64fa function;
-    class controller_documentcontroller_documentcontroller_7dff1881 function;
+    controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_34e19c16
+    controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf
+    controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_c928302c
+    controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8
+    controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_eedcff7f
+    %% Omitted for readability: 2686 nodes, 0 edges
+    class controller_aiprofilecontroller_aiprofilecontroll_9865a5ff klass;
+    class controller_aiprofilecontroller_aiprofilecontroll_34e19c16 function;
+    class controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf function;
+    class controller_aiprofilecontroller_aiprofilecontroll_c928302c function;
+    class controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8 function;
+    class controller_aiprofilecontroller_aiprofilecontroll_eedcff7f function;
     class config_aiobservationconfiguration_aiobservationc_a4879645 klass;
     class config_aiobservationconfiguration_aiobservationc_b7762de3 entry;
     class config_openapiconfig_openapiconfig_c70d619d api;
     class config_openapiconfig_openapiconfig_graphragopena_fcf8e0a5 api;
-    class controller_schemacontroller_def755be klass;
-    class controller_schemacontroller_schemacontroller_4c740e38 klass;
     class graphrag_graphragapplication_graphragapplication_ca8d408d klass;
     class graphrag_graphragapplication_graphragapplication_e971e69e function;
     class controller_querycontroller_71438120 klass;
+    class controller_schemacontroller_def755be klass;
+    class domain_aiprofilenode_aiprofilenode_0d9b28fc klass;
     class domain_documentuploadnode_documentuploadnode_8c92fc32 klass;
     class observability_aiobservationservice_aiobservation_f83bee78 klass;
-    class service_schemaregistryservicetest_schemaregistry_85e2c045 test;
+    class service_runtimesettingsservice_runtimesettingsse_cd89f19f async;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -489,30 +487,30 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>.understand-anything/intermediate/batches.json</code></td><td>173 nodes</td></tr>
-<tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>51 nodes</td></tr>
-<tr><td><code>graphrag/controller/SchemaController.java</code></td><td>49 nodes</td></tr>
+<tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
+<tr><td><code>graphrag/controller/SchemaController.java</code></td><td>53 nodes</td></tr>
+<tr><td><code>graphrag/service/RuntimeSettingsService.java</code></td><td>45 nodes</td></tr>
+<tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
-<tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>34 nodes</td></tr>
-<tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>33 nodes</td></tr>
-<tr><td><code>graphrag/error/GlobalExceptionHandler.java</code></td><td>32 nodes</td></tr>
-<tr><td><code>graphrag/service/LangChain4jSchemaGenerationService.java</code></td><td>32 nodes</td></tr>
+<tr><td><code>graphrag/observability/AiObservabilityClientPathTest.java</code></td><td>35 nodes</td></tr>
+<tr><td><code>graphrag/service/AiProfileService.java</code></td><td>34 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1401, method x770, contains x725, imports x551. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1716, method x933, contains x743, imports x640. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2846 nodes and 2651 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around understand, anything, openspec, schema, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 2883 nodes and 2687 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (2846 nodes, 2651 edges)
+    %% Section: Graph Build (2883 nodes, 2687 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -546,7 +544,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_domain_graph_3f1cce63 -->|contains| understand_anything_domain_graph_edges_b8252148
-    %% Omitted for readability: 2828 nodes, 0 edges
+    %% Omitted for readability: 2865 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -836,8 +834,8 @@ flowchart LR
       <tr><td><code>.understand-anything/fingerprints.json</code></td><td>501 nodes</td></tr>
 <tr><td><code>.understand-anything/intermediate/scan-result.json</code></td><td>372 nodes</td></tr>
 <tr><td><code>.understand-anything/tmp/ua-import-map-output.json</code></td><td>369 nodes</td></tr>
-<tr><td><code>README.md</code></td><td>39 nodes</td></tr>
-<tr><td><code>specs/schema-generation-with-examples/spec.md</code></td><td>37 nodes</td></tr>
+<tr><td><code>specs/schema-generation-with-examples/spec.md</code></td><td>47 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>40 nodes</td></tr>
 <tr><td><code>specs/extraction-run-cleanup/spec.md</code></td><td>34 nodes</td></tr>
 <tr><td><code>.understand-anything/tmp/ua-file-analyzer-input-37.json</code></td><td>29 nodes</td></tr>
 <tr><td><code>.understand-anything/tmp/ua-file-analyzer-input-38.json</code></td><td>29 nodes</td></tr>
@@ -845,7 +843,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2651. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2687. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1198,27 +1196,27 @@ flowchart LR
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around specmd, openspec, specs, documentation, mostly in specs/documentation-alignment/spec.md, specs/documentation-alignment/spec.md, graphify/references/exports.md. This section covers 24 nodes and 21 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around specmd, documentation, alignment, openspec, mostly in specs/documentation-alignment/spec.md, specs/documentation-alignment/spec.md, graphify/references/exports.md. This section covers 32 nodes and 28 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (24 nodes, 21 edges)
+    %% Section: Outputs &amp; Docs (32 nodes, 28 edges)
     subgraph outputs_docs_specs_documentation_alignment_spec_8af68c7a["specs/documentation-alignment/spec.md"]
-        openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0("ADDED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
-        openspec_specs_documentation_alignment_spec_md_d_69faacec("ADDED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
-        openspec_changes_archive_2026_06_03_sync_docs_wi_5bd5636b("spec.md")
-        openspec_specs_documentation_alignment_spec_md_d_fb8897c9("spec.md")
-        openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1("Requirement: Contributor guidance stays...<br/><small>specs/documentation-alignment/spec.md</small>")
+        documentation_alignment_spec_added_requirements_ffbcb27a("ADDED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
+        documentation_alignment_spec_requirements_3e090460("Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
+        documentation_alignment_spec_documentation_align_995cd9fa("documentation-alignment Specification<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_ef657ce9("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_specs_documentation_alignment_spec_md_d_bae1d98d("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
+        documentation_alignment_spec_modified_requiremen_8cb36d3c("MODIFIED Requirements<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_specs_documentation_alignment_spec_md_d_3ec2839b("Requirement: Contributor guidance stays...<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1("Requirement: Contributor guidance stays...<br/><small>specs/documentation-alignment/spec.md</small>")
+        openspec_specs_documentation_alignment_spec_md_d_f471f2fd("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_changes_archive_2026_06_03_sync_docs_wi_36ed6a7f("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
         openspec_changes_archive_2026_06_03_sync_docs_wi_6c742bb5("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
-        openspec_specs_documentation_alignment_spec_md_d_f471f2fd("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
-        openspec_specs_documentation_alignment_spec_md_d_bae1d98d("Requirement: Repository guidance reflec...<br/><small>specs/documentation-alignment/spec.md</small>")
     end
     subgraph outputs_docs_graphify_references_exports_md_145be2aa["graphify/references/exports.md"]
         references_exports_graphify_reference_extra_expo_ee448005("graphify reference: extra exports and b...<br/><small>graphify/references/exports.md</small>")
-        references_exports_f50c662b("exports.md")
         references_exports_step_6b_wiki_only_if_wiki_fla_f09198df("Step 6b - Wiki (only if --wiki flag)<br/><small>graphify/references/exports.md</small>")
         references_exports_step_7_neo4j_export_only_if_n_4506a260("Step 7 - Neo4j export (only if --neo4j...<br/><small>graphify/references/exports.md</small>")
         references_exports_step_7b_svg_export_only_if_sv_f5c26580("Step 7b - SVG export (only if --svg flag)<br/><small>graphify/references/exports.md</small>")
@@ -1226,34 +1224,33 @@ flowchart LR
         references_exports_step_7d_mcp_server_only_if_mc_bc22e883("Step 7d - MCP server (only if --mcp flag)<br/><small>graphify/references/exports.md</small>")
         references_exports_step_8_token_reduction_benchm_d4b739be("Step 8 - Token reduction benchmark (onl...<br/><small>graphify/references/exports.md</small>")
     end
-    references_exports_f50c662b -->|contains| references_exports_graphify_reference_extra_expo_ee448005
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_6b_wiki_only_if_wiki_fla_f09198df
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7_neo4j_export_only_if_n_4506a260
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7b_svg_export_only_if_sv_f5c26580
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7c_graphml_export_only_i_4cc5e08c
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_7d_mcp_server_only_if_mc_bc22e883
     references_exports_graphify_reference_extra_expo_ee448005 -->|contains| references_exports_step_8_token_reduction_benchm_d4b739be
-    openspec_changes_archive_2026_06_03_sync_docs_wi_5bd5636b -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0
-    openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0 -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1
-    openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0 -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_36ed6a7f
-    openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0 -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_6c742bb5
-    openspec_specs_documentation_alignment_spec_md_d_fb8897c9 -->|contains| openspec_specs_documentation_alignment_spec_md_d_69faacec
-    openspec_specs_documentation_alignment_spec_md_d_69faacec -->|contains| openspec_specs_documentation_alignment_spec_md_d_3ec2839b
-    openspec_specs_documentation_alignment_spec_md_d_69faacec -->|contains| openspec_specs_documentation_alignment_spec_md_d_f471f2fd
-    openspec_specs_documentation_alignment_spec_md_d_69faacec -->|contains| openspec_specs_documentation_alignment_spec_md_d_bae1d98d
-    %% Omitted for readability: 6 nodes, 0 edges
-    class openspec_changes_archive_2026_06_03_sync_docs_wi_15b773e0 concept;
-    class openspec_specs_documentation_alignment_spec_md_d_69faacec concept;
-    class openspec_changes_archive_2026_06_03_sync_docs_wi_5bd5636b concept;
-    class openspec_specs_documentation_alignment_spec_md_d_fb8897c9 concept;
-    class openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1 concept;
+    documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1
+    documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_36ed6a7f
+    documentation_alignment_spec_added_requirements_ffbcb27a -->|contains| openspec_changes_archive_2026_06_03_sync_docs_wi_6c742bb5
+    documentation_alignment_spec_modified_requiremen_8cb36d3c -->|contains| openspec_changes_archive_2026_06_18_add_runtime_ef657ce9
+    documentation_alignment_spec_documentation_align_995cd9fa -->|contains| documentation_alignment_spec_requirements_3e090460
+    documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_3ec2839b
+    documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_f471f2fd
+    documentation_alignment_spec_requirements_3e090460 -->|contains| openspec_specs_documentation_alignment_spec_md_d_bae1d98d
+    %% Omitted for readability: 14 nodes, 0 edges
+    class documentation_alignment_spec_added_requirements_ffbcb27a concept;
+    class documentation_alignment_spec_requirements_3e090460 concept;
+    class documentation_alignment_spec_documentation_align_995cd9fa concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_ef657ce9 concept;
+    class openspec_specs_documentation_alignment_spec_md_d_bae1d98d concept;
+    class documentation_alignment_spec_modified_requiremen_8cb36d3c concept;
     class openspec_specs_documentation_alignment_spec_md_d_3ec2839b concept;
+    class openspec_changes_archive_2026_06_03_sync_docs_wi_cf5abfa1 concept;
+    class openspec_specs_documentation_alignment_spec_md_d_f471f2fd concept;
     class openspec_changes_archive_2026_06_03_sync_docs_wi_36ed6a7f concept;
     class openspec_changes_archive_2026_06_03_sync_docs_wi_6c742bb5 concept;
-    class openspec_specs_documentation_alignment_spec_md_d_f471f2fd concept;
-    class openspec_specs_documentation_alignment_spec_md_d_bae1d98d concept;
     class references_exports_graphify_reference_extra_expo_ee448005 concept;
-    class references_exports_f50c662b concept;
     class references_exports_step_6b_wiki_only_if_wiki_fla_f09198df concept;
     class references_exports_step_7_neo4j_export_only_if_n_4506a260 concept;
     class references_exports_step_7b_svg_export_only_if_sv_f5c26580 concept;
@@ -1291,14 +1288,30 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
-  <td><code>ADDED Requirements</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><code>documentation-alignment Specification</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing ADDED Requirements.</td>
+  <td>Documentation node describing documentation-alignment Specification.</td>
 </tr>
 <tr>
   <td>3</td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Purpose.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirements.</td>
+</tr>
+<tr>
+  <td>5</td>
   <td><code>Requirement: Repository guidance reflects implemented API surface</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1306,7 +1319,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Repository guidance reflects implemented API surface.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>6</td>
   <td><code>Scenario: Schema endpoints are documented completely</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1314,7 +1327,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Schema endpoints are documented completely.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>7</td>
   <td><code>Requirement: Repository guidance reflects implemented configuration defaults</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1322,7 +1335,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Repository guidance reflects implemented configuration defaults.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>8</td>
   <td><code>Scenario: Extraction limits change in application config</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1330,7 +1343,15 @@ flowchart LR
   <td>Documentation node describing Scenario: Extraction limits change in application config.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>9</td>
+  <td><code>Scenario: Runtime settings and AI profiles are added</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Runtime settings and AI profiles are added.</td>
+</tr>
+<tr>
+  <td>10</td>
   <td><code>Requirement: Contributor guidance stays synchronized across repo instruction files</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1338,7 +1359,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Contributor guidance stays synchronized across repo instruction files.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>11</td>
   <td><code>Scenario: Shared guidance changes</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1346,7 +1367,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Shared guidance changes.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>12</td>
   <td><code>spec.md</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1354,7 +1375,7 @@ flowchart LR
   <td>Documentation node describing spec.md.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>13</td>
   <td><code>ADDED Requirements</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1362,7 +1383,7 @@ flowchart LR
   <td>Documentation node describing ADDED Requirements.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>14</td>
   <td><code>Requirement: Repository guidance reflects implemented API surface</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1370,7 +1391,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Repository guidance reflects implemented API surface.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>15</td>
   <td><code>Scenario: Schema endpoints are documented completely</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1378,7 +1399,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Schema endpoints are documented completely.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>16</td>
   <td><code>Requirement: Repository guidance reflects implemented configuration defaults</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1386,7 +1407,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Repository guidance reflects implemented configuration defaults.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>17</td>
   <td><code>Scenario: Extraction limits change in application config</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1394,7 +1415,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Extraction limits change in application config.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>18</td>
   <td><code>Requirement: Contributor guidance stays synchronized across repo instruction files</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1402,7 +1423,7 @@ flowchart LR
   <td>Documentation node describing Requirement: Contributor guidance stays synchronized across repo instruction files.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>19</td>
   <td><code>Scenario: Shared guidance changes</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1410,7 +1431,7 @@ flowchart LR
   <td>Documentation node describing Scenario: Shared guidance changes.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>20</td>
   <td><code>exports.md</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1418,7 +1439,7 @@ flowchart LR
   <td>Documentation node describing exports.md.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>21</td>
   <td><code>graphify reference: extra exports and benchmark</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1426,7 +1447,7 @@ flowchart LR
   <td>Documentation node describing graphify reference: extra exports and benchmark.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>22</td>
   <td><code>Step 6b - Wiki (only if --wiki flag)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1434,7 +1455,7 @@ flowchart LR
   <td>Documentation node describing Step 6b - Wiki (only if --wiki flag).</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>23</td>
   <td><code>Step 7 - Neo4j export (only if --neo4j or --neo4j-push flag)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1442,7 +1463,7 @@ flowchart LR
   <td>Documentation node describing Step 7 - Neo4j export (only if --neo4j or --neo4j-push flag).</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>24</td>
   <td><code>Step 7b - SVG export (only if --svg flag)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1450,7 +1471,7 @@ flowchart LR
   <td>Documentation node describing Step 7b - SVG export (only if --svg flag).</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>25</td>
   <td><code>Step 7c - GraphML export (only if --graphml flag)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1458,7 +1479,7 @@ flowchart LR
   <td>Documentation node describing Step 7c - GraphML export (only if --graphml flag).</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>26</td>
   <td><code>Step 7d - MCP server (only if --mcp flag)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1466,12 +1487,36 @@ flowchart LR
   <td>Documentation node describing Step 7d - MCP server (only if --mcp flag).</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>27</td>
   <td><code>Step 8 - Token reduction benchmark (only if total_words &gt; 5000)</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Documentation node describing Step 8 - Token reduction benchmark (only if total_words &gt; 5000).</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>MODIFIED Requirements</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MODIFIED Requirements.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Requirement: Repository guidance reflects implemented configuration defaults</code><br><small style="color:var(--muted)">specs/documentation-alignment/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Repository guidance reflects implemented configuration defaults.</td>
 </tr>
 </table>
 
@@ -1480,14 +1525,15 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>graphify/references/exports.md</code></td><td>8 nodes</td></tr>
+      <tr><td><code>specs/documentation-alignment/spec.md</code></td><td>11 nodes</td></tr>
+<tr><td><code>graphify/references/exports.md</code></td><td>8 nodes</td></tr>
 <tr><td><code>specs/documentation-alignment/spec.md</code></td><td>8 nodes</td></tr>
-<tr><td><code>specs/documentation-alignment/spec.md</code></td><td>8 nodes</td></tr>
+<tr><td><code>specs/documentation-alignment/spec.md</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x21. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x28. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1844,48 +1890,68 @@ flowchart LR
 
 <!-- ====== 7. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around graphify, codex, skills, references, mostly in graphify/references/add-watch.md, graphify/references/update.md, graphify/references/transcribe.md. This section covers 11 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around runtime, settings, specmd, application, mostly in specs/runtime-application-settings/spec.md, specs/runtime-application-settings/spec.md, graphify/references/add-watch.md. This section covers 43 nodes and 38 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (11 nodes, 8 edges)
+    %% Section: Ingestion &amp; Updates (43 nodes, 38 edges)
+    subgraph ingest_cache_update_specs_runtime_application_se_ca694f53["specs/runtime-application-settings/spec.md"]
+        runtime_application_settings_spec_added_requirem_d90ec4e8("ADDED Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
+        runtime_application_settings_spec_requirements_643b3bab("Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_1b807e69("Requirement: Safe runtime settings appl...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_specs_runtime_application_settings_spec_9e08aadd("Requirement: Safe runtime settings appl...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_90825c5f("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_3515615f("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_specs_runtime_application_settings_spec_c0f519f4("Requirement: Runtime setting updates ar...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_specs_runtime_application_settings_spec_8040d742("Requirement: Runtime settings are expos...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_specs_runtime_application_settings_spec_2bc0c14b("Requirement: Runtime settings fall back...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_8b112ccd("Requirement: Runtime settings fall back...<br/><small>specs/runtime-application-settings/spec.md</small>")
+        runtime_application_settings_spec_runtime_applic_df80e214("runtime-application-settings Specification<br/><small>specs/runtime-application-settings/spec.md</small>")
+    end
     subgraph ingest_cache_update_graphify_references_add_watc_ad4a876c["graphify/references/add-watch.md"]
         references_add_watch_graphify_reference_add_a_ur_df000dfb("graphify reference: add a URL and watch...<br/><small>graphify/references/add-watch.md</small>")
-        references_add_watch_a882e130("add-watch.md")
         references_add_watch_for_watch_6ae398fb("For --watch<br/><small>graphify/references/add-watch.md</small>")
         references_add_watch_for_graphify_add_4d2c1e86("For /graphify add<br/><small>graphify/references/add-watch.md</small>")
-    end
-    subgraph ingest_cache_update_graphify_references_update_m_5902f3df["graphify/references/update.md"]
-        references_update_graphify_reference_incremental_e7189a5d("graphify reference: incremental update...<br/><small>graphify/references/update.md</small>")
-        references_update_c8e72156("update.md")
-        references_update_for_cluster_only_5e9f2f93("For --cluster-only<br/><small>graphify/references/update.md</small>")
-        references_update_for_update_incremental_re_extr_46861e8c("For --update (incremental re-extraction)<br/><small>graphify/references/update.md</small>")
+        references_add_watch_a882e130("add-watch.md")
     end
     subgraph ingest_cache_update_graphify_references_transcri_94aa8e73["graphify/references/transcribe.md"]
-        references_transcribe_f4c653e5("transcribe.md")
         references_transcribe_graphify_reference_transcr_aa389265("graphify reference: transcribe video an...<br/><small>graphify/references/transcribe.md</small>")
         references_transcribe_step_2_5_transcribe_video_21771e20("Step 2.5 - Transcribe video / audio fil...<br/><small>graphify/references/transcribe.md</small>")
     end
+    references_update_graphify_reference_incremental_e7189a5d("graphify reference: incremental update...<br/><small>graphify/references/update.md</small>")
     references_add_watch_a882e130 -->|contains| references_add_watch_graphify_reference_add_a_ur_df000dfb
     references_add_watch_graphify_reference_add_a_ur_df000dfb -->|contains| references_add_watch_for_graphify_add_4d2c1e86
     references_add_watch_graphify_reference_add_a_ur_df000dfb -->|contains| references_add_watch_for_watch_6ae398fb
-    references_transcribe_f4c653e5 -->|contains| references_transcribe_graphify_reference_transcr_aa389265
     references_transcribe_graphify_reference_transcr_aa389265 -->|contains| references_transcribe_step_2_5_transcribe_video_21771e20
-    references_update_c8e72156 -->|contains| references_update_graphify_reference_incremental_e7189a5d
-    references_update_graphify_reference_incremental_e7189a5d -->|contains| references_update_for_cluster_only_5e9f2f93
-    references_update_graphify_reference_incremental_e7189a5d -->|contains| references_update_for_update_incremental_re_extr_46861e8c
+    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_90825c5f
+    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_3515615f
+    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_8b112ccd
+    runtime_application_settings_spec_added_requirem_d90ec4e8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_1b807e69
+    runtime_application_settings_spec_runtime_applic_df80e214 -->|contains| runtime_application_settings_spec_requirements_643b3bab
+    runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_c0f519f4
+    runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_8040d742
+    runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_2bc0c14b
+    runtime_application_settings_spec_requirements_643b3bab -->|contains| openspec_specs_runtime_application_settings_spec_9e08aadd
+    %% Omitted for readability: 25 nodes, 0 edges
+    class runtime_application_settings_spec_added_requirem_d90ec4e8 concept;
+    class runtime_application_settings_spec_requirements_643b3bab concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_1b807e69 concept;
+    class openspec_specs_runtime_application_settings_spec_9e08aadd concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_90825c5f concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_3515615f concept;
+    class openspec_specs_runtime_application_settings_spec_c0f519f4 concept;
+    class openspec_specs_runtime_application_settings_spec_8040d742 concept;
+    class openspec_specs_runtime_application_settings_spec_2bc0c14b concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_8b112ccd concept;
+    class runtime_application_settings_spec_runtime_applic_df80e214 concept;
     class references_add_watch_graphify_reference_add_a_ur_df000dfb concept;
-    class references_add_watch_a882e130 concept;
     class references_add_watch_for_watch_6ae398fb concept;
     class references_add_watch_for_graphify_add_4d2c1e86 concept;
-    class references_update_graphify_reference_incremental_e7189a5d concept;
-    class references_update_c8e72156 concept;
-    class references_update_for_cluster_only_5e9f2f93 concept;
-    class references_update_for_update_incremental_re_extr_46861e8c concept;
-    class references_transcribe_f4c653e5 concept;
+    class references_add_watch_a882e130 concept;
     class references_transcribe_graphify_reference_transcr_aa389265 concept;
     class references_transcribe_step_2_5_transcribe_video_21771e20 concept;
+    class references_update_graphify_reference_incremental_e7189a5d concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1909,91 +1975,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>add-watch.md</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing add-watch.md.</td>
+  <td>Documentation node describing spec.md.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>graphify reference: add a URL and watch a folder</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><code>runtime-application-settings Specification</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing graphify reference: add a URL and watch a folder.</td>
+  <td>Documentation node describing runtime-application-settings Specification.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>For /graphify add</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing For /graphify add.</td>
+  <td>Documentation node describing Purpose.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>For --watch</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing For --watch.</td>
+  <td>Documentation node describing Requirements.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>update.md</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><code>Requirement: Runtime settings are exposed through an allowlisted API</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing update.md.</td>
+  <td>Documentation node describing Requirement: Runtime settings are exposed through an allowlisted API.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>graphify reference: incremental update and cluster-only</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><code>Scenario: Client lists runtime settings</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing graphify reference: incremental update and cluster-only.</td>
+  <td>Documentation node describing Scenario: Client lists runtime settings.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>For --update (incremental re-extraction)</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><code>Scenario: Client requests a non-allowlisted setting update</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing For --update (incremental re-extraction).</td>
+  <td>Documentation node describing Scenario: Client requests a non-allowlisted setting update.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>For --cluster-only</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><code>Requirement: Runtime setting updates are validated and persisted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing For --cluster-only.</td>
+  <td>Documentation node describing Requirement: Runtime setting updates are validated and persisted.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>transcribe.md</code><br><small style="color:var(--muted)">graphify/references/transcribe.md</small></td>
+  <td><code>Scenario: Valid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing transcribe.md.</td>
+  <td>Documentation node describing Scenario: Valid setting update is submitted.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>graphify reference: transcribe video and audio</code><br><small style="color:var(--muted)">graphify/references/transcribe.md</small></td>
+  <td><code>Scenario: Invalid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing graphify reference: transcribe video and audio.</td>
+  <td>Documentation node describing Scenario: Invalid setting update is submitted.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>Step 2.5 - Transcribe video / audio files (only if video files detected)</code><br><small style="color:var(--muted)">graphify/references/transcribe.md</small></td>
+  <td><code>Requirement: Safe runtime settings apply without restart</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Step 2.5 - Transcribe video / audio files (only if video files detected).</td>
+  <td>Documentation node describing Requirement: Safe runtime settings apply without restart.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Scenario: Query limit setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Query limit setting changes.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Scenario: Extraction or chunking setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Extraction or chunking setting changes.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Scenario: Startup-bound setting is represented</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Startup-bound setting is represented.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Requirement: Runtime settings fall back to startup defaults</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime settings fall back to startup defaults.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Scenario: No override exists</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: No override exists.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Scenario: Override is cleared</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Override is cleared.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>ADDED Requirements</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADDED Requirements.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Requirement: Runtime settings are exposed through an allowlisted API</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime settings are exposed through an allowlisted API.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Scenario: Client lists runtime settings</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client lists runtime settings.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Scenario: Client requests a non-allowlisted setting update</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client requests a non-allowlisted setting update.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Requirement: Runtime setting updates are validated and persisted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime setting updates are validated and persisted.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Scenario: Valid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Valid setting update is submitted.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Scenario: Invalid setting update is submitted</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Invalid setting update is submitted.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Requirement: Safe runtime settings apply without restart</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Safe runtime settings apply without restart.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Scenario: Query limit setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Query limit setting changes.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Scenario: Extraction or chunking setting changes</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Extraction or chunking setting changes.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Scenario: Startup-bound setting is represented</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Startup-bound setting is represented.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Requirement: Runtime settings fall back to startup defaults</code><br><small style="color:var(--muted)">specs/runtime-application-settings/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Runtime settings fall back to startup defaults.</td>
 </tr>
 </table>
 
@@ -2002,26 +2220,28 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>graphify/references/add-watch.md</code></td><td>4 nodes</td></tr>
+      <tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>17 nodes</td></tr>
+<tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>15 nodes</td></tr>
+<tr><td><code>graphify/references/add-watch.md</code></td><td>4 nodes</td></tr>
 <tr><td><code>graphify/references/update.md</code></td><td>4 nodes</td></tr>
 <tr><td><code>graphify/references/transcribe.md</code></td><td>3 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x38. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around openspec, changes, archive, 2026, mostly in specs/ai-observability-monitoring/spec.md, specs/hybrid-search/spec.md, specs/hybrid-search/spec.md. This section covers 113 nodes and 102 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around openspec, specmd, specs, changes, mostly in specs/ai-observability-monitoring/spec.md, specs/ai-profile-management/spec.md, specs/ai-profile-management/spec.md. This section covers 168 nodes and 154 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (113 nodes, 102 edges)
+    %% Section: Serving API (168 nodes, 154 edges)
     subgraph serve_api_specs_ai_observability_monitoring_spec_e3ed4285["specs/ai-observability-monitoring/spec.md"]
         openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_lan_9a9d55c6("Requirement: Langfuse is available as a...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
@@ -2029,51 +2249,47 @@ flowchart LR
         ai_observability_monitoring_spec_requirement_mod_7a367b9e("Requirement: Model operations are trace...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_mod_6b621205("Requirement: Model operations emit ligh...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_pro_82449c3e("Requirement: Prompt and response captur...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
-        ai_observability_monitoring_spec_requirement_ai_30a4917c("Requirement: AI tracing can be enabled...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
     end
-    subgraph serve_api_archive_2026_05_30_add_kb_schemas_list_f2fb6c3b["archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md"]
-        node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332("proposal.md")
-        node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797("Capabilities<br/><small>archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md</small>")
-    end
-    subgraph serve_api_archive_2026_06_10_add_hybrid_search_e_aaf286c1["archive/2026-06-10-add-hybrid-search-endpoint/proposal.md"]
-        node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a("proposal.md")
-        node_2026_06_10_add_hybrid_search_endpoint_propo_625c23c9("Capabilities<br/><small>archive/2026-06-10-add-hybrid-search-endpoint/proposal.md</small>")
+    subgraph serve_api_specs_ai_profile_management_spec_md_d0c9820c["specs/ai-profile-management/spec.md"]
+        ai_profile_management_spec_added_requirements_2812f7d2("ADDED Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
+        ai_profile_management_spec_requirements_f0c29c28("Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
+        openspec_specs_ai_profile_management_spec_md_ai_c4619ebf("Requirement: Incompatible embedding pro...<br/><small>specs/ai-profile-management/spec.md</small>")
     end
     subgraph serve_api_specs_hybrid_search_spec_md_ed761238["specs/hybrid-search/spec.md"]
         hybrid_search_spec_added_requirements_ca7f0135("ADDED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
         hybrid_search_spec_requirements_6b3873a5("Requirements<br/><small>specs/hybrid-search/spec.md</small>")
     end
     node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea("design.md")
+    node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332("proposal.md")
     node_2026_05_30_add_kb_schemas_list_endpoint_tas_0c451f43("tasks.md")
     node_2026_06_07_add_schema_update_delete_endpoin_98f0b22a("tasks.md")
     node_2026_06_10_add_hybrid_search_endpoint_desig_437985ec("design.md")
+    node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a("proposal.md")
     node_2026_06_10_add_hybrid_search_endpoint_tasks_9f60d2b2("tasks.md")
-    node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332 -->|contains| node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797
-    openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_ai_30a4917c
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_bus_93f052c4
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_lan_9a9d55c6
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_7a367b9e
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_6b621205
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_pro_82449c3e
-    node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a -->|contains| node_2026_06_10_add_hybrid_search_endpoint_propo_625c23c9
-    %% Omitted for readability: 95 nodes, 0 edges
+    ai_profile_management_spec_requirements_f0c29c28 -->|contains| openspec_specs_ai_profile_management_spec_md_ai_c4619ebf
+    %% Omitted for readability: 150 nodes, 0 edges
     class openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 concept;
     class ai_observability_monitoring_spec_requirement_lan_9a9d55c6 concept;
     class ai_observability_monitoring_spec_requirement_bus_93f052c4 concept;
     class ai_observability_monitoring_spec_requirement_mod_7a367b9e concept;
     class ai_observability_monitoring_spec_requirement_mod_6b621205 concept;
     class ai_observability_monitoring_spec_requirement_pro_82449c3e concept;
-    class ai_observability_monitoring_spec_requirement_ai_30a4917c concept;
-    class node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332 concept;
-    class node_2026_05_30_add_kb_schemas_list_endpoint_pro_2ea33797 concept;
-    class node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a concept;
-    class node_2026_06_10_add_hybrid_search_endpoint_propo_625c23c9 concept;
+    class ai_profile_management_spec_added_requirements_2812f7d2 concept;
+    class ai_profile_management_spec_requirements_f0c29c28 concept;
+    class openspec_specs_ai_profile_management_spec_md_ai_c4619ebf concept;
     class hybrid_search_spec_added_requirements_ca7f0135 concept;
     class hybrid_search_spec_requirements_6b3873a5 concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea concept;
+    class node_2026_05_30_add_kb_schemas_list_endpoint_pro_f76f1332 concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_tas_0c451f43 concept;
     class node_2026_06_07_add_schema_update_delete_endpoin_98f0b22a concept;
     class node_2026_06_10_add_hybrid_search_endpoint_desig_437985ec concept;
+    class node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a concept;
     class node_2026_06_10_add_hybrid_search_endpoint_tasks_9f60d2b2 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -2344,212 +2560,24 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>32 nodes</td></tr>
-<tr><td><code>specs/hybrid-search/spec.md</code></td><td>18 nodes</td></tr>
+<tr><td><code>specs/ai-profile-management/spec.md</code></td><td>25 nodes</td></tr>
+<tr><td><code>specs/ai-profile-management/spec.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>specs/hybrid-search/spec.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>specs/hybrid-search/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>specs/schema-list-by-knowledge-base/spec.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-06-10-add-hybrid-search-endpoint/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/design.md</code></td><td>5 nodes</td></tr>
-<tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/tasks.md</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x102. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x154. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 9. Security & Global Graph ====== -->
-<h2 id="security-global">9. Security &amp; Global Graph</h2>
-<p>Security &amp; Global Graph groups implementation around securitymd, traffic, understand, anything, mostly in UA_SECURITY.md. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Security &amp; Global Graph (13 nodes, 12 edges)
-    ua_security_understand_anything_plugin_security_3b3fc833("Understand Anything Plugin Security Review<br/><small>UA_SECURITY.md</small>")
-    ua_security_what_can_still_leave_the_machine_b7f2fde0("What Can Still Leave The Machine<br/><small>UA_SECURITY.md</small>")
-    ua_security_ec001317("UA_SECURITY.md")
-    ua_security_evidence_checked_2d31e836("Evidence Checked<br/><small>UA_SECURITY.md</small>")
-    ua_security_final_assessment_25251a1d("Final Assessment<br/><small>UA_SECURITY.md</small>")
-    ua_security_main_conclusion_65c793e5("Main Conclusion<br/><small>UA_SECURITY.md</small>")
-    ua_security_1_llm_analysis_traffic_19dc511b("1. LLM analysis traffic<br/><small>UA_SECURITY.md</small>")
-    ua_security_2_package_manager_traffic_133dd04f("2. Package manager traffic<br/><small>UA_SECURITY.md</small>")
-    ua_security_3_dashboard_browser_traffic_d4e45e77("3. Dashboard browser traffic<br/><small>UA_SECURITY.md</small>")
-    ua_security_4_generated_local_artifacts_0148605b("4. Generated local artifacts<br/><small>UA_SECURITY.md</small>")
-    ua_security_5_auto_update_behavior_c96edeb3("5. Auto-update behavior<br/><small>UA_SECURITY.md</small>")
-    ua_security_recommended_use_927270c3("Recommended Use<br/><small>UA_SECURITY.md</small>")
-    ua_security_risks_outside_usual_codex_activity_29d43894("Risks Outside Usual Codex Activity<br/><small>UA_SECURITY.md</small>")
-    ua_security_ec001317 -->|contains| ua_security_understand_anything_plugin_security_3b3fc833
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_evidence_checked_2d31e836
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_final_assessment_25251a1d
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_main_conclusion_65c793e5
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_recommended_use_927270c3
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_risks_outside_usual_codex_activity_29d43894
-    ua_security_understand_anything_plugin_security_3b3fc833 -->|contains| ua_security_what_can_still_leave_the_machine_b7f2fde0
-    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_1_llm_analysis_traffic_19dc511b
-    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_2_package_manager_traffic_133dd04f
-    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_3_dashboard_browser_traffic_d4e45e77
-    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_4_generated_local_artifacts_0148605b
-    ua_security_what_can_still_leave_the_machine_b7f2fde0 -->|contains| ua_security_5_auto_update_behavior_c96edeb3
-    class ua_security_understand_anything_plugin_security_3b3fc833 concept;
-    class ua_security_what_can_still_leave_the_machine_b7f2fde0 concept;
-    class ua_security_ec001317 concept;
-    class ua_security_evidence_checked_2d31e836 concept;
-    class ua_security_final_assessment_25251a1d concept;
-    class ua_security_main_conclusion_65c793e5 concept;
-    class ua_security_1_llm_analysis_traffic_19dc511b concept;
-    class ua_security_2_package_manager_traffic_133dd04f concept;
-    class ua_security_3_dashboard_browser_traffic_d4e45e77 concept;
-    class ua_security_4_generated_local_artifacts_0148605b concept;
-    class ua_security_5_auto_update_behavior_c96edeb3 concept;
-    class ua_security_recommended_use_927270c3 concept;
-    class ua_security_risks_outside_usual_codex_activity_29d43894 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>UA_SECURITY.md</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing UA_SECURITY.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Understand Anything Plugin Security Review</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Understand Anything Plugin Security Review.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>Main Conclusion</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Main Conclusion.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Evidence Checked</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Evidence Checked.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>What Can Still Leave The Machine</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Can Still Leave The Machine.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>1. LLM analysis traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 1. LLM analysis traffic.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>2. Package manager traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 2. Package manager traffic.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>3. Dashboard browser traffic</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3. Dashboard browser traffic.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>4. Generated local artifacts</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 4. Generated local artifacts.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>5. Auto-update behavior</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 5. Auto-update behavior.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Risks Outside Usual Codex Activity</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Risks Outside Usual Codex Activity.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>Recommended Use</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Recommended Use.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Final Assessment</code><br><small style="color:var(--muted)">UA_SECURITY.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Final Assessment.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>UA_SECURITY.md</code></td><td>13 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 10. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
+<!-- ====== 9. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
 <p>Tests &amp; Fixtures groups implementation around openspec, test, specmd, specs, mostly in specs/service-helper-utilities/spec.md, specs/test-coverage-governance/spec.md, specs/test-coverage-governance/spec.md. This section covers 121 nodes and 109 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2891,8 +2919,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 11. Community 159 ====== -->
-<h2 id="community-159">11. Community 159</h2>
+<!-- ====== 10. Community 159 ====== -->
+<h2 id="community-159">10. Community 159</h2>
 <p>Community 159 groups implementation around add, designmd, openspec, changes, mostly in archive/2026-06-04-add-ai-observability-monitoring/design.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3101,8 +3129,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. Community 178 ====== -->
-<h2 id="community-178">12. Community 178</h2>
+<!-- ====== 11. Community 178 ====== -->
+<h2 id="community-178">11. Community 178</h2>
 <p>Community 178 groups implementation around agentsmd, stack, commands, architecture, mostly in AGENTS.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3274,6 +3302,161 @@ flowchart LR
   <div class="card">
     <h4>Design Notes</h4>
     <p>This section comes from graphify community clustering. Relationship summary: contains x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 12. Community 532 ====== -->
+<h2 id="community-532">12. Community 532</h2>
+<p>Community 532 groups implementation around specmd, runtime, openspec, changes, mostly in specs/ai-observability-monitoring/spec.md. This section covers 10 nodes and 9 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 532 (10 nodes, 9 edges)
+    openspec_changes_archive_2026_06_18_add_runtime_ffb214b1("Requirement: Langfuse input and output...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_92b8b61f("spec.md")
+    openspec_changes_archive_2026_06_18_add_runtime_ed3c70c8("Requirement: AI observations include ac...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    ai_observability_monitoring_spec_modified_requir_c8ac0c0f("MODIFIED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_5d0592c5("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_d83c3566("Scenario: Full input and output capture...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_a60c2550("Scenario: Full input and output capture...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_d9bf5217("Scenario: Input or output exceeds confi...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_3a2b5d01("Scenario: Knowledge-base workflow uses...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_d906340e("Scenario: Model name tags are disabled...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    openspec_changes_archive_2026_06_18_add_runtime_92b8b61f -->|contains| ai_observability_monitoring_spec_modified_requir_c8ac0c0f
+    openspec_changes_archive_2026_06_18_add_runtime_92b8b61f -->|contains| openspec_changes_archive_2026_06_18_add_runtime_5d0592c5
+    ai_observability_monitoring_spec_modified_requir_c8ac0c0f -->|contains| openspec_changes_archive_2026_06_18_add_runtime_ffb214b1
+    openspec_changes_archive_2026_06_18_add_runtime_ffb214b1 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_d83c3566
+    openspec_changes_archive_2026_06_18_add_runtime_ffb214b1 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_a60c2550
+    openspec_changes_archive_2026_06_18_add_runtime_ffb214b1 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_d9bf5217
+    openspec_changes_archive_2026_06_18_add_runtime_5d0592c5 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_ed3c70c8
+    openspec_changes_archive_2026_06_18_add_runtime_ed3c70c8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_3a2b5d01
+    openspec_changes_archive_2026_06_18_add_runtime_ed3c70c8 -->|contains| openspec_changes_archive_2026_06_18_add_runtime_d906340e
+    class openspec_changes_archive_2026_06_18_add_runtime_ffb214b1 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_92b8b61f concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_ed3c70c8 concept;
+    class ai_observability_monitoring_spec_modified_requir_c8ac0c0f concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_5d0592c5 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_d83c3566 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_a60c2550 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_d9bf5217 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_3a2b5d01 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_d906340e concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>MODIFIED Requirements</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MODIFIED Requirements.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Requirement: Langfuse input and output respect content privacy controls</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Langfuse input and output respect content privacy controls.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Scenario: Full input and output capture is enabled</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Full input and output capture is enabled.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Scenario: Full input and output capture is disabled</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Full input and output capture is disabled.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Scenario: Input or output exceeds configured length</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Input or output exceeds configured length.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>ADDED Requirements</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADDED Requirements.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Requirement: AI observations include active profile metadata when enabled</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: AI observations include active profile metadata when enabled.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Scenario: Knowledge-base workflow uses active profile</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Knowledge-base workflow uses active profile.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Scenario: Model name tags are disabled at runtime</code><br><small style="color:var(--muted)">specs/ai-observability-monitoring/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Model name tags are disabled at runtime.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>10 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x9. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3668,12 +3851,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-overwrite-completed-extraction/proposal.md, archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md, archive/2026-05-16-fix-cypher-validation-patterns/proposal.md. This section covers 137 nodes and 113 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-05-15-overwrite-completed-extraction/proposal.md, archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md, archive/2026-05-16-fix-cypher-validation-patterns/proposal.md. This section covers 157 nodes and 130 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (137 nodes, 113 edges)
+    %% Section: Other (157 nodes, 130 edges)
     node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
     node_2026_05_15_overwrite_completed_extraction_p_168e9394("proposal.md")
     node_2026_05_15_overwrite_completed_extraction_t_6540f7eb("tasks.md")
@@ -3689,10 +3872,10 @@ flowchart LR
     node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
     node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5("proposal.md")
     node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5("tasks.md")
-    node_2026_06_06_extend_document_operations_desig_3ceb874e("design.md")
-    node_2026_06_06_extend_document_operations_propo_2a50e1ad("proposal.md")
     node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
-    %% Omitted for readability: 119 nodes, 0 edges
+    node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07("design.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
+    %% Omitted for readability: 139 nodes, 0 edges
     class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
     class node_2026_05_15_overwrite_completed_extraction_p_168e9394 concept;
     class node_2026_05_15_overwrite_completed_extraction_t_6540f7eb concept;
@@ -3708,9 +3891,9 @@ flowchart LR
     class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
     class node_2026_06_04_fix_langfuse_llm_io_capture_prop_963e83e5 concept;
     class node_2026_06_04_fix_langfuse_llm_io_capture_task_d94d8cc5 concept;
-    class node_2026_06_06_extend_document_operations_desig_3ceb874e concept;
-    class node_2026_06_06_extend_document_operations_propo_2a50e1ad concept;
     class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3991,7 +4174,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x113. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x130. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4016,18 +4199,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>5868</td></tr>
-      <tr><td>Edges</td><td>7906</td></tr>
+      <tr><td>Nodes</td><td>6349</td></tr>
+      <tr><td>Edges</td><td>8985</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>531</td></tr>
+      <tr><td>Communities</td><td>569</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>7152</td></tr>
-      <tr><td>INFERRED</td><td>754</td></tr>
+      <tr><td>EXTRACTED</td><td>8005</td></tr>
+      <tr><td>INFERRED</td><td>980</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4035,7 +4218,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-16 19:15 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-18 13:07 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

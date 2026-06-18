@@ -7,6 +7,7 @@ import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
 import dev.langchain4j.data.document.Document;
 import io.github.vfedoriv.graphrag.TestAiObservationService;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
@@ -26,7 +27,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_preservesNodeDescriptionsAndProperties_andEdgeDescriptions() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(new EmptyObjectProvider<>(), TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
         GraphNode contract = GraphNode.from("c1", "contract", Map.of(
             "description", "A legal agreement",
             "contractId", "C-001",
@@ -67,7 +68,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_handlesMissingOptionalMetadata() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(new EmptyObjectProvider<>(), TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
         GraphNode source = GraphNode.from("n1", "NodeType", Map.of());
         GraphNode target = GraphNode.from("n2", "AnotherType", Map.of());
         GraphEdge edge = GraphEdge.from(source, target, "relates_to", Map.of());
@@ -116,7 +117,7 @@ class LangChain4jSchemaGenerationServiceTest {
             }
         };
 
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
         SchemaGenerationResult result = service.generate("generated", 1, "desc", "source text", "[]");
 
         SchemaDocument schema = new SchemaParser().parse(result.content());
@@ -164,7 +165,7 @@ class LangChain4jSchemaGenerationServiceTest {
                 return Stream.of(springModel);
             }
         };
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
         service.generate("generated", 1, "desc", "source text", "[]");
 
         assertThat(promptTextRef.get()).contains("`key` can be either a single property name or a list of property names");
@@ -201,7 +202,7 @@ class LangChain4jSchemaGenerationServiceTest {
                 return Stream.of(springModel);
             }
         };
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(provider, TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.generate("generated", 1, "desc", "source text", "[]"))
             .isInstanceOf(IllegalArgumentException.class);
@@ -265,7 +266,7 @@ class LangChain4jSchemaGenerationServiceTest {
 
     @Test
     void inferSchema_doesNotFabricateIdKeyWhenNoPropertiesExist() {
-        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(null, TestAiObservationService.noop());
+        LangChain4jSchemaGenerationService service = new LangChain4jSchemaGenerationService(new EmptyObjectProvider<>(), TestAiObservationService.noop(), new EmptyObjectProvider<>(), knowledgeBaseService());
         GraphNode node = GraphNode.from("n1", "Person", Map.of("description", "entity"));
         GraphDocument graphDocument = GraphDocument.from(Set.of(node), Set.of(), Document.from("text"));
 
@@ -295,6 +296,14 @@ class LangChain4jSchemaGenerationServiceTest {
         assertThat(LangChain4jSchemaGenerationService.buildKeyPropertyWarnings(schema))
             .extracting(w -> w.code())
             .containsExactly("NODE_KEY_MISSING");
+    }
+
+    private KnowledgeBaseService knowledgeBaseService() {
+        KnowledgeBaseService service = org.mockito.Mockito.mock(KnowledgeBaseService.class);
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
+        org.mockito.Mockito.when(service.activeAiProfile(org.mockito.ArgumentMatchers.anyString())).thenReturn(profile);
+        return service;
     }
 
 }

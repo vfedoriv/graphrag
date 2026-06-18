@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import java.nio.file.Path;
 import java.util.List;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class ChunkingServiceTest {
 
-    private final ChunkingService chunkingService = new ChunkingService(props(10, 2));
+    private final ChunkingService chunkingService = new ChunkingService(TestRuntimeSettings.from(props(10, 2)));
 
     @Test
     void splitsTextWithConfiguredOverlapAndStableOrder() {

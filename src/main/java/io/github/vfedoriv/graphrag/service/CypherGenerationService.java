@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
@@ -21,24 +21,27 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherGenerationService {
 
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
     private final ActiveSchemaResolver activeSchemaResolver;
     private final ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider;
     private final CypherValidationService cypherValidationService;
     private final AiObservationService aiObservationService;
+    private final KnowledgeBaseService knowledgeBaseService;
 
     public CypherGenerationService(
-        AppProperties appProperties,
+        RuntimeSettingsService runtimeSettingsService,
         ActiveSchemaResolver activeSchemaResolver,
         ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider,
         CypherValidationService cypherValidationService,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        KnowledgeBaseService knowledgeBaseService
     ) {
-        this.appProperties = appProperties;
+        this.runtimeSettingsService = runtimeSettingsService;
         this.activeSchemaResolver = activeSchemaResolver;
         this.cypherGenerationClientProvider = cypherGenerationClientProvider;
         this.cypherValidationService = cypherValidationService;
         this.aiObservationService = aiObservationService;
+        this.knowledgeBaseService = knowledgeBaseService;
     }
 
     public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt) {
@@ -68,7 +71,11 @@ public class CypherGenerationService {
                     throw new IllegalStateException("Cypher generation model is not configured for this profile");
                 }
                 log.info("Cypher generation client resolved: knowledgeBaseId={}, clientClass={}", knowledgeBaseId, client.getClass().getName());
-                GeneratedCypher generated = client.generate(schema, prompt, appProperties.query().maxRows());
+                AiProfileNode activeProfile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+                GeneratedCypher generated = AiProfileContext.withProfile(
+                    activeProfile.getId(),
+                    () -> client.generate(schema, prompt, runtimeSettingsService.query().maxRows())
+                );
                 QueryValidationResult validation = cypherValidationService.validate(schema, generated.cypher(), generated.parameters());
                 workflow.highCardinalityAttribute("query.validation.valid", String.valueOf(validation.valid()));
                 workflow.highCardinalityAttribute("query.validation.error_count", String.valueOf(validation.errors().size()));
@@ -102,8 +109,8 @@ public class CypherGenerationService {
             result.cypher(),
             result.parameters(),
             result.errors(),
-            appProperties.query().maxRows(),
-            appProperties.query().timeoutSeconds()
+            runtimeSettingsService.query().maxRows(),
+            runtimeSettingsService.query().timeoutSeconds()
         );
     }
 

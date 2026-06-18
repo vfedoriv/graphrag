@@ -64,6 +64,9 @@ Key services:
 - `CypherExecutionService`
 - `SchemaBootstrapService` (loads bootstrap schemas on startup)
 - `AiObservationService` (AI workflow spans, model call metrics, privacy-controlled content metadata)
+- `RuntimeSettingsService` (allowlisted live runtime setting overrides + typed accessors)
+- `AiProfileService` (OpenAI-compatible AI profile CRUD, write-only API keys, default profile seeding)
+- `AiRuntimeModelFactory` (profile/revision-scoped Spring AI OpenAI chat and embedding clients)
 
 ## Profiles
 
@@ -71,6 +74,8 @@ Key services:
 - `openai`: requires `OPENAI_API_KEY`
 - `lm_studio`: requires `LM_STUDIO_API_KEY=lm-studio`
 - `langfuse`: enables AI observability and exports OTLP traces to local Langfuse defaults
+
+At startup the default AI profile is seeded from `app.model.*` when no default exists. New knowledge bases receive the default profile. Document processing, extraction, Cypher generation, `/ask`, hybrid search, and KB-scoped schema generation resolve the active knowledge-base AI profile at runtime. Profile API keys are write-only and must not be returned by read APIs.
 
 ## Key Files
 
@@ -105,6 +110,8 @@ Use short imperative commit messages such as `add schema activation panel`. Keep
 - Extraction must stay constrained to active schema labels/relationship types
 - Query execution is read-only and validated before run
 - Do not use the Java `var` keyword; declare the concrete variable type explicitly.
+- Runtime setting overrides must stay allowlisted, validated, and typed; do not add ad hoc stringly-typed setting reads in feature services.
+- Knowledge-base AI profile changes must reject embedding model/dimension incompatibility once chunks exist and must leave the previous active profile unchanged on failure.
 
 ## graphify
 

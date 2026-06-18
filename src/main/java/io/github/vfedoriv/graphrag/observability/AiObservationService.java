@@ -2,7 +2,12 @@ package io.github.vfedoriv.graphrag.observability;
 
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.service.AiProfileService;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -19,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -55,23 +61,29 @@ public class AiObservationService {
     private final MeterRegistry meterRegistry;
     private final AppProperties appProperties;
     private final Environment environment;
+    private final RuntimeSettingsService runtimeSettingsService;
+    private final ObjectProvider<AiProfileService> aiProfileServiceProvider;
 
     public AiObservationService(
         AiObservabilityProperties properties,
         ObservationRegistry observationRegistry,
         MeterRegistry meterRegistry,
         AppProperties appProperties,
-        Environment environment
+        Environment environment,
+        RuntimeSettingsService runtimeSettingsService,
+        ObjectProvider<AiProfileService> aiProfileServiceProvider
     ) {
         this.properties = properties;
         this.observationRegistry = observationRegistry;
         this.meterRegistry = meterRegistry;
         this.appProperties = appProperties;
         this.environment = environment;
+        this.runtimeSettingsService = runtimeSettingsService;
+        this.aiProfileServiceProvider = aiProfileServiceProvider;
     }
 
     public AiObservationScope startWorkflow(AiWorkflowContext context) {
-        if (!properties.enabled()) {
+        if (!settings().enabled()) {
             return AiObservationScope.noop();
         }
         Observation observation = startObservation("graphrag.ai.workflow", context.workflow(), context.schemaName());
@@ -83,7 +95,7 @@ public class AiObservationService {
         AiModelCallContext context = new AiModelCallContext(
             OPERATION_CHAT,
             workflow,
-            providerProfile("spring.ai.model.chat"),
+            providerProfile(true),
             modelName(true),
             schemaName,
             highCardinalityAttributes
@@ -95,7 +107,7 @@ public class AiObservationService {
         AiModelCallContext context = new AiModelCallContext(
             OPERATION_EMBEDDING,
             workflow,
-            providerProfile("spring.ai.model.embedding"),
+            providerProfile(false),
             modelName(false),
             null,
             highCardinalityAttributes
@@ -107,7 +119,7 @@ public class AiObservationService {
         if (value == null) {
             return Map.of(prefix + ".length", "0");
         }
-        if (properties.contentCaptureEnabled()) {
+        if (settings().contentCaptureEnabled()) {
             return Map.of(
                 prefix + ".length", String.valueOf(LogSanitizer.length(value)),
                 prefix + ".sha256", sha256(value),
@@ -143,7 +155,7 @@ public class AiObservationService {
     }
 
     public boolean enabled() {
-        return properties.enabled();
+        return settings().enabled();
     }
 
     void recordModelCall(
@@ -153,7 +165,7 @@ public class AiObservationService {
         long elapsedNanos,
         AiTokenUsage tokenUsage
     ) {
-        if (!properties.enabled()) {
+        if (!settings().enabled()) {
             return;
         }
         Iterable<Tag> baseTags = modelTags(context, status, null);
@@ -199,7 +211,7 @@ public class AiObservationService {
     }
 
     private AiModelCallObservation startModelCall(AiModelCallContext context) {
-        if (!properties.enabled()) {
+        if (!settings().enabled()) {
             return AiModelCallObservation.noop(this, context);
         }
         Observation parentObservation = observationRegistry.getCurrentObservation();
@@ -226,12 +238,13 @@ public class AiObservationService {
     }
 
     private Observation startObservation(String name, String workflow, String schemaName) {
-        Observation observation = properties.enabled()
+        RuntimeSettingsService.AiObservationSettings settings = settings();
+        Observation observation = settings.enabled()
             ? Observation.start(name, observationRegistry)
             : Observation.NOOP;
         observation.lowCardinalityKeyValue(AiObservationAttributes.WORKFLOW, stable(workflow));
-        observation.lowCardinalityKeyValue(AiObservationAttributes.CONTENT_CAPTURE, String.valueOf(properties.contentCaptureEnabled()));
-        if (properties.schemaNameTagEnabled() && schemaName != null && !schemaName.isBlank()) {
+        observation.lowCardinalityKeyValue(AiObservationAttributes.CONTENT_CAPTURE, String.valueOf(settings.contentCaptureEnabled()));
+        if (settings.schemaNameTagEnabled() && schemaName != null && !schemaName.isBlank()) {
             observation.lowCardinalityKeyValue(AiObservationAttributes.SCHEMA_NAME, truncate(schemaName));
         }
         return observation;
@@ -320,8 +333,9 @@ public class AiObservationService {
         tags.add(Tag.of(AiObservationAttributes.PROVIDER_PROFILE, stable(context.providerProfile())));
         tags.add(Tag.of(AiObservationAttributes.MODEL_NAME, stable(context.modelName())));
         tags.add(Tag.of(AiObservationAttributes.STATUS, stable(status)));
-        tags.add(Tag.of(AiObservationAttributes.CONTENT_CAPTURE, String.valueOf(properties.contentCaptureEnabled())));
-        if (properties.schemaNameTagEnabled() && context.schemaName() != null && !context.schemaName().isBlank()) {
+        RuntimeSettingsService.AiObservationSettings settings = settings();
+        tags.add(Tag.of(AiObservationAttributes.CONTENT_CAPTURE, String.valueOf(settings.contentCaptureEnabled())));
+        if (settings.schemaNameTagEnabled() && context.schemaName() != null && !context.schemaName().isBlank()) {
             tags.add(Tag.of(AiObservationAttributes.SCHEMA_NAME, truncate(context.schemaName())));
         }
         if (failureCategory != null && !failureCategory.isBlank()) {
@@ -351,18 +365,40 @@ public class AiObservationService {
             .increment(value.doubleValue());
     }
 
-    private String providerProfile(String propertyName) {
+    private String providerProfile(boolean chat) {
+        AiProfileNode profile = activeProfile();
+        if (profile != null) {
+            return profile.getId();
+        }
         if (environment == null) {
             return AiObservationAttributes.UNKNOWN;
         }
+        String propertyName = chat ? "spring.ai.model.chat" : "spring.ai.model.embedding";
         return stable(environment.getProperty(propertyName, AiObservationAttributes.UNKNOWN));
     }
 
     private String modelName(boolean chat) {
-        if (!properties.modelNameTagEnabled() || appProperties == null) {
+        if (!settings().modelNameTagEnabled() || appProperties == null) {
             return AiObservationAttributes.UNKNOWN;
         }
+        AiProfileNode profile = activeProfile();
+        if (profile != null) {
+            return chat ? profile.getChatModel() : profile.getEmbeddingModel();
+        }
         return chat ? appProperties.model().chatModel() : appProperties.model().embeddingModel();
+    }
+
+    private AiProfileNode activeProfile() {
+        String profileId = AiProfileContext.activeProfileId();
+        AiProfileService aiProfileService = aiProfileServiceProvider.getIfAvailable();
+        if (profileId == null || aiProfileService == null) {
+            return null;
+        }
+        try {
+            return aiProfileService.getNode(profileId);
+        } catch (RuntimeException ex) {
+            return null;
+        }
     }
 
     private String stable(String value) {
@@ -376,7 +412,7 @@ public class AiObservationService {
         if (value == null) {
             return "";
         }
-        int maxLength = properties.maxAttributeLength();
+        int maxLength = settings().maxAttributeLength();
         if (value.length() <= maxLength) {
             return value;
         }
@@ -394,7 +430,7 @@ public class AiObservationService {
         if (value == null) {
             return "";
         }
-        int maxLength = properties.maxInputOutputLength();
+        int maxLength = settings().maxInputOutputLength();
         if (value.length() <= maxLength) {
             return value;
         }
@@ -404,7 +440,7 @@ public class AiObservationService {
     private String langfuseIoValue(String value) {
         int length = LogSanitizer.length(value);
         String hash = value == null ? AiObservationAttributes.UNKNOWN : sha256(value);
-        if (properties.inputOutputContentEnabled()) {
+        if (settings().inputOutputContentEnabled()) {
             return truncateInputOutput(value);
         }
         String preview = LogSanitizer.preview(value);
@@ -418,5 +454,20 @@ public class AiObservationService {
         } catch (NoSuchAlgorithmException ex) {
             return AiObservationAttributes.UNKNOWN;
         }
+    }
+
+    private RuntimeSettingsService.AiObservationSettings settings() {
+        if (runtimeSettingsService == null) {
+            return new RuntimeSettingsService.AiObservationSettings(
+                properties.enabled(),
+                properties.contentCaptureEnabled(),
+                properties.maxAttributeLength(),
+                properties.inputOutputContentEnabled(),
+                properties.maxInputOutputLength(),
+                properties.modelNameTagEnabled(),
+                properties.schemaNameTagEnabled()
+            );
+        }
+        return runtimeSettingsService.aiObservation();
     }
 }

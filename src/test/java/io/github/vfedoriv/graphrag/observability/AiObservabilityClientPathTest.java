@@ -5,13 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.embedding.SpringAiEmbeddingClient;
 import io.github.vfedoriv.graphrag.graph.SpringAiGraphExtractionClient;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
 import io.github.vfedoriv.graphrag.query.SpringAiCypherGenerationClient;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.service.AiProfileService;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
+import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.service.LangChain4jSchemaGenerationService;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -43,7 +48,8 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
             provider(chatModel("{\"nodes\":[],\"relationships\":[]}")),
-            service
+            service,
+            new EmptyObjectProvider<>()
         );
 
         try (AiObservationScope ignored = service.startWorkflow(new AiWorkflowContext(
@@ -64,7 +70,8 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
             provider(chatModel("not valid json")),
-            service
+            service,
+            new EmptyObjectProvider<>()
         );
 
         assertThatThrownBy(() -> {
@@ -88,7 +95,8 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         SpringAiCypherGenerationClient client = new SpringAiCypherGenerationClient(
             provider(chatModel("{\"cypher\":\"MATCH (n) RETURN n LIMIT 1\",\"explanation\":\"ok\",\"parameters\":{}}")),
-            service
+            service,
+            new EmptyObjectProvider<>()
         );
 
         try (AiObservationScope ignored = service.startWorkflow(new AiWorkflowContext(
@@ -109,7 +117,8 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         SpringAiCypherGenerationClient client = new SpringAiCypherGenerationClient(
             provider(chatModel("```cypher\nMATCH (n) RETURN n\n```")),
-            service
+            service,
+            new EmptyObjectProvider<>()
         );
 
         assertThatThrownBy(() -> {
@@ -133,7 +142,8 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         SpringAiEmbeddingClient client = new SpringAiEmbeddingClient(
             provider(embeddingModel()),
-            service
+            service,
+            new EmptyObjectProvider<>()
         );
 
         try (AiObservationScope ignored = service.startWorkflow(new AiWorkflowContext(
@@ -156,7 +166,9 @@ class AiObservabilityClientPathTest {
         AiObservationService service = service(handler);
         LangChain4jSchemaGenerationService schemaGenerationService = new LangChain4jSchemaGenerationService(
             provider(chatModel("[]")),
-            service
+            service,
+            new EmptyObjectProvider<>(),
+            knowledgeBaseService()
         );
 
         schemaGenerationService.generateExample("Acme supplies contract C-1", "focus on parties");
@@ -216,13 +228,25 @@ class AiObservabilityClientPathTest {
         MockEnvironment environment = new MockEnvironment()
             .withProperty("spring.ai.model.chat", "openai")
             .withProperty("spring.ai.model.embedding", "openai");
+        AiObservabilityProperties properties = new AiObservabilityProperties(true, false, 128, true, 512, true, true);
+        AppProperties appProperties = appProperties();
         return new AiObservationService(
-            new AiObservabilityProperties(true, false, 128, true, 512, true, true),
+            properties,
             observationRegistry,
             new SimpleMeterRegistry(),
-            appProperties(),
-            environment
+            appProperties,
+            environment,
+            TestRuntimeSettings.from(appProperties, properties),
+            new EmptyObjectProvider<>()
         );
+    }
+
+    private KnowledgeBaseService knowledgeBaseService() {
+        KnowledgeBaseService service = org.mockito.Mockito.mock(KnowledgeBaseService.class);
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
+        org.mockito.Mockito.when(service.activeAiProfile(org.mockito.ArgumentMatchers.anyString())).thenReturn(profile);
+        return service;
     }
 
     private AppProperties appProperties() {

@@ -4,6 +4,9 @@ import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
+import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
+import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,19 +23,22 @@ import org.springframework.stereotype.Component;
 public class SpringAiEmbeddingClient implements EmbeddingClient {
     private final ObjectProvider<EmbeddingModel> embeddingModelProvider;
     private final AiObservationService aiObservationService;
+    private final ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
 
     public SpringAiEmbeddingClient(
         ObjectProvider<EmbeddingModel> embeddingModelProvider,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider
     ) {
         this.embeddingModelProvider = embeddingModelProvider;
         this.aiObservationService = aiObservationService;
+        this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
     }
 
     @Override
     public List<List<Double>> embed(List<String> texts) {
         long startNanos = System.nanoTime();
-        EmbeddingModel embeddingModel = embeddingModelProvider.getIfAvailable();
+        EmbeddingModel embeddingModel = resolveEmbeddingModel();
         if (embeddingModel == null) {
             log.error("Embedding model bean is missing: chunks={}", texts == null ? 0 : texts.size());
             throw new IllegalStateException("EmbeddingModel bean is not available in application context");
@@ -75,5 +81,14 @@ public class SpringAiEmbeddingClient implements EmbeddingClient {
                 throw ex;
             }
         }
+    }
+
+    private EmbeddingModel resolveEmbeddingModel() {
+        String profileId = AiProfileContext.activeProfileId();
+        AiRuntimeModelFactory factory = runtimeModelFactoryProvider.getIfAvailable();
+        if (profileId != null && factory != null) {
+            return factory.embeddingModel(profileId);
+        }
+        return embeddingModelProvider.getIfAvailable();
     }
 }

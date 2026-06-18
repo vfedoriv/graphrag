@@ -11,6 +11,7 @@ public class KnowledgeBaseNode {
     private String id;
     private String name;
     private String activeSchemaId;
+    private String activeAiProfileId;
     private Instant createdAt;
 
     public String getId() {
@@ -35,6 +36,14 @@ public class KnowledgeBaseNode {
 
     public void setActiveSchemaId(String activeSchemaId) {
         this.activeSchemaId = activeSchemaId;
+    }
+
+    public String getActiveAiProfileId() {
+        return activeAiProfileId;
+    }
+
+    public void setActiveAiProfileId(String activeAiProfileId) {
+        this.activeAiProfileId = activeAiProfileId;
     }
 
     public Instant getCreatedAt() {

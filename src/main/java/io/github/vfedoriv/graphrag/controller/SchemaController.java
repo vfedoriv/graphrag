@@ -189,6 +189,43 @@ public class SchemaController {
         return new GenerateSchemaResponse(result.content(), result.warnings());
     }
 
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/schemas/generate")
+    @Operation(summary = "Generate schema JSON for knowledge base", description = "Generates graph schema JSON using the knowledge base active AI profile.")
+    public GenerateSchemaResponse generateSchemaForKnowledgeBase(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody GenerateSchemaRequest request
+    ) {
+        SchemaGenerationResult result = schemaGenerationService.generate(
+            knowledgeBaseId,
+            request.name(),
+            request.version(),
+            request.description(),
+            request.text(),
+            request.example()
+        );
+        return new GenerateSchemaResponse(result.content(), result.warnings());
+    }
+
+    @PostMapping(path = "/knowledge-bases/{knowledgeBaseId}/schemas/generate/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Generate schema JSON from file for knowledge base", description = "Parses a file and generates graph schema JSON using the knowledge base active AI profile.")
+    public GenerateSchemaResponse generateSchemaFromFileForKnowledgeBase(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Schema generation request metadata JSON part")
+        @Valid @RequestPart("request") GenerateSchemaFromFileRequest request,
+        @Parameter(description = "Source file used for schema generation") @RequestPart("file") MultipartFile file
+    ) {
+        String text = parseUploadedText(file);
+        SchemaGenerationResult result = schemaGenerationService.generate(
+            knowledgeBaseId,
+            request.name(),
+            request.version(),
+            request.description(),
+            text,
+            normalizeExample(request.example())
+        );
+        return new GenerateSchemaResponse(result.content(), result.warnings());
+    }
+
     private String normalizeExample(Object exampleValue) {
         if (exampleValue instanceof String stringValue) {
             return stringValue;
@@ -246,6 +283,29 @@ public class SchemaController {
         log.info("Generate schema example from file parsed text: fileName='{}', textLength={}", file.getOriginalFilename(), text.length());
         String example = schemaGenerationService.generateExample(text, userPrompt);
         log.info("Generate schema example from file completed: fileName='{}', exampleLength={}", file.getOriginalFilename(), example.length());
+        return new GenerateSchemaExampleResponse(example);
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/schemas/generate/example")
+    @Operation(summary = "Generate schema example for knowledge base", description = "Generates a schema example using the knowledge base active AI profile.")
+    public GenerateSchemaExampleResponse generateSchemaExampleForKnowledgeBase(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody GenerateSchemaExampleRequest request
+    ) {
+        String example = schemaGenerationService.generateExample(knowledgeBaseId, request.text(), request.userPrompt());
+        return new GenerateSchemaExampleResponse(example);
+    }
+
+    @PostMapping(path = "/knowledge-bases/{knowledgeBaseId}/schemas/generate/example/from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Generate schema example from file for knowledge base", description = "Parses a file and generates a schema example using the knowledge base active AI profile.")
+    public GenerateSchemaExampleResponse generateSchemaExampleFromFileForKnowledgeBase(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Parameter(description = "Optional guidance for domain/entities/relationships/properties")
+        @RequestParam(required = false) String userPrompt,
+        @Parameter(description = "Source file used for example generation") @RequestPart("file") MultipartFile file
+    ) {
+        String text = parseUploadedText(file);
+        String example = schemaGenerationService.generateExample(knowledgeBaseId, text, userPrompt);
         return new GenerateSchemaExampleResponse(example);
     }
 

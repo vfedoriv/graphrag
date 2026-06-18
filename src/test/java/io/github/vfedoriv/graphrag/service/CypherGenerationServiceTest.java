@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
+import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
@@ -81,16 +83,19 @@ class CypherGenerationServiceTest {
             }
             """);
         when(activeSchemaResolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schemaDefinition, schema));
+        KnowledgeBaseService knowledgeBaseService = org.mockito.Mockito.mock(KnowledgeBaseService.class);
+        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile());
         when(validationService.validate(Mockito.any(io.github.vfedoriv.graphrag.schema.SchemaDocument.class), Mockito.anyString(), Mockito.anyMap())).thenReturn(
             new QueryValidationResult(true, "MATCH (n:Contract) RETURN n LIMIT $__limit", Map.of("__limit", 200), List.of())
         );
 
         CypherGenerationService service = new CypherGenerationService(
-            props(),
+            TestRuntimeSettings.from(props()),
             activeSchemaResolver,
             provider,
             validationService,
-            TestAiObservationService.noop()
+            TestAiObservationService.noop(),
+            knowledgeBaseService
         );
 
         GeneratedQueryResponse response = service.generate("kb-1", "list contracts");
@@ -112,5 +117,11 @@ class CypherGenerationServiceTest {
             new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
             new AppProperties.Extraction(40, 80, 2)
         );
+    }
+
+    private AiProfileNode profile() {
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
+        return profile;
     }
 }

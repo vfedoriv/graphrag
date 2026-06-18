@@ -60,6 +60,11 @@ Out of scope (current implementation):
   - embedding-based chunk retrieval with bounded graph context,
   - execution endpoint,
   - combined `/ask` endpoint.
+- Runtime AI configuration:
+  - Neo4j-persisted runtime setting overrides for allowlisted query, hybrid search, chunking, extraction, and AI observability settings,
+  - Neo4j-persisted OpenAI-compatible AI profiles with write-only API keys,
+  - default AI profile seeding from `app.model.*`,
+  - per-knowledge-base active AI profile selection with embedding compatibility checks.
 - Error handling via RFC 7807-style `ProblemDetail`.
 - Unit + integration tests (including Testcontainers for Neo4j).
 
@@ -94,6 +99,8 @@ Primary runtime services:
 - `CypherGenerationService`: prompt-to-Cypher using active schema.
 - `CypherValidationService`: blocked keyword checks, schema checks, `EXPLAIN`, limit enforcement.
 - `CypherExecutionService`: executes only validated Cypher.
+- `RuntimeSettingsService`: allowlisted live runtime setting overrides and typed accessors.
+- `AiProfileService`: OpenAI-compatible profile CRUD, default profile seeding, API-key masking, and cache invalidation.
 
 ## Process Flows
 
@@ -166,11 +173,13 @@ flowchart TD
 
 Infrastructure nodes:
 
-- `(:KnowledgeBase {id, name, activeSchemaId, createdAt})`
+- `(:KnowledgeBase {id, name, activeSchemaId, activeAiProfileId, createdAt})`
 - `(:SchemaDefinition {id, name, version, sourceType, format, content, contentHash, status, createdAt})`
 - `(:DocumentUpload {id, knowledgeBaseId, originalFilename, contentType, sizeBytes, sha256, contentUri, status, uploadedAt, processedAt, errorMessage})`
-- `(:DocumentChunk {id, documentId, chunkIndex, text, tokenEstimate, embedding, metadata})`
+- `(:DocumentChunk {id, documentId, chunkIndex, text, tokenEstimate, embedding, embeddingModel, embeddingDimensions, metadata})`
 - `(:ExtractionRun {id, documentId, schemaId, model, status, startedAt, completedAt, errorMessage})`
+- `(:AiProfile {id, name, baseUrl, apiKey, chatModel, embeddingModel, embeddingDimensions, timeoutSeconds, maxRetries, defaultProfile, revision, createdAt, updatedAt})`
+- `(:RuntimeSettingOverride {key, rawValue, updatedAt})`
 
 Infrastructure relationships:
 
@@ -214,6 +223,14 @@ Domain-specific nodes/relationships are dynamic and schema-driven. Extracted gra
   - `app.model.embedding-dimensions=768`
   - `app.model.chat-model=qwen/qwen3.6-35b-a3b`
   - `LM_STUDIO_API_KEY` (default: `lm-studio`)
+
+## Runtime Settings And AI Profiles
+
+On startup, the application seeds a default AI profile from `app.model.*` when no default exists. New knowledge bases are assigned that default profile. Profile API keys are write-only: create/update requests may supply or clear the secret, but read responses expose only configured/masked metadata.
+
+Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, and knowledge-base-scoped schema generation resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
+
+Persisted runtime settings override selected startup properties without restarting. The allowlist covers query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, and AI observability privacy/tag settings. Unknown keys, invalid types, sensitive values in read responses, and incompatible profile assignments are rejected.
 
 ## OpenAPI / Swagger
 

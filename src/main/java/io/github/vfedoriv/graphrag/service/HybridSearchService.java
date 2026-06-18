@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphContext;
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphEntity;
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphRelationship;
@@ -8,6 +7,8 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchHit;
 import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.util.ArrayList;
@@ -23,18 +24,24 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class HybridSearchService {
 
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
     private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
     private final Neo4jClient neo4jClient;
+    private final KnowledgeBaseService knowledgeBaseService;
+    private final io.github.vfedoriv.graphrag.repository.DocumentChunkRepository documentChunkRepository;
 
     public HybridSearchService(
-        AppProperties appProperties,
+        RuntimeSettingsService runtimeSettingsService,
         ObjectProvider<EmbeddingClient> embeddingClientProvider,
-        Neo4jClient neo4jClient
+        Neo4jClient neo4jClient,
+        KnowledgeBaseService knowledgeBaseService,
+        io.github.vfedoriv.graphrag.repository.DocumentChunkRepository documentChunkRepository
     ) {
-        this.appProperties = appProperties;
+        this.runtimeSettingsService = runtimeSettingsService;
         this.embeddingClientProvider = embeddingClientProvider;
         this.neo4jClient = neo4jClient;
+        this.knowledgeBaseService = knowledgeBaseService;
+        this.documentChunkRepository = documentChunkRepository;
     }
 
     public HybridSearchResponse search(String knowledgeBaseId, HybridSearchRequest request) {
@@ -42,7 +49,7 @@ public class HybridSearchService {
         int topK = boundedTopK(request.topK());
         int graphDepth = boundedGraphDepth(request.graphDepth());
         boolean includeChunkText = request.includeChunkText() == null
-            ? appProperties.query().hybridSearchIncludeChunkText()
+            ? runtimeSettingsService.query().hybridSearchIncludeChunkText()
             : request.includeChunkText();
         int candidateCount = candidateCount(topK);
         log.info(
@@ -55,11 +62,13 @@ public class HybridSearchService {
             includeChunkText
         );
 
+        AiProfileNode activeProfile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        validateEmbeddingCompatibility(knowledgeBaseId, activeProfile);
         EmbeddingClient embeddingClient = resolveEmbeddingClient();
         if (embeddingClient == null) {
             throw new IllegalStateException("Embedding model is not configured for hybrid search");
         }
-        List<List<Double>> vectors = embeddingClient.embed(List.of(request.query()));
+        List<List<Double>> vectors = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(List.of(request.query())));
         if (vectors.size() != 1) {
             throw new IllegalStateException("Embedding response size mismatch for hybrid search query");
         }
@@ -95,24 +104,27 @@ public class HybridSearchService {
     }
 
     private int boundedTopK(Integer requestedTopK) {
-        int topK = requestedTopK == null ? appProperties.query().hybridSearchDefaultTopK() : requestedTopK;
-        if (topK > appProperties.query().hybridSearchMaxTopK()) {
-            throw new IllegalArgumentException("topK must be less than or equal to " + appProperties.query().hybridSearchMaxTopK());
+        RuntimeSettingsService.QuerySettings settings = runtimeSettingsService.query();
+        int topK = requestedTopK == null ? settings.hybridSearchDefaultTopK() : requestedTopK;
+        if (topK > settings.hybridSearchMaxTopK()) {
+            throw new IllegalArgumentException("topK must be less than or equal to " + settings.hybridSearchMaxTopK());
         }
         return topK;
     }
 
     private int boundedGraphDepth(Integer requestedGraphDepth) {
-        int graphDepth = requestedGraphDepth == null ? appProperties.query().hybridSearchDefaultGraphDepth() : requestedGraphDepth;
-        if (graphDepth > appProperties.query().hybridSearchMaxGraphDepth()) {
-            throw new IllegalArgumentException("graphDepth must be less than or equal to " + appProperties.query().hybridSearchMaxGraphDepth());
+        RuntimeSettingsService.QuerySettings settings = runtimeSettingsService.query();
+        int graphDepth = requestedGraphDepth == null ? settings.hybridSearchDefaultGraphDepth() : requestedGraphDepth;
+        if (graphDepth > settings.hybridSearchMaxGraphDepth()) {
+            throw new IllegalArgumentException("graphDepth must be less than or equal to " + settings.hybridSearchMaxGraphDepth());
         }
         return graphDepth;
     }
 
     private int candidateCount(int topK) {
-        long multiplied = (long) topK * appProperties.query().hybridSearchCandidateMultiplier();
-        return (int) Math.min(multiplied, appProperties.query().hybridSearchMaxCandidates());
+        RuntimeSettingsService.QuerySettings settings = runtimeSettingsService.query();
+        long multiplied = (long) topK * settings.hybridSearchCandidateMultiplier();
+        return (int) Math.min(multiplied, settings.hybridSearchMaxCandidates());
     }
 
     private HybridSearchHit toHit(Map<String, Object> row, boolean includeChunkText) {
@@ -235,6 +247,24 @@ public class HybridSearchService {
             .filter(client -> !client.getClass().getName().contains("SpringAi"))
             .findFirst()
             .orElse(clients.getFirst());
+    }
+
+    private void validateEmbeddingCompatibility(String knowledgeBaseId, AiProfileNode profile) {
+        List<DocumentChunkNode> chunks = documentChunkRepository.findFirstEmbeddedChunkByKnowledgeBaseId(knowledgeBaseId);
+        if (chunks.isEmpty()) {
+            return;
+        }
+        DocumentChunkNode chunk = chunks.getFirst();
+        int storedDimensions = chunk.getEmbeddingDimensions() > 0
+            ? chunk.getEmbeddingDimensions()
+            : chunk.getEmbedding() == null ? 0 : chunk.getEmbedding().size();
+        String storedModel = chunk.getEmbeddingModel();
+        if (storedDimensions > 0 && storedDimensions != profile.getEmbeddingDimensions()) {
+            throw new IllegalStateException("Active AI profile embedding dimensions are incompatible with stored embeddings");
+        }
+        if (storedModel != null && !storedModel.isBlank() && !storedModel.equals(profile.getEmbeddingModel())) {
+            throw new IllegalStateException("Active AI profile embedding model is incompatible with stored embeddings");
+        }
     }
 
     private String hybridSearchCypher() {

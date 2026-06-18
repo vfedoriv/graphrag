@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
@@ -23,16 +22,16 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherExecutionService {
 
-    private final AppProperties appProperties;
+    private final RuntimeSettingsService runtimeSettingsService;
     private final CypherValidationService cypherValidationService;
     private final Neo4jClient neo4jClient;
 
     public CypherExecutionService(
-        AppProperties appProperties,
+        RuntimeSettingsService runtimeSettingsService,
         CypherValidationService cypherValidationService,
         Neo4jClient neo4jClient
     ) {
-        this.appProperties = appProperties;
+        this.runtimeSettingsService = runtimeSettingsService;
         this.cypherValidationService = cypherValidationService;
         this.neo4jClient = neo4jClient;
     }
@@ -93,8 +92,8 @@ public class CypherExecutionService {
             validation.cypher(),
             validation.parameters(),
             validation.errors(),
-            appProperties.query().maxRows(),
-            appProperties.query().timeoutSeconds()
+            runtimeSettingsService.query().maxRows(),
+            runtimeSettingsService.query().timeoutSeconds()
         );
     }
 
