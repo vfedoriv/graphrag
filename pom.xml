@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>io.github.vfedoriv</groupId>
@@ -28,9 +28,10 @@
     </scm>
     <properties>
         <java.version>25</java.version>
-        <spring-ai.version>2.0.0-M5</spring-ai.version>
-        <langchain4j.version>1.14.0</langchain4j.version>
-        <langchain4j-beta.version>1.14.0-beta24</langchain4j-beta.version>
+        <spring-ai.version>2.0.0</spring-ai.version>
+        <langchain4j.version>1.16.2</langchain4j.version>
+        <langchain4j-beta.version>1.16.2-beta26</langchain4j-beta.version>
+        <langchain4j-community-beta.version>1.16.0-beta26</langchain4j-community-beta.version>
 
     </properties>
     <dependencies>
@@ -61,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-advisors-vector-store</artifactId>
+            <artifactId>spring-ai-vector-store-advisor</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
@@ -93,13 +94,13 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-neo4j</artifactId>
-            <version>${langchain4j-beta.version}</version>
+            <version>${langchain4j-community-beta.version}</version>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-neo4j-retriever</artifactId>
-            <version>${langchain4j-beta.version}</version>
+            <version>${langchain4j-community-beta.version}</version>
         </dependency>
 
         <dependency>
@@ -110,7 +111,7 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-llm-graph-transformer</artifactId>
-            <version>${langchain4j-beta.version}</version>
+            <version>${langchain4j-community-beta.version}</version>
         </dependency>
 
         <dependency>
