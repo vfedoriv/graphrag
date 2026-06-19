@@ -10,6 +10,7 @@ public class RuntimeSettingOverrideNode {
     @Id
     private String key;
     private String value;
+    private String lifecycleState;
     private Instant updatedAt;
 
     public String getKey() {
@@ -26,6 +27,14 @@ public class RuntimeSettingOverrideNode {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getLifecycleState() {
+        return lifecycleState;
+    }
+
+    public void setLifecycleState(String lifecycleState) {
+        this.lifecycleState = lifecycleState;
     }
 
     public Instant getUpdatedAt() {

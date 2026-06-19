@@ -99,7 +99,7 @@ Primary runtime services:
 - `CypherGenerationService`: prompt-to-Cypher using active schema.
 - `CypherValidationService`: blocked keyword checks, schema checks, `EXPLAIN`, limit enforcement.
 - `CypherExecutionService`: executes only validated Cypher.
-- `RuntimeSettingsService`: allowlisted live runtime setting overrides and typed accessors.
+- `RuntimeSettingsService`: allowlisted runtime setting overrides, restart lifecycle metadata, live logging control, and typed live accessors.
 - `AiProfileService`: OpenAI-compatible profile CRUD, default profile seeding, API-key masking, and cache invalidation.
 
 ## Process Flows
@@ -179,7 +179,7 @@ Infrastructure nodes:
 - `(:DocumentChunk {id, documentId, chunkIndex, text, tokenEstimate, embedding, embeddingModel, embeddingDimensions, metadata})`
 - `(:ExtractionRun {id, documentId, schemaId, model, status, startedAt, completedAt, errorMessage})`
 - `(:AiProfile {id, name, baseUrl, apiKey, chatModel, embeddingModel, embeddingDimensions, timeoutSeconds, maxRetries, defaultProfile, revision, createdAt, updatedAt})`
-- `(:RuntimeSettingOverride {key, rawValue, updatedAt})`
+- `(:RuntimeSettingOverride {key, value, lifecycleState, updatedAt})`
 
 Infrastructure relationships:
 
@@ -230,9 +230,11 @@ On startup, the application seeds a default AI profile from `app.model.*` when n
 
 Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, and knowledge-base-scoped schema generation resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
 
-Persisted runtime settings override selected startup properties without restarting. The live allowlist covers query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, and AI observability privacy/tag settings. The runtime settings list also exposes read-only inventory entries for startup-bound application identity, logging, Spring AI bootstrap switches, Spring auto-configuration controls, Neo4j connectivity/database settings, document storage, multipart limits, actuator/health settings, tracing, OpenTelemetry exporter settings, and Spring AI OpenAI aliases. Each entry reports `updateMode`, `mutable`, `liveApplied`, `sensitive`, constraints, source, and a reason when it is read-only, restart-required, profile-managed, or sensitive.
+Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
 
-Profile-specific property files are resolved before the catalog is built, so listed defaults reflect the active Spring profiles. Startup-bound and read-only settings cannot be updated or cleared through `/api/v1/runtime-settings`; changing them requires normal configuration and restart unless a dedicated runtime reconfiguration path exists. AI provider defaults under `app.model.*` and derived `spring.ai.openai.*` entries are visible as profile-managed context, but knowledge-base provider behavior must be changed through the AI profile API. API keys, Neo4j passwords, and OTLP authorization headers are masked in runtime settings responses and never expose raw secret values.
+The runtime settings list exposes `currentValue`, `defaultValue`, `activeValue`, `source`, and `lifecycleState`. Restart-required overrides report `pending-restart` while the saved desired value differs from the startup-active value and `active` after restart when the running default matches the persisted override. Profile-specific property files are resolved before the catalog is built, so listed defaults reflect active Spring profiles.
+
+Startup-bound settings consumed before Neo4j-backed overrides can load remain deployment-managed unless the implementation provides a safe runtime reassignment path. Neo4j URI, authentication, credentials, and database selection are not editable through `/api/v1/runtime-settings`; change them through environment variables, Docker Compose, Kubernetes, or equivalent deployment configuration. AI provider defaults under `app.model.*` and derived `spring.ai.openai.*` entries are visible as profile-managed context, but knowledge-base provider behavior must be changed through the AI profile API. API keys, Neo4j passwords, and OTLP authorization headers are masked in runtime settings responses and never expose raw secret values.
 
 ## OpenAPI / Swagger
 
@@ -288,8 +290,9 @@ Key app properties:
 
 Runtime settings catalog categories:
 
-- Live mutable: `app.query.*`, `app.chunking.*`, `app.extraction.*`, and `app.ai.observability.*`.
-- Read-only or restart-required visibility: `spring.application.name`, `logging.level.root`, Spring AI bootstrap switches, Spring auto-configuration exclusions, Neo4j URI/username/database, document storage root, multipart limits, actuator/health settings, tracing switches, OTLP endpoint and non-secret exporter headers.
+- Live mutable: `app.query.*`, `app.chunking.*`, `app.extraction.*`, `app.ai.observability.*`, and `logging.level.root`.
+- Restart-required mutable: supported non-secret entries such as `app.storage.documents-root`, reported with pending or active lifecycle metadata.
+- Read-only or restart-required visibility: `spring.application.name`, Spring AI bootstrap switches, Spring auto-configuration exclusions, Neo4j URI/username/database, multipart limits, actuator/health settings, tracing switches, OTLP endpoint and non-secret exporter headers.
 - Profile-managed visibility: `app.model.base-url`, model names/dimensions, and derived Spring AI OpenAI base URL/model aliases. Use AI profile management for operational provider changes.
 - Sensitive read-only: `app.model.api-key`, `spring.ai.openai.api-key`, `spring.neo4j.authentication.password`, and OTLP authorization headers. Responses indicate configured/masked status only.
 

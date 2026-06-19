@@ -570,9 +570,9 @@
     "semantic_hash": "0a754920b1ccba14f6d3bcb42fac751c"
   },
   "src/main/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageService.java": {
-    "mtime": 1780769080.5319808,
-    "ast_hash": "ee54b51f4dfbca47b9348b6dc348bbbf",
-    "semantic_hash": "ee54b51f4dfbca47b9348b6dc348bbbf"
+    "mtime": 1781811457.1329863,
+    "ast_hash": "73e1c29f08c607574e7da3979a9d7ba5",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/storage/package-info.java": {
     "mtime": 1778080990.8141818,
@@ -850,8 +850,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java": {
-    "mtime": 1781112193.574453,
-    "ast_hash": "7346c82e88749df855f409b553a22d54",
+    "mtime": 1781811561.4606283,
+    "ast_hash": "1802b7609ba6e70a655451093f08fef7",
     "semantic_hash": ""
   },
   "src/test/resources/fixtures/schemas/contracts-v1.json": {
@@ -1655,18 +1655,18 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1781789450.2439759,
-    "ast_hash": "2e9945281767f5c45757e25cba8ce2d3",
+    "mtime": 1781811268.8625324,
+    "ast_hash": "ebfab4c3e12efd9c867808727bec2cc0",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1781789450.388977,
-    "ast_hash": "63626a120e37e1b8b452cec919867772",
+    "mtime": 1781811269.011534,
+    "ast_hash": "634370fb1e1c263461ddbdc0ac1981ca",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1781789450.0849745,
-    "ast_hash": "af399f4f1d0c3ea0d4c19526f89ca063",
+    "mtime": 1781811239.7352245,
+    "ast_hash": "dc5b8f3be4a895d3f104e9ccfab55f63",
     "semantic_hash": ""
   },
   "compose.yaml": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/RuntimeSettingOverrideNode.java": {
-    "mtime": 1781782210.636407,
-    "ast_hash": "5e8b36c64df4f6a50727909c20fdfad3",
+    "mtime": 1781811024.5337443,
+    "ast_hash": "c12452a06c7a07add6714472f817b68d",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/AiProfileResponse.java": {
@@ -2785,8 +2785,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/RuntimeSettingResponse.java": {
-    "mtime": 1781789243.6877322,
-    "ast_hash": "1c027d0d7addb0b8796a95e35b3cf28a",
+    "mtime": 1781811024.3687437,
+    "ast_hash": "351b9deeb72381247a7b6a19d1c0f65a",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/UpdateAiProfileRequest.java": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsService.java": {
-    "mtime": 1781807557.6048987,
-    "ast_hash": "6dc3e6011d4cfd625dbb5a98ea5f0460",
+    "mtime": 1781811519.5409482,
+    "ast_hash": "3bad254f11ce5cf45bb463684722f2b0",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/TestRuntimeSettings.java": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsServiceTest.java": {
-    "mtime": 1781807607.585714,
-    "ast_hash": "ad3cf86e22cb83573663be2b2740c33e",
+    "mtime": 1781811730.2095988,
+    "ast_hash": "d4f78ab3d90882851c736073c7aa87f9",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/.openspec.yaml": {
@@ -2945,13 +2945,13 @@
     "semantic_hash": ""
   },
   "openspec/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781789768.0875075,
-    "ast_hash": "e0a78e081e542e88025e97ce00b2f38a",
+    "mtime": 1781807939.1277547,
+    "ast_hash": "7a43e0caf5c0ba34f0151aa9bc8ca66d",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/controller/RuntimeSettingsControllerTest.java": {
-    "mtime": 1781807582.4743004,
-    "ast_hash": "05d3a443eab4044919e5bc8313784e0c",
+    "mtime": 1781811182.4366863,
+    "ast_hash": "fb98aa4ab9d4c22c69d87cf9df439084",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/BulkUpdateRuntimeSettingsRequest.java": {
@@ -2962,31 +2962,6 @@
   "src/main/java/io/github/vfedoriv/graphrag/dto/RuntimeSettingUpdateRequest.java": {
     "mtime": 1781807557.127891,
     "ast_hash": "35359e7a587c9ae138b459f01b8715fe",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-bulk-runtime-settings-update/.openspec.yaml": {
-    "mtime": 1781807264.0478902,
-    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-bulk-runtime-settings-update/design.md": {
-    "mtime": 1781807332.9676886,
-    "ast_hash": "616d572ca799fabe2fe11bbf9b799029",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-bulk-runtime-settings-update/proposal.md": {
-    "mtime": 1781807305.6023593,
-    "ast_hash": "120ecd0de23bbb365fb8f75ea793e1ca",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-bulk-runtime-settings-update/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781807341.5707953,
-    "ast_hash": "92a0b0b6abe2dce72bf784ccb3bd3962",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-bulk-runtime-settings-update/tasks.md": {
-    "mtime": 1781807787.7938807,
-    "ast_hash": "f31981d04a35234c2d3c6371402e9951",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-18-expand-runtime-settings-management/.openspec.yaml": {
@@ -3017,6 +2992,61 @@
   "openspec/changes/archive/2026-06-18-expand-runtime-settings-management/tasks.md": {
     "mtime": 1781789645.7909725,
     "ast_hash": "81a6d72afbc68fb2bddd6472e5ec9924",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/.openspec.yaml": {
+    "mtime": 1781809565.0409226,
+    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/design.md": {
+    "mtime": 1781810801.1708791,
+    "ast_hash": "849d46bb9793fbbecf72462abe131ff3",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/proposal.md": {
+    "mtime": 1781810621.753965,
+    "ast_hash": "2ce21238a183ab5d72fb44c9ec95a0cb",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/specs/documentation-alignment/spec.md": {
+    "mtime": 1781810617.4608464,
+    "ast_hash": "e66b64289c31e468f74e6295b4fe3fe9",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781810808.1340687,
+    "ast_hash": "5489fc8de308a0c643136123dfe05bf0",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/tasks.md": {
+    "mtime": 1781811937.6926432,
+    "ast_hash": "0b21f7e34c9e535edb9fe58221ddf113",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/.openspec.yaml": {
+    "mtime": 1781807264.0478902,
+    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/design.md": {
+    "mtime": 1781807332.9676886,
+    "ast_hash": "616d572ca799fabe2fe11bbf9b799029",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/proposal.md": {
+    "mtime": 1781807305.6023593,
+    "ast_hash": "120ecd0de23bbb365fb8f75ea793e1ca",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781807341.5707953,
+    "ast_hash": "92a0b0b6abe2dce72bf784ccb3bd3962",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/tasks.md": {
+    "mtime": 1781807787.7938807,
+    "ast_hash": "f31981d04a35234c2d3c6371402e9951",
     "semantic_hash": ""
   }
 }

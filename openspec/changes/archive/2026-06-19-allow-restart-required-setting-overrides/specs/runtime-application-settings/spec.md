@@ -1,8 +1,5 @@
-# runtime-application-settings Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change add-runtime-settings-ai-profiles. Update Purpose after archive.
-## Requirements
 ### Requirement: Runtime settings are exposed through an allowlisted API
 The system SHALL expose application settings only through an explicit allowlist of backend-owned settings, including mutable live settings, mutable restart-required settings, and non-mutable configuration inventory entries.
 
@@ -141,20 +138,6 @@ The system SHALL expose a catalog entry for each relevant backend-owned applicat
 - **WHEN** a property value is supplied by an active Spring profile such as `openai`, `lm_studio`, or `langfuse`
 - **THEN** the runtime settings list reports the profile-resolved startup value as the default for that setting
 
-### Requirement: Sensitive runtime setting values are masked
-The system SHALL prevent secret configuration values from being returned in runtime setting read responses.
-
-#### Scenario: Client lists sensitive settings
-- **WHEN** a client requests the runtime settings list
-- **THEN** sensitive entries such as AI API keys, Neo4j passwords, and OTLP authorization headers are marked sensitive
-- **AND** their current and default values do not contain the raw configured secret
-- **AND** the response indicates whether the secret is configured when that can be reported without exposing the secret
-
-#### Scenario: Client attempts to update sensitive startup-bound setting
-- **WHEN** a client submits an update for a sensitive startup-bound setting through the runtime settings API
-- **THEN** the system rejects the update
-- **AND** no persisted runtime setting override is changed
-
 ### Requirement: Runtime settings support atomic bulk updates
 The system SHALL allow clients to update multiple allowlisted mutable runtime settings in one request and SHALL apply the submitted updates atomically.
 
@@ -184,4 +167,3 @@ The system SHALL allow clients to update multiple allowlisted mutable runtime se
 - **WHEN** a client submits a bulk update request with no setting updates
 - **THEN** the system rejects the request with a validation error
 - **AND** no persisted runtime setting override is changed
-

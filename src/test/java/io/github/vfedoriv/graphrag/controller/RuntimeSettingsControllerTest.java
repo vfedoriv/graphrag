@@ -45,9 +45,45 @@ class RuntimeSettingsControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].key").value("app.query.max-rows"))
             .andExpect(jsonPath("$[0].updateMode").value("live"))
+            .andExpect(jsonPath("$[0].activeValue").value(25))
+            .andExpect(jsonPath("$[0].lifecycleState").value("active"))
             .andExpect(jsonPath("$[1].updateMode").value("restart-required"))
             .andExpect(jsonPath("$[2].sensitive").value(true))
             .andExpect(jsonPath("$[2].currentValue.masked").value(true));
+    }
+
+    @Test
+    void updatesMutableRestartRequiredSettingWithPendingMetadata() throws Exception {
+        when(service.update("app.storage.documents-root", "var/other-documents")).thenReturn(
+            new RuntimeSettingResponse(
+                "app.storage.documents-root",
+                "storage",
+                "string",
+                "var/other-documents",
+                "var/documents",
+                "var/documents",
+                "override",
+                "pending-restart",
+                true,
+                false,
+                false,
+                Map.of("minLength", 1),
+                "restart-required",
+                "Document storage root changes are persisted for the next backend restart.",
+                "Documents root",
+                null
+            )
+        );
+
+        mockMvc.perform(put("/api/v1/runtime-settings/{key}", "app.storage.documents-root")
+                .contentType("application/json")
+                .content("{\"value\":\"var/other-documents\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.currentValue").value("var/other-documents"))
+            .andExpect(jsonPath("$.activeValue").value("var/documents"))
+            .andExpect(jsonPath("$.lifecycleState").value("pending-restart"))
+            .andExpect(jsonPath("$.updateMode").value("restart-required"))
+            .andExpect(jsonPath("$.liveApplied").value(false));
     }
 
     @Test
@@ -86,10 +122,27 @@ class RuntimeSettingsControllerTest {
     void bulkUpdatesMutableSettingsAndReturnsUpdatedSettings() throws Exception {
         when(service.update(List.of(
             new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
-            new RuntimeSettingUpdateRequest("app.query.require-limit", false)
+            new RuntimeSettingUpdateRequest("app.storage.documents-root", "var/bulk-documents")
         ))).thenReturn(List.of(
             setting("app.query.max-rows", 25, false, true, "live"),
-            setting("app.query.require-limit", false, false, true, "live")
+            new RuntimeSettingResponse(
+                "app.storage.documents-root",
+                "storage",
+                "string",
+                "var/bulk-documents",
+                "var/documents",
+                "var/documents",
+                "override",
+                "pending-restart",
+                true,
+                false,
+                false,
+                Map.of("minLength", 1),
+                "restart-required",
+                "Document storage root changes are persisted for the next backend restart.",
+                "Documents root",
+                null
+            )
         ));
 
         mockMvc.perform(put("/api/v1/runtime-settings")
@@ -98,15 +151,16 @@ class RuntimeSettingsControllerTest {
                     {
                       "updates": [
                         {"key": "app.query.max-rows", "value": 25},
-                        {"key": "app.query.require-limit", "value": false}
+                        {"key": "app.storage.documents-root", "value": "var/bulk-documents"}
                       ]
                     }
                     """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].key").value("app.query.max-rows"))
             .andExpect(jsonPath("$[0].currentValue").value(25))
-            .andExpect(jsonPath("$[1].key").value("app.query.require-limit"))
-            .andExpect(jsonPath("$[1].currentValue").value(false));
+            .andExpect(jsonPath("$[1].key").value("app.storage.documents-root"))
+            .andExpect(jsonPath("$[1].currentValue").value("var/bulk-documents"))
+            .andExpect(jsonPath("$[1].lifecycleState").value("pending-restart"));
     }
 
     @Test
@@ -155,7 +209,9 @@ class RuntimeSettingsControllerTest {
             "string",
             value,
             value,
+            value,
             "default",
+            liveApplied ? "active" : "default",
             liveApplied,
             liveApplied,
             sensitive,

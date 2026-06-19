@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.storage;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LocalFilesystemBinaryStorageService implements BinaryStorageService {
 
-    private final Path documentsRoot;
+    private final RuntimeSettingsService runtimeSettingsService;
 
-    public LocalFilesystemBinaryStorageService(AppProperties appProperties) {
-        this.documentsRoot = appProperties.storage().documentsRoot().toAbsolutePath().normalize();
+    public LocalFilesystemBinaryStorageService(RuntimeSettingsService runtimeSettingsService) {
+        this.runtimeSettingsService = runtimeSettingsService;
     }
 
     @Override
     public URI store(String knowledgeBaseId, String documentId, String originalFilename, byte[] bytes) throws IOException {
-        Path kbPath = documentsRoot.resolve(knowledgeBaseId).normalize();
+        Path kbPath = documentsRoot().resolve(knowledgeBaseId).normalize();
         Files.createDirectories(kbPath);
 
         String sanitizedFilename = sanitizeFilename(originalFilename);
@@ -65,5 +65,9 @@ public class LocalFilesystemBinaryStorageService implements BinaryStorageService
             return "document.bin";
         }
         return originalFilename.replaceAll("[^A-Za-z0-9._-]", "_");
+    }
+
+    private Path documentsRoot() {
+        return runtimeSettingsService.documentStorageRoot().toAbsolutePath().normalize();
     }
 }

@@ -64,7 +64,7 @@ Key services:
 - `CypherExecutionService`
 - `SchemaBootstrapService` (loads bootstrap schemas on startup)
 - `AiObservationService` (AI workflow spans, model call metrics, privacy-controlled content metadata)
-- `RuntimeSettingsService` (allowlisted live runtime setting overrides, expanded read-only configuration catalog + typed accessors)
+- `RuntimeSettingsService` (allowlisted runtime setting overrides, restart lifecycle metadata, live logging control + typed live accessors)
 - `AiProfileService` (OpenAI-compatible AI profile CRUD, write-only API keys, default profile seeding)
 - `AiRuntimeModelFactory` (profile/revision-scoped Spring AI OpenAI chat and embedding clients)
 
@@ -77,7 +77,7 @@ Key services:
 
 At startup the default AI profile is seeded from `app.model.*` when no default exists. New knowledge bases receive the default profile. Document processing, extraction, Cypher generation, `/ask`, hybrid search, and KB-scoped schema generation resolve the active knowledge-base AI profile at runtime. Profile API keys are write-only and must not be returned by read APIs.
 
-Runtime settings expose live mutable overrides only for query, hybrid search, chunking, extraction, and AI observability settings. The list API also exposes read-only, restart-required, profile-managed, and sensitive-read-only entries for relevant `application.properties` groups such as application identity, logging, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Profile-resolved startup properties are reported as defaults; read-only/startup-bound settings cannot be updated or cleared through runtime overrides. Use AI profile APIs for provider behavior changes instead of raw `app.model.*` or `spring.ai.openai.*` edits. API keys, Neo4j passwords, and OTLP authorization headers must remain masked in read responses.
+Runtime settings use `mutable=true` to mean editable through the settings API; `liveApplied`, `updateMode`, `activeValue`, and `lifecycleState` describe whether the saved value applies immediately or after restart. Live mutable overrides cover query, hybrid search, chunking, extraction, AI observability, and `logging.level.root` via Spring Boot logging. Supported non-secret restart-required settings such as `app.storage.documents-root` may be persisted as desired values and reported as `pending-restart` until the backend restarts with that value active. The list API also exposes read-only, restart-required, profile-managed, and sensitive-read-only entries for relevant `application.properties` groups such as application identity, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Profile-resolved startup properties are reported as defaults. Settings consumed before Neo4j-backed overrides can load remain deployment-managed unless a safe runtime reassignment path exists; Neo4j connectivity, credentials, and database selection stay deployment-managed through environment variables, Docker Compose, or equivalent configuration. Use AI profile APIs for provider behavior changes instead of raw `app.model.*` or `spring.ai.openai.*` edits. API keys, Neo4j passwords, and OTLP authorization headers must remain masked in read responses.
 
 ## Key Files
 
@@ -112,7 +112,7 @@ Use short imperative commit messages such as `add schema activation panel`. Keep
 - Extraction must stay constrained to active schema labels/relationship types
 - Query execution is read-only and validated before run
 - Do not use the Java `var` keyword; declare the concrete variable type explicitly.
-- Runtime setting overrides must stay allowlisted, validated, and typed; do not add ad hoc stringly-typed setting reads in feature services. Read-only catalog additions must declare update mode, live-apply status, sensitivity, and rejection reason.
+- Runtime setting overrides must stay allowlisted, validated, and typed; do not add ad hoc stringly-typed setting reads in feature services. Catalog additions must declare editability, update mode, live-apply status, sensitivity, lifecycle behavior, and rejection or restart reason.
 - Knowledge-base AI profile changes must reject embedding model/dimension incompatibility once chunks exist and must leave the previous active profile unchanged on failure.
 
 ## graphify

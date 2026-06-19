@@ -49,12 +49,63 @@ class RuntimeSettingsServiceTest {
         assertThat(maxRows.source()).isEqualTo("override");
         assertThat(maxRows.updateMode()).isEqualTo("live");
         assertThat(maxRows.liveApplied()).isTrue();
+        assertThat(maxRows.lifecycleState()).isEqualTo("active");
         assertThat(service.query().maxRows()).isEqualTo(25);
         assertThat(service.query().blockedKeywords()).containsExactly("CREATE", "MERGE");
         assertThat(service.chunking().maxCharacters()).isEqualTo(1200);
         assertThat(service.extraction().maxRetries()).isEqualTo(4);
         assertThat(service.aiObservation().modelNameTagEnabled()).isFalse();
         assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("25");
+    }
+
+    @Test
+    void mutableRestartRequiredOverrideIsPersistedAsPendingDesiredValue() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        RuntimeSettingResponse updated = service.update("app.storage.documents-root", "var/other-documents");
+
+        assertThat(updated.currentValue()).isEqualTo("var/other-documents");
+        assertThat(updated.defaultValue()).isEqualTo("var/documents");
+        assertThat(updated.activeValue()).isEqualTo("var/documents");
+        assertThat(updated.source()).isEqualTo("override");
+        assertThat(updated.mutable()).isTrue();
+        assertThat(updated.liveApplied()).isFalse();
+        assertThat(updated.updateMode()).isEqualTo("restart-required");
+        assertThat(updated.lifecycleState()).isEqualTo("pending-restart");
+        assertThat(store.get("app.storage.documents-root").getValue()).isEqualTo("var/other-documents");
+        assertThat(store.get("app.storage.documents-root").getLifecycleState()).isEqualTo("pending-restart");
+    }
+
+    @Test
+    void restartRequiredOverrideIsActiveWhenStartupDefaultMatchesPersistedValue() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingOverrideNode node = override("app.storage.documents-root", "var/restarted-documents");
+        node.setLifecycleState("pending-restart");
+        store.put("app.storage.documents-root", node);
+
+        RuntimeSettingsService service = service(store, appProperties("var/restarted-documents"));
+        RuntimeSettingResponse setting = settingsByKey(service).get("app.storage.documents-root");
+
+        assertThat(setting.currentValue()).isEqualTo("var/restarted-documents");
+        assertThat(setting.activeValue()).isEqualTo("var/restarted-documents");
+        assertThat(setting.lifecycleState()).isEqualTo("active");
+        assertThat(store.get("app.storage.documents-root").getLifecycleState()).isEqualTo("active");
+    }
+
+    @Test
+    void clearRestartRequiredOverrideFallsBackToStartupDefault() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+        service.update("app.storage.documents-root", "var/other-documents");
+
+        RuntimeSettingResponse cleared = service.clear("app.storage.documents-root");
+
+        assertThat(cleared.currentValue()).isEqualTo("var/documents");
+        assertThat(cleared.activeValue()).isEqualTo("var/documents");
+        assertThat(cleared.source()).isEqualTo("default");
+        assertThat(cleared.lifecycleState()).isEqualTo("default");
+        assertThat(store).doesNotContainKey("app.storage.documents-root");
     }
 
     @Test
@@ -81,6 +132,24 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void bulkUpdateAllowsMixedLiveAndRestartRequiredSettings() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        List<RuntimeSettingResponse> updated = service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.query.max-rows", 25),
+            new RuntimeSettingUpdateRequest("app.storage.documents-root", "var/bulk-documents")
+        ));
+
+        assertThat(updated).extracting(RuntimeSettingResponse::key)
+            .containsExactly("app.query.max-rows", "app.storage.documents-root");
+        assertThat(updated).extracting(RuntimeSettingResponse::lifecycleState)
+            .containsExactly("active", "pending-restart");
+        assertThat(service.query().maxRows()).isEqualTo(25);
+        assertThat(store.get("app.storage.documents-root").getValue()).isEqualTo("var/bulk-documents");
+    }
+
+    @Test
     void listsExpandedCatalogWithUpdateModesAndProfileResolvedDefaults() {
         RuntimeSettingsService service = service(new LinkedHashMap<>());
 
@@ -100,10 +169,52 @@ class RuntimeSettingsServiceTest {
             "spring.ai.openai.base-url"
         );
         assertThat(settings.get("spring.application.name").currentValue()).isEqualTo("graphrag-test");
-        assertThat(settings.get("logging.level.root").updateMode()).isEqualTo("read-only");
+        assertThat(settings.get("logging.level.root").updateMode()).isEqualTo("live");
+        assertThat(settings.get("logging.level.root").mutable()).isTrue();
+        assertThat(settings.get("logging.level.root").liveApplied()).isTrue();
         assertThat(settings.get("spring.neo4j.uri").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.neo4j.uri").mutable()).isFalse();
+        assertThat(settings.get("spring.neo4j.authentication.password").mutable()).isFalse();
         assertThat(settings.get("app.model.base-url").updateMode()).isEqualTo("profile-managed");
+        assertThat(settings.get("app.model.base-url").mutable()).isFalse();
+        assertThat(settings.get("spring.application.name").mutable()).isFalse();
+        assertThat(settings.get("app.storage.documents-root").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("app.storage.documents-root").mutable()).isTrue();
+        assertThat(settings.get("spring.servlet.multipart.max-file-size").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.servlet.multipart.max-file-size").mutable()).isTrue();
+        assertThat(settings.get("management.tracing.enabled").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("management.tracing.enabled").mutable()).isTrue();
+        assertThat(settings.get("management.opentelemetry.tracing.export.otlp.endpoint").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("management.opentelemetry.tracing.export.otlp.endpoint").mutable()).isTrue();
+        assertThat(settings.get("spring.ai.openai.timeout").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.ai.openai.timeout").mutable()).isTrue();
+        assertThat(settings.get("spring.ai.model.chat").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.ai.model.chat").mutable()).isFalse();
+        assertThat(settings.get("spring.autoconfigure.exclude").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.autoconfigure.exclude").mutable()).isFalse();
         assertThat(settings.get("app.query.max-rows").updateMode()).isEqualTo("live");
+    }
+
+    @Test
+    void rootLoggingLevelIsValidatedPersistedAndLiveApplied() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        try {
+            RuntimeSettingResponse updated = service.update("logging.level.root", "warn");
+
+            assertThat(updated.currentValue()).isEqualTo("WARN");
+            assertThat(updated.updateMode()).isEqualTo("live");
+            assertThat(updated.liveApplied()).isTrue();
+            assertThat(updated.lifecycleState()).isEqualTo("active");
+            assertThat(store.get("logging.level.root").getValue()).isEqualTo("WARN");
+
+            assertThatThrownBy(() -> service.update("logging.level.root", "verbose"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("must be one of");
+        } finally {
+            service.update("logging.level.root", "INFO");
+        }
     }
 
     @Test
@@ -222,6 +333,10 @@ class RuntimeSettingsServiceTest {
     }
 
     private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store) {
+        return service(store, appProperties());
+    }
+
+    private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store, AppProperties appProperties) {
         RuntimeSettingOverrideRepository repository = mock(RuntimeSettingOverrideRepository.class);
         when(repository.findById(anyString())).thenAnswer(invocation -> Optional.ofNullable(store.get(invocation.getArgument(0))));
         when(repository.save(any(RuntimeSettingOverrideNode.class))).thenAnswer(invocation -> {
@@ -233,7 +348,7 @@ class RuntimeSettingsServiceTest {
             store.remove(invocation.getArgument(0));
             return null;
         }).when(repository).deleteById(anyString());
-        return new RuntimeSettingsService(repository, appProperties(), observabilityProperties(), environment());
+        return new RuntimeSettingsService(repository, appProperties, observabilityProperties(), environment());
     }
 
     private RuntimeSettingOverrideNode override(String key, String value) {
@@ -291,10 +406,14 @@ class RuntimeSettingsServiceTest {
     }
 
     private AppProperties appProperties() {
+        return appProperties("var/documents");
+    }
+
+    private AppProperties appProperties(String documentsRoot) {
         return new AppProperties(
             new AppProperties.Neo4j("neo4j"),
             new AppProperties.Model("https://api.openai.com/v1", "secret", "text-embedding-3-small", 1536, "gpt-5-mini"),
-            new AppProperties.Storage(Path.of("var/documents")),
+            new AppProperties.Storage(Path.of(documentsRoot)),
             new AppProperties.Chunking(800, 80, 4000),
             new AppProperties.Query(200, 15, true, List.of("CREATE", "DELETE"), 10, 50, 4, 200, 1, 2, true),
             new AppProperties.Extraction(40, 80, 2)

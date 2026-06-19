@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
 import java.time.Instant;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -15,7 +16,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +31,10 @@ public class RuntimeSettingsService {
 
     private final RuntimeSettingOverrideRepository repository;
     private final Environment environment;
+    private final LoggingSystem loggingSystem;
     private final Map<String, SettingDefinition> definitions;
+    private final Map<String, Object> restartRequiredActiveValues = new ConcurrentHashMap<>();
+    private volatile boolean restartRequiredOverridesLoaded;
 
     public RuntimeSettingsService(
         RuntimeSettingOverrideRepository repository,
@@ -35,11 +44,13 @@ public class RuntimeSettingsService {
     ) {
         this.repository = repository;
         this.environment = environment;
+        this.loggingSystem = LoggingSystem.get(RuntimeSettingsService.class.getClassLoader());
         this.definitions = buildDefinitions(appProperties, observabilityProperties);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RuntimeSettingResponse> list() {
+        ensureRestartRequiredOverridesLoaded();
         return definitions.values().stream()
             .map(this::toResponse)
             .toList();
@@ -51,6 +62,7 @@ public class RuntimeSettingsService {
         if (repository == null) {
             throw new IllegalStateException("Runtime setting persistence is not configured");
         }
+        ensureRestartRequiredOverridesLoaded();
         if (!definition.mutable()) {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
@@ -58,8 +70,10 @@ public class RuntimeSettingsService {
         RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
         node.setKey(key);
         node.setValue(definition.toStorage(parsed));
+        node.setLifecycleState(lifecycleState(definition, parsed));
         node.setUpdatedAt(Instant.now());
         repository.save(node);
+        definition.applyLive(parsed);
         return toResponse(definition);
     }
 
@@ -68,6 +82,7 @@ public class RuntimeSettingsService {
         if (repository == null) {
             throw new IllegalStateException("Runtime setting persistence is not configured");
         }
+        ensureRestartRequiredOverridesLoaded();
         if (updates == null || updates.isEmpty()) {
             throw new IllegalArgumentException("Bulk runtime setting update must include at least one setting");
         }
@@ -98,8 +113,12 @@ public class RuntimeSettingsService {
             RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
             node.setKey(update.definition().key());
             node.setValue(update.definition().toStorage(update.value()));
+            node.setLifecycleState(lifecycleState(update.definition(), update.value()));
             node.setUpdatedAt(updatedAt);
             repository.save(node);
+        }
+        for (ParsedSettingUpdate update : parsedUpdates) {
+            update.definition().applyLive(update.value());
         }
 
         return parsedUpdates.stream()
@@ -114,11 +133,19 @@ public class RuntimeSettingsService {
         if (repository == null) {
             throw new IllegalStateException("Runtime setting persistence is not configured");
         }
+        ensureRestartRequiredOverridesLoaded();
         if (!definition.mutable()) {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
         repository.deleteById(key);
         return toResponse(definition);
+    }
+
+    @Transactional(readOnly = true)
+    public Path documentStorageRoot() {
+        SettingDefinition definition = requireDefinition("app.storage.documents-root");
+        ensureRestartRequiredOverridesLoaded();
+        return Path.of(String.valueOf(activeParsedValue(definition)));
     }
 
     @Transactional(readOnly = true)
@@ -174,14 +201,27 @@ public class RuntimeSettingsService {
     }
 
     private RuntimeSettingResponse toResponse(SettingDefinition definition) {
-        boolean hasOverride = repository != null && repository.findById(definition.key()).isPresent();
+        RuntimeSettingOverrideNode override = repository == null
+            ? null
+            : repository.findById(definition.key()).orElse(null);
+        boolean hasEffectiveOverride = override != null && definition.mutable();
+        Object defaultValue = definition.displayValue(definition.defaultValue());
+        Object parsedValue = hasEffectiveOverride ? definition.parse(override.getValue()) : definition.defaultValue();
+        Object currentValue = hasEffectiveOverride ? definition.displayValue(parsedValue) : defaultValue;
+        Object activeValue = definition.updateMode() == UpdateMode.RESTART_REQUIRED
+            ? definition.displayValue(activeParsedValue(definition))
+            : currentValue;
+        String lifecycleState = hasEffectiveOverride ? lifecycleState(definition, parsedValue) : "default";
+        reconcileLifecycleState(override, lifecycleState);
         return new RuntimeSettingResponse(
             definition.key(),
             definition.category(),
             definition.type().name().toLowerCase(Locale.ROOT),
-            currentValue(definition),
-            definition.displayValue(definition.defaultValue()),
-            hasOverride ? "override" : "default",
+            currentValue,
+            defaultValue,
+            activeValue,
+            hasEffectiveOverride ? "override" : "default",
+            lifecycleState,
             definition.mutable(),
             definition.liveApplied(),
             definition.sensitive(),
@@ -191,6 +231,60 @@ public class RuntimeSettingsService {
             definition.label(),
             definition.description()
         );
+    }
+
+    private void reconcileLifecycleState(RuntimeSettingOverrideNode override, String lifecycleState) {
+        if (repository == null || override == null || Objects.equals(override.getLifecycleState(), lifecycleState)) {
+            return;
+        }
+        override.setLifecycleState(lifecycleState);
+        repository.save(override);
+    }
+
+    private String lifecycleState(SettingDefinition definition, Object parsedValue) {
+        if (definition.updateMode() == UpdateMode.LIVE) {
+            return "active";
+        }
+        if (definition.updateMode() == UpdateMode.RESTART_REQUIRED) {
+            Object currentValue = definition.displayValue(parsedValue);
+            Object activeValue = definition.displayValue(activeParsedValue(definition));
+            return Objects.equals(currentValue, activeValue) ? "active" : "pending-restart";
+        }
+        return "default";
+    }
+
+    @PostConstruct
+    void loadPersistedRestartRequiredOverrides() {
+        ensureRestartRequiredOverridesLoaded();
+    }
+
+    private void ensureRestartRequiredOverridesLoaded() {
+        if (restartRequiredOverridesLoaded) {
+            return;
+        }
+        synchronized (restartRequiredActiveValues) {
+            if (restartRequiredOverridesLoaded) {
+                return;
+            }
+            if (repository != null) {
+                for (SettingDefinition definition : definitions.values()) {
+                    if (definition.mutable() && definition.updateMode() == UpdateMode.RESTART_REQUIRED) {
+                        repository.findById(definition.key())
+                            .map(RuntimeSettingOverrideNode::getValue)
+                            .map(definition::parse)
+                            .ifPresent(value -> restartRequiredActiveValues.put(definition.key(), value));
+                    }
+                }
+            }
+            restartRequiredOverridesLoaded = true;
+        }
+    }
+
+    private Object activeParsedValue(SettingDefinition definition) {
+        if (definition.updateMode() == UpdateMode.RESTART_REQUIRED) {
+            return restartRequiredActiveValues.getOrDefault(definition.key(), definition.defaultValue());
+        }
+        return definition.defaultValue();
     }
 
     private Object currentValue(SettingDefinition definition) {
@@ -263,7 +357,16 @@ public class RuntimeSettingsService {
         addBool(map, "app.ai.observability.model-name-tag-enabled", "ai-observability", observabilityProperties.modelNameTagEnabled());
         addBool(map, "app.ai.observability.schema-name-tag-enabled", "ai-observability", observabilityProperties.schemaNameTagEnabled());
         addReadOnlyString(map, "spring.application.name", "application", env("spring.application.name"), UpdateMode.READ_ONLY, false, "Application identity is informational.");
-        addReadOnlyString(map, "logging.level.root", "logging", env("logging.level.root"), UpdateMode.READ_ONLY, false, "Root logging level is startup-bound in this catalog.");
+        addLiveString(
+            map,
+            "logging.level.root",
+            "logging",
+            envOrDefault("logging.level.root", "INFO"),
+            Map.of("enum", List.of("TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF")),
+            value -> parseLoggingLevel("logging.level.root", value),
+            value -> loggingSystem.setLogLevel(null, LogLevel.valueOf(String.valueOf(value))),
+            "Root logging level is applied through the Spring Boot logging system."
+        );
         addReadOnlyString(map, "spring.ai.model.chat", "spring-ai", env("spring.ai.model.chat"), UpdateMode.RESTART_REQUIRED, false, "Spring AI model bootstrap is bound during startup.");
         addReadOnlyString(map, "spring.ai.model.embedding", "spring-ai", env("spring.ai.model.embedding"), UpdateMode.RESTART_REQUIRED, false, "Spring AI model bootstrap is bound during startup.");
         addReadOnlyString(map, "spring.autoconfigure.exclude", "spring", env("spring.autoconfigure.exclude"), UpdateMode.RESTART_REQUIRED, false, "Auto-configuration exclusions are evaluated during startup.");
@@ -271,17 +374,17 @@ public class RuntimeSettingsService {
         addReadOnlyString(map, "spring.neo4j.authentication.username", "neo4j", env("spring.neo4j.authentication.username"), UpdateMode.RESTART_REQUIRED, false, "Neo4j authentication is managed by startup-created infrastructure.");
         addReadOnlyString(map, "spring.neo4j.authentication.password", "neo4j", env("spring.neo4j.authentication.password"), UpdateMode.SENSITIVE_READ_ONLY, true, "Neo4j credentials are sensitive and startup-bound.");
         addReadOnlyString(map, "app.neo4j.database", "neo4j", appProperties.neo4j().database(), UpdateMode.RESTART_REQUIRED, false, "Neo4j database selection is bound to repository infrastructure.");
-        addReadOnlyString(map, "app.storage.documents-root", "storage", appProperties.storage().documentsRoot().toString(), UpdateMode.RESTART_REQUIRED, false, "Document storage root is resolved by storage services at startup.");
-        addReadOnlyString(map, "spring.servlet.multipart.max-file-size", "multipart", env("spring.servlet.multipart.max-file-size"), UpdateMode.RESTART_REQUIRED, false, "Multipart limits are applied by web infrastructure.");
-        addReadOnlyString(map, "spring.servlet.multipart.max-request-size", "multipart", env("spring.servlet.multipart.max-request-size"), UpdateMode.RESTART_REQUIRED, false, "Multipart limits are applied by web infrastructure.");
-        addReadOnlyString(map, "management.endpoints.web.exposure.include", "actuator", env("management.endpoints.web.exposure.include"), UpdateMode.RESTART_REQUIRED, false, "Actuator exposure is configured at startup.");
-        addReadOnlyString(map, "management.endpoint.health.probes.enabled", "actuator", env("management.endpoint.health.probes.enabled"), UpdateMode.RESTART_REQUIRED, false, "Health probe configuration is bound during startup.");
-        addReadOnlyString(map, "management.tracing.enabled", "tracing", env("management.tracing.enabled"), UpdateMode.RESTART_REQUIRED, false, "Tracing infrastructure is configured at startup.");
-        addReadOnlyString(map, "management.tracing.export.otlp.enabled", "tracing", env("management.tracing.export.otlp.enabled"), UpdateMode.RESTART_REQUIRED, false, "OTLP exporter infrastructure is configured at startup.");
-        addReadOnlyString(map, "management.tracing.sampling.probability", "tracing", env("management.tracing.sampling.probability"), UpdateMode.RESTART_REQUIRED, false, "Tracing sampling is configured at startup.");
-        addReadOnlyString(map, "management.opentelemetry.tracing.export.otlp.endpoint", "opentelemetry", env("management.opentelemetry.tracing.export.otlp.endpoint"), UpdateMode.RESTART_REQUIRED, false, "OTLP exporter endpoint is configured at startup.");
+        addRestartRequiredString(map, "app.storage.documents-root", "storage", appProperties.storage().documentsRoot().toString(), "Document storage root changes are persisted for the next backend restart.");
+        addRestartRequiredString(map, "spring.servlet.multipart.max-file-size", "multipart", env("spring.servlet.multipart.max-file-size"), "Multipart limits are applied by web infrastructure.");
+        addRestartRequiredString(map, "spring.servlet.multipart.max-request-size", "multipart", env("spring.servlet.multipart.max-request-size"), "Multipart limits are applied by web infrastructure.");
+        addRestartRequiredString(map, "management.endpoints.web.exposure.include", "actuator", env("management.endpoints.web.exposure.include"), "Actuator exposure is configured at startup.");
+        addRestartRequiredString(map, "management.endpoint.health.probes.enabled", "actuator", env("management.endpoint.health.probes.enabled"), "Health probe configuration is bound during startup.");
+        addRestartRequiredString(map, "management.tracing.enabled", "tracing", env("management.tracing.enabled"), "Tracing infrastructure is configured at startup.");
+        addRestartRequiredString(map, "management.tracing.export.otlp.enabled", "tracing", env("management.tracing.export.otlp.enabled"), "OTLP exporter infrastructure is configured at startup.");
+        addRestartRequiredString(map, "management.tracing.sampling.probability", "tracing", env("management.tracing.sampling.probability"), "Tracing sampling is configured at startup.");
+        addRestartRequiredString(map, "management.opentelemetry.tracing.export.otlp.endpoint", "opentelemetry", env("management.opentelemetry.tracing.export.otlp.endpoint"), "OTLP exporter endpoint is configured at startup.");
         addReadOnlyString(map, "management.opentelemetry.tracing.export.otlp.headers.Authorization", "opentelemetry", env("management.opentelemetry.tracing.export.otlp.headers.Authorization"), UpdateMode.SENSITIVE_READ_ONLY, true, "OTLP authorization headers are sensitive and startup-bound.");
-        addReadOnlyString(map, "management.opentelemetry.tracing.export.otlp.headers.x-langfuse-ingestion-version", "opentelemetry", env("management.opentelemetry.tracing.export.otlp.headers.x-langfuse-ingestion-version"), UpdateMode.RESTART_REQUIRED, false, "OTLP exporter headers are configured at startup.");
+        addRestartRequiredString(map, "management.opentelemetry.tracing.export.otlp.headers.x-langfuse-ingestion-version", "opentelemetry", env("management.opentelemetry.tracing.export.otlp.headers.x-langfuse-ingestion-version"), "OTLP exporter headers are configured at startup.");
         addReadOnlyString(map, "app.model.base-url", "ai-provider", appProperties.model().baseUrl(), UpdateMode.PROFILE_MANAGED, false, "Use AI profile management to change provider behavior.");
         addReadOnlyString(map, "app.model.api-key", "ai-provider", appProperties.model().apiKey(), UpdateMode.SENSITIVE_READ_ONLY, true, "Use AI profile management to change provider secrets.");
         addReadOnlyString(map, "app.model.embedding-model", "ai-provider", appProperties.model().embeddingModel(), UpdateMode.PROFILE_MANAGED, false, "Use AI profile management to change provider behavior.");
@@ -291,11 +394,11 @@ public class RuntimeSettingsService {
         addReadOnlyString(map, "spring.ai.openai.api-key", "spring-ai-openai", env("spring.ai.openai.api-key"), UpdateMode.SENSITIVE_READ_ONLY, true, "Derived API key is sensitive; use AI profile management for workflow changes.");
         addReadOnlyString(map, "spring.ai.openai.embedding.options.model", "spring-ai-openai", env("spring.ai.openai.embedding.options.model"), UpdateMode.PROFILE_MANAGED, false, "Derived from AI provider defaults; use AI profile management for workflow changes.");
         addReadOnlyString(map, "spring.ai.openai.chat.options.model", "spring-ai-openai", env("spring.ai.openai.chat.options.model"), UpdateMode.PROFILE_MANAGED, false, "Derived from AI provider defaults; use AI profile management for workflow changes.");
-        addReadOnlyString(map, "spring.ai.openai.timeout", "spring-ai-openai", env("spring.ai.openai.timeout"), UpdateMode.RESTART_REQUIRED, false, "Spring AI client timeout is configured at startup.");
-        addReadOnlyString(map, "spring.ai.openai.chat.timeout", "spring-ai-openai", env("spring.ai.openai.chat.timeout"), UpdateMode.RESTART_REQUIRED, false, "Spring AI client timeout is configured at startup.");
-        addReadOnlyString(map, "spring.ai.openai.embedding.timeout", "spring-ai-openai", env("spring.ai.openai.embedding.timeout"), UpdateMode.RESTART_REQUIRED, false, "Spring AI client timeout is configured at startup.");
-        addReadOnlyString(map, "spring.ai.chat.observations.log-prompt", "spring-ai-observability", env("spring.ai.chat.observations.log-prompt"), UpdateMode.RESTART_REQUIRED, false, "Spring AI observation logging is configured at startup.");
-        addReadOnlyString(map, "spring.ai.chat.observations.log-completion", "spring-ai-observability", env("spring.ai.chat.observations.log-completion"), UpdateMode.RESTART_REQUIRED, false, "Spring AI observation logging is configured at startup.");
+        addRestartRequiredString(map, "spring.ai.openai.timeout", "spring-ai-openai", env("spring.ai.openai.timeout"), "Spring AI client timeout is configured at startup.");
+        addRestartRequiredString(map, "spring.ai.openai.chat.timeout", "spring-ai-openai", env("spring.ai.openai.chat.timeout"), "Spring AI client timeout is configured at startup.");
+        addRestartRequiredString(map, "spring.ai.openai.embedding.timeout", "spring-ai-openai", env("spring.ai.openai.embedding.timeout"), "Spring AI client timeout is configured at startup.");
+        addRestartRequiredString(map, "spring.ai.chat.observations.log-prompt", "spring-ai-observability", env("spring.ai.chat.observations.log-prompt"), "Spring AI observation logging is configured at startup.");
+        addRestartRequiredString(map, "spring.ai.chat.observations.log-completion", "spring-ai-observability", env("spring.ai.chat.observations.log-completion"), "Spring AI observation logging is configured at startup.");
         return Map.copyOf(map);
     }
 
@@ -312,6 +415,7 @@ public class RuntimeSettingsService {
             value -> parseInteger(key, value, min),
             Objects::toString,
             Function.identity(),
+            value -> { },
             UpdateMode.LIVE,
             null,
             label(key),
@@ -332,6 +436,7 @@ public class RuntimeSettingsService {
             value -> parseBoolean(key, value),
             Objects::toString,
             Function.identity(),
+            value -> { },
             UpdateMode.LIVE,
             null,
             label(key),
@@ -352,10 +457,68 @@ public class RuntimeSettingsService {
             value -> parseStringList(key, value),
             value -> String.join(",", castStringList(value)),
             Function.identity(),
+            value -> { },
             UpdateMode.LIVE,
             null,
             label(key),
             null
+        ));
+    }
+
+    private void addLiveString(
+        Map<String, SettingDefinition> map,
+        String key,
+        String category,
+        String defaultValue,
+        Map<String, Object> constraints,
+        Function<Object, Object> parser,
+        Consumer<Object> liveApplier,
+        String description
+    ) {
+        map.put(key, new SettingDefinition(
+            key,
+            category,
+            SettingType.STRING,
+            defaultValue == null ? "" : parser.apply(defaultValue),
+            true,
+            true,
+            false,
+            constraints,
+            parser,
+            Objects::toString,
+            Function.identity(),
+            liveApplier,
+            UpdateMode.LIVE,
+            null,
+            label(key),
+            description
+        ));
+    }
+
+    private void addRestartRequiredString(
+        Map<String, SettingDefinition> map,
+        String key,
+        String category,
+        String defaultValue,
+        String reason
+    ) {
+        map.put(key, new SettingDefinition(
+            key,
+            category,
+            SettingType.STRING,
+            defaultValue == null ? "" : defaultValue,
+            true,
+            false,
+            false,
+            Map.of("minLength", 1),
+            value -> parseNonBlankString(key, value),
+            Objects::toString,
+            Function.identity(),
+            value -> { },
+            UpdateMode.RESTART_REQUIRED,
+            reason,
+            label(key),
+            reason
         ));
     }
 
@@ -380,6 +543,7 @@ public class RuntimeSettingsService {
             value -> String.valueOf(value),
             Objects::toString,
             sensitive ? this::maskedValue : Function.identity(),
+            value -> { },
             updateMode,
             reason,
             label(key),
@@ -392,6 +556,13 @@ public class RuntimeSettingsService {
             return "";
         }
         return environment.getProperty(key, "");
+    }
+
+    private String envOrDefault(String key, String defaultValue) {
+        if (environment == null) {
+            return defaultValue;
+        }
+        return environment.getProperty(key, defaultValue);
     }
 
     private Object maskedValue(Object value) {
@@ -456,6 +627,24 @@ public class RuntimeSettingsService {
         }
     }
 
+    private String parseNonBlankString(String key, Object value) {
+        String text = String.valueOf(value == null ? "" : value).trim();
+        if (text.isBlank()) {
+            throw new IllegalArgumentException(key + " must not be blank");
+        }
+        return text;
+    }
+
+    private String parseLoggingLevel(String key, Object value) {
+        String text = String.valueOf(value == null ? "" : value).trim().toUpperCase(Locale.ROOT);
+        try {
+            LogLevel.valueOf(text);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(key + " must be one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF", ex);
+        }
+        return text;
+    }
+
     @SuppressWarnings("unchecked")
     private List<String> castStringList(Object value) {
         return (List<String>) value;
@@ -498,6 +687,7 @@ public class RuntimeSettingsService {
         Function<Object, Object> parser,
         Function<Object, String> storageMapper,
         Function<Object, Object> displayMapper,
+        Consumer<Object> liveApplier,
         UpdateMode updateMode,
         String reason,
         String label,
@@ -513,6 +703,12 @@ public class RuntimeSettingsService {
 
         Object displayValue(Object value) {
             return displayMapper.apply(value);
+        }
+
+        void applyLive(Object value) {
+            if (liveApplied) {
+                liveApplier.accept(value);
+            }
         }
     }
 
