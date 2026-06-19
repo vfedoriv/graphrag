@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.springframework.mock.env.MockEnvironment;
 
 class RuntimeSettingsServiceTest {
@@ -146,6 +148,27 @@ class RuntimeSettingsServiceTest {
         assertThat(store.get("app.query.max-rows")).isSameAs(originalNode);
         assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("30");
         assertThat(service.query().maxRows()).isEqualTo(30);
+    }
+
+    @Test
+    void backfillsMissingOverrideVersionsBeforeReadingPersistedOverrides() {
+        RuntimeSettingOverrideNode node = override("app.storage.documents-root", "var/restarted-documents");
+        node.setLifecycleState("pending-restart");
+        RuntimeSettingOverrideRepository repository = mock(RuntimeSettingOverrideRepository.class);
+        when(repository.findById("app.storage.documents-root")).thenReturn(Optional.of(node));
+        RuntimeSettingsService service = new RuntimeSettingsService(
+            repository,
+            appProperties("var/restarted-documents"),
+            observabilityProperties(),
+            environment()
+        );
+
+        RuntimeSettingResponse setting = settingsByKey(service).get("app.storage.documents-root");
+
+        assertThat(setting.lifecycleState()).isEqualTo("active");
+        InOrder inOrder = inOrder(repository);
+        inOrder.verify(repository).backfillMissingVersions();
+        inOrder.verify(repository).findById("app.storage.documents-root");
     }
 
     @Test

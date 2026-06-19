@@ -273,6 +273,7 @@ public class RuntimeSettingsService {
                 return;
             }
             if (repository != null) {
+                repository.backfillMissingVersions();
                 for (SettingDefinition definition : definitions.values()) {
                     if (definition.mutable() && definition.updateMode() == UpdateMode.RESTART_REQUIRED) {
                         repository.findById(definition.key())

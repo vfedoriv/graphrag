@@ -42,6 +42,12 @@ The system SHALL validate submitted runtime setting values before persisting mut
 - **AND** normal repeated updates do not emit assigned-id new-entity warnings
 - **AND** subsequent setting reads return the latest persisted value and lifecycle metadata
 
+#### Scenario: Existing runtime setting override lacks version metadata
+- **WHEN** the application loads persisted runtime setting overrides created before override records included version metadata
+- **THEN** the system normalizes missing version metadata before versioned persistence operations run
+- **AND** runtime settings list, update, clear, and lifecycle reconciliation operations do not fail because an existing override record lacks version metadata
+- **AND** existing override values and lifecycle metadata remain available after normalization
+
 #### Scenario: Restart-required setting is active after restart
 - **WHEN** the application starts and loads a persisted restart-required override for a supported mutable setting
 - **THEN** the affected setting response no longer reports the override as pending
@@ -191,4 +197,3 @@ The system SHALL allow clients to update multiple allowlisted mutable runtime se
 - **WHEN** a client submits a bulk update request with no setting updates
 - **THEN** the system rejects the request with a validation error
 - **AND** no persisted runtime setting override is changed
-

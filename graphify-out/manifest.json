@@ -2810,8 +2810,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/RuntimeSettingOverrideRepository.java": {
-    "mtime": 1781782211.0394065,
-    "ast_hash": "09e09ef3f88a04c7a6b786ef1b711353",
+    "mtime": 1781865854.3135207,
+    "ast_hash": "de5877efcf576aed8c23954db916bdfe",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AiProfileContext.java": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsService.java": {
-    "mtime": 1781864599.8146346,
-    "ast_hash": "4a10c031354e596083ec06f4b560c372",
+    "mtime": 1781865854.4195228,
+    "ast_hash": "dee14d941d1a081e942a7469c0726e80",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/TestRuntimeSettings.java": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsServiceTest.java": {
-    "mtime": 1781864599.9566376,
-    "ast_hash": "e575825c09e90c4f7fa6167862ac5fe0",
+    "mtime": 1781865865.0187273,
+    "ast_hash": "1feeaa571dfa6c10165bb7fda6d2d1db",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/.openspec.yaml": {
@@ -2945,8 +2945,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781863547.1719272,
-    "ast_hash": "162dd2dd2529e68dfe4d7da7ae2ac0c1",
+    "mtime": 1781865018.02988,
+    "ast_hash": "6e7dfbfac57a8a4c8aa330d465175322",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/controller/RuntimeSettingsControllerTest.java": {
@@ -3049,29 +3049,54 @@
     "ast_hash": "0b21f7e34c9e535edb9fe58221ddf113",
     "semantic_hash": ""
   },
-  "openspec/changes/fix-runtime-setting-override-versioning/.openspec.yaml": {
+  "openspec/changes/archive/2026-06-19-fix-runtime-setting-override-versioning/.openspec.yaml": {
     "mtime": 1781864425.171079,
     "ast_hash": "34b43c55d3ca6875b6faa975762e6c09",
     "semantic_hash": ""
   },
-  "openspec/changes/fix-runtime-setting-override-versioning/design.md": {
+  "openspec/changes/archive/2026-06-19-fix-runtime-setting-override-versioning/design.md": {
     "mtime": 1781864491.6964343,
     "ast_hash": "26e7f11b5dc27d9a8a73f3bc3c056a81",
     "semantic_hash": ""
   },
-  "openspec/changes/fix-runtime-setting-override-versioning/proposal.md": {
+  "openspec/changes/archive/2026-06-19-fix-runtime-setting-override-versioning/proposal.md": {
     "mtime": 1781864450.6365979,
     "ast_hash": "ec5191d1e8cd4c2b8adbdd6d8d642759",
     "semantic_hash": ""
   },
-  "openspec/changes/fix-runtime-setting-override-versioning/specs/runtime-application-settings/spec.md": {
+  "openspec/changes/archive/2026-06-19-fix-runtime-setting-override-versioning/specs/runtime-application-settings/spec.md": {
     "mtime": 1781864491.920439,
     "ast_hash": "857560b0e3e4e6cc9a9b8327064d13ca",
     "semantic_hash": ""
   },
-  "openspec/changes/fix-runtime-setting-override-versioning/tasks.md": {
+  "openspec/changes/archive/2026-06-19-fix-runtime-setting-override-versioning/tasks.md": {
     "mtime": 1781864809.3752935,
     "ast_hash": "b1c5a074b51d7b46409c11ea3222a069",
+    "semantic_hash": ""
+  },
+  "openspec/changes/include-runtime-setting-version-backfill/.openspec.yaml": {
+    "mtime": 1781866165.6975644,
+    "ast_hash": "34b43c55d3ca6875b6faa975762e6c09",
+    "semantic_hash": ""
+  },
+  "openspec/changes/include-runtime-setting-version-backfill/design.md": {
+    "mtime": 1781866225.059722,
+    "ast_hash": "10c673c459430c0c19ca900fa8345ea4",
+    "semantic_hash": ""
+  },
+  "openspec/changes/include-runtime-setting-version-backfill/proposal.md": {
+    "mtime": 1781866187.5739908,
+    "ast_hash": "8bc4bfb60fc4db51f21f224f106de671",
+    "semantic_hash": ""
+  },
+  "openspec/changes/include-runtime-setting-version-backfill/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781866241.8480496,
+    "ast_hash": "052591d9c7f3326ac64676b2ae327023",
+    "semantic_hash": ""
+  },
+  "openspec/changes/include-runtime-setting-version-backfill/tasks.md": {
+    "mtime": 1781866534.8567822,
+    "ast_hash": "34a8fa9c7c10b2e560d7d11e58e6ad9b",
     "semantic_hash": ""
   }
 }
