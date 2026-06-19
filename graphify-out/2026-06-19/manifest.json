@@ -2445,8 +2445,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/documentation-alignment/spec.md": {
-    "mtime": 1781863547.1709273,
-    "ast_hash": "9ab48d0f4dd94d6a41b1eae5dac15bda",
+    "mtime": 1781789768.0875075,
+    "ast_hash": "f1517b900dbab3fb9eae02651fb4b3e5",
     "semantic_hash": ""
   },
   "openspec/specs/extraction-run-cleanup/spec.md": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/RuntimeSettingOverrideNode.java": {
-    "mtime": 1781864599.6716318,
-    "ast_hash": "8da6cb5a7d76678a02e4d116e9e11313",
+    "mtime": 1781811024.5337443,
+    "ast_hash": "c12452a06c7a07add6714472f817b68d",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/AiProfileResponse.java": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsService.java": {
-    "mtime": 1781864599.8146346,
-    "ast_hash": "4a10c031354e596083ec06f4b560c372",
+    "mtime": 1781811519.5409482,
+    "ast_hash": "3bad254f11ce5cf45bb463684722f2b0",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/TestRuntimeSettings.java": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/RuntimeSettingsServiceTest.java": {
-    "mtime": 1781864599.9566376,
-    "ast_hash": "e575825c09e90c4f7fa6167862ac5fe0",
+    "mtime": 1781811730.2095988,
+    "ast_hash": "d4f78ab3d90882851c736073c7aa87f9",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-18-add-runtime-settings-ai-profiles/.openspec.yaml": {
@@ -2945,8 +2945,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781863547.1719272,
-    "ast_hash": "162dd2dd2529e68dfe4d7da7ae2ac0c1",
+    "mtime": 1781807939.1277547,
+    "ast_hash": "7a43e0caf5c0ba34f0151aa9bc8ca66d",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/controller/RuntimeSettingsControllerTest.java": {
@@ -2994,6 +2994,36 @@
     "ast_hash": "81a6d72afbc68fb2bddd6472e5ec9924",
     "semantic_hash": ""
   },
+  "openspec/changes/allow-restart-required-setting-overrides/.openspec.yaml": {
+    "mtime": 1781809565.0409226,
+    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/design.md": {
+    "mtime": 1781810801.1708791,
+    "ast_hash": "849d46bb9793fbbecf72462abe131ff3",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/proposal.md": {
+    "mtime": 1781810621.753965,
+    "ast_hash": "2ce21238a183ab5d72fb44c9ec95a0cb",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/specs/documentation-alignment/spec.md": {
+    "mtime": 1781810617.4608464,
+    "ast_hash": "e66b64289c31e468f74e6295b4fe3fe9",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/specs/runtime-application-settings/spec.md": {
+    "mtime": 1781810808.1340687,
+    "ast_hash": "5489fc8de308a0c643136123dfe05bf0",
+    "semantic_hash": ""
+  },
+  "openspec/changes/allow-restart-required-setting-overrides/tasks.md": {
+    "mtime": 1781811937.6926432,
+    "ast_hash": "0b21f7e34c9e535edb9fe58221ddf113",
+    "semantic_hash": ""
+  },
   "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/.openspec.yaml": {
     "mtime": 1781807264.0478902,
     "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
@@ -3017,61 +3047,6 @@
   "openspec/changes/archive/2026-06-18-add-bulk-runtime-settings-update/tasks.md": {
     "mtime": 1781807787.7938807,
     "ast_hash": "f31981d04a35234c2d3c6371402e9951",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/.openspec.yaml": {
-    "mtime": 1781809565.0409226,
-    "ast_hash": "b7b869129b3342cbedebad25d6f39a1e",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/design.md": {
-    "mtime": 1781810801.1708791,
-    "ast_hash": "849d46bb9793fbbecf72462abe131ff3",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/proposal.md": {
-    "mtime": 1781810621.753965,
-    "ast_hash": "2ce21238a183ab5d72fb44c9ec95a0cb",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/specs/documentation-alignment/spec.md": {
-    "mtime": 1781810617.4608464,
-    "ast_hash": "e66b64289c31e468f74e6295b4fe3fe9",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781810808.1340687,
-    "ast_hash": "5489fc8de308a0c643136123dfe05bf0",
-    "semantic_hash": ""
-  },
-  "openspec/changes/archive/2026-06-19-allow-restart-required-setting-overrides/tasks.md": {
-    "mtime": 1781863475.9414139,
-    "ast_hash": "0b21f7e34c9e535edb9fe58221ddf113",
-    "semantic_hash": ""
-  },
-  "openspec/changes/fix-runtime-setting-override-versioning/.openspec.yaml": {
-    "mtime": 1781864425.171079,
-    "ast_hash": "34b43c55d3ca6875b6faa975762e6c09",
-    "semantic_hash": ""
-  },
-  "openspec/changes/fix-runtime-setting-override-versioning/design.md": {
-    "mtime": 1781864491.6964343,
-    "ast_hash": "26e7f11b5dc27d9a8a73f3bc3c056a81",
-    "semantic_hash": ""
-  },
-  "openspec/changes/fix-runtime-setting-override-versioning/proposal.md": {
-    "mtime": 1781864450.6365979,
-    "ast_hash": "ec5191d1e8cd4c2b8adbdd6d8d642759",
-    "semantic_hash": ""
-  },
-  "openspec/changes/fix-runtime-setting-override-versioning/specs/runtime-application-settings/spec.md": {
-    "mtime": 1781864491.920439,
-    "ast_hash": "857560b0e3e4e6cc9a9b8327064d13ca",
-    "semantic_hash": ""
-  },
-  "openspec/changes/fix-runtime-setting-override-versioning/tasks.md": {
-    "mtime": 1781864809.3752935,
-    "ast_hash": "b1c5a074b51d7b46409c11ea3222a069",
     "semantic_hash": ""
   }
 }

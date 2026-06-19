@@ -132,6 +132,23 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void repeatedUpdateMutatesExistingOverrideNode() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        service.update("app.query.max-rows", 25);
+        RuntimeSettingOverrideNode originalNode = store.get("app.query.max-rows");
+
+        RuntimeSettingResponse updated = service.update("app.query.max-rows", 30);
+
+        assertThat(updated.currentValue()).isEqualTo(30);
+        assertThat(updated.lifecycleState()).isEqualTo("active");
+        assertThat(store.get("app.query.max-rows")).isSameAs(originalNode);
+        assertThat(store.get("app.query.max-rows").getValue()).isEqualTo("30");
+        assertThat(service.query().maxRows()).isEqualTo(30);
+    }
+
+    @Test
     void bulkUpdateAllowsMixedLiveAndRestartRequiredSettings() {
         Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
         RuntimeSettingsService service = service(store);

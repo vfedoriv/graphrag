@@ -6,8 +6,8 @@ import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
-import java.time.Instant;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -67,8 +67,7 @@ public class RuntimeSettingsService {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
         Object parsed = definition.parse(value);
-        RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
-        node.setKey(key);
+        RuntimeSettingOverrideNode node = overrideNode(key);
         node.setValue(definition.toStorage(parsed));
         node.setLifecycleState(lifecycleState(definition, parsed));
         node.setUpdatedAt(Instant.now());
@@ -110,8 +109,7 @@ public class RuntimeSettingsService {
 
         Instant updatedAt = Instant.now();
         for (ParsedSettingUpdate update : parsedUpdates) {
-            RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
-            node.setKey(update.definition().key());
+            RuntimeSettingOverrideNode node = overrideNode(update.definition().key());
             node.setValue(update.definition().toStorage(update.value()));
             node.setLifecycleState(lifecycleState(update.definition(), update.value()));
             node.setUpdatedAt(updatedAt);
@@ -239,6 +237,14 @@ public class RuntimeSettingsService {
         }
         override.setLifecycleState(lifecycleState);
         repository.save(override);
+    }
+
+    private RuntimeSettingOverrideNode overrideNode(String key) {
+        return repository.findById(key).orElseGet(() -> {
+            RuntimeSettingOverrideNode node = new RuntimeSettingOverrideNode();
+            node.setKey(key);
+            return node;
+        });
     }
 
     private String lifecycleState(SettingDefinition definition, Object parsedValue) {

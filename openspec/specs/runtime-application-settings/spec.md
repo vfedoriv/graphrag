@@ -20,7 +20,7 @@ The system SHALL expose application settings only through an explicit allowlist 
 - **AND** no persisted runtime setting is changed
 
 ### Requirement: Runtime setting updates are validated and persisted
-The system SHALL validate submitted runtime setting values before persisting mutable live overrides or mutable restart-required overrides in Neo4j or the configured runtime settings store.
+The system SHALL validate submitted runtime setting values before persisting mutable live overrides or mutable restart-required overrides in Neo4j or the configured runtime settings store, and SHALL persist runtime setting override records using stable entity state handling for assigned setting-key identifiers.
 
 #### Scenario: Valid live setting update is submitted
 - **WHEN** a client updates an allowlisted mutable live setting with a valid value
@@ -34,6 +34,13 @@ The system SHALL validate submitted runtime setting values before persisting mut
 - **AND** subsequent setting reads return the persisted value as the desired current value
 - **AND** the response reports the saved value as pending
 - **AND** the response indicates that the updated value is not live-applied and requires application restart before it affects startup-bound behavior
+
+#### Scenario: Existing runtime setting override is updated
+- **WHEN** a client updates an allowlisted mutable setting that already has a persisted override record
+- **THEN** the system updates the existing override record for that setting key
+- **AND** the save path preserves persistence state needed by Spring Data Neo4j for assigned identifiers
+- **AND** normal repeated updates do not emit assigned-id new-entity warnings
+- **AND** subsequent setting reads return the latest persisted value and lifecycle metadata
 
 #### Scenario: Restart-required setting is active after restart
 - **WHEN** the application starts and loads a persisted restart-required override for a supported mutable setting
