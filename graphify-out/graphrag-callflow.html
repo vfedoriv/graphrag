@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 6872 nodes, 9905 edges, 618 communities. Commit: 80bfd80</p>
+<p class="subtitle">Generated from graphify knowledge graph: 6966 nodes, 10149 edges, 614 communities. Commit: 9a26d90</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -74,10 +74,10 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#community-577">Community 577</a>
     <a href="#community-159">Community 159</a>
+    <a href="#community-553">Community 553</a>
     <a href="#community-178">Community 178</a>
     <a href="#community-591">Community 591</a>
     <a href="#community-532">Community 532</a>
-    <a href="#community-594">Community 594</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,7 +88,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2913 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2974 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2883 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -100,7 +100,7 @@ flowchart LR
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>172 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>191 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>210 nodes</small>")
     class SERVE_API_35EC8E86 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>121 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
@@ -108,15 +108,15 @@ flowchart LR
     class COMMUNITY_577_C37C68AB module;
     COMMUNITY_159_19BCAB60("Community 159<br/><small>15 nodes</small>")
     class COMMUNITY_159_19BCAB60 module;
+    COMMUNITY_553_83162F2E("Community 553<br/><small>14 nodes</small>")
+    class COMMUNITY_553_83162F2E module;
     COMMUNITY_178_FEA41A9A("Community 178<br/><small>12 nodes</small>")
     class COMMUNITY_178_FEA41A9A module;
     COMMUNITY_591_E966E732("Community 591<br/><small>12 nodes</small>")
     class COMMUNITY_591_E966E732 module;
     COMMUNITY_532_110F4261("Community 532<br/><small>10 nodes</small>")
     class COMMUNITY_532_110F4261 module;
-    COMMUNITY_594_15EF0751("Community 594<br/><small>10 nodes</small>")
-    class COMMUNITY_594_15EF0751 module;
-    OTHER_D0941E68("Other<br/><small>291 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>301 nodes</small>")
     class OTHER_D0941E68 module;
     BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2913</td><td><code>40, 2, 4, 3, 388, 7, 14, 12, 11, 1, 18, 72, 20, 43, 35, 49, 6, 17, 63, 19, 22, 342, 127, 16, 385, 386, 128, 551, 130, 131, 133, 33, 8, 447, 134, 135, 147, 32, 5, 9, 141, 24, 38, 10, 21, 340, 536, 544, 13, 138, 23, 25, 54, 145, 26, 39, 509, 192, 552, 153, 28, 30, 452, 144, 157, 206, 529, 534, 554, 555, 143, 530, 564, 573, 15, 27, 36, 37, 451, 570, 578, 67, 586, 537, 556, 557, 590, 53, 560, 46, 47, 562, 569, 146, 526, 553, 595, 596, 48, 52, 593, 597, 322, 323, 341, 55, 57, 515, 58, 587, 60, 61, 62, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 581, 606, 607, 66, 446, 68, 69, 70, 71, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 583, 584, 609, 610, 611, 612, 613, 614, 615, 616, 617, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>45</td><td><code>268, 266, 270, 579, 588, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>172</td><td><code>531, 42, 29, 528, 592, 533, 538, 568, 571, 453, 456, 572, 500</code></td></tr><tr><td>Serving API</td><td>191</td><td><code>123, 172, 445, 44, 179, 527, 329, 343, 347, 539, 604, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 577</td><td>16</td><td><code>577</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 591</td><td>12</td><td><code>591</code></td></tr><tr><td>Community 532</td><td>10</td><td><code>532</code></td></tr><tr><td>Community 594</td><td>10</td><td><code>594</code></td></tr><tr><td>Other</td><td>291</td><td><code>203, 306, 310, 311, 312, 313, 327, 330, 331, 332, 335, 535, 559, 561, 565, 566, 574, 575, 576, 580, 582, 585, 598, 599, 600, 601, 602, 603, 348, 349, 567, 605, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444, 589, 608</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2974</td><td><code>40, 2, 4, 144, 7, 11, 3, 14, 23, 38, 388, 12, 385, 22, 386, 9, 18, 43, 63, 1, 17, 49, 35, 19, 20, 6, 127, 72, 128, 130, 131, 33, 551, 8, 134, 135, 509, 586, 143, 16, 530, 141, 24, 10, 21, 340, 5, 536, 544, 138, 147, 54, 13, 133, 145, 26, 39, 447, 192, 25, 342, 552, 153, 28, 452, 526, 157, 206, 529, 534, 554, 36, 67, 15, 27, 32, 37, 451, 560, 570, 555, 557, 537, 556, 573, 53, 564, 46, 47, 562, 569, 595, 146, 48, 607, 322, 323, 341, 52, 55, 57, 515, 58, 60, 61, 62, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 581, 606, 66, 446, 593, 68, 69, 70, 71, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 583, 584, 596, 609, 610, 611, 612, 613, 614, 615, 616, 617, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>45</td><td><code>268, 266, 270, 579, 588, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>172</td><td><code>531, 42, 29, 528, 592, 533, 538, 568, 571, 453, 456, 572, 500</code></td></tr><tr><td>Serving API</td><td>210</td><td><code>123, 172, 445, 30, 44, 179, 527, 329, 343, 347, 539, 590, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 577</td><td>16</td><td><code>577</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 553</td><td>14</td><td><code>553</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 591</td><td>12</td><td><code>591</code></td></tr><tr><td>Community 532</td><td>10</td><td><code>532</code></td></tr><tr><td>Other</td><td>301</td><td><code>594, 203, 306, 310, 311, 312, 313, 327, 330, 331, 332, 335, 535, 559, 561, 565, 566, 574, 575, 576, 578, 580, 582, 585, 587, 598, 599, 602, 603, 348, 349, 567, 605, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444, 589, 608</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>6872 nodes · 9905 edges · 618 communities (560 shown, 58 thin omitted)</li>
-      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1115 edges (avg confidence: 0.8)</li>
+      <li>6966 nodes · 10149 edges · 614 communities (555 shown, 59 thin omitted)</li>
+      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1166 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/service/RuntimeSettingsService.java, graphrag/observability/AiObservationService.java. This section covers 2913 nodes and 6262 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/service/RuntimeSettingsService.java, graphrag/observability/AiObservationService.java. This section covers 2974 nodes and 6475 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2913 nodes, 6262 edges)
+    %% Section: Extraction Pipeline (2974 nodes, 6475 edges)
     subgraph extract_pipeline_graphrag_controller_AiProfileCo_1c2efa25["graphrag/controller/AiProfileController.java"]
         controller_aiprofilecontroller_aiprofilecontroll_9865a5ff("AiProfileController<br/><small>graphrag/controller/AiProfileController.java</small>")
         controller_aiprofilecontroller_aiprofilecontroll_34e19c16("AiProfileController()<br/><small>graphrag/controller/AiProfileController.java</small>")
@@ -199,7 +199,7 @@ flowchart LR
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_c928302c
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_eedcff7f
-    %% Omitted for readability: 2895 nodes, 0 edges
+    %% Omitted for readability: 2956 nodes, 0 edges
     class controller_aiprofilecontroller_aiprofilecontroll_9865a5ff klass;
     class controller_aiprofilecontroller_aiprofilecontroll_34e19c16 function;
     class controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf function;
@@ -489,8 +489,8 @@ flowchart LR
       <tr><td><code>.understand-anything/intermediate/batches.json</code></td><td>173 nodes</td></tr>
 <tr><td><code>graphrag/service/RuntimeSettingsService.java</code></td><td>74 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
+<tr><td><code>graphrag/service/DocumentProcessingService.java</code></td><td>57 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>53 nodes</td></tr>
-<tr><td><code>graphrag/service/DocumentProcessingService.java</code></td><td>53 nodes</td></tr>
 <tr><td><code>graphrag/service/HybridSearchService.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationServiceTest.java</code></td><td>38 nodes</td></tr>
 <tr><td><code>graphrag/domain/DocumentProcessingRunNode.java</code></td><td>35 nodes</td></tr>
@@ -498,7 +498,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1955, method x1053, contains x757, calls x690. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x2042, method x1081, contains x760, calls x717. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2231,22 +2231,25 @@ flowchart LR
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around openspec, specmd, changes, add, mostly in specs/ai-observability-monitoring/spec.md, specs/ai-profile-management/spec.md, specs/ai-profile-management/spec.md. This section covers 191 nodes and 175 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around openspec, specmd, specs, changes, mostly in specs/ai-observability-monitoring/spec.md, specs/ai-profile-management/spec.md, specs/ai-profile-management/spec.md. This section covers 210 nodes and 193 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (191 nodes, 175 edges)
+    %% Section: Serving API (210 nodes, 193 edges)
     subgraph serve_api_specs_ai_observability_monitoring_spec_e3ed4285["specs/ai-observability-monitoring/spec.md"]
         openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_lan_9a9d55c6("Requirement: Langfuse is available as a...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_bus_93f052c4("Requirement: Business workflow spans co...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
         ai_observability_monitoring_spec_requirement_mod_7a367b9e("Requirement: Model operations are trace...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
-        ai_observability_monitoring_spec_requirement_mod_6b621205("Requirement: Model operations emit ligh...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
     end
     subgraph serve_api_specs_ai_profile_management_spec_md_d0c9820c["specs/ai-profile-management/spec.md"]
         ai_profile_management_spec_added_requirements_2812f7d2("ADDED Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
         ai_profile_management_spec_requirements_f0c29c28("Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
+    end
+    subgraph serve_api_specs_document_processing_options_spec_6b0a1a74["specs/document-processing-options/spec.md"]
+        document_processing_options_spec_added_requireme_9562b028("ADDED Requirements<br/><small>specs/document-processing-options/spec.md</small>")
+        document_processing_options_spec_requirements_4d52b960("Requirements<br/><small>specs/document-processing-options/spec.md</small>")
     end
     subgraph serve_api_specs_hybrid_search_spec_md_ed761238["specs/hybrid-search/spec.md"]
         hybrid_search_spec_added_requirements_ca7f0135("ADDED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
@@ -2259,20 +2262,19 @@ flowchart LR
     node_2026_06_10_add_hybrid_search_endpoint_desig_437985ec("design.md")
     node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a("proposal.md")
     node_2026_06_10_add_hybrid_search_endpoint_tasks_9f60d2b2("tasks.md")
-    add_document_processing_options_tasks_7870e34e("tasks.md")
-    document_processing_options_spec_added_requireme_9562b028("ADDED Requirements<br/><small>specs/document-processing-options/spec.md</small>")
+    node_2026_06_30_add_document_processing_options_2f66071f("tasks.md")
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_bus_93f052c4
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_lan_9a9d55c6
     openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_7a367b9e
-    openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_mod_6b621205
-    %% Omitted for readability: 173 nodes, 0 edges
+    %% Omitted for readability: 192 nodes, 0 edges
     class openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 concept;
     class ai_observability_monitoring_spec_requirement_lan_9a9d55c6 concept;
     class ai_observability_monitoring_spec_requirement_bus_93f052c4 concept;
     class ai_observability_monitoring_spec_requirement_mod_7a367b9e concept;
-    class ai_observability_monitoring_spec_requirement_mod_6b621205 concept;
     class ai_profile_management_spec_added_requirements_2812f7d2 concept;
     class ai_profile_management_spec_requirements_f0c29c28 concept;
+    class document_processing_options_spec_added_requireme_9562b028 concept;
+    class document_processing_options_spec_requirements_4d52b960 concept;
     class hybrid_search_spec_added_requirements_ca7f0135 concept;
     class hybrid_search_spec_requirements_6b3873a5 concept;
     class node_2026_05_30_add_kb_schemas_list_endpoint_des_3bedd5ea concept;
@@ -2282,8 +2284,7 @@ flowchart LR
     class node_2026_06_10_add_hybrid_search_endpoint_desig_437985ec concept;
     class node_2026_06_10_add_hybrid_search_endpoint_propo_896d597a concept;
     class node_2026_06_10_add_hybrid_search_endpoint_tasks_9f60d2b2 concept;
-    class add_document_processing_options_tasks_7870e34e concept;
-    class document_processing_options_spec_added_requireme_9562b028 concept;
+    class node_2026_06_30_add_document_processing_options_2f66071f concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2555,16 +2556,16 @@ flowchart LR
       <tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>32 nodes</td></tr>
 <tr><td><code>specs/ai-profile-management/spec.md</code></td><td>25 nodes</td></tr>
 <tr><td><code>specs/ai-profile-management/spec.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>specs/document-processing-options/spec.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>specs/hybrid-search/spec.md</code></td><td>19 nodes</td></tr>
-<tr><td><code>specs/document-processing-options/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>specs/hybrid-search/spec.md</code></td><td>17 nodes</td></tr>
+<tr><td><code>specs/document-processing-options/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>archive/2026-05-30-add-kb-schemas-list-endpoint/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>specs/schema-list-by-knowledge-base/spec.md</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x175. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x193. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3343,8 +3344,207 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. Community 178 ====== -->
-<h2 id="community-178">12. Community 178</h2>
+<!-- ====== 12. Community 553 ====== -->
+<h2 id="community-553">12. Community 553</h2>
+<p>Community 553 groups implementation around run, processing, specmd, document, mostly in specs/document-processing-run-history/spec.md. This section covers 14 nodes and 13 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 553 (14 nodes, 13 edges)
+    document_processing_run_history_spec_requirement_6185e762("Requirements<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_9a075f8f("Requirement: Processing run activation...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_6f7bd67b("Requirement: Processing runs are recorded<br/><small>specs/document-processing-run-history/spec.md</small>")
+    document_processing_run_history_spec_document_pr_ce1fdbef("document-processing-run-history Specifi...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_a5147789("spec.md")
+    openspec_specs_document_processing_run_history_s_fedc6b6b("Requirement: Effective processing optio...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    document_processing_run_history_spec_purpose_0b07e16d("Purpose<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_cd889634("Scenario: Client inspects processing ru...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_72a60222("Scenario: Failed overwrite keeps previo...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_3c9ad059("Scenario: First successful run becomes...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_770ba2a1("Scenario: Processing run completes<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_bde0a7a4("Scenario: Processing run fails<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_444526f1("Scenario: Processing run starts<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_10eb4f18("Scenario: Successful overwrite creates...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_specs_document_processing_run_history_s_a5147789 -->|contains| document_processing_run_history_spec_document_pr_ce1fdbef
+    document_processing_run_history_spec_document_pr_ce1fdbef -->|contains| document_processing_run_history_spec_purpose_0b07e16d
+    document_processing_run_history_spec_document_pr_ce1fdbef -->|contains| document_processing_run_history_spec_requirement_6185e762
+    document_processing_run_history_spec_requirement_6185e762 -->|contains| openspec_specs_document_processing_run_history_s_fedc6b6b
+    document_processing_run_history_spec_requirement_6185e762 -->|contains| openspec_specs_document_processing_run_history_s_9a075f8f
+    document_processing_run_history_spec_requirement_6185e762 -->|contains| openspec_specs_document_processing_run_history_s_6f7bd67b
+    openspec_specs_document_processing_run_history_s_6f7bd67b -->|contains| openspec_specs_document_processing_run_history_s_770ba2a1
+    openspec_specs_document_processing_run_history_s_6f7bd67b -->|contains| openspec_specs_document_processing_run_history_s_bde0a7a4
+    openspec_specs_document_processing_run_history_s_6f7bd67b -->|contains| openspec_specs_document_processing_run_history_s_444526f1
+    openspec_specs_document_processing_run_history_s_9a075f8f -->|contains| openspec_specs_document_processing_run_history_s_72a60222
+    openspec_specs_document_processing_run_history_s_9a075f8f -->|contains| openspec_specs_document_processing_run_history_s_3c9ad059
+    openspec_specs_document_processing_run_history_s_9a075f8f -->|contains| openspec_specs_document_processing_run_history_s_10eb4f18
+    openspec_specs_document_processing_run_history_s_fedc6b6b -->|contains| openspec_specs_document_processing_run_history_s_cd889634
+    class document_processing_run_history_spec_requirement_6185e762 concept;
+    class openspec_specs_document_processing_run_history_s_9a075f8f concept;
+    class openspec_specs_document_processing_run_history_s_6f7bd67b concept;
+    class document_processing_run_history_spec_document_pr_ce1fdbef concept;
+    class openspec_specs_document_processing_run_history_s_a5147789 concept;
+    class openspec_specs_document_processing_run_history_s_fedc6b6b concept;
+    class document_processing_run_history_spec_purpose_0b07e16d concept;
+    class openspec_specs_document_processing_run_history_s_cd889634 concept;
+    class openspec_specs_document_processing_run_history_s_72a60222 concept;
+    class openspec_specs_document_processing_run_history_s_3c9ad059 concept;
+    class openspec_specs_document_processing_run_history_s_770ba2a1 concept;
+    class openspec_specs_document_processing_run_history_s_bde0a7a4 concept;
+    class openspec_specs_document_processing_run_history_s_444526f1 concept;
+    class openspec_specs_document_processing_run_history_s_10eb4f18 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>document-processing-run-history Specification</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing document-processing-run-history Specification.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Purpose.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirements.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Requirement: Processing runs are recorded</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Processing runs are recorded.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Scenario: Processing run starts</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Processing run starts.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Scenario: Processing run completes</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Processing run completes.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Scenario: Processing run fails</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Processing run fails.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Requirement: Processing run activation preserves the latest successful result</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Processing run activation preserves the latest successful result.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Scenario: First successful run becomes active</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: First successful run becomes active.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Scenario: Successful overwrite creates new active run</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Successful overwrite creates new active run.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Scenario: Failed overwrite keeps previous active run</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Failed overwrite keeps previous active run.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Requirement: Effective processing options are auditable</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Effective processing options are auditable.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Scenario: Client inspects processing run data</code><br><small style="color:var(--muted)">specs/document-processing-run-history/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Client inspects processing run data.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>specs/document-processing-run-history/spec.md</code></td><td>14 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 13. Community 178 ====== -->
+<h2 id="community-178">13. Community 178</h2>
 <p>Community 178 groups implementation around agentsmd, stack, commands, architecture, mostly in AGENTS.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3520,8 +3720,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 13. Community 591 ====== -->
-<h2 id="community-591">13. Community 591</h2>
+<!-- ====== 14. Community 591 ====== -->
+<h2 id="community-591">14. Community 591</h2>
 <p>Community 591 groups implementation around processing, document, run, specmd, mostly in specs/document-processing-run-history/spec.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3529,40 +3729,40 @@ flowchart LR
 flowchart LR
     %% Section: Community 591 (12 nodes, 11 edges)
     document_processing_run_history_spec_added_requi_38ca6adc("ADDED Requirements<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_requirement_5185a6b8("Requirement: Processing run activation...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_requirement_b3f30dc6("Requirement: Processing runs are recorded<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_37722cfa("spec.md")
-    document_processing_run_history_spec_requirement_66940765("Requirement: Effective processing optio...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_pr_07496431("Scenario: Processing run completes<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_cl_4297a82d("Scenario: Client inspects processing ru...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_fa_8d35cabb("Scenario: Failed overwrite keeps previo...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_fi_cd6d1d82("Scenario: First successful run becomes...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_pr_c5b75f3e("Scenario: Processing run fails<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_pr_56068dc6("Scenario: Processing run starts<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_scenario_su_4870d077("Scenario: Successful overwrite creates...<br/><small>specs/document-processing-run-history/spec.md</small>")
-    document_processing_run_history_spec_37722cfa -->|contains| document_processing_run_history_spec_added_requi_38ca6adc
-    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| document_processing_run_history_spec_requirement_66940765
-    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| document_processing_run_history_spec_requirement_5185a6b8
-    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| document_processing_run_history_spec_requirement_b3f30dc6
-    document_processing_run_history_spec_requirement_b3f30dc6 -->|contains| document_processing_run_history_spec_scenario_pr_07496431
-    document_processing_run_history_spec_requirement_b3f30dc6 -->|contains| document_processing_run_history_spec_scenario_pr_c5b75f3e
-    document_processing_run_history_spec_requirement_b3f30dc6 -->|contains| document_processing_run_history_spec_scenario_pr_56068dc6
-    document_processing_run_history_spec_requirement_5185a6b8 -->|contains| document_processing_run_history_spec_scenario_fa_8d35cabb
-    document_processing_run_history_spec_requirement_5185a6b8 -->|contains| document_processing_run_history_spec_scenario_fi_cd6d1d82
-    document_processing_run_history_spec_requirement_5185a6b8 -->|contains| document_processing_run_history_spec_scenario_su_4870d077
-    document_processing_run_history_spec_requirement_66940765 -->|contains| document_processing_run_history_spec_scenario_cl_4297a82d
+    openspec_changes_archive_2026_06_30_add_document_11c55ae2("Requirement: Processing run activation...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_42456a23("Requirement: Processing runs are recorded<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_8595acd4("spec.md")
+    openspec_changes_archive_2026_06_30_add_document_392adf1d("Requirement: Effective processing optio...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_52dc59f0("Scenario: Processing run completes<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_cb040ac0("Scenario: Client inspects processing ru...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_e5fdf8ca("Scenario: Failed overwrite keeps previo...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_5cf57c7a("Scenario: First successful run becomes...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_7f9776c2("Scenario: Processing run fails<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_5020c64a("Scenario: Processing run starts<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_4628a4ae("Scenario: Successful overwrite creates...<br/><small>specs/document-processing-run-history/spec.md</small>")
+    openspec_changes_archive_2026_06_30_add_document_8595acd4 -->|contains| document_processing_run_history_spec_added_requi_38ca6adc
+    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| openspec_changes_archive_2026_06_30_add_document_392adf1d
+    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| openspec_changes_archive_2026_06_30_add_document_11c55ae2
+    document_processing_run_history_spec_added_requi_38ca6adc -->|contains| openspec_changes_archive_2026_06_30_add_document_42456a23
+    openspec_changes_archive_2026_06_30_add_document_42456a23 -->|contains| openspec_changes_archive_2026_06_30_add_document_52dc59f0
+    openspec_changes_archive_2026_06_30_add_document_42456a23 -->|contains| openspec_changes_archive_2026_06_30_add_document_7f9776c2
+    openspec_changes_archive_2026_06_30_add_document_42456a23 -->|contains| openspec_changes_archive_2026_06_30_add_document_5020c64a
+    openspec_changes_archive_2026_06_30_add_document_11c55ae2 -->|contains| openspec_changes_archive_2026_06_30_add_document_e5fdf8ca
+    openspec_changes_archive_2026_06_30_add_document_11c55ae2 -->|contains| openspec_changes_archive_2026_06_30_add_document_5cf57c7a
+    openspec_changes_archive_2026_06_30_add_document_11c55ae2 -->|contains| openspec_changes_archive_2026_06_30_add_document_4628a4ae
+    openspec_changes_archive_2026_06_30_add_document_392adf1d -->|contains| openspec_changes_archive_2026_06_30_add_document_cb040ac0
     class document_processing_run_history_spec_added_requi_38ca6adc concept;
-    class document_processing_run_history_spec_requirement_5185a6b8 concept;
-    class document_processing_run_history_spec_requirement_b3f30dc6 concept;
-    class document_processing_run_history_spec_37722cfa concept;
-    class document_processing_run_history_spec_requirement_66940765 concept;
-    class document_processing_run_history_spec_scenario_pr_07496431 concept;
-    class document_processing_run_history_spec_scenario_cl_4297a82d concept;
-    class document_processing_run_history_spec_scenario_fa_8d35cabb concept;
-    class document_processing_run_history_spec_scenario_fi_cd6d1d82 concept;
-    class document_processing_run_history_spec_scenario_pr_c5b75f3e concept;
-    class document_processing_run_history_spec_scenario_pr_56068dc6 concept;
-    class document_processing_run_history_spec_scenario_su_4870d077 concept;
+    class openspec_changes_archive_2026_06_30_add_document_11c55ae2 concept;
+    class openspec_changes_archive_2026_06_30_add_document_42456a23 concept;
+    class openspec_changes_archive_2026_06_30_add_document_8595acd4 concept;
+    class openspec_changes_archive_2026_06_30_add_document_392adf1d concept;
+    class openspec_changes_archive_2026_06_30_add_document_52dc59f0 concept;
+    class openspec_changes_archive_2026_06_30_add_document_cb040ac0 concept;
+    class openspec_changes_archive_2026_06_30_add_document_e5fdf8ca concept;
+    class openspec_changes_archive_2026_06_30_add_document_5cf57c7a concept;
+    class openspec_changes_archive_2026_06_30_add_document_7f9776c2 concept;
+    class openspec_changes_archive_2026_06_30_add_document_5020c64a concept;
+    class openspec_changes_archive_2026_06_30_add_document_4628a4ae concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3697,8 +3897,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. Community 532 ====== -->
-<h2 id="community-532">14. Community 532</h2>
+<!-- ====== 15. Community 532 ====== -->
+<h2 id="community-532">15. Community 532</h2>
 <p>Community 532 groups implementation around specmd, runtime, openspec, changes, mostly in specs/ai-observability-monitoring/spec.md. This section covers 10 nodes and 9 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3852,43 +4052,51 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. Community 594 ====== -->
-<h2 id="community-594">15. Community 594</h2>
-<p>Community 594 groups implementation around document, specmd, openspec, changes, mostly in specs/document-management/spec.md. This section covers 10 nodes and 9 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around changes, openspec, archive, 2026, mostly in specs/document-management/spec.md, archive/2026-06-04-fix-langfuse-llm-io-capture/design.md, archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md. This section covers 301 nodes and 253 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 594 (10 nodes, 9 edges)
-    openspec_changes_add_document_processing_options_80375cd1("Requirement: Document can be deleted<br/><small>specs/document-management/spec.md</small>")
-    document_management_spec_modified_requirements_565e05ef("MODIFIED Requirements<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_67c2f7d4("Requirement: Document replacement clear...<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_6855ce05("spec.md")
-    openspec_changes_add_document_processing_options_4f2222b1("Scenario: Replacement clears chunks and...<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_9d825f95("Scenario: Replacement storage write fails<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_d98cdd51("Scenario: Deleted document belongs to a...<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_57c97b44("Scenario: Deleted document is not found<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_1ab598df("Scenario: Stored binary deletion fails<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_45167c85("Scenario: Successful document deletion<br/><small>specs/document-management/spec.md</small>")
-    openspec_changes_add_document_processing_options_6855ce05 -->|contains| document_management_spec_modified_requirements_565e05ef
-    document_management_spec_modified_requirements_565e05ef -->|contains| openspec_changes_add_document_processing_options_80375cd1
-    document_management_spec_modified_requirements_565e05ef -->|contains| openspec_changes_add_document_processing_options_67c2f7d4
-    openspec_changes_add_document_processing_options_67c2f7d4 -->|contains| openspec_changes_add_document_processing_options_4f2222b1
-    openspec_changes_add_document_processing_options_67c2f7d4 -->|contains| openspec_changes_add_document_processing_options_9d825f95
-    openspec_changes_add_document_processing_options_80375cd1 -->|contains| openspec_changes_add_document_processing_options_d98cdd51
-    openspec_changes_add_document_processing_options_80375cd1 -->|contains| openspec_changes_add_document_processing_options_57c97b44
-    openspec_changes_add_document_processing_options_80375cd1 -->|contains| openspec_changes_add_document_processing_options_1ab598df
-    openspec_changes_add_document_processing_options_80375cd1 -->|contains| openspec_changes_add_document_processing_options_45167c85
-    class openspec_changes_add_document_processing_options_80375cd1 concept;
-    class document_management_spec_modified_requirements_565e05ef concept;
-    class openspec_changes_add_document_processing_options_67c2f7d4 concept;
-    class openspec_changes_add_document_processing_options_6855ce05 concept;
-    class openspec_changes_add_document_processing_options_4f2222b1 concept;
-    class openspec_changes_add_document_processing_options_9d825f95 concept;
-    class openspec_changes_add_document_processing_options_d98cdd51 concept;
-    class openspec_changes_add_document_processing_options_57c97b44 concept;
-    class openspec_changes_add_document_processing_options_1ab598df concept;
-    class openspec_changes_add_document_processing_options_45167c85 concept;
+    %% Section: Other (301 nodes, 253 edges)
+    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
+    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545("proposal.md")
+    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
+    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
+    node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95("Decisions<br/><small>archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small>")
+    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07("design.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
+    node_2026_06_18_expand_runtime_settings_manageme_5a63b876("design.md")
+    node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73("tasks.md")
+    node_2026_06_19_allow_restart_required_setting_o_dd4bbca8("design.md")
+    node_2026_06_19_allow_restart_required_setting_o_d699845f("tasks.md")
+    node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8("design.md")
+    node_2026_06_19_include_runtime_setting_version_d283ed99("design.md")
+    node_2026_06_30_add_document_processing_options_bbb8e2ce("design.md")
+    add_page_aware_tika_processing_design_b5fa825d("design.md")
+    add_page_aware_tika_processing_tasks_398de8f7("tasks.md")
+    openspec_changes_archive_2026_06_30_add_document_f1873c9c("Requirement: Document can be deleted<br/><small>specs/document-management/spec.md</small>")
+    %% Omitted for readability: 283 nodes, 0 edges
+    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
+    class node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 concept;
+    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
+    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
+    class node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95 concept;
+    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07 concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
+    class node_2026_06_18_expand_runtime_settings_manageme_5a63b876 concept;
+    class node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73 concept;
+    class node_2026_06_19_allow_restart_required_setting_o_dd4bbca8 concept;
+    class node_2026_06_19_allow_restart_required_setting_o_d699845f concept;
+    class node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8 concept;
+    class node_2026_06_19_include_runtime_setting_version_d283ed99 concept;
+    class node_2026_06_30_add_document_processing_options_bbb8e2ce concept;
+    class add_page_aware_tika_processing_design_b5fa825d concept;
+    class add_page_aware_tika_processing_tasks_398de8f7 concept;
+    class openspec_changes_archive_2026_06_30_add_document_f1873c9c concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3990,6 +4198,166 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Scenario: Stored binary deletion fails.</td>
 </tr>
+<tr>
+  <td>11</td>
+  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing design.md.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Context.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Goals / Non-Goals.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Decisions.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Centralize Langfuse input/output propagation</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Centralize Langfuse input/output propagation.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Treat chat and embedding outputs differently</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Treat chat and embedding outputs differently.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Preserve privacy configuration semantics</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Preserve privacy configuration semantics.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Add tests around exported attributes, not Langfuse UI behavior</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Add tests around exported attributes, not Langfuse UI behavior.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Risks / Trade-offs.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing proposal.md.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Why.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing What Changes.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Capabilities.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing New Capabilities.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modified Capabilities.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impact.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing design.md.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Context.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Goals / Non-Goals.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Decisions.</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -3998,341 +4366,18 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>specs/document-management/spec.md</code></td><td>10 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x9. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around changes, openspec, archive, 2026, mostly in archive/2026-06-04-fix-langfuse-llm-io-capture/design.md, archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md, archive/2026-05-15-overwrite-completed-extraction/design.md. This section covers 291 nodes and 244 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (291 nodes, 244 edges)
-    node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545("proposal.md")
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
-    node_2026_05_15_overwrite_completed_extraction_p_168e9394("proposal.md")
-    node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
-    node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95("Decisions<br/><small>archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small>")
-    node_2026_06_06_extend_document_operations_tasks_3d26ded0("tasks.md")
-    node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07("design.md")
-    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
-    node_2026_06_18_expand_runtime_settings_manageme_5a63b876("design.md")
-    node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73("tasks.md")
-    node_2026_06_19_allow_restart_required_setting_o_dd4bbca8("design.md")
-    node_2026_06_19_allow_restart_required_setting_o_d699845f("tasks.md")
-    node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8("design.md")
-    node_2026_06_19_include_runtime_setting_version_d283ed99("design.md")
-    add_document_processing_options_design_3597fb00("design.md")
-    add_page_aware_tika_processing_design_b5fa825d("design.md")
-    add_page_aware_tika_processing_tasks_398de8f7("tasks.md")
-    %% Omitted for readability: 273 nodes, 0 edges
-    class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
-    class node_2026_05_15_overwrite_completed_extraction_p_168e9394 concept;
-    class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
-    class node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95 concept;
-    class node_2026_06_06_extend_document_operations_tasks_3d26ded0 concept;
-    class node_2026_06_18_add_runtime_settings_ai_profiles_a4a77b07 concept;
-    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
-    class node_2026_06_18_expand_runtime_settings_manageme_5a63b876 concept;
-    class node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73 concept;
-    class node_2026_06_19_allow_restart_required_setting_o_dd4bbca8 concept;
-    class node_2026_06_19_allow_restart_required_setting_o_d699845f concept;
-    class node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8 concept;
-    class node_2026_06_19_include_runtime_setting_version_d283ed99 concept;
-    class add_document_processing_options_design_3597fb00 concept;
-    class add_page_aware_tika_processing_design_b5fa825d concept;
-    class add_page_aware_tika_processing_tasks_398de8f7 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing design.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Context.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Goals / Non-Goals.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Decisions.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Centralize Langfuse input/output propagation</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Centralize Langfuse input/output propagation.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Treat chat and embedding outputs differently</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Treat chat and embedding outputs differently.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Preserve privacy configuration semantics</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Preserve privacy configuration semantics.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>Add tests around exported attributes, not Langfuse UI behavior</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Add tests around exported attributes, not Langfuse UI behavior.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Risks / Trade-offs.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>design.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing design.md.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>Context</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Context.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>Goals / Non-Goals</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Goals / Non-Goals.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Decisions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Decisions.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>Risks / Trade-offs</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Risks / Trade-offs.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Migration Plan</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Migration Plan.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Open Questions</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/design.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Open Questions.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>proposal.md</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing proposal.md.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Why</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Why.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>What Changes</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing What Changes.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Capabilities.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>New Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing New Capabilities.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>Modified Capabilities</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Modified Capabilities.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>Impact</code><br><small style="color:var(--muted)">archive/2026-05-15-overwrite-completed-extraction/proposal.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Impact.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</code></td><td>9 nodes</td></tr>
-<tr><td><code>changes/add-document-processing-options/design.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>changes/add-document-processing-options/proposal.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</code></td><td>9 nodes</td></tr>
 <tr><td><code>changes/add-page-aware-tika-processing/design.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>changes/add-page-aware-tika-processing/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-15-cleanup-stale-failed-extraction-runs/proposal.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-15-overwrite-completed-extraction/design.md</code></td><td>7 nodes</td></tr>
 <tr><td><code>archive/2026-05-15-overwrite-completed-extraction/proposal.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>archive/2026-05-15-tolerate-invalid-relationship-triples/proposal.md</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x244. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x253. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4357,18 +4402,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>6872</td></tr>
-      <tr><td>Edges</td><td>9905</td></tr>
+      <tr><td>Nodes</td><td>6966</td></tr>
+      <tr><td>Edges</td><td>10149</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>618</td></tr>
+      <tr><td>Communities</td><td>614</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>8790</td></tr>
-      <tr><td>INFERRED</td><td>1115</td></tr>
+      <tr><td>EXTRACTED</td><td>8983</td></tr>
+      <tr><td>INFERRED</td><td>1166</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4376,7 +4421,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-30 12:57 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-30 13:20 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

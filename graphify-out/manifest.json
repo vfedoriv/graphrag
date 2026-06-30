@@ -55,14 +55,14 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java": {
-    "mtime": 1778870508.4328802,
-    "ast_hash": "970cb6b6336530c1075adaf24839787a",
-    "semantic_hash": "970cb6b6336530c1075adaf24839787a"
+    "mtime": 1782825059.8262434,
+    "ast_hash": "8fde346a6ca3e8b5aeb4756fd39fb9eb",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java": {
-    "mtime": 1778870508.4328802,
-    "ast_hash": "118893ca24fdcb1dc8061c3c307fbeeb",
-    "semantic_hash": "118893ca24fdcb1dc8061c3c307fbeeb"
+    "mtime": 1782825375.1745172,
+    "ast_hash": "74b3c812812ffb9dc6b8831546bfe928",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/package-info.java": {
     "mtime": 1778080990.8131819,
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java": {
-    "mtime": 1782824002.908672,
-    "ast_hash": "84c185ae5de8b7d2b9fd6408eaa97437",
+    "mtime": 1782825316.0141718,
+    "ast_hash": "29c34312bc8db7578ec23fd7eb3b4f8f",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParserTest.java": {
-    "mtime": 1778870508.4328802,
-    "ast_hash": "db4c10d1b47aa40e6efa928bc9014cc2",
-    "semantic_hash": "db4c10d1b47aa40e6efa928bc9014cc2"
+    "mtime": 1782825163.348662,
+    "ast_hash": "88fb3a4e351d5ccb7ecb4f1a904859cd",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequestValidationTest.java": {
     "mtime": 1778485306.7056494,
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingServiceTest.java": {
-    "mtime": 1782824003.054675,
-    "ast_hash": "0fd53c2b6e0098b0089095a0b0306294",
+    "mtime": 1782825323.084333,
+    "ast_hash": "999751de32611b8635165b461e5f8738",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java": {
@@ -2440,8 +2440,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/document-management/spec.md": {
-    "mtime": 1780769736.3356526,
-    "ast_hash": "3b8e63dc54242dd7041ffe233c9f988e",
+    "mtime": 1782824371.4646146,
+    "ast_hash": "bfc6bf967a5a4ff008c4a5a53c209a43",
     "semantic_hash": ""
   },
   "openspec/specs/documentation-alignment/spec.md": {
@@ -3145,48 +3145,13 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingOptionsRegistry.java": {
-    "mtime": 1782823507.0333936,
-    "ast_hash": "59b2ddb4e3612f771d0b998e2bd81e9a",
+    "mtime": 1782825384.212722,
+    "ast_hash": "30fc65290f0b4c2d89f612fa03d61764",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingOptionsRegistryTest.java": {
-    "mtime": 1782823823.7409592,
-    "ast_hash": "3d559afc88026e38636d3f0098189a5e",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/.openspec.yaml": {
-    "mtime": 1782822937.5075736,
-    "ast_hash": "3a2e665cfb0f43d1733f16a967480b31",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/design.md": {
-    "mtime": 1782823106.1440763,
-    "ast_hash": "347a04ddfea3b03120b0b265bd80584f",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/proposal.md": {
-    "mtime": 1782823106.0210738,
-    "ast_hash": "91fab20b39801c544f42d05e829b724b",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/specs/document-management/spec.md": {
-    "mtime": 1782823107.0240946,
-    "ast_hash": "92a2b4c0516a9272bf7099ff3990d2db",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/specs/document-processing-options/spec.md": {
-    "mtime": 1782823106.514084,
-    "ast_hash": "75e2df591ed81ec1886bb6044c54f557",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/specs/document-processing-run-history/spec.md": {
-    "mtime": 1782823106.7770896,
-    "ast_hash": "6090f2a45cf646d22d5b9d48c05657ee",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-document-processing-options/tasks.md": {
-    "mtime": 1782824235.8584988,
-    "ast_hash": "d944d8e3d9eb207647e36a8e29c44ab8",
+    "mtime": 1782825419.0825112,
+    "ast_hash": "c4c08d67396e3aa91d4fcac8b8a3cabe",
     "semantic_hash": ""
   },
   "openspec/changes/add-page-aware-tika-processing/.openspec.yaml": {
@@ -3210,8 +3175,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/add-page-aware-tika-processing/tasks.md": {
-    "mtime": 1782823107.5341053,
-    "ast_hash": "b1dc58b29d6397133ab389780a4f179b",
+    "mtime": 1782825615.7349243,
+    "ast_hash": "0703c52ed7bbf91048ba95849e0f78aa",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-19-include-runtime-setting-version-backfill/.openspec.yaml": {
@@ -3237,6 +3202,71 @@
   "openspec/changes/archive/2026-06-19-include-runtime-setting-version-backfill/tasks.md": {
     "mtime": 1781866547.195024,
     "ast_hash": "6246ab4849d4645bde77e0c7e3bfdbbe",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParsedDocument.java": {
+    "mtime": 1782824996.743751,
+    "ast_hash": "e9c94c275842faf05759485c3ce6374c",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParsedSection.java": {
+    "mtime": 1782824996.5927474,
+    "ast_hash": "d38273946e7f845a64ca0f9fcb8b19a5",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/TikaProcessingOptions.java": {
+    "mtime": 1782825369.1603808,
+    "ast_hash": "cc20d68535748642168b59eb79c5a07a",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/document/TikaProcessingOptionsTest.java": {
+    "mtime": 1782825392.0558999,
+    "ast_hash": "c1933d0290989f6a8e23c95076cf5e5b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/.openspec.yaml": {
+    "mtime": 1782822937.5075736,
+    "ast_hash": "3a2e665cfb0f43d1733f16a967480b31",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/design.md": {
+    "mtime": 1782823106.1440763,
+    "ast_hash": "347a04ddfea3b03120b0b265bd80584f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/proposal.md": {
+    "mtime": 1782823106.0210738,
+    "ast_hash": "91fab20b39801c544f42d05e829b724b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/specs/document-management/spec.md": {
+    "mtime": 1782823107.0240946,
+    "ast_hash": "92a2b4c0516a9272bf7099ff3990d2db",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/specs/document-processing-options/spec.md": {
+    "mtime": 1782823106.514084,
+    "ast_hash": "75e2df591ed81ec1886bb6044c54f557",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/specs/document-processing-run-history/spec.md": {
+    "mtime": 1782823106.7770896,
+    "ast_hash": "6090f2a45cf646d22d5b9d48c05657ee",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-add-document-processing-options/tasks.md": {
+    "mtime": 1782824235.8584988,
+    "ast_hash": "d944d8e3d9eb207647e36a8e29c44ab8",
+    "semantic_hash": ""
+  },
+  "openspec/specs/document-processing-options/spec.md": {
+    "mtime": 1782824371.4656146,
+    "ast_hash": "f48b5cb83a4f8c8108dc6107587befa7",
+    "semantic_hash": ""
+  },
+  "openspec/specs/document-processing-run-history/spec.md": {
+    "mtime": 1782824371.4656146,
+    "ast_hash": "caf10ae8ce4f7011d3a2d8cb530fb878",
     "semantic_hash": ""
   }
 }

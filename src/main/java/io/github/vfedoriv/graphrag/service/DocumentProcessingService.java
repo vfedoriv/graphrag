@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.document.ParsedDocument;
+import io.github.vfedoriv.graphrag.document.ParsedSection;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
@@ -139,9 +141,10 @@ public class DocumentProcessingService {
             try {
                 updateProcessingRunStage(processingRun, "PARSING");
                 document = setStatus(document, DocumentStatus.PARSING, null);
-                String text = parseDocument(document);
+                ParsedDocument parsedDocument = parseDocument(document, optionSet.effectiveOptions());
                 updateProcessingRunStage(processingRun, "CHUNKING");
-                List<String> chunks = chunkingService.split(text);
+                List<ChunkWithMetadata> chunks = chunksFor(document, processingRun, parsedDocument);
+                List<String> chunkTexts = chunks.stream().map(ChunkWithMetadata::text).toList();
                 workflow.highCardinalityAttribute("document.chunk_count", String.valueOf(chunks.size()));
                 log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
                 updateProcessingRunStage(processingRun, "EMBEDDING");
@@ -170,7 +173,7 @@ public class DocumentProcessingService {
                     documentId,
                     embeddingClient.getClass().getName()
                 );
-                List<List<Double>> embeddings = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(chunks));
+                List<List<Double>> embeddings = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(chunkTexts));
                 log.info("Embedding request completed: documentId={}, vectors={}", documentId, embeddings.size());
                 if (embeddings.size() != chunks.size()) {
                     throw new IllegalStateException("Embedding response size mismatch");
@@ -183,12 +186,12 @@ public class DocumentProcessingService {
                     chunk.setId(UUID.randomUUID().toString());
                     chunk.setDocumentId(documentId);
                     chunk.setChunkIndex(i);
-                    chunk.setText(chunks.get(i));
-                    chunk.setTokenEstimate(chunkingService.tokenEstimate(chunks.get(i)));
+                    chunk.setText(chunks.get(i).text());
+                    chunk.setTokenEstimate(chunkingService.tokenEstimate(chunks.get(i).text()));
                     chunk.setEmbedding(embeddings.get(i));
                     chunk.setEmbeddingModel(activeProfile.getEmbeddingModel());
                     chunk.setEmbeddingDimensions(activeProfile.getEmbeddingDimensions());
-                    chunk.setMetadata("{\"source\":\"" + safeJson(document.getOriginalFilename()) + "\"}");
+                    chunk.setMetadata(writeJson(chunks.get(i).metadata()));
                     documentChunkRepository.save(chunk);
                     createChunkRelationship(documentId, chunk.getId());
                 }
@@ -260,10 +263,57 @@ public class DocumentProcessingService {
         return chunks;
     }
 
-    private String parseDocument(DocumentUploadNode document) throws IOException {
+    private ParsedDocument parseDocument(DocumentUploadNode document, Map<String, Object> effectiveOptions) throws IOException {
         byte[] bytes = documentUploadService.readContent(document.getContentUri());
         log.info("Loaded document bytes from storage: documentId={}, bytes={}", document.getId(), bytes.length);
-        return documentParsingService.parse(document.getOriginalFilename(), document.getContentType(), bytes);
+        return documentParsingService.parseStructured(
+            document.getOriginalFilename(),
+            document.getContentType(),
+            bytes,
+            effectiveOptions
+        );
+    }
+
+    private List<ChunkWithMetadata> chunksFor(
+        DocumentUploadNode document,
+        DocumentProcessingRunNode processingRun,
+        ParsedDocument parsedDocument
+    ) {
+        List<ChunkWithMetadata> chunks = new java.util.ArrayList<>();
+        for (ParsedSection section : parsedDocument.sections()) {
+            List<String> sectionChunks = chunkingService.split(section.text());
+            for (String text : sectionChunks) {
+                chunks.add(new ChunkWithMetadata(text, chunkMetadata(document, processingRun, parsedDocument, section)));
+            }
+        }
+        return chunks;
+    }
+
+    private Map<String, Object> chunkMetadata(
+        DocumentUploadNode document,
+        DocumentProcessingRunNode processingRun,
+        ParsedDocument parsedDocument,
+        ParsedSection section
+    ) {
+        Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("source", document.getOriginalFilename());
+        metadata.put("parserId", section.parserId() == null ? parsedDocument.parserId() : section.parserId());
+        metadata.put("format", section.format() == null ? parsedDocument.format() : section.format());
+        metadata.put("processingRunId", processingRun.getId());
+        metadata.put("sectionIndex", section.sectionIndex());
+        if (section.pageNumber() != null) {
+            metadata.put("pageNumber", section.pageNumber());
+        }
+        if (section.pageCount() != null) {
+            metadata.put("pageCount", section.pageCount());
+        }
+        Map<String, Object> parserMetadata = new LinkedHashMap<>();
+        parserMetadata.putAll(parsedDocument.metadata());
+        parserMetadata.putAll(section.metadata());
+        if (!parserMetadata.isEmpty()) {
+            metadata.put("parserMetadata", parserMetadata);
+        }
+        return metadata;
     }
 
     private DocumentProcessingOptionSet resolveOptionSet(DocumentUploadNode document, Map<String, Object> requestedOptions) {
@@ -420,13 +470,6 @@ public class DocumentProcessingService {
             .run();
     }
 
-    private String safeJson(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
-
     private EmbeddingClient resolveEmbeddingClient() {
         List<EmbeddingClient> clients = embeddingClientProvider.orderedStream().toList();
         if (clients.isEmpty()) {
@@ -439,5 +482,8 @@ public class DocumentProcessingService {
             .filter(client -> !client.getClass().getName().contains("SpringAi"))
             .findFirst()
             .orElse(clients.getFirst());
+    }
+
+    private record ChunkWithMetadata(String text, Map<String, Object> metadata) {
     }
 }

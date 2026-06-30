@@ -12,6 +12,8 @@ import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.document.ParsedDocument;
+import io.github.vfedoriv.graphrag.document.ParsedSection;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
@@ -89,8 +91,12 @@ class DocumentProcessingServiceTest {
         when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
-        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
-            .thenReturn("abcdefghij01234567");
+        when(documentParsingService.parseStructured(
+            org.mockito.Mockito.eq("a.txt"),
+            org.mockito.Mockito.eq("text/plain"),
+            any(byte[].class),
+            any()
+        )).thenReturn(parsedDocument("text", "TXT", "abcdefghij01234567"));
         when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
@@ -122,7 +128,15 @@ class DocumentProcessingServiceTest {
 
         assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
         assertThat(processed.getProcessedAt()).isNotNull();
-        verify(documentChunkRepository, times(2)).save(any());
+        ArgumentCaptor<DocumentChunkNode> chunkCaptor = ArgumentCaptor.forClass(DocumentChunkNode.class);
+        verify(documentChunkRepository, times(2)).save(chunkCaptor.capture());
+        assertThat(chunkCaptor.getAllValues()).extracting(DocumentChunkNode::getChunkIndex).containsExactly(0, 1);
+        assertThat(chunkCaptor.getAllValues().getFirst().getMetadata())
+            .contains("\"source\":\"a.txt\"")
+            .contains("\"parserId\":\"text\"")
+            .contains("\"format\":\"TXT\"")
+            .contains("\"processingRunId\":\"")
+            .contains("\"sectionIndex\":0");
         ArgumentCaptor<DocumentProcessingRunNode> runCaptor = ArgumentCaptor.forClass(DocumentProcessingRunNode.class);
         verify(documentProcessingRunRepository, org.mockito.Mockito.atLeastOnce()).save(runCaptor.capture());
         assertThat(savedRunStages)
@@ -150,8 +164,12 @@ class DocumentProcessingServiceTest {
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
-        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
-            .thenThrow(new IllegalArgumentException("parse failed"));
+        when(documentParsingService.parseStructured(
+            org.mockito.Mockito.eq("a.txt"),
+            org.mockito.Mockito.eq("text/plain"),
+            any(byte[].class),
+            any()
+        )).thenThrow(new IllegalArgumentException("parse failed"));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
         DocumentProcessingService service = new DocumentProcessingService(
@@ -205,8 +223,12 @@ class DocumentProcessingServiceTest {
         when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
-        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
-            .thenReturn("abcdefghij01234567");
+        when(documentParsingService.parseStructured(
+            org.mockito.Mockito.eq("a.txt"),
+            org.mockito.Mockito.eq("text/plain"),
+            any(byte[].class),
+            any()
+        )).thenReturn(parsedDocument("text", "TXT", "abcdefghij01234567"));
         when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
@@ -265,6 +287,87 @@ class DocumentProcessingServiceTest {
         assertThat(processed.getProcessedAt()).isNotNull();
     }
 
+    @Test
+    void chunksPageSectionsWithoutCrossingPageBoundariesAndPersistsPageMetadata() throws Exception {
+        AppProperties appProperties = props();
+        ChunkingService chunkingService = new ChunkingService(TestRuntimeSettings.from(appProperties));
+        EmbeddingClient embeddingClient = texts -> List.of(
+            List.of(0.1, 0.2, 0.3),
+            List.of(0.4, 0.5, 0.6),
+            List.of(0.7, 0.8, 0.9),
+            List.of(1.0, 1.1, 1.2)
+        );
+        DocumentUploadNode doc = new DocumentUploadNode();
+        doc.setId("doc-1");
+        doc.setKnowledgeBaseId("kb-1");
+        doc.setOriginalFilename("sample.pdf");
+        doc.setContentType("application/pdf");
+        doc.setContentUri("file:///tmp/sample.pdf");
+
+        ParsedDocument parsedDocument = new ParsedDocument(
+            "tika",
+            "PDF",
+            List.of(
+                new ParsedSection(0, "abcdefghij01234567", "tika", "PDF", 1, 2, java.util.Map.of()),
+                new ParsedSection(1, "klmnopqrst98765432", "tika", "PDF", 2, 2, java.util.Map.of())
+            ),
+            java.util.Map.of("Content-Type", "application/pdf")
+        );
+
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
+        when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
+        when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
+        when(documentParsingService.parseStructured(
+            org.mockito.Mockito.eq("sample.pdf"),
+            org.mockito.Mockito.eq("application/pdf"),
+            any(byte[].class),
+            any()
+        )).thenReturn(parsedDocument);
+        when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
+        when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
+            .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode(), new DocumentChunkNode(), new DocumentChunkNode()));
+        when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
+        DocumentProcessingService service = new DocumentProcessingService(
+            documentUploadRepository,
+            documentChunkRepository,
+            extractionRunRepository,
+            documentProcessingRunRepository,
+            documentUploadService,
+            documentParsingService,
+            chunkingService,
+            new DocumentProcessingOptionsRegistry(),
+            neo4jClient,
+            embeddingClientProvider,
+            embeddingModelProvider,
+            environment,
+            graphExtractionService,
+            TestAiObservationService.noop(),
+            knowledgeBaseService
+        );
+
+        DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("pdf.split-pages", true));
+
+        assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
+        ArgumentCaptor<DocumentChunkNode> chunkCaptor = ArgumentCaptor.forClass(DocumentChunkNode.class);
+        verify(documentChunkRepository, times(4)).save(chunkCaptor.capture());
+        assertThat(chunkCaptor.getAllValues()).extracting(DocumentChunkNode::getChunkIndex).containsExactly(0, 1, 2, 3);
+        assertThat(chunkCaptor.getAllValues().get(0).getText()).contains("abcdefghij");
+        assertThat(chunkCaptor.getAllValues().get(1).getText()).contains("ij01234567");
+        assertThat(chunkCaptor.getAllValues().get(2).getText()).contains("klmnopqrst");
+        assertThat(chunkCaptor.getAllValues().get(3).getText()).contains("st98765432");
+        assertThat(chunkCaptor.getAllValues().get(0).getMetadata())
+            .contains("\"sectionIndex\":0")
+            .contains("\"pageNumber\":1")
+            .contains("\"pageCount\":2")
+            .contains("\"parserMetadata\":{\"Content-Type\":\"application/pdf\"}");
+        assertThat(chunkCaptor.getAllValues().get(2).getMetadata())
+            .contains("\"sectionIndex\":1")
+            .contains("\"pageNumber\":2")
+            .contains("\"pageCount\":2");
+    }
+
     private AppProperties props() {
         return new AppProperties(
             new AppProperties.Neo4j("neo4j"),
@@ -287,5 +390,14 @@ class DocumentProcessingServiceTest {
         profile.setTimeoutSeconds(60);
         profile.setMaxRetries(2);
         return profile;
+    }
+
+    private ParsedDocument parsedDocument(String parserId, String format, String text) {
+        return new ParsedDocument(
+            parserId,
+            format,
+            List.of(new ParsedSection(0, text, parserId, format, null, null, java.util.Map.of())),
+            java.util.Map.of()
+        );
     }
 }

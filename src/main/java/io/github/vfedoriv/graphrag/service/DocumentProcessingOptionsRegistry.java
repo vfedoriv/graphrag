@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.error.ProcessingOptionsValidationException;
+import io.github.vfedoriv.graphrag.document.TikaProcessingOptions;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +53,17 @@ public class DocumentProcessingOptionsRegistry {
             "Requests OCR for image-backed PDF content when a parser implementation supports it."
         ),
         new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_SPLIT_PAGES,
+            "Split PDF pages",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Preserves PDF page boundaries as parser sections before chunking."
+        ),
+        new DocumentProcessingOptionDefinition(
             "maxPages",
             "Maximum pages",
             DocumentProcessingOptionValueType.INTEGER,
@@ -61,6 +73,226 @@ public class DocumentProcessingOptionsRegistry {
             List.of(FORMAT_PDF),
             true,
             "Maximum PDF pages to process. A value of 0 means no document-level page limit."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_SORT_BY_POSITION,
+            "Sort PDF text by position",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF text position sorting for layout-sensitive extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_ENABLE_AUTO_SPACE,
+            "Enable PDF auto spacing",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF auto-space insertion."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_SUPPRESS_DUPLICATE_OVERLAPPING_TEXT,
+            "Suppress duplicate PDF text",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika duplicate overlapping text suppression."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_ANNOTATION_TEXT,
+            "Extract PDF annotations",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF annotation text extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_BOOKMARKS_TEXT,
+            "Extract PDF bookmarks",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF bookmark text extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_ACROFORM_CONTENT,
+            "Extract PDF forms",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF AcroForm content extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_FONT_NAMES,
+            "Extract PDF font names",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF font-name extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_INLINE_IMAGES,
+            "Extract PDF inline images",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF inline image extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_UNIQUE_INLINE_IMAGES_ONLY,
+            "Extract unique PDF inline images only",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika duplicate inline image filtering."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_EXTRACT_INLINE_IMAGE_METADATA_ONLY,
+            "Extract PDF image metadata only",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika inline image metadata-only extraction."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_OCR_STRATEGY,
+            "PDF OCR strategy",
+            DocumentProcessingOptionValueType.STRING,
+            "NO_OCR",
+            DocumentProcessingOptionConstraint.allowedValues(List.of("AUTO", "NO_OCR", "OCR_ONLY", "OCR_AND_TEXT_EXTRACTION")),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF OCR strategy."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_OCR_RENDERING_STRATEGY,
+            "PDF OCR rendering strategy",
+            DocumentProcessingOptionValueType.STRING,
+            "NO_TEXT",
+            DocumentProcessingOptionConstraint.allowedValues(List.of("NO_TEXT", "TEXT_ONLY", "VECTOR_GRAPHICS_ONLY", "ALL")),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF OCR rendering strategy."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_OCR_DPI,
+            "PDF OCR DPI",
+            DocumentProcessingOptionValueType.INTEGER,
+            300,
+            DocumentProcessingOptionConstraint.integerRange(72, 600),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika PDF OCR render DPI."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.PDF_OCR_IMAGE_FORMAT,
+            "PDF OCR image format",
+            DocumentProcessingOptionValueType.STRING,
+            "png",
+            DocumentProcessingOptionConstraint.allowedValues(List.of("png", "jpeg", "tiff")),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tika OCR render image format."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.OCR_LANGUAGE,
+            "OCR language",
+            DocumentProcessingOptionValueType.STRING,
+            "eng",
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tesseract OCR language."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.OCR_PAGE_SEGMENTATION_MODE,
+            "OCR page segmentation mode",
+            DocumentProcessingOptionValueType.STRING,
+            "1",
+            DocumentProcessingOptionConstraint.allowedValues(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13")),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tesseract page segmentation mode."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.OCR_PRESERVE_INTERWORD_SPACING,
+            "Preserve OCR interword spacing",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            false,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tesseract interword spacing preservation."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.OCR_TIMEOUT_SECONDS,
+            "OCR timeout seconds",
+            DocumentProcessingOptionValueType.INTEGER,
+            120,
+            DocumentProcessingOptionConstraint.integerRange(1, 3600),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tesseract OCR timeout."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.OCR_SKIP,
+            "Skip OCR",
+            DocumentProcessingOptionValueType.BOOLEAN,
+            true,
+            DocumentProcessingOptionConstraint.none(),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF),
+            true,
+            "Maps to Tesseract OCR skip flag."
+        ),
+        new DocumentProcessingOptionDefinition(
+            TikaProcessingOptions.TIKA_WRITE_LIMIT,
+            "Tika write limit",
+            DocumentProcessingOptionValueType.INTEGER,
+            -1,
+            DocumentProcessingOptionConstraint.integerRange(-1, 10_000_000),
+            List.of(PARSER_TIKA),
+            List.of(FORMAT_PDF, FORMAT_DOCX),
+            true,
+            "Limits Tika handler output size. A value of -1 keeps Tika output unlimited."
         ),
         new DocumentProcessingOptionDefinition(
             "docxRevisionMode",

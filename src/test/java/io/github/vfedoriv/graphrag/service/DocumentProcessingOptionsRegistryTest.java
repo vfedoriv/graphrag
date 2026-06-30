@@ -21,9 +21,19 @@ class DocumentProcessingOptionsRegistryTest {
         assertThat(registry.applicableDefinitions(txt)).extracting(DocumentProcessingOptionDefinition::key)
             .containsExactly("preserveLineBreaks");
         assertThat(registry.applicableDefinitions(pdf)).extracting(DocumentProcessingOptionDefinition::key)
-            .containsExactly("preserveLineBreaks", "includeMetadata", "ocrEnabled", "maxPages");
+            .contains(
+                "preserveLineBreaks",
+                "includeMetadata",
+                "ocrEnabled",
+                "pdf.split-pages",
+                "maxPages",
+                "pdf.sort-by-position",
+                "pdf.ocr-strategy",
+                "ocr.language",
+                "tika.write-limit"
+            );
         assertThat(registry.applicableDefinitions(docx)).extracting(DocumentProcessingOptionDefinition::key)
-            .containsExactly("preserveLineBreaks", "includeMetadata", "docxRevisionMode");
+            .containsExactly("preserveLineBreaks", "includeMetadata", "tika.write-limit", "docxRevisionMode");
     }
 
     @Test
@@ -40,7 +50,10 @@ class DocumentProcessingOptionsRegistryTest {
             .containsEntry("preserveLineBreaks", true)
             .containsEntry("includeMetadata", false)
             .containsEntry("ocrEnabled", true)
-            .containsEntry("maxPages", 2);
+            .containsEntry("maxPages", 2)
+            .containsEntry("pdf.split-pages", false)
+            .containsEntry("pdf.ocr-strategy", "NO_OCR")
+            .containsEntry("tika.write-limit", -1);
     }
 
     @Test
@@ -55,6 +68,8 @@ class DocumentProcessingOptionsRegistryTest {
         assertThatThrownBy(() -> registry.validate(pdf, Map.of("ocrEnabled", "yes")))
             .isInstanceOf(ProcessingOptionsValidationException.class);
         assertThatThrownBy(() -> registry.validate(pdf, Map.of("maxPages", 10001)))
+            .isInstanceOf(ProcessingOptionsValidationException.class);
+        assertThatThrownBy(() -> registry.validate(pdf, Map.of("pdf.ocr-strategy", "tracked")))
             .isInstanceOf(ProcessingOptionsValidationException.class);
         assertThatThrownBy(() -> registry.validate(docx, Map.of("docxRevisionMode", "tracked")))
             .isInstanceOf(ProcessingOptionsValidationException.class);

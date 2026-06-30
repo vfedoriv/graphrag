@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.document;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,15 @@ public class DocumentParsingService {
     }
 
     public String parse(String filename, String contentType, byte[] bytes) {
-        return routedDocumentParser.parserFor(filename, contentType).parse(new ByteArrayInputStream(bytes)).text();
+        return parseStructured(filename, contentType, bytes, Map.of()).text();
+    }
+
+    public ParsedDocument parseStructured(
+        String filename,
+        String contentType,
+        byte[] bytes,
+        Map<String, Object> processingOptions
+    ) {
+        return routedDocumentParser.parse(filename, contentType, new ByteArrayInputStream(bytes), processingOptions);
     }
 }
