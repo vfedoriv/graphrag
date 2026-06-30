@@ -20,7 +20,8 @@ public class CypherValidationService {
 
     private static final Pattern LIMIT_PATTERN = Pattern.compile("\\bLIMIT\\b", Pattern.CASE_INSENSITIVE);
     private static final Set<String> INFRA_LABELS = Set.of(
-        "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "ExtractedEntity", "ExtractedRelation"
+        "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "DocumentProcessingRun",
+        "ExtractedEntity", "ExtractedRelation"
     );
     private final RuntimeSettingsService runtimeSettingsService;
     private final ActiveSchemaResolver activeSchemaResolver;

@@ -12,12 +12,14 @@ class GraphArtifactCleanupServiceTest {
         GraphArtifactCleanupService.DocumentArtifactCleanupResult result =
             GraphArtifactCleanupService.documentCleanupResult(Map.of(
                 "deletedChunks", 2,
+                "deletedProcessingRuns", 6,
                 "deletedRuns", 3L,
                 "deletedRelationships", 4,
                 "deletedObsoleteExtractedNodes", 5
             ));
 
         assertThat(result.deletedChunks()).isEqualTo(2L);
+        assertThat(result.deletedProcessingRuns()).isEqualTo(6L);
         assertThat(result.deletedRuns()).isEqualTo(3L);
         assertThat(result.deletedRelationships()).isEqualTo(4L);
         assertThat(result.deletedObsoleteExtractedNodes()).isEqualTo(5L);
@@ -45,6 +47,7 @@ class GraphArtifactCleanupServiceTest {
             GraphArtifactCleanupService.extractionRunCleanupResult(null);
 
         assertThat(documentResult.deletedChunks()).isZero();
+        assertThat(documentResult.deletedProcessingRuns()).isZero();
         assertThat(documentResult.deletedRuns()).isZero();
         assertThat(documentResult.deletedRelationships()).isZero();
         assertThat(documentResult.deletedObsoleteExtractedNodes()).isZero();

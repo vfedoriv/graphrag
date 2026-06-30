@@ -100,8 +100,8 @@ class DocumentUploadIntegrationTest {
         assertThat(replaced.getErrorMessage()).isNull();
         assertThat(Files.readString(Path.of(documentUploadService.localPath(replaced)))).isEqualTo("replacement");
         assertThat(Path.of(previousPath)).doesNotExist();
-        assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L);
-        assertDocumentArtifacts(other.getId(), 1L, 1L, 2L, 1L);
+        assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L, 0L);
+        assertDocumentArtifacts(other.getId(), 1L, 1L, 1L, 2L, 1L);
     }
 
     @Test
@@ -146,18 +146,20 @@ class DocumentUploadIntegrationTest {
         assertThat(documentUploadRepository.findById(target.getId())).isEmpty();
         assertThat(Path.of(targetPath)).doesNotExist();
         assertThat(Path.of(otherPath)).exists();
-        assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L);
-        assertDocumentArtifacts(other.getId(), 1L, 1L, 2L, 1L);
+        assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L, 0L);
+        assertDocumentArtifacts(other.getId(), 1L, 1L, 1L, 2L, 1L);
     }
 
     private void createDerivedArtifacts(String documentId, String runId, String contractId, String partyId) {
         neo4jClient.query("""
             MATCH (document:DocumentUpload {id: $documentId})
             CREATE (chunk:DocumentChunk {id: $documentId + '-chunk', documentId: $documentId, chunkIndex: 0, text: 'chunk'})
+            CREATE (processingRun:DocumentProcessingRun {id: $runId + '-processing', documentId: $documentId, status: 'COMPLETED', activeCompleted: true})
             CREATE (run:ExtractionRun {id: $runId, documentId: $documentId, status: 'COMPLETED'})
             CREATE (contract:Contract {id: $contractId, contractId: $contractId, sourceDocumentId: $documentId, extractionRunId: $runId})
             CREATE (party:Party {id: $partyId, partyId: $partyId, sourceDocumentId: $documentId, extractionRunId: $runId})
             CREATE (document)-[:HAS_CHUNK]->(chunk)
+            CREATE (document)-[:HAS_PROCESSING_RUN]->(processingRun)
             CREATE (document)-[:HAS_EXTRACTION_RUN]->(run)
             CREATE (run)-[:CREATED_NODE]->(contract)
             CREATE (run)-[:CREATED_NODE]->(party)
@@ -174,6 +176,7 @@ class DocumentUploadIntegrationTest {
     private void assertDocumentArtifacts(
         String documentId,
         long expectedChunks,
+        long expectedProcessingRuns,
         long expectedRuns,
         long expectedNodes,
         long expectedRelationships
@@ -182,6 +185,9 @@ class DocumentUploadIntegrationTest {
             .bind(documentId).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
         Long runs = neo4jClient.query("MATCH (r:ExtractionRun {documentId: $documentId}) RETURN count(r) AS c")
+            .bind(documentId).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        Long processingRuns = neo4jClient.query("MATCH (r:DocumentProcessingRun {documentId: $documentId}) RETURN count(r) AS c")
             .bind(documentId).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
         Long nodes = neo4jClient.query("""
@@ -199,6 +205,7 @@ class DocumentUploadIntegrationTest {
             .bind(documentId).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(chunks).isEqualTo(expectedChunks);
+        assertThat(processingRuns).isEqualTo(expectedProcessingRuns);
         assertThat(runs).isEqualTo(expectedRuns);
         assertThat(nodes).isEqualTo(expectedNodes);
         assertThat(relationships).isEqualTo(expectedRelationships);

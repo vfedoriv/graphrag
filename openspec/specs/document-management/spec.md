@@ -2,9 +2,7 @@
 
 ## Purpose
 Define update, delete, and source-file context behavior for uploaded knowledge base documents.
-
 ## Requirements
-
 ### Requirement: Document responses expose local source path
 The system SHALL include source-file context metadata in document responses so trusted local clients can open the stored document outside the backend.
 
@@ -54,8 +52,9 @@ The system SHALL allow an existing document in a knowledge base to be replaced w
 The system MUST remove stale derived artifacts for a document when its source binary is successfully replaced.
 
 #### Scenario: Replacement clears chunks and extraction artifacts
-- **WHEN** a processed document with chunks, extraction runs, and extracted graph data is successfully replaced
+- **WHEN** a processed document with chunks, processing runs, extraction runs, and extracted graph data is successfully replaced
 - **THEN** the system deletes chunks for that document
+- **AND** the system deletes processing runs for that document
 - **AND** the system deletes extraction runs for that document
 - **AND** the system deletes extracted graph relationships for that document
 - **AND** the system deletes extracted graph nodes for that document that are not retained by any remaining extraction run
@@ -63,7 +62,7 @@ The system MUST remove stale derived artifacts for a document when its source bi
 #### Scenario: Replacement storage write fails
 - **WHEN** replacement binary storage fails before the replacement metadata is saved
 - **THEN** the system returns an error
-- **AND** the existing document metadata, stored binary, chunks, extraction runs, and extracted graph data remain unchanged
+- **AND** the existing document metadata, stored binary, chunks, processing runs, extraction runs, and extracted graph data remain unchanged
 
 ### Requirement: Document can be deleted
 The system SHALL allow an existing document to be deleted from its knowledge base.
@@ -73,6 +72,7 @@ The system SHALL allow an existing document to be deleted from its knowledge bas
 - **THEN** the system removes the document record
 - **AND** the system removes the stored binary for that document
 - **AND** the system removes chunks for that document
+- **AND** the system removes processing runs for that document
 - **AND** the system removes extraction runs for that document
 - **AND** the system removes extracted graph relationships for that document
 - **AND** the system removes extracted graph nodes for that document that are not retained by any remaining extraction run
@@ -84,7 +84,7 @@ The system SHALL allow an existing document to be deleted from its knowledge bas
 
 #### Scenario: Deleted document belongs to another knowledge base
 - **WHEN** a client deletes a document id that exists under a different knowledge base
-- **THEN** the system rejects the request and does not delete the document, stored binary, chunks, extraction runs, or extracted graph data
+- **THEN** the system rejects the request and does not delete the document, stored binary, chunks, processing runs, extraction runs, or extracted graph data
 
 #### Scenario: Stored binary deletion fails
 - **WHEN** the system cannot delete the primary stored binary for a delete request
@@ -101,3 +101,4 @@ The system MUST scope update and delete cleanup to the target document and MUST 
 #### Scenario: Cleanup does not remove infrastructure nodes
 - **WHEN** update or delete cleanup removes extracted graph artifacts for a document
 - **THEN** the cleanup does not delete knowledge base nodes, schema nodes, document upload nodes for other documents, document chunk nodes for other documents, or extraction run nodes for other documents
+

@@ -176,10 +176,11 @@ public class DocumentUploadService {
         DocumentUploadNode saved = documentUploadRepository.save(document);
         deletePreviousContent(previousContentUri, replacementContentUri.toString(), documentId);
         log.info(
-            "Document replaced: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
+            "Document replaced: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
             documentId,
             cleanupResult.deletedChunks(),
+            cleanupResult.deletedProcessingRuns(),
             cleanupResult.deletedRuns(),
             cleanupResult.deletedRelationships(),
             cleanupResult.deletedObsoleteExtractedNodes()
@@ -196,10 +197,11 @@ public class DocumentUploadService {
             graphArtifactCleanupService.cleanupDocumentArtifacts(documentId);
         documentUploadRepository.delete(document);
         log.info(
-            "Document deleted: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
+            "Document deleted: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
             documentId,
             cleanupResult.deletedChunks(),
+            cleanupResult.deletedProcessingRuns(),
             cleanupResult.deletedRuns(),
             cleanupResult.deletedRelationships(),
             cleanupResult.deletedObsoleteExtractedNodes()

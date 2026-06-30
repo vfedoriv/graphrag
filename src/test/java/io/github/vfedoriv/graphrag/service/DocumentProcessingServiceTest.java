@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
@@ -13,11 +14,14 @@ import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.nio.file.Path;
 import java.util.List;
@@ -27,6 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,6 +50,8 @@ class DocumentProcessingServiceTest {
     private DocumentChunkRepository documentChunkRepository;
     @Mock
     private ExtractionRunRepository extractionRunRepository;
+    @Mock
+    private DocumentProcessingRunRepository documentProcessingRunRepository;
     @Mock
     private DocumentUploadService documentUploadService;
     @Mock
@@ -76,24 +83,33 @@ class DocumentProcessingServiceTest {
         doc.setOriginalFilename("a.txt");
         doc.setContentType("text/plain");
         doc.setContentUri("file:///tmp/a.txt");
+        doc.setProcessingDefaultsJson("{\"preserveLineBreaks\":true}");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
         when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
-        when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
+        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
             .thenReturn("abcdefghij01234567");
         when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode()));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        List<String> savedRunStages = new java.util.ArrayList<>();
+        when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> {
+            DocumentProcessingRunNode run = i.getArgument(0);
+            savedRunStages.add(run.getStage());
+            return run;
+        });
         DocumentProcessingService service = new DocumentProcessingService(
             documentUploadRepository,
             documentChunkRepository,
             extractionRunRepository,
+            documentProcessingRunRepository,
             documentUploadService,
             documentParsingService,
             chunkingService,
+            new DocumentProcessingOptionsRegistry(),
             neo4jClient,
             embeddingClientProvider,
             embeddingModelProvider,
@@ -102,11 +118,72 @@ class DocumentProcessingServiceTest {
             TestAiObservationService.noop(),
             knowledgeBaseService
         );
-        DocumentUploadNode processed = service.process("doc-1");
+        DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("preserveLineBreaks", false));
 
         assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
         assertThat(processed.getProcessedAt()).isNotNull();
         verify(documentChunkRepository, times(2)).save(any());
+        ArgumentCaptor<DocumentProcessingRunNode> runCaptor = ArgumentCaptor.forClass(DocumentProcessingRunNode.class);
+        verify(documentProcessingRunRepository, org.mockito.Mockito.atLeastOnce()).save(runCaptor.capture());
+        assertThat(savedRunStages)
+            .contains("PARSING", "CHUNKING", "EMBEDDING", "EXTRACTING_GRAPH", "COMPLETED");
+        DocumentProcessingRunNode completedRun = runCaptor.getAllValues().getLast();
+        assertThat(completedRun.getStatus()).isEqualTo(DocumentProcessingRunStatus.COMPLETED);
+        assertThat(completedRun.isActiveCompleted()).isTrue();
+        assertThat(completedRun.getSavedDefaultsJson()).contains("\"preserveLineBreaks\":true");
+        assertThat(completedRun.getRequestedOptionsJson()).contains("\"preserveLineBreaks\":false");
+        assertThat(completedRun.getEffectiveOptionsJson()).contains("\"preserveLineBreaks\":false");
+        verify(documentProcessingRunRepository).deactivateOtherCompletedRuns("doc-1", completedRun.getId());
+    }
+
+    @Test
+    void recordsFailedProcessingRunWithoutCreatingChunksOrExtraction() throws Exception {
+        AppProperties appProperties = props();
+        ChunkingService chunkingService = new ChunkingService(TestRuntimeSettings.from(appProperties));
+        DocumentUploadNode doc = new DocumentUploadNode();
+        doc.setId("doc-1");
+        doc.setKnowledgeBaseId("kb-1");
+        doc.setOriginalFilename("a.txt");
+        doc.setContentType("text/plain");
+        doc.setContentUri("file:///tmp/a.txt");
+
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
+        when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
+        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
+            .thenThrow(new IllegalArgumentException("parse failed"));
+        when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
+        DocumentProcessingService service = new DocumentProcessingService(
+            documentUploadRepository,
+            documentChunkRepository,
+            extractionRunRepository,
+            documentProcessingRunRepository,
+            documentUploadService,
+            documentParsingService,
+            chunkingService,
+            new DocumentProcessingOptionsRegistry(),
+            neo4jClient,
+            embeddingClientProvider,
+            embeddingModelProvider,
+            environment,
+            graphExtractionService,
+            TestAiObservationService.noop(),
+            knowledgeBaseService
+        );
+
+        DocumentUploadNode failed = service.process("doc-1");
+
+        assertThat(failed.getStatus()).isEqualTo(DocumentStatus.FAILED);
+        ArgumentCaptor<DocumentProcessingRunNode> runCaptor = ArgumentCaptor.forClass(DocumentProcessingRunNode.class);
+        verify(documentProcessingRunRepository, org.mockito.Mockito.atLeastOnce()).save(runCaptor.capture());
+        DocumentProcessingRunNode failedRun = runCaptor.getAllValues().getLast();
+        assertThat(failedRun.getStatus()).isEqualTo(DocumentProcessingRunStatus.FAILED);
+        assertThat(failedRun.isActiveCompleted()).isFalse();
+        assertThat(failedRun.getErrorMessage()).isEqualTo("parse failed");
+        verify(documentChunkRepository, never()).save(any());
+        verify(graphExtractionService, never()).extract(any(), any(), org.mockito.Mockito.anyBoolean());
+        verify(documentProcessingRunRepository, never()).deactivateOtherCompletedRuns(any(), any());
     }
 
     @Test
@@ -128,7 +205,7 @@ class DocumentProcessingServiceTest {
         when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
-        when(documentParsingService.parse("a.txt", "text/plain", "chunk-one chunk-two".getBytes()))
+        when(documentParsingService.parse(org.mockito.Mockito.eq("a.txt"), org.mockito.Mockito.eq("text/plain"), any(byte[].class)))
             .thenReturn("abcdefghij01234567");
         when(embeddingClientProvider.orderedStream()).thenReturn(Stream.of(embeddingClient));
         when(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc("doc-1"))
@@ -159,16 +236,21 @@ class DocumentProcessingServiceTest {
             saved.setUploadedAt(in.getUploadedAt());
             saved.setProcessedAt(in.getProcessedAt());
             saved.setErrorMessage(in.getErrorMessage());
+            saved.setProcessingDefaultsJson(in.getProcessingDefaultsJson());
+            saved.setProcessingDefaultsUpdatedAt(in.getProcessingDefaultsUpdatedAt());
             return saved;
         });
+        when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
 
         DocumentProcessingService service = new DocumentProcessingService(
             documentUploadRepository,
             documentChunkRepository,
             extractionRunRepository,
+            documentProcessingRunRepository,
             documentUploadService,
             documentParsingService,
             chunkingService,
+            new DocumentProcessingOptionsRegistry(),
             neo4jClient,
             embeddingClientProvider,
             embeddingModelProvider,

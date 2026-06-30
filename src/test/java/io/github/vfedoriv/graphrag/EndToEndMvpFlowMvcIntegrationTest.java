@@ -106,14 +106,30 @@ class EndToEndMvpFlowMvcIntegrationTest {
         String documentId = objectMapper.readTree(uploadBody).path("id").asText();
         assertThat(documentId).isNotBlank();
 
-        mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
+        mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId)
+                .contentType("application/json")
+                .content("""
+                    { "options": { "preserveLineBreaks": false } }
+                    """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("COMPLETED"))
             .andExpect(jsonPath("$.localPath").isNotEmpty());
+        String effectiveOptionsJson = neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_PROCESSING_RUN]->(run:DocumentProcessingRun {activeCompleted: true})
+            RETURN run.effectiveOptionsJson AS json
+            """)
+            .bind(documentId).to("documentId")
+            .fetchAs(String.class)
+            .one()
+            .orElseThrow();
+        assertThat(effectiveOptionsJson).contains("\"preserveLineBreaks\":false");
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
             .andExpect(status().isConflict());
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId)
-                .param("allowOverwrite", "true"))
+                .contentType("application/json")
+                .content("""
+                    { "allowOverwrite": true, "options": { "preserveLineBreaks": true } }
+                    """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("COMPLETED"));
 

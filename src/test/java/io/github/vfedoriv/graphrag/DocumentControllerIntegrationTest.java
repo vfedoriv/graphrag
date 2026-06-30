@@ -3,6 +3,8 @@ package io.github.vfedoriv.graphrag;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -170,6 +173,61 @@ class DocumentControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(2))
             .andExpect(jsonPath("$[?(@.id == '" + targetDocumentId + "')].originalFilename").value("target.txt"));
+    }
+
+    @Test
+    void managesDocumentProcessingOptionsDefaultsAndRejectsInvalidInputs() throws Exception {
+        String uploadBody = mockMvc.perform(multipart("/api/v1/knowledge-bases/{knowledgeBaseId}/documents", "kb-1")
+                .file(new MockMultipartFile("file", "scan.pdf", "application/pdf", "pdf".getBytes())))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        String documentId = objectMapper.readTree(uploadBody).get("id").asText();
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/processing-options", documentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.parserId").value("tika"))
+            .andExpect(jsonPath("$.fileFormat").value("PDF"))
+            .andExpect(jsonPath("$.options[?(@.key == 'ocrEnabled')].defaultValue").value(false));
+
+        mockMvc.perform(put("/api/v1/documents/{documentId}/processing-options/defaults", documentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "options": { "ocrEnabled": true, "maxPages": 2 } }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.savedDefaults.ocrEnabled").value(true))
+            .andExpect(jsonPath("$.savedDefaults.maxPages").value(2))
+            .andExpect(jsonPath("$.savedDefaultsUpdatedAt").isNotEmpty());
+
+        mockMvc.perform(put("/api/v1/documents/{documentId}/processing-options/defaults", documentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "options": { "ocrEnabled": "yes" } }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors[0]").value("ocrEnabled must be a boolean"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/processing-options", documentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.savedDefaults.ocrEnabled").value(true));
+
+        mockMvc.perform(delete("/api/v1/documents/{documentId}/processing-options/defaults", documentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.savedDefaults").isEmpty())
+            .andExpect(jsonPath("$.savedDefaultsUpdatedAt").doesNotExist());
+    }
+
+    @Test
+    void rejectsConflictingAllowOverwriteBeforeProcessingStarts() throws Exception {
+        mockMvc.perform(post("/api/v1/documents/{documentId}/process", "missing")
+                .param("allowOverwrite", "true")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "allowOverwrite": false, "options": {} }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("allowOverwrite query parameter conflicts with request body"));
     }
 
     @Test

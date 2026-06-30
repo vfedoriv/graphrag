@@ -2,6 +2,9 @@ package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.dto.DocumentChunkResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentProcessRequest;
+import io.github.vfedoriv.graphrag.dto.DocumentProcessingDefaultsRequest;
+import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionsResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentUploadResponse;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -159,12 +163,64 @@ public class DocumentController {
     public DocumentUploadResponse processDocument(
         @Parameter(description = "Document identifier") @PathVariable String documentId,
         @Parameter(description = "Allow replacing existing completed extraction for this document")
-        @RequestParam(defaultValue = "false") boolean allowOverwrite
+        @RequestParam(required = false) Boolean allowOverwrite,
+        @RequestBody(required = false) DocumentProcessRequest request
     ) {
-        log.info("Process document request: documentId={}, allowOverwrite={}", documentId, allowOverwrite);
-        DocumentUploadResponse response = toResponse(documentProcessingService.process(documentId, allowOverwrite));
+        boolean effectiveAllowOverwrite = resolveAllowOverwrite(allowOverwrite, request);
+        log.info("Process document request: documentId={}, allowOverwrite={}", documentId, effectiveAllowOverwrite);
+        DocumentUploadResponse response = toResponse(documentProcessingService.process(
+            documentId,
+            effectiveAllowOverwrite,
+            request == null ? null : request.options()
+        ));
         log.info("Process document completed: documentId={}, status={}", documentId, response.status());
         return response;
+    }
+
+    @GetMapping("/documents/{documentId}/processing-options")
+    @Operation(summary = "Get document processing options", description = "Returns applicable processing option definitions and saved defaults.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Processing options retrieved"),
+        @ApiResponse(responseCode = "400", description = "Unsupported document type", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentProcessingOptionsResponse getProcessingOptions(
+        @Parameter(description = "Document identifier") @PathVariable String documentId
+    ) {
+        log.info("Get document processing options request: documentId={}", documentId);
+        return documentProcessingService.getProcessingOptions(documentId);
+    }
+
+    @PutMapping("/documents/{documentId}/processing-options/defaults")
+    @Operation(summary = "Replace document processing defaults", description = "Replaces saved document-scoped processing defaults.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Processing defaults saved"),
+        @ApiResponse(responseCode = "400", description = "Invalid processing options", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentProcessingOptionsResponse replaceProcessingDefaults(
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @RequestBody(required = false) DocumentProcessingDefaultsRequest request
+    ) {
+        log.info("Replace document processing defaults request: documentId={}", documentId);
+        return documentProcessingService.replaceProcessingDefaults(
+            documentId,
+            request == null ? null : request.options()
+        );
+    }
+
+    @DeleteMapping("/documents/{documentId}/processing-options/defaults")
+    @Operation(summary = "Clear document processing defaults", description = "Removes saved document-scoped processing defaults.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Processing defaults cleared"),
+        @ApiResponse(responseCode = "400", description = "Unsupported document type", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentProcessingOptionsResponse clearProcessingDefaults(
+        @Parameter(description = "Document identifier") @PathVariable String documentId
+    ) {
+        log.info("Clear document processing defaults request: documentId={}", documentId);
+        return documentProcessingService.clearProcessingDefaults(documentId);
     }
 
     @GetMapping("/documents/{documentId}/chunks")
@@ -204,5 +260,19 @@ public class DocumentController {
             node.getProcessedAt(),
             node.getErrorMessage()
         );
+    }
+
+    private boolean resolveAllowOverwrite(Boolean queryAllowOverwrite, DocumentProcessRequest request) {
+        Boolean bodyAllowOverwrite = request == null ? null : request.allowOverwrite();
+        if (queryAllowOverwrite != null && bodyAllowOverwrite != null && !queryAllowOverwrite.equals(bodyAllowOverwrite)) {
+            throw new IllegalArgumentException("allowOverwrite query parameter conflicts with request body");
+        }
+        if (queryAllowOverwrite != null) {
+            return queryAllowOverwrite;
+        }
+        if (bodyAllowOverwrite != null) {
+            return bodyAllowOverwrite;
+        }
+        return false;
     }
 }

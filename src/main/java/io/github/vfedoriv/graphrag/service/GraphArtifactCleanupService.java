@@ -22,36 +22,46 @@ public class GraphArtifactCleanupService {
             WITH document, collect(DISTINCT chunk) AS chunks
             FOREACH (chunk IN chunks | DETACH DELETE chunk)
             WITH document, size(chunks) AS deletedChunks
+            OPTIONAL MATCH (document)-[:HAS_PROCESSING_RUN]->(processingRun:DocumentProcessingRun)
+            WITH document, deletedChunks, [run IN collect(DISTINCT processingRun) WHERE run IS NOT NULL] AS processingRunsToDelete
+            UNWIND CASE WHEN size(processingRunsToDelete) = 0 THEN [null] ELSE processingRunsToDelete END AS processingRunToDelete
+            OPTIONAL MATCH (processingRunToDelete)-[processingRunRel]-()
+            WITH document, deletedChunks, processingRunsToDelete, count(DISTINCT processingRunRel) AS deletedProcessingRunRelationshipCount
+            FOREACH (run IN processingRunsToDelete | DETACH DELETE run)
+            WITH document, deletedChunks, size(processingRunsToDelete) AS deletedProcessingRuns, deletedProcessingRunRelationshipCount
             OPTIONAL MATCH (document)-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
-            WITH document, deletedChunks, [run IN collect(DISTINCT run) WHERE run IS NOT NULL] AS runsToDelete
-            WITH document, deletedChunks, runsToDelete, [run IN runsToDelete | run.id] AS runIds
+            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, [run IN collect(DISTINCT run) WHERE run IS NOT NULL] AS runsToDelete
+            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, [run IN runsToDelete | run.id] AS runIds
             OPTIONAL MATCH ()-[graphRel]-()
             WHERE graphRel.sourceDocumentId = $documentId
                 AND (size(runIds) = 0 OR graphRel.extractionRunId IN runIds)
-            WITH document, deletedChunks, runsToDelete, collect(DISTINCT graphRel) AS graphRelationships
+            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, collect(DISTINCT graphRel) AS graphRelationships
             FOREACH (graphRel IN graphRelationships | DELETE graphRel)
-            WITH document, deletedChunks, runsToDelete, size(graphRelationships) AS deletedGraphRelationshipCount
+            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, size(graphRelationships) AS deletedGraphRelationshipCount
             UNWIND CASE WHEN size(runsToDelete) = 0 THEN [null] ELSE runsToDelete END AS runToDelete
             OPTIONAL MATCH (runToDelete)-[runRel]-()
-            WITH document, deletedChunks, runsToDelete, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
+            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
             FOREACH (run IN runsToDelete | DETACH DELETE run)
             WITH
                 document,
                 deletedChunks,
+                deletedProcessingRuns,
                 size(runsToDelete) AS deletedRuns,
-                deletedGraphRelationshipCount + deletedRunRelationshipCount AS deletedRelationshipCount
+                deletedGraphRelationshipCount + deletedRunRelationshipCount + deletedProcessingRunRelationshipCount AS deletedRelationshipCount
             OPTIONAL MATCH (obsoleteNode)
             WHERE obsoleteNode.sourceDocumentId = $documentId
                 AND NOT obsoleteNode:ExtractionRun
+                AND NOT obsoleteNode:DocumentProcessingRun
                 AND NOT obsoleteNode:DocumentUpload
                 AND NOT obsoleteNode:DocumentChunk
                 AND NOT obsoleteNode:KnowledgeBase
                 AND NOT obsoleteNode:SchemaDefinition
                 AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
-            WITH deletedChunks, deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
+            WITH deletedChunks, deletedProcessingRuns, deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
             FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
             RETURN
                 deletedChunks AS deletedChunks,
+                deletedProcessingRuns AS deletedProcessingRuns,
                 deletedRuns AS deletedRuns,
                 deletedRelationshipCount AS deletedRelationships,
                 size(obsoleteNodes) AS deletedObsoleteExtractedNodes
@@ -92,6 +102,7 @@ public class GraphArtifactCleanupService {
             WHERE deletedRuns > 0
                 AND obsoleteNode.sourceDocumentId = $documentId
                 AND NOT obsoleteNode:ExtractionRun
+                AND NOT obsoleteNode:DocumentProcessingRun
                 AND NOT obsoleteNode:DocumentUpload
                 AND NOT obsoleteNode:DocumentChunk
                 AND NOT obsoleteNode:KnowledgeBase
@@ -123,6 +134,7 @@ public class GraphArtifactCleanupService {
         }
         return new DocumentArtifactCleanupResult(
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedChunks")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedProcessingRuns")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRelationships")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
@@ -142,12 +154,13 @@ public class GraphArtifactCleanupService {
 
     public record DocumentArtifactCleanupResult(
         long deletedChunks,
+        long deletedProcessingRuns,
         long deletedRuns,
         long deletedRelationships,
         long deletedObsoleteExtractedNodes
     ) {
         public static DocumentArtifactCleanupResult zero() {
-            return new DocumentArtifactCleanupResult(0L, 0L, 0L, 0L);
+            return new DocumentArtifactCleanupResult(0L, 0L, 0L, 0L, 0L);
         }
     }
 

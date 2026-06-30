@@ -83,6 +83,17 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(ProcessingOptionsValidationException.class)
+    public ProblemDetail handleProcessingOptionsValidation(
+        ProcessingOptionsValidationException ex,
+        HttpServletRequest request
+    ) {
+        log.error("Processing options validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
+        ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+        detail.setProperty("errors", ex.getErrors());
+        return detail;
+    }
+
     @ExceptionHandler(HttpMessageConversionException.class)
     public ProblemDetail handleHttpMessageConversion(HttpMessageConversionException ex, HttpServletRequest request) {
         String detailMessage = ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null

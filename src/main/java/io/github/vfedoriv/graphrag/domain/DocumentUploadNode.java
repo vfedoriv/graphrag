@@ -22,6 +22,8 @@ public class DocumentUploadNode {
     private Instant uploadedAt;
     private Instant processedAt;
     private String errorMessage;
+    private String processingDefaultsJson;
+    private Instant processingDefaultsUpdatedAt;
 
     public String getId() {
         return id;
@@ -113,5 +115,21 @@ public class DocumentUploadNode {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getProcessingDefaultsJson() {
+        return processingDefaultsJson;
+    }
+
+    public void setProcessingDefaultsJson(String processingDefaultsJson) {
+        this.processingDefaultsJson = processingDefaultsJson;
+    }
+
+    public Instant getProcessingDefaultsUpdatedAt() {
+        return processingDefaultsUpdatedAt;
+    }
+
+    public void setProcessingDefaultsUpdatedAt(Instant processingDefaultsUpdatedAt) {
+        this.processingDefaultsUpdatedAt = processingDefaultsUpdatedAt;
     }
 }
