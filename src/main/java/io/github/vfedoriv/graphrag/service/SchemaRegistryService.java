@@ -73,7 +73,7 @@ public class SchemaRegistryService {
             throw new SchemaValidationException(errors);
         }
 
-        if (schemaRepository.existsByNameAndVersion(doc.name(), doc.version())) {
+        if (Boolean.TRUE.equals(schemaRepository.existsByNameAndVersion(doc.name(), doc.version()))) {
             throw new ConflictException(
                 "Schema version is immutable and already exists for name=" + doc.name() + ", version=" + doc.version()
             );
@@ -233,7 +233,7 @@ public class SchemaRegistryService {
     }
 
     private void rejectIfActive(String schemaId, String messagePrefix) {
-        if (schemaRepository.existsActiveKnowledgeBaseReference(schemaId)) {
+        if (Boolean.TRUE.equals(schemaRepository.existsActiveKnowledgeBaseReference(schemaId))) {
             throw new ConflictException(messagePrefix + schemaId);
         }
     }

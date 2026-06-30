@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Node("DocumentProcessingRun")
@@ -9,6 +10,8 @@ public class DocumentProcessingRunNode {
 
     @Id
     private String id;
+    @Version
+    private Long version;
     private String documentId;
     private String knowledgeBaseId;
     private String sourceSha256;
@@ -30,6 +33,10 @@ public class DocumentProcessingRunNode {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     public String getDocumentId() {

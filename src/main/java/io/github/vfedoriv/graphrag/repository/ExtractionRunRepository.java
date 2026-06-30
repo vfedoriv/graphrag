@@ -13,6 +13,6 @@ public interface ExtractionRunRepository extends Neo4jRepository<ExtractionRunNo
         MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun {status: 'COMPLETED'})
         RETURN count(run) > 0
         """)
-    boolean hasCompletedRun(String documentId);
+    Boolean hasCompletedRun(String documentId);
 
 }

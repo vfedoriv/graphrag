@@ -9,7 +9,7 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
 
     List<DocumentChunkNode> findByDocumentIdOrderByChunkIndexAsc(String documentId);
 
-    void deleteByDocumentId(String documentId);
+    Long deleteByDocumentId(String documentId);
 
     @Query("""
         MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk)

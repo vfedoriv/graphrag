@@ -12,18 +12,19 @@ public interface AiProfileRepository extends Neo4jRepository<AiProfileNode, Stri
 
     Optional<AiProfileNode> findFirstByDefaultProfileTrue();
 
-    boolean existsByDefaultProfileTrue();
+    Boolean existsByDefaultProfileTrue();
 
     @Query("""
         MATCH (profile:AiProfile)
         WHERE profile.id <> $profileId
         SET profile.defaultProfile = false
+        RETURN count(profile)
         """)
-    void unsetDefaultProfileForOthers(String profileId);
+    Long unsetDefaultProfileForOthers(String profileId);
 
     @Query("""
         MATCH (:KnowledgeBase {activeAiProfileId: $profileId})
         RETURN count(*) > 0
         """)
-    boolean existsKnowledgeBaseAssignment(String profileId);
+    Boolean existsKnowledgeBaseAssignment(String profileId);
 }

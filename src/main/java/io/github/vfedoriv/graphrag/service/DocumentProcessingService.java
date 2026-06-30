@@ -111,7 +111,7 @@ public class DocumentProcessingService {
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
         DocumentProcessingOptionSet optionSet = resolveOptionSet(document, requestedOptions);
-        if (!allowOverwrite && extractionRunRepository.hasCompletedRun(documentId)) {
+        if (!allowOverwrite && Boolean.TRUE.equals(extractionRunRepository.hasCompletedRun(documentId))) {
             throw new ConflictException(
                 "Document already has a completed extraction run. Set allowOverwrite=true to replace it."
             );

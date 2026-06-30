@@ -10,6 +10,7 @@ public interface RuntimeSettingOverrideRepository extends Neo4jRepository<Runtim
         MATCH (override:RuntimeSettingOverride)
         WHERE override.version IS NULL
         SET override.version = 0
+        RETURN count(override)
         """)
-    void backfillMissingVersions();
+    Long backfillMissingVersions();
 }

@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.domain;
 
 import java.util.List;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Node("DocumentChunk")
@@ -9,6 +10,8 @@ public class DocumentChunkNode {
 
     @Id
     private String id;
+    @Version
+    private Long version;
     private String documentId;
     private int chunkIndex;
     private String text;
@@ -24,6 +27,10 @@ public class DocumentChunkNode {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     public String getDocumentId() {

@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Node("KnowledgeBase")
@@ -9,6 +10,8 @@ public class KnowledgeBaseNode {
 
     @Id
     private String id;
+    @Version
+    private Long version;
     private String name;
     private String activeSchemaId;
     private String activeAiProfileId;
@@ -20,6 +23,10 @@ public class KnowledgeBaseNode {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     public String getName() {

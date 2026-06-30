@@ -152,7 +152,7 @@ public class AiProfileService implements ApplicationRunner {
         if (profile.isDefaultProfile()) {
             throw new ConflictException("Default AI profile cannot be deleted");
         }
-        if (aiProfileRepository.existsKnowledgeBaseAssignment(id)) {
+        if (Boolean.TRUE.equals(aiProfileRepository.existsKnowledgeBaseAssignment(id))) {
             throw new ConflictException("AI profile is assigned to at least one knowledge base: " + id);
         }
         aiProfileRepository.deleteById(id);
