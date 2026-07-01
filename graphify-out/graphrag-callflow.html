@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 7005 nodes, 10191 edges, 621 communities. Commit: 98ca935</p>
+<p class="subtitle">Generated from graphify knowledge graph: 7058 nodes, 10247 edges, 629 communities. Commit: a7ac7ba</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,11 +88,11 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2995 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>3005 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2883 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>121 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>146 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>45 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
@@ -116,7 +116,7 @@ flowchart LR
     class COMMUNITY_178_FEA41A9A module;
     COMMUNITY_591_E966E732("Community 591<br/><small>12 nodes</small>")
     class COMMUNITY_591_E966E732 module;
-    OTHER_D0941E68("Other<br/><small>311 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>329 nodes</small>")
     class OTHER_D0941E68 module;
     BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -135,7 +135,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2995</td><td><code>40, 2, 144, 38, 7, 11, 3, 386, 14, 12, 18, 20, 1, 6, 43, 63, 342, 385, 49, 17, 35, 16, 22, 25, 19, 127, 24, 32, 340, 388, 128, 130, 131, 133, 33, 8, 134, 135, 39, 5, 147, 530, 9, 141, 4, 509, 536, 10, 21, 544, 13, 138, 551, 145, 26, 447, 54, 192, 552, 153, 28, 452, 157, 206, 529, 534, 554, 586, 143, 23, 36, 570, 597, 27, 451, 556, 600, 601, 67, 72, 555, 595, 602, 15, 53, 560, 37, 46, 47, 562, 564, 569, 603, 604, 537, 605, 146, 48, 322, 323, 341, 52, 55, 57, 573, 515, 58, 60, 61, 62, 620, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 557, 563, 581, 593, 606, 66, 446, 68, 69, 70, 71, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 583, 584, 596, 609, 610, 611, 612, 613, 614, 615, 616, 617, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>121</td><td><code>132, 139, 350, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>45</td><td><code>268, 266, 270, 579, 588, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>172</td><td><code>531, 42, 29, 528, 592, 533, 538, 568, 571, 453, 456, 572, 500</code></td></tr><tr><td>Serving API</td><td>210</td><td><code>123, 172, 445, 30, 44, 179, 527, 329, 343, 347, 539, 590, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 526</td><td>18</td><td><code>526</code></td></tr><tr><td>Community 577</td><td>16</td><td><code>577</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 553</td><td>14</td><td><code>553</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 591</td><td>12</td><td><code>591</code></td></tr><tr><td>Other</td><td>311</td><td><code>532, 594, 203, 306, 310, 311, 312, 313, 327, 330, 331, 332, 335, 535, 559, 561, 565, 566, 574, 575, 576, 578, 580, 582, 585, 587, 598, 599, 607, 618, 348, 349, 567, 619, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444, 589, 608</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>3005</td><td><code>40, 4, 144, 7, 38, 49, 3, 11, 14, 12, 18, 1, 20, 600, 35, 43, 63, 342, 385, 6, 17, 573, 22, 19, 127, 16, 340, 386, 128, 130, 131, 133, 8, 134, 135, 147, 2, 447, 5, 21, 33, 530, 9, 141, 24, 544, 551, 10, 509, 560, 13, 138, 25, 54, 145, 26, 39, 192, 555, 153, 28, 452, 157, 206, 388, 529, 534, 552, 554, 597, 143, 23, 570, 601, 27, 32, 36, 37, 451, 556, 67, 72, 15, 557, 595, 603, 53, 46, 47, 537, 562, 564, 569, 604, 621, 146, 622, 48, 586, 322, 323, 341, 52, 536, 55, 57, 515, 58, 60, 61, 62, 620, 625, 64, 352, 371, 390, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 511, 563, 581, 593, 606, 626, 66, 446, 628, 68, 69, 70, 71, 74, 75, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 508, 519, 520, 521, 522, 523, 524, 525, 545, 546, 547, 548, 549, 550, 583, 584, 596, 609, 610, 611, 612, 613, 614, 615, 616, 617, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99</code></td></tr><tr><td>Graph Build</td><td>2883</td><td><code>31, 34, 56, 41, 73, 124, 125, 126, 129, 136, 140, 142, 208, 148, 160, 0, 150, 151, 152, 155, 156, 161, 162, 163, 165, 166, 167, 169, 170, 171, 173, 174, 175, 176, 177, 181, 182, 183, 45, 510, 558, 184, 185, 186, 187, 188, 190, 191, 193, 194, 195, 196, 197, 198, 199, 200, 202, 164, 204, 205, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 267, 269, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 50, 51, 299, 300, 301, 302, 303, 304, 305, 307, 308, 309, 314, 315, 318, 319, 320, 321, 324, 325, 326, 328, 336, 338, 339, 345, 346, 513, 351, 353, 354, 355, 356, 357, 540, 358, 359, 360, 361, 363, 367, 369, 370, 372, 373, 375, 382, 389, 391, 433, 516, 434, 435, 436, 437, 439, 440, 443, 450, 518, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 501, 503, 504</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>146</td><td><code>132, 139, 602, 350, 605, 201, 264, 316, 317, 449, 368, 512, 438, 455, 514</code></td></tr><tr><td>Outputs &amp; Docs</td><td>45</td><td><code>268, 266, 270, 579, 588, 543</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>137, 154, 189, 454, 502, 505, 506, 507</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>172</td><td><code>531, 42, 29, 528, 592, 533, 538, 568, 571, 453, 456, 572, 500</code></td></tr><tr><td>Serving API</td><td>210</td><td><code>123, 172, 445, 30, 44, 179, 527, 329, 343, 347, 539, 590, 344, 376, 377, 383, 384</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>121</td><td><code>149, 158, 168, 337, 180, 333, 334, 387, 59, 65, 380, 448, 517</code></td></tr><tr><td>Community 526</td><td>18</td><td><code>526</code></td></tr><tr><td>Community 577</td><td>16</td><td><code>577</code></td></tr><tr><td>Community 159</td><td>15</td><td><code>159</code></td></tr><tr><td>Community 553</td><td>14</td><td><code>553</code></td></tr><tr><td>Community 178</td><td>12</td><td><code>178</code></td></tr><tr><td>Community 591</td><td>12</td><td><code>591</code></td></tr><tr><td>Other</td><td>329</td><td><code>532, 594, 203, 306, 310, 311, 312, 313, 327, 330, 331, 332, 335, 535, 559, 561, 565, 566, 574, 575, 576, 578, 580, 582, 585, 587, 598, 599, 607, 618, 623, 624, 348, 349, 567, 619, 362, 364, 365, 366, 374, 378, 379, 381, 541, 542, 441, 442, 444, 589, 627, 608</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -147,8 +147,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>7005 nodes · 10191 edges · 621 communities (561 shown, 60 thin omitted)</li>
-      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1166 edges (avg confidence: 0.8)</li>
+      <li>7058 nodes · 10247 edges · 629 communities (569 shown, 60 thin omitted)</li>
+      <li>Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1168 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 363 edges</li>
       <li>2. `importMap` - 363 edges</li>
@@ -159,12 +159,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/service/RuntimeSettingsService.java, graphrag/observability/AiObservationService.java. This section covers 2995 nodes and 6500 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, test, mostly in .understand-anything/intermediate/batches.json, graphrag/service/RuntimeSettingsService.java, graphrag/observability/AiObservationService.java. This section covers 3005 nodes and 6518 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2995 nodes, 6500 edges)
+    %% Section: Extraction Pipeline (3005 nodes, 6518 edges)
     subgraph extract_pipeline_graphrag_controller_AiProfileCo_1c2efa25["graphrag/controller/AiProfileController.java"]
         controller_aiprofilecontroller_aiprofilecontroll_9865a5ff("AiProfileController<br/><small>graphrag/controller/AiProfileController.java</small>")
         controller_aiprofilecontroller_aiprofilecontroll_34e19c16("AiProfileController()<br/><small>graphrag/controller/AiProfileController.java</small>")
@@ -199,7 +199,7 @@ flowchart LR
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_c928302c
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_bb0d05e8
     controller_aiprofilecontroller_aiprofilecontroll_9865a5ff -->|method| controller_aiprofilecontroller_aiprofilecontroll_eedcff7f
-    %% Omitted for readability: 2977 nodes, 0 edges
+    %% Omitted for readability: 2987 nodes, 0 edges
     class controller_aiprofilecontroller_aiprofilecontroll_9865a5ff klass;
     class controller_aiprofilecontroller_aiprofilecontroll_34e19c16 function;
     class controller_aiprofilecontroller_aiprofilecontroll_9f21f0cf function;
@@ -498,7 +498,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x2061, method x1087, contains x760, calls x717. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x2066, method x1091, contains x761, calls x718. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -850,12 +850,12 @@ flowchart LR
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around openspec, document, specmd, changes, mostly in specs/document-management/spec.md, specs/document-management/spec.md, specs/query-ask-orchestration/spec.md. This section covers 121 nodes and 108 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around openspec, specmd, document, specs, mostly in specs/document-management/spec.md, specs/document-management/spec.md, specs/neo4j-persistence-state-handling/spec.md. This section covers 146 nodes and 131 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (121 nodes, 108 edges)
+    %% Section: Analysis &amp; Clustering (146 nodes, 131 edges)
     subgraph analysis_clustering_specs_document_management_sp_2a8ad07f["specs/document-management/spec.md"]
         document_management_spec_added_requirements_35beb3fc("ADDED Requirements<br/><small>specs/document-management/spec.md</small>")
         document_management_spec_requirements_b56c3f78("Requirements<br/><small>specs/document-management/spec.md</small>")
@@ -866,31 +866,28 @@ flowchart LR
         openspec_specs_document_management_spec_md_docum_f7db1efc("Requirement: Document responses expose...<br/><small>specs/document-management/spec.md</small>")
         openspec_changes_archive_2026_06_06_extend_docum_2481dc7b("Requirement: Document responses expose...<br/><small>specs/document-management/spec.md</small>")
     end
-    subgraph analysis_clustering_archive_2026_05_19_improve_q_4ca9dc5a["archive/2026-05-19-improve-query-validation-error-reporting/proposal.md"]
-        node_2026_05_19_improve_query_validation_error_r_4a61ca40("proposal.md")
-        node_2026_05_19_improve_query_validation_error_r_93a3f80c("Capabilities<br/><small>archive/2026-05-19-improve-query-validation-error-reporting/proposal.md</small>")
-    end
-    subgraph analysis_clustering_archive_2026_06_10_move_quer_773d1083["archive/2026-06-10-move-query-ask-orchestration/proposal.md"]
-        node_2026_06_10_move_query_ask_orchestration_pro_f1f35ee7("proposal.md")
-        node_2026_06_10_move_query_ask_orchestration_pro_c1563f86("Capabilities<br/><small>archive/2026-06-10-move-query-ask-orchestration/proposal.md</small>")
+    subgraph analysis_clustering_specs_neo4j_persistence_stat_7ba91504["specs/neo4j-persistence-state-handling/spec.md"]
+        neo4j_persistence_state_handling_spec_added_requ_8b9b6714("ADDED Requirements<br/><small>specs/neo4j-persistence-state-handling/spec.md</small>")
+        openspec_specs_neo4j_persistence_state_handling_9787c191("Requirement: Assigned-id Neo4j entities...<br/><small>specs/neo4j-persistence-state-handling/spec.md</small>")
+        neo4j_persistence_state_handling_spec_requiremen_982706fd("Requirements<br/><small>specs/neo4j-persistence-state-handling/spec.md</small>")
     end
     subgraph analysis_clustering_specs_query_ask_orchestratio_95ccd8d2["specs/query-ask-orchestration/spec.md"]
         query_ask_orchestration_spec_added_requirements_1a61dc71("ADDED Requirements<br/><small>specs/query-ask-orchestration/spec.md</small>")
         query_ask_orchestration_spec_requirements_eb40baaa("Requirements<br/><small>specs/query-ask-orchestration/spec.md</small>")
     end
-    node_2026_05_15_cleanup_stale_failed_extraction_a0ba81ed("tasks.md")
     node_2026_05_19_improve_query_validation_error_r_2c161ebc("design.md")
+    node_2026_05_19_improve_query_validation_error_r_4a61ca40("proposal.md")
     node_2026_05_19_improve_query_validation_error_r_8b9bc078("tasks.md")
     node_2026_06_10_move_query_ask_orchestration_des_14d79eb2("design.md")
-    node_2026_05_19_improve_query_validation_error_r_4a61ca40 -->|contains| node_2026_05_19_improve_query_validation_error_r_93a3f80c
+    node_2026_06_10_move_query_ask_orchestration_pro_f1f35ee7("proposal.md")
     document_management_spec_added_requirements_35beb3fc -->|contains| openspec_changes_archive_2026_06_06_extend_docum_c6ec839b
     document_management_spec_added_requirements_35beb3fc -->|contains| openspec_changes_archive_2026_06_06_extend_docum_829ed12b
     document_management_spec_added_requirements_35beb3fc -->|contains| openspec_changes_archive_2026_06_06_extend_docum_2481dc7b
-    node_2026_06_10_move_query_ask_orchestration_pro_f1f35ee7 -->|contains| node_2026_06_10_move_query_ask_orchestration_pro_c1563f86
     document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_59dbe1b9
     document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_7904642b
     document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_f7db1efc
-    %% Omitted for readability: 103 nodes, 0 edges
+    neo4j_persistence_state_handling_spec_requiremen_982706fd -->|contains| openspec_specs_neo4j_persistence_state_handling_9787c191
+    %% Omitted for readability: 128 nodes, 0 edges
     class document_management_spec_added_requirements_35beb3fc concept;
     class document_management_spec_requirements_b56c3f78 concept;
     class openspec_changes_archive_2026_06_06_extend_docum_829ed12b concept;
@@ -899,16 +896,16 @@ flowchart LR
     class openspec_changes_archive_2026_06_06_extend_docum_c6ec839b concept;
     class openspec_specs_document_management_spec_md_docum_f7db1efc concept;
     class openspec_changes_archive_2026_06_06_extend_docum_2481dc7b concept;
-    class node_2026_05_19_improve_query_validation_error_r_4a61ca40 concept;
-    class node_2026_05_19_improve_query_validation_error_r_93a3f80c concept;
-    class node_2026_06_10_move_query_ask_orchestration_pro_f1f35ee7 concept;
-    class node_2026_06_10_move_query_ask_orchestration_pro_c1563f86 concept;
+    class neo4j_persistence_state_handling_spec_added_requ_8b9b6714 concept;
+    class openspec_specs_neo4j_persistence_state_handling_9787c191 concept;
+    class neo4j_persistence_state_handling_spec_requiremen_982706fd concept;
     class query_ask_orchestration_spec_added_requirements_1a61dc71 concept;
     class query_ask_orchestration_spec_requirements_eb40baaa concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_a0ba81ed concept;
     class node_2026_05_19_improve_query_validation_error_r_2c161ebc concept;
+    class node_2026_05_19_improve_query_validation_error_r_4a61ca40 concept;
     class node_2026_05_19_improve_query_validation_error_r_8b9bc078 concept;
     class node_2026_06_10_move_query_ask_orchestration_des_14d79eb2 concept;
+    class node_2026_06_10_move_query_ask_orchestration_pro_f1f35ee7 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1179,17 +1176,17 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>specs/document-management/spec.md</code></td><td>25 nodes</td></tr>
 <tr><td><code>specs/document-management/spec.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>specs/neo4j-persistence-state-handling/spec.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>specs/query-ask-orchestration/spec.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>specs/neo4j-persistence-state-handling/spec.md</code></td><td>11 nodes</td></tr>
 <tr><td><code>specs/query-ask-orchestration/spec.md</code></td><td>10 nodes</td></tr>
 <tr><td><code>specs/cypher-validation/spec.md</code></td><td>8 nodes</td></tr>
 <tr><td><code>archive/2026-05-19-improve-query-validation-error-reporting/design.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-05-19-improve-query-validation-error-reporting/proposal.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>archive/2026-06-10-move-query-ask-orchestration/proposal.md</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x108. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x131. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4142,14 +4139,13 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around changes, openspec, archive, 2026, mostly in specs/ai-observability-monitoring/spec.md, specs/document-management/spec.md, archive/2026-06-04-fix-langfuse-llm-io-capture/design.md. This section covers 311 nodes and 262 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around changes, openspec, archive, 2026, mostly in specs/ai-observability-monitoring/spec.md, specs/document-management/spec.md, archive/2026-06-04-fix-langfuse-llm-io-capture/design.md. This section covers 329 nodes and 277 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (311 nodes, 262 edges)
+    %% Section: Other (329 nodes, 277 edges)
     node_2026_05_15_cleanup_stale_failed_extraction_7d86df62("design.md")
-    node_2026_05_15_cleanup_stale_failed_extraction_11ee4545("proposal.md")
     node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
     node_2026_06_04_add_ai_observability_monitoring_3f8a45a9("tasks.md")
     node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95("Decisions<br/><small>archive/2026-06-04-fix-langfuse-llm-io-capture/design.md</small>")
@@ -4165,10 +4161,10 @@ flowchart LR
     node_2026_06_30_add_document_processing_options_bbb8e2ce("design.md")
     node_2026_06_30_add_page_aware_tika_processing_d_9c771f23("design.md")
     node_2026_06_30_add_page_aware_tika_processing_t_8c709491("tasks.md")
+    node_2026_06_30_harden_neo4j_persistence_state_h_292675bb("design.md")
     openspec_changes_archive_2026_06_30_add_document_f1873c9c("Requirement: Document can be deleted<br/><small>specs/document-management/spec.md</small>")
-    %% Omitted for readability: 293 nodes, 0 edges
+    %% Omitted for readability: 311 nodes, 0 edges
     class node_2026_05_15_cleanup_stale_failed_extraction_7d86df62 concept;
-    class node_2026_05_15_cleanup_stale_failed_extraction_11ee4545 concept;
     class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
     class node_2026_06_04_add_ai_observability_monitoring_3f8a45a9 concept;
     class node_2026_06_04_fix_langfuse_llm_io_capture_desi_c634db95 concept;
@@ -4184,6 +4180,7 @@ flowchart LR
     class node_2026_06_30_add_document_processing_options_bbb8e2ce concept;
     class node_2026_06_30_add_page_aware_tika_processing_d_9c771f23 concept;
     class node_2026_06_30_add_page_aware_tika_processing_t_8c709491 concept;
+    class node_2026_06_30_harden_neo4j_persistence_state_h_292675bb concept;
     class openspec_changes_archive_2026_06_30_add_document_f1873c9c concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -4465,7 +4462,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x262. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x277. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4490,18 +4487,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>7005</td></tr>
-      <tr><td>Edges</td><td>10191</td></tr>
+      <tr><td>Nodes</td><td>7058</td></tr>
+      <tr><td>Edges</td><td>10247</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>621</td></tr>
+      <tr><td>Communities</td><td>629</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>9025</td></tr>
-      <tr><td>INFERRED</td><td>1166</td></tr>
+      <tr><td>EXTRACTED</td><td>9079</td></tr>
+      <tr><td>INFERRED</td><td>1168</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4509,7 +4506,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-06-30 20:21 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-30 20:54 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

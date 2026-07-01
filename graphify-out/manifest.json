@@ -635,8 +635,8 @@
     "semantic_hash": "4cbdf5392f3c956dbb0d9c3b9c3dc52c"
   },
   "src/test/java/io/github/vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java": {
-    "mtime": 1781787455.0132658,
-    "ast_hash": "6e438819f37b22d75bb46c244b6f190e",
+    "mtime": 1782852730.2307203,
+    "ast_hash": "021724b618cfc3eec98b13f14ffccf0c",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/SchemaRegistryIntegrationTest.java": {
@@ -3272,6 +3272,41 @@
   "openspec/specs/page-aware-tika-processing/spec.md": {
     "mtime": 1782825769.4963403,
     "ast_hash": "2af97db3d32a02b61aa45638cbad475a",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/Neo4jPersistenceVersionBackfillService.java": {
+    "mtime": 1782852661.4747987,
+    "ast_hash": "91e0d59da67e12a43e9eeb41c05786e5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-harden-neo4j-persistence-state-handling/.openspec.yaml": {
+    "mtime": 1782851238.356726,
+    "ast_hash": "3a2e665cfb0f43d1733f16a967480b31",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-harden-neo4j-persistence-state-handling/design.md": {
+    "mtime": 1782851291.0594325,
+    "ast_hash": "ee7c5ea54192ef42ba905f67f056082d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-harden-neo4j-persistence-state-handling/proposal.md": {
+    "mtime": 1782851260.1010175,
+    "ast_hash": "d5fa60ca01ac769f8d81bcc4378d5de7",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-harden-neo4j-persistence-state-handling/specs/neo4j-persistence-state-handling/spec.md": {
+    "mtime": 1782851306.1896353,
+    "ast_hash": "ed168ca94559ce64e63b92896baf3057",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-06-30-harden-neo4j-persistence-state-handling/tasks.md": {
+    "mtime": 1782851580.8033159,
+    "ast_hash": "252d56d5f07ca166c7ca0930d7bb6071",
+    "semantic_hash": ""
+  },
+  "openspec/specs/neo4j-persistence-state-handling/spec.md": {
+    "mtime": 1782852689.5941756,
+    "ast_hash": "1ebf0cdc62616ed513c275bebfbb37c9",
     "semantic_hash": ""
   }
 }

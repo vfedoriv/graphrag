@@ -16,6 +16,11 @@ The system SHALL map backend-owned Neo4j application entities that use assigned 
 - **THEN** persistence state metadata uses a distinct field name
 - **AND** the business version meaning remains unchanged
 
+#### Scenario: Existing entity lacks persistence version metadata
+- **WHEN** the application starts with persisted Neo4j application entities created before persistence version metadata existed
+- **THEN** the system backfills missing persistence version metadata before normal save/update operations depend on it
+- **AND** existing entity values and business identifiers remain unchanged
+
 ### Requirement: Repository query contracts avoid projection metadata noise
 The system SHALL define custom Neo4j repository query methods with return types that avoid Spring Data projection metadata calculation noise during normal application workflows.
 

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ class KnowledgeBaseControllerIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private Neo4jPersistenceVersionBackfillService versionBackfillService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -177,6 +180,61 @@ class KnowledgeBaseControllerIntegrationTest {
             .one()
             .orElse("");
         assertThat(persistedProfileId).isEqualTo("profile-alt");
+    }
+
+    @Test
+    void updatesLegacyAiProfileAfterVersionBackfill() throws Exception {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        neo4jClient.query("""
+            CREATE (:AiProfile {
+              id: 'legacy-profile',
+              name: 'Legacy Profile',
+              baseUrl: 'https://profiles.example/v1',
+              apiKey: 'legacy-secret',
+              chatModel: 'legacy-chat',
+              embeddingModel: 'legacy-embedding',
+              embeddingDimensions: 768,
+              timeoutSeconds: 60,
+              maxRetries: 1,
+              defaultProfile: true,
+              revision: 1,
+              createdAt: datetime(),
+              updatedAt: datetime()
+            })
+            """).run();
+
+        versionBackfillService.run(null);
+
+        mockMvc.perform(put("/api/v1/ai-profiles/{profileId}", "legacy-profile")
+                .contentType("application/json")
+                .content("""
+                    {
+                      "name": "Legacy Profile",
+                      "baseUrl": "https://profiles.example/v1",
+                      "chatModel": "legacy-chat",
+                      "embeddingModel": "legacy-embedding",
+                      "embeddingDimensions": 768,
+                      "timeoutSeconds": 600,
+                      "maxRetries": 1,
+                      "defaultProfile": true
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("legacy-profile"))
+            .andExpect(jsonPath("$.timeoutSeconds").value(600))
+            .andExpect(jsonPath("$.revision").value(2))
+            .andExpect(jsonPath("$.apiKeyConfigured").value(true));
+
+        Map<String, Object> row = neo4jClient.query("""
+            MATCH (profile:AiProfile {id: 'legacy-profile'})
+            RETURN profile.version AS version, profile.timeoutSeconds AS timeoutSeconds
+            """)
+            .fetch()
+            .one()
+            .orElseThrow();
+        assertThat(row.get("version")).isInstanceOf(Number.class);
+        assertThat(((Number) row.get("version")).longValue()).isGreaterThanOrEqualTo(1L);
+        assertThat(row.get("timeoutSeconds")).isEqualTo(600L);
     }
 
     @Test
