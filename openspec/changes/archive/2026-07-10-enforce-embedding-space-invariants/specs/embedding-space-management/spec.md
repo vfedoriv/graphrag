@@ -1,0 +1,32 @@
+## ADDED Requirements
+
+### Requirement: Embedding spaces have stable non-secret identities
+The system SHALL derive and persist an embedding-space identity from normalized embedding provider endpoint, embedding model, and embedding dimensions without including API key material.
+
+#### Scenario: Profiles use different providers with equal dimensions
+- **WHEN** two profiles use equal embedding dimensions but different normalized provider endpoints or embedding models
+- **THEN** the system assigns different embedding-space identities
+
+#### Scenario: API key is rotated
+- **WHEN** an API key changes while provider endpoint, embedding model, and dimensions remain unchanged
+- **THEN** the system preserves the embedding-space identity
+
+### Requirement: Vector retrieval is isolated by knowledge base and embedding space
+The system SHALL query a vector index that contains only chunks from the requested knowledge base and compatible embedding space.
+
+#### Scenario: Other knowledge bases have more similar global candidates
+- **WHEN** chunks from other knowledge bases would otherwise consume vector-index candidates
+- **THEN** hybrid search still evaluates the requested knowledge base's isolated vector index
+- **AND** it can return its available top-ranked compatible chunks
+
+### Requirement: Legacy chunks are classified or quarantined
+The system SHALL backfill a legacy chunk into an embedding space only when its knowledge base profile unambiguously matches its stored model and dimensions.
+
+#### Scenario: Legacy chunk is unambiguous
+- **WHEN** a legacy chunk's stored model and dimensions match its knowledge base active profile
+- **THEN** migration assigns the corresponding embedding-space identity and index membership
+
+#### Scenario: Legacy chunk is ambiguous
+- **WHEN** a legacy chunk cannot be assigned to one compatible embedding space
+- **THEN** the system excludes it from vector retrieval
+- **AND** reports that the knowledge base requires explicit re-embedding

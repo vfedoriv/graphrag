@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.service.HybridSearchService;
 import java.util.Comparator;
 import java.util.List;
@@ -48,23 +50,12 @@ class HybridSearchIntegrationTest {
     private HybridSearchService hybridSearchService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private EmbeddingSpaceIndexService embeddingSpaceIndexService;
 
     @BeforeEach
     void setUpGraph() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        neo4jClient.query("DROP INDEX " + DocumentProcessingService.CHUNK_EMBEDDING_INDEX + " IF EXISTS").run();
-        neo4jClient.query("""
-            CREATE VECTOR INDEX document_chunk_embedding IF NOT EXISTS
-            FOR (c:DocumentChunk)
-            ON (c.embedding)
-            OPTIONS {indexConfig: {
-              `vector.dimensions`: 3,
-              `vector.similarity_function`: 'cosine'
-            }}
-            """).run();
-        neo4jClient.query("CALL db.awaitIndex($name)")
-            .bind(DocumentProcessingService.CHUNK_EMBEDDING_INDEX).to("name")
-            .run();
         neo4jClient.query("""
             CREATE (:AiProfile {
               id: 'default',
@@ -111,6 +102,30 @@ class HybridSearchIntegrationTest {
             CREATE (contract)-[:HAS_PARTY {role: 'Supplier'}]->(party)
             CREATE (contract)-[:HAS_OBLIGATION {kind: 'Renewal'}]->(obligation)
             """).run();
+        EmbeddingSpace embeddingSpace = EmbeddingSpaceIdentity.derive(
+            "https://api.openai.com/v1", "text-embedding-3-small", 3
+        );
+        assignSpace("kb-1", embeddingSpace);
+        assignSpace("kb-2", embeddingSpace);
+        embeddingSpaceIndexService.ensureIndex("kb-1", embeddingSpace);
+        embeddingSpaceIndexService.ensureIndex("kb-2", embeddingSpace);
+        neo4jClient.query("CALL db.awaitIndex($name)")
+            .bind(embeddingSpaceIndexService.indexName("kb-1", embeddingSpace.id())).to("name")
+            .run();
+        neo4jClient.query("CALL db.awaitIndex($name)")
+            .bind(embeddingSpaceIndexService.indexName("kb-2", embeddingSpace.id())).to("name")
+            .run();
+    }
+
+    private void assignSpace(String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
+        neo4jClient.query("""
+            MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk)
+            SET chunk.embeddingSpaceId = $embeddingSpaceId
+            SET chunk:%s
+            """.formatted(embeddingSpaceIndexService.labelName(knowledgeBaseId, embeddingSpace.id())))
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(embeddingSpace.id()).to("embeddingSpaceId")
+            .run();
     }
 
     @Test

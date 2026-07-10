@@ -13,6 +13,9 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
+import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.ArrayList;
@@ -55,6 +58,8 @@ class DocumentProcessingIntegrationTest {
     private Neo4jClient neo4jClient;
     @Autowired
     private SchemaRegistryService schemaRegistryService;
+    @Autowired
+    private EmbeddingSpaceIndexService embeddingSpaceIndexService;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -106,13 +111,18 @@ class DocumentProcessingIntegrationTest {
         assertThat(chunks).isNotEmpty();
         assertThat(chunks).extracting("chunkIndex").isSorted();
         assertThat(chunks.get(0).getEmbedding()).hasSize(1536);
+        EmbeddingSpace embeddingSpace = EmbeddingSpaceIdentity.derive(
+            "https://api.openai.com/v1", "text-embedding-3-small", 1536
+        );
+        assertThat(chunks).extracting(DocumentChunkNode::getEmbeddingSpaceId)
+            .containsOnly(embeddingSpace.id());
 
         Long indexCount = neo4jClient.query("""
             SHOW INDEXES YIELD name, type
             WHERE name = $name AND type = 'VECTOR'
             RETURN count(*) AS c
             """)
-            .bind(DocumentProcessingService.CHUNK_EMBEDDING_INDEX).to("name")
+            .bind(embeddingSpaceIndexService.indexName("kb-1", embeddingSpace.id())).to("name")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(indexCount).isEqualTo(1L);
 
@@ -120,7 +130,7 @@ class DocumentProcessingIntegrationTest {
             CALL db.index.vector.queryNodes($name, 3, $queryVector) YIELD node, score
             RETURN count(node) AS c
             """)
-            .bind(DocumentProcessingService.CHUNK_EMBEDDING_INDEX).to("name")
+            .bind(embeddingSpaceIndexService.indexName("kb-1", embeddingSpace.id())).to("name")
             .bind(vectorOf(0.11)).to("queryVector")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(hitCount).isGreaterThan(0L);

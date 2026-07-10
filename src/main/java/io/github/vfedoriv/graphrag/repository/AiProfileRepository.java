@@ -27,4 +27,10 @@ public interface AiProfileRepository extends Neo4jRepository<AiProfileNode, Stri
         RETURN count(*) > 0
         """)
     Boolean existsKnowledgeBaseAssignment(String profileId);
+
+    @Query("""
+        MATCH (knowledgeBase:KnowledgeBase {activeAiProfileId: $profileId})
+        RETURN knowledgeBase.id AS knowledgeBaseId
+        """)
+    List<String> findAssignedKnowledgeBaseIds(String profileId);
 }

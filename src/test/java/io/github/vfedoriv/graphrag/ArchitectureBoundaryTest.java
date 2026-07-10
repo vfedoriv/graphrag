@@ -29,6 +29,8 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".service.CypherExecutionService",
             BASE_PACKAGE + ".service.CypherValidationService",
             BASE_PACKAGE + ".service.DocumentProcessingService",
+            BASE_PACKAGE + ".service.EmbeddingSpaceIndexService",
+            BASE_PACKAGE + ".service.EmbeddingSpaceMigrationService",
             BASE_PACKAGE + ".service.GraphArtifactCleanupService",
             BASE_PACKAGE + ".service.GraphExtractionService",
             BASE_PACKAGE + ".service.GraphProvenanceMigrationService",

@@ -28,6 +28,7 @@ public class KnowledgeBaseService {
     private final DocumentChunkRepository documentChunkRepository;
     private final DocumentUploadRepository documentUploadRepository;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final EmbeddingSpacePolicy embeddingSpacePolicy;
 
     @Autowired
     public KnowledgeBaseService(
@@ -36,7 +37,8 @@ public class KnowledgeBaseService {
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository,
         DocumentUploadRepository documentUploadRepository,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        EmbeddingSpacePolicy embeddingSpacePolicy
     ) {
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.neo4jClient = neo4jClient;
@@ -44,6 +46,7 @@ public class KnowledgeBaseService {
         this.documentChunkRepository = documentChunkRepository;
         this.documentUploadRepository = documentUploadRepository;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+        this.embeddingSpacePolicy = embeddingSpacePolicy;
     }
 
     public KnowledgeBaseService(
@@ -52,7 +55,15 @@ public class KnowledgeBaseService {
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository
     ) {
-        this(knowledgeBaseRepository, neo4jClient, aiProfileService, documentChunkRepository, null, null);
+        this(
+            knowledgeBaseRepository,
+            neo4jClient,
+            aiProfileService,
+            documentChunkRepository,
+            null,
+            null,
+            new EmbeddingSpacePolicy(documentChunkRepository)
+        );
     }
 
     @Transactional
@@ -104,7 +115,7 @@ public class KnowledgeBaseService {
     public KnowledgeBaseNode updateActiveAiProfile(String knowledgeBaseId, String profileId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         AiProfileNode profile = aiProfileService.getNode(profileId);
-        validateEmbeddingCompatibility(knowledgeBaseId, profile);
+        embeddingSpacePolicy.requireCompatible(knowledgeBaseId, profile);
         knowledgeBase.setActiveAiProfileId(profile.getId());
         return knowledgeBaseRepository.save(knowledgeBase);
     }
@@ -117,28 +128,6 @@ public class KnowledgeBaseService {
         KnowledgeBaseNode saved = knowledgeBaseRepository.save(kb);
         log.info("Knowledge base updated: knowledgeBaseId={}", saved.getId());
         return saved;
-    }
-
-    private void validateEmbeddingCompatibility(String knowledgeBaseId, AiProfileNode profile) {
-        List<DocumentChunkNode> chunks = documentChunkRepository.findFirstEmbeddedChunkByKnowledgeBaseId(knowledgeBaseId);
-        if (chunks.isEmpty()) {
-            return;
-        }
-        DocumentChunkNode chunk = chunks.getFirst();
-        int storedDimensions = chunk.getEmbeddingDimensions() > 0
-            ? chunk.getEmbeddingDimensions()
-            : chunk.getEmbedding() == null ? 0 : chunk.getEmbedding().size();
-        String storedModel = chunk.getEmbeddingModel();
-        boolean modelCompatible = storedModel == null || storedModel.isBlank() || storedModel.equals(profile.getEmbeddingModel());
-        boolean dimensionsCompatible = storedDimensions == 0 || storedDimensions == profile.getEmbeddingDimensions();
-        if (!modelCompatible || !dimensionsCompatible) {
-            throw new ConflictException(
-                "AI profile embedding settings are incompatible with existing knowledge base embeddings: storedModel="
-                    + storedModel + ", storedDimensions=" + storedDimensions
-                    + ", requestedModel=" + profile.getEmbeddingModel()
-                    + ", requestedDimensions=" + profile.getEmbeddingDimensions()
-            );
-        }
     }
 
     private KnowledgeBaseNode createLegacy(String id, String name) {

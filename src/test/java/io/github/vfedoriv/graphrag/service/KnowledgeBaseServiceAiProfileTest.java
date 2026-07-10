@@ -52,7 +52,7 @@ class KnowledgeBaseServiceAiProfileTest {
         AiProfileNode compatible = profile("profile-new", "embed-default", 1536);
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
         when(aiProfileService.getNode("profile-new")).thenReturn(compatible);
-        when(chunkRepository.findFirstEmbeddedChunkByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
         when(knowledgeBaseRepository.save(any(KnowledgeBaseNode.class))).thenAnswer(invocation -> invocation.getArgument(0));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
@@ -76,7 +76,7 @@ class KnowledgeBaseServiceAiProfileTest {
         AiProfileNode incompatible = profile("profile-new", "other-embed", 768);
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
         when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
-        when(chunkRepository.findFirstEmbeddedChunkByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
             mock(Neo4jClient.class),
@@ -93,6 +93,32 @@ class KnowledgeBaseServiceAiProfileTest {
     }
 
     @Test
+    void rejectsEqualDimensionProfileAssignmentFromAnotherProvider() {
+        KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
+        AiProfileService aiProfileService = mock(AiProfileService.class);
+        DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
+        KnowledgeBaseNode knowledgeBase = knowledgeBase("kb-1", "profile-old");
+        AiProfileNode incompatible = profile("profile-new", "embed-default", 1536);
+        incompatible.setBaseUrl("https://other-provider.example/v1");
+        when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
+        when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1"))
+            .thenReturn(List.of(chunk("embed-default", 1536)));
+        KnowledgeBaseService service = new KnowledgeBaseService(
+            knowledgeBaseRepository,
+            mock(Neo4jClient.class),
+            aiProfileService,
+            chunkRepository
+        );
+
+        assertThatThrownBy(() -> service.updateActiveAiProfile("kb-1", "profile-new"))
+            .isInstanceOf(ConflictException.class)
+            .hasMessageContaining("embedding space");
+
+        verify(knowledgeBaseRepository, never()).save(any(KnowledgeBaseNode.class));
+    }
+
+    @Test
     void rejectsDeletionWhenDocumentsRemain() {
         KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
         DocumentUploadRepository documentUploadRepository = mock(DocumentUploadRepository.class);
@@ -104,7 +130,8 @@ class KnowledgeBaseServiceAiProfileTest {
             mock(AiProfileService.class),
             mock(DocumentChunkRepository.class),
             documentUploadRepository,
-            mock(KnowledgeBaseLifecycleService.class)
+            mock(KnowledgeBaseLifecycleService.class),
+            new EmbeddingSpacePolicy(mock(DocumentChunkRepository.class))
         );
 
         assertThatThrownBy(() -> service.delete("kb-1"))
@@ -123,6 +150,7 @@ class KnowledgeBaseServiceAiProfileTest {
     private AiProfileNode profile(String id, String embeddingModel, int dimensions) {
         AiProfileNode profile = new AiProfileNode();
         profile.setId(id);
+        profile.setBaseUrl("https://api.openai.com/v1");
         profile.setEmbeddingModel(embeddingModel);
         profile.setEmbeddingDimensions(dimensions);
         return profile;
@@ -132,6 +160,7 @@ class KnowledgeBaseServiceAiProfileTest {
         DocumentChunkNode chunk = new DocumentChunkNode();
         chunk.setEmbeddingModel(embeddingModel);
         chunk.setEmbeddingDimensions(dimensions);
+        chunk.setEmbeddingSpaceId(EmbeddingSpaceIdentity.derive("https://api.openai.com/v1", embeddingModel, dimensions).id());
         return chunk;
     }
 }

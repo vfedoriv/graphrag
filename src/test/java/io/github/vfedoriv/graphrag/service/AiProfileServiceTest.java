@@ -12,11 +12,14 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
+import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,6 +173,54 @@ class AiProfileServiceTest {
             .isInstanceOf(ConflictException.class)
             .hasMessageContaining("assigned");
         verify(repository, never()).deleteById(anyString());
+    }
+
+    @Test
+    void rejectsSharedProfileUpdateAtomicallyWhenAnAssignedKnowledgeBaseHasAnotherEmbeddingSpace() {
+        Map<String, AiProfileNode> store = new LinkedHashMap<>();
+        AiProfileRepository profileRepository = repository(store);
+        DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
+        AiProfileService service = new AiProfileService(
+            profileRepository,
+            appProperties(),
+            new EmptyObjectProvider<>(),
+            new EmbeddingSpacePolicy(chunkRepository)
+        );
+        service.create(new CreateAiProfileRequest(
+            "shared",
+            "Shared",
+            "https://api.openai.com/v1",
+            null,
+            "chat",
+            "embed",
+            768,
+            null,
+            null,
+            false
+        ));
+        DocumentChunkNode chunk = new DocumentChunkNode();
+        chunk.setId("chunk-1");
+        chunk.setEmbeddingSpaceId(EmbeddingSpaceIdentity.derive("https://api.openai.com/v1", "embed", 768).id());
+        when(profileRepository.findAssignedKnowledgeBaseIds("shared")).thenReturn(List.of("kb-1", "kb-2"));
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk));
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-2")).thenReturn(List.of(chunk));
+
+        assertThatThrownBy(() -> service.update("shared", new UpdateAiProfileRequest(
+            "Shared",
+            "https://other-provider.example/v1",
+            null,
+            false,
+            "chat",
+            "embed",
+            768,
+            null,
+            null,
+            false
+        ))).isInstanceOf(EmbeddingSpaceConflictException.class)
+            .hasMessageContaining("assigned knowledge bases");
+
+        assertThat(store.get("shared").getBaseUrl()).isEqualTo("https://api.openai.com/v1");
+        assertThat(store.get("shared").getRevision()).isEqualTo(1);
     }
 
     private AiProfileService service(Map<String, AiProfileNode> store) {

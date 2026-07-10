@@ -7,12 +7,14 @@ import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,27 @@ public class AiProfileService implements ApplicationRunner {
     private final AiProfileRepository aiProfileRepository;
     private final AppProperties appProperties;
     private final org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
+    private final EmbeddingSpacePolicy embeddingSpacePolicy;
+
+    @Autowired
+    public AiProfileService(
+        AiProfileRepository aiProfileRepository,
+        AppProperties appProperties,
+        org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider,
+        EmbeddingSpacePolicy embeddingSpacePolicy
+    ) {
+        this.aiProfileRepository = aiProfileRepository;
+        this.appProperties = appProperties;
+        this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
+        this.embeddingSpacePolicy = embeddingSpacePolicy;
+    }
 
     public AiProfileService(
         AiProfileRepository aiProfileRepository,
         AppProperties appProperties,
         org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider
     ) {
-        this.aiProfileRepository = aiProfileRepository;
-        this.appProperties = appProperties;
-        this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
+        this(aiProfileRepository, appProperties, runtimeModelFactoryProvider, null);
     }
 
     @Override
@@ -123,6 +137,10 @@ public class AiProfileService implements ApplicationRunner {
         AiProfileNode profile = getNode(id);
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
             timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()));
+        EmbeddingSpace requestedEmbeddingSpace = EmbeddingSpaceIdentity.derive(
+            request.baseUrl(), request.embeddingModel(), request.embeddingDimensions()
+        );
+        rejectIncompatibleProfileUpdate(profile.getId(), requestedEmbeddingSpace);
         applyValues(
             profile,
             request.name(),
@@ -241,6 +259,26 @@ public class AiProfileService implements ApplicationRunner {
         AiRuntimeModelFactory factory = runtimeModelFactoryProvider.getIfAvailable();
         if (factory != null) {
             factory.invalidate(profileId);
+        }
+    }
+
+    private void rejectIncompatibleProfileUpdate(String profileId, EmbeddingSpace requestedEmbeddingSpace) {
+        if (embeddingSpacePolicy == null) {
+            return;
+        }
+        List<String> assignedKnowledgeBaseIds = aiProfileRepository.findAssignedKnowledgeBaseIds(profileId);
+        if (assignedKnowledgeBaseIds == null || assignedKnowledgeBaseIds.isEmpty()) {
+            return;
+        }
+        List<String> incompatibleKnowledgeBaseIds = embeddingSpacePolicy.incompatibleKnowledgeBaseIds(
+            assignedKnowledgeBaseIds,
+            requestedEmbeddingSpace
+        );
+        if (!incompatibleKnowledgeBaseIds.isEmpty()) {
+            throw new EmbeddingSpaceConflictException(
+                "AI profile update would make stored embeddings incompatible with assigned knowledge bases",
+                incompatibleKnowledgeBaseIds
+            );
         }
     }
 

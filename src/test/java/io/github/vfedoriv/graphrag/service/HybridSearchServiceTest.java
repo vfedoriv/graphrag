@@ -87,13 +87,14 @@ class HybridSearchServiceTest {
 
     private DocumentChunkRepository emptyChunkRepository() {
         DocumentChunkRepository repository = Mockito.mock(DocumentChunkRepository.class);
-        Mockito.when(repository.findFirstEmbeddedChunkByKnowledgeBaseId("kb-1")).thenReturn(List.of());
+        Mockito.when(repository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of());
         return repository;
     }
 
     private AiProfileNode profile() {
         AiProfileNode profile = new AiProfileNode();
         profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
+        profile.setBaseUrl("https://api.openai.com/v1");
         profile.setEmbeddingModel("text-embedding-3-small");
         profile.setEmbeddingDimensions(3);
         return profile;

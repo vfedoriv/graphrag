@@ -15,7 +15,6 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
         MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk)
         WHERE chunk.embedding IS NOT NULL
         RETURN chunk
-        LIMIT 1
         """)
-    List<DocumentChunkNode> findFirstEmbeddedChunkByKnowledgeBaseId(String knowledgeBaseId);
+    List<DocumentChunkNode> findEmbeddedChunksByKnowledgeBaseId(String knowledgeBaseId);
 }

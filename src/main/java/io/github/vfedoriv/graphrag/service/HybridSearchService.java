@@ -8,7 +8,6 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,25 @@ public class HybridSearchService {
     private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
     private final Neo4jClient neo4jClient;
     private final KnowledgeBaseService knowledgeBaseService;
-    private final io.github.vfedoriv.graphrag.repository.DocumentChunkRepository documentChunkRepository;
+    private final EmbeddingSpacePolicy embeddingSpacePolicy;
+    private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+
+    @Autowired
+    public HybridSearchService(
+        RuntimeSettingsService runtimeSettingsService,
+        ObjectProvider<EmbeddingClient> embeddingClientProvider,
+        Neo4jClient neo4jClient,
+        KnowledgeBaseService knowledgeBaseService,
+        EmbeddingSpacePolicy embeddingSpacePolicy,
+        EmbeddingSpaceIndexService embeddingSpaceIndexService
+    ) {
+        this.runtimeSettingsService = runtimeSettingsService;
+        this.embeddingClientProvider = embeddingClientProvider;
+        this.neo4jClient = neo4jClient;
+        this.knowledgeBaseService = knowledgeBaseService;
+        this.embeddingSpacePolicy = embeddingSpacePolicy;
+        this.embeddingSpaceIndexService = embeddingSpaceIndexService;
+    }
 
     public HybridSearchService(
         RuntimeSettingsService runtimeSettingsService,
@@ -37,11 +55,14 @@ public class HybridSearchService {
         KnowledgeBaseService knowledgeBaseService,
         io.github.vfedoriv.graphrag.repository.DocumentChunkRepository documentChunkRepository
     ) {
-        this.runtimeSettingsService = runtimeSettingsService;
-        this.embeddingClientProvider = embeddingClientProvider;
-        this.neo4jClient = neo4jClient;
-        this.knowledgeBaseService = knowledgeBaseService;
-        this.documentChunkRepository = documentChunkRepository;
+        this(
+            runtimeSettingsService,
+            embeddingClientProvider,
+            neo4jClient,
+            knowledgeBaseService,
+            new EmbeddingSpacePolicy(documentChunkRepository),
+            new EmbeddingSpaceIndexService(neo4jClient)
+        );
     }
 
     public HybridSearchResponse search(String knowledgeBaseId, HybridSearchRequest request) {
@@ -63,23 +84,27 @@ public class HybridSearchService {
         );
 
         AiProfileNode activeProfile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
-        validateEmbeddingCompatibility(knowledgeBaseId, activeProfile);
+        EmbeddingSpace embeddingSpace = embeddingSpacePolicy.spaceFor(activeProfile);
+        embeddingSpacePolicy.requireCompatible(knowledgeBaseId, activeProfile);
         EmbeddingClient embeddingClient = resolveEmbeddingClient();
         if (embeddingClient == null) {
             throw new IllegalStateException("Embedding model is not configured for hybrid search");
+        }
+        if (!embeddingSpacePolicy.hasEmbeddedChunks(knowledgeBaseId)) {
+            return emptyResponse(request, topK, graphDepth, includeChunkText, startNanos, knowledgeBaseId);
         }
         List<List<Double>> vectors = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(List.of(request.query())));
         if (vectors.size() != 1) {
             throw new IllegalStateException("Embedding response size mismatch for hybrid search query");
         }
+        embeddingSpaceIndexService.ensureIndex(knowledgeBaseId, embeddingSpace);
 
-        List<Map<String, Object>> rows = new ArrayList<>(neo4jClient.query(hybridSearchCypher())
-            .bind(DocumentProcessingService.CHUNK_EMBEDDING_INDEX).to("indexName")
+        List<Map<String, Object>> rows = new ArrayList<>(neo4jClient.query(hybridSearchCypher(graphDepth))
+            .bind(embeddingSpaceIndexService.indexName(knowledgeBaseId, embeddingSpace.id())).to("indexName")
             .bind(candidateCount).to("candidateCount")
             .bind(vectors.getFirst()).to("queryVector")
             .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(topK).to("topK")
-            .bind(graphDepth).to("graphDepth")
             .fetch()
             .all());
         List<HybridSearchHit> hits = rows.stream()
@@ -100,6 +125,28 @@ public class HybridSearchService {
             response.hitCount(),
             response.executionTimeMs()
         );
+        return response;
+    }
+
+    private HybridSearchResponse emptyResponse(
+        HybridSearchRequest request,
+        int topK,
+        int graphDepth,
+        boolean includeChunkText,
+        long startNanos,
+        String knowledgeBaseId
+    ) {
+        HybridSearchResponse response = new HybridSearchResponse(
+            request.query(),
+            topK,
+            graphDepth,
+            includeChunkText,
+            List.of(),
+            0,
+            LogSanitizer.elapsedMillis(startNanos)
+        );
+        log.info("Hybrid search completed: knowledgeBaseId={}, hitCount=0, executionTimeMs={}",
+            knowledgeBaseId, response.executionTimeMs());
         return response;
     }
 
@@ -249,25 +296,7 @@ public class HybridSearchService {
             .orElse(clients.getFirst());
     }
 
-    private void validateEmbeddingCompatibility(String knowledgeBaseId, AiProfileNode profile) {
-        List<DocumentChunkNode> chunks = documentChunkRepository.findFirstEmbeddedChunkByKnowledgeBaseId(knowledgeBaseId);
-        if (chunks.isEmpty()) {
-            return;
-        }
-        DocumentChunkNode chunk = chunks.getFirst();
-        int storedDimensions = chunk.getEmbeddingDimensions() > 0
-            ? chunk.getEmbeddingDimensions()
-            : chunk.getEmbedding() == null ? 0 : chunk.getEmbedding().size();
-        String storedModel = chunk.getEmbeddingModel();
-        if (storedDimensions > 0 && storedDimensions != profile.getEmbeddingDimensions()) {
-            throw new IllegalStateException("Active AI profile embedding dimensions are incompatible with stored embeddings");
-        }
-        if (storedModel != null && !storedModel.isBlank() && !storedModel.equals(profile.getEmbeddingModel())) {
-            throw new IllegalStateException("Active AI profile embedding model is incompatible with stored embeddings");
-        }
-    }
-
-    private String hybridSearchCypher() {
+    private String hybridSearchCypher(int graphDepth) {
         return """
             CALL db.index.vector.queryNodes($indexName, $candidateCount, $queryVector) YIELD node AS chunk, score
             MATCH (document:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk)
@@ -275,8 +304,7 @@ public class HybridSearchService {
             ORDER BY score DESC
             LIMIT $topK
             OPTIONAL MATCH (chunk)-[:MENTIONS]->(mentioned)
-            OPTIONAL MATCH path = (mentioned)-[*0..2]-(neighbor)
-            WHERE $graphDepth > 0 AND length(path) <= $graphDepth
+            OPTIONAL MATCH path = (mentioned)-[*0..%d]-(neighbor)
             WITH document, chunk, score, collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes, collect(DISTINCT relationships(path)) AS relationshipGroups
             WITH document, chunk, score,
                  [entity IN entityNodes WHERE entity IS NOT NULL | {
@@ -304,6 +332,6 @@ public class HybridSearchService {
                     properties: properties(rel)
                 }] AS relationships
             ORDER BY score DESC
-            """;
+            """.formatted(graphDepth);
     }
 }

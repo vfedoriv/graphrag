@@ -134,6 +134,13 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(EmbeddingSpaceConflictException.class)
+    public ProblemDetail handleEmbeddingSpaceConflict(EmbeddingSpaceConflictException ex, HttpServletRequest request) {
+        ProblemDetail detail = baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+        detail.setProperty("affectedKnowledgeBaseIds", ex.getAffectedKnowledgeBaseIds());
+        return detail;
+    }
+
     @ExceptionHandler(KnowledgeBaseNotEmptyException.class)
     public ProblemDetail handleKnowledgeBaseNotEmpty(KnowledgeBaseNotEmptyException ex, HttpServletRequest request) {
         ProblemDetail detail = baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());

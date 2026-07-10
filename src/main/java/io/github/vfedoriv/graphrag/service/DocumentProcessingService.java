@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.core.env.Environment;
@@ -44,8 +45,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DocumentProcessingService {
-
-    public static final String CHUNK_EMBEDDING_INDEX = "document_chunk_embedding";
 
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentChunkRepository documentChunkRepository;
@@ -64,6 +63,49 @@ public class DocumentProcessingService {
     private final AiObservationService aiObservationService;
     private final KnowledgeBaseService knowledgeBaseService;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final EmbeddingSpacePolicy embeddingSpacePolicy;
+    private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+
+    @Autowired
+    public DocumentProcessingService(
+        DocumentUploadRepository documentUploadRepository,
+        DocumentChunkRepository documentChunkRepository,
+        ExtractionRunRepository extractionRunRepository,
+        DocumentProcessingRunRepository documentProcessingRunRepository,
+        DocumentUploadService documentUploadService,
+        DocumentParsingService documentParsingService,
+        ChunkingService chunkingService,
+        DocumentProcessingOptionsRegistry processingOptionsRegistry,
+        Neo4jClient neo4jClient,
+        ObjectProvider<EmbeddingClient> embeddingClientProvider,
+        ObjectProvider<EmbeddingModel> embeddingModelProvider,
+        Environment environment,
+        GraphExtractionService graphExtractionService,
+        AiObservationService aiObservationService,
+        KnowledgeBaseService knowledgeBaseService,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        EmbeddingSpacePolicy embeddingSpacePolicy,
+        EmbeddingSpaceIndexService embeddingSpaceIndexService
+    ) {
+        this.documentUploadRepository = documentUploadRepository;
+        this.documentChunkRepository = documentChunkRepository;
+        this.extractionRunRepository = extractionRunRepository;
+        this.documentProcessingRunRepository = documentProcessingRunRepository;
+        this.documentUploadService = documentUploadService;
+        this.documentParsingService = documentParsingService;
+        this.chunkingService = chunkingService;
+        this.processingOptionsRegistry = processingOptionsRegistry;
+        this.neo4jClient = neo4jClient;
+        this.embeddingClientProvider = embeddingClientProvider;
+        this.embeddingModelProvider = embeddingModelProvider;
+        this.environment = environment;
+        this.graphExtractionService = graphExtractionService;
+        this.aiObservationService = aiObservationService;
+        this.knowledgeBaseService = knowledgeBaseService;
+        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+        this.embeddingSpacePolicy = embeddingSpacePolicy;
+        this.embeddingSpaceIndexService = embeddingSpaceIndexService;
+    }
 
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
@@ -83,22 +125,26 @@ public class DocumentProcessingService {
         KnowledgeBaseService knowledgeBaseService,
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
     ) {
-        this.documentUploadRepository = documentUploadRepository;
-        this.documentChunkRepository = documentChunkRepository;
-        this.extractionRunRepository = extractionRunRepository;
-        this.documentProcessingRunRepository = documentProcessingRunRepository;
-        this.documentUploadService = documentUploadService;
-        this.documentParsingService = documentParsingService;
-        this.chunkingService = chunkingService;
-        this.processingOptionsRegistry = processingOptionsRegistry;
-        this.neo4jClient = neo4jClient;
-        this.embeddingClientProvider = embeddingClientProvider;
-        this.embeddingModelProvider = embeddingModelProvider;
-        this.environment = environment;
-        this.graphExtractionService = graphExtractionService;
-        this.aiObservationService = aiObservationService;
-        this.knowledgeBaseService = knowledgeBaseService;
-        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+        this(
+            documentUploadRepository,
+            documentChunkRepository,
+            extractionRunRepository,
+            documentProcessingRunRepository,
+            documentUploadService,
+            documentParsingService,
+            chunkingService,
+            processingOptionsRegistry,
+            neo4jClient,
+            embeddingClientProvider,
+            embeddingModelProvider,
+            environment,
+            graphExtractionService,
+            aiObservationService,
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService,
+            new EmbeddingSpacePolicy(documentChunkRepository),
+            new EmbeddingSpaceIndexService(neo4jClient)
+        );
     }
 
     public DocumentUploadNode process(String documentId) {
@@ -155,6 +201,8 @@ public class DocumentProcessingService {
                 document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
                 AiProfileNode activeProfile = activeProfile(document.getKnowledgeBaseId());
+                EmbeddingSpace embeddingSpace = embeddingSpacePolicy.spaceFor(activeProfile);
+                embeddingSpacePolicy.requireCompatible(document.getKnowledgeBaseId(), activeProfile);
                 EmbeddingClient embeddingClient = resolveEmbeddingClient();
                 if (embeddingClient == null) {
                     List<String> embeddingModelBeans = embeddingModelProvider.stream()
@@ -183,7 +231,7 @@ public class DocumentProcessingService {
                     throw new IllegalStateException("Embedding response size mismatch");
                 }
 
-                ensureVectorIndex(activeProfile.getEmbeddingDimensions());
+                embeddingSpaceIndexService.ensureIndex(document.getKnowledgeBaseId(), embeddingSpace);
                 documentChunkRepository.deleteByDocumentId(documentId);
                 for (int i = 0; i < chunks.size(); i++) {
                     DocumentChunkNode chunk = new DocumentChunkNode();
@@ -195,9 +243,11 @@ public class DocumentProcessingService {
                     chunk.setEmbedding(embeddings.get(i));
                     chunk.setEmbeddingModel(activeProfile.getEmbeddingModel());
                     chunk.setEmbeddingDimensions(activeProfile.getEmbeddingDimensions());
+                    chunk.setEmbeddingSpaceId(embeddingSpace.id());
                     chunk.setMetadata(writeJson(chunks.get(i).metadata()));
                     documentChunkRepository.save(chunk);
                     createChunkRelationship(documentId, chunk.getId());
+                    embeddingSpaceIndexService.assignChunk(chunk.getId(), document.getKnowledgeBaseId(), embeddingSpace);
                 }
                 document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
                 List<DocumentChunkNode> persistedChunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
@@ -445,22 +495,6 @@ public class DocumentProcessingService {
 
     private AiProfileNode activeProfile(String knowledgeBaseId) {
         return knowledgeBaseService.activeAiProfile(knowledgeBaseId);
-    }
-
-    private void ensureVectorIndex(int embeddingDimensions) {
-        log.info("Ensuring vector index exists: index={}, dimensions={}", CHUNK_EMBEDDING_INDEX, embeddingDimensions);
-        neo4jClient.query("""
-            CREATE VECTOR INDEX %s IF NOT EXISTS
-            FOR (c:DocumentChunk)
-            ON (c.embedding)
-            OPTIONS {indexConfig: {
-              `vector.dimensions`: $dimensions,
-              `vector.similarity_function`: 'cosine'
-            }}
-            """.formatted(CHUNK_EMBEDDING_INDEX))
-            .bind(embeddingDimensions).to("dimensions")
-            .run();
-        log.info("Vector index ensured: index={}", CHUNK_EMBEDDING_INDEX);
     }
 
     private void createChunkRelationship(String documentId, String chunkId) {
