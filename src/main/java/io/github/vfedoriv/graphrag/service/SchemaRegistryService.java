@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,24 @@ public class SchemaRegistryService {
     private final SchemaDefinitionRepository schemaRepository;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final Neo4jClient neo4jClient;
+    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+
+    @Autowired
+    public SchemaRegistryService(
+        SchemaParser schemaParser,
+        SchemaValidator schemaValidator,
+        SchemaDefinitionRepository schemaRepository,
+        KnowledgeBaseRepository knowledgeBaseRepository,
+        Neo4jClient neo4jClient,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+    ) {
+        this.schemaParser = schemaParser;
+        this.schemaValidator = schemaValidator;
+        this.schemaRepository = schemaRepository;
+        this.knowledgeBaseRepository = knowledgeBaseRepository;
+        this.neo4jClient = neo4jClient;
+        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+    }
 
     public SchemaRegistryService(
         SchemaParser schemaParser,
@@ -42,11 +61,7 @@ public class SchemaRegistryService {
         KnowledgeBaseRepository knowledgeBaseRepository,
         Neo4jClient neo4jClient
     ) {
-        this.schemaParser = schemaParser;
-        this.schemaValidator = schemaValidator;
-        this.schemaRepository = schemaRepository;
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.neo4jClient = neo4jClient;
+        this(schemaParser, schemaValidator, schemaRepository, knowledgeBaseRepository, neo4jClient, null);
     }
 
     @Transactional
@@ -173,14 +188,16 @@ public class SchemaRegistryService {
     public void activateSchema(String knowledgeBaseId, String schemaId) {
         log.info("Activating schema: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         SchemaDefinitionNode schema = getSchema(schemaId);
-        KnowledgeBaseNode kb = knowledgeBaseRepository.findById(knowledgeBaseId)
-            .orElseGet(() -> {
-                KnowledgeBaseNode created = new KnowledgeBaseNode();
-                created.setId(knowledgeBaseId);
-                created.setName("kb-" + knowledgeBaseId);
-                created.setCreatedAt(Instant.now());
-                return knowledgeBaseRepository.save(created);
-            });
+        KnowledgeBaseNode kb = knowledgeBaseLifecycleService == null
+            ? knowledgeBaseRepository.findById(knowledgeBaseId)
+                .orElseGet(() -> {
+                    KnowledgeBaseNode created = new KnowledgeBaseNode();
+                    created.setId(knowledgeBaseId);
+                    created.setName("kb-" + knowledgeBaseId);
+                    created.setCreatedAt(Instant.now());
+                    return knowledgeBaseRepository.save(created);
+                })
+            : knowledgeBaseLifecycleService.provision(knowledgeBaseId, "kb-" + knowledgeBaseId);
         if (schemaId.equals(kb.getActiveSchemaId())) {
             if (schema.getStatus() != SchemaStatus.ACTIVE) {
                 schema.setStatus(SchemaStatus.ACTIVE);

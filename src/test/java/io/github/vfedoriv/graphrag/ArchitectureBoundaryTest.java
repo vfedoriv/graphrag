@@ -34,6 +34,7 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".service.GraphProvenanceMigrationService",
             BASE_PACKAGE + ".service.HybridSearchService",
             BASE_PACKAGE + ".service.KnowledgeBaseService",
+            BASE_PACKAGE + ".service.KnowledgeBaseLifecycleMigrationService",
             BASE_PACKAGE + ".service.Neo4jPersistenceVersionBackfillService",
             BASE_PACKAGE + ".service.SchemaRegistryService"
     );

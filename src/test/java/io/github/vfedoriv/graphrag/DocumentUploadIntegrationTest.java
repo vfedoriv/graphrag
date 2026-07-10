@@ -47,6 +47,7 @@ class DocumentUploadIntegrationTest {
     @BeforeEach
     void clearGraph() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        neo4jClient.query("CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', createdAt: datetime()})").run();
         TestDocumentStorage.clean();
     }
 

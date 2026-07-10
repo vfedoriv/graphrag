@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
+import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationType;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
@@ -20,6 +22,8 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -29,15 +33,21 @@ public class DocumentUploadService {
     private final BinaryStorageService binaryStorageService;
     private final DocumentUploadRepository documentUploadRepository;
     private final GraphArtifactCleanupService graphArtifactCleanupService;
+    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final DocumentStorageMutationService storageMutationService;
 
     public DocumentUploadService(
         BinaryStorageService binaryStorageService,
         DocumentUploadRepository documentUploadRepository,
-        GraphArtifactCleanupService graphArtifactCleanupService
+        GraphArtifactCleanupService graphArtifactCleanupService,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        DocumentStorageMutationService storageMutationService
     ) {
         this.binaryStorageService = binaryStorageService;
         this.documentUploadRepository = documentUploadRepository;
         this.graphArtifactCleanupService = graphArtifactCleanupService;
+        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+        this.storageMutationService = storageMutationService;
     }
 
     @Transactional
@@ -49,6 +59,8 @@ public class DocumentUploadService {
             file.getContentType(),
             file.getSize()
         );
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
+        validateFile(file);
         byte[] bytes = readBytes(file);
         String sha256 = sha256(bytes);
 
@@ -73,13 +85,19 @@ public class DocumentUploadService {
         node.setStatus(DocumentStatus.UPLOADED);
         node.setUploadedAt(Instant.now());
 
+        DocumentStorageMutationNode mutation = storageMutationService.begin(
+            DocumentStorageMutationType.STORE, knowledgeBaseId, node.getId(), null, null
+        );
         try {
             URI contentUri = binaryStorageService.store(knowledgeBaseId, node.getId(), file.getOriginalFilename(), bytes);
+            storageMutationService.recordStoredContent(mutation.getId(), contentUri.toString());
             node.setContentUri(contentUri.toString());
             DocumentUploadNode saved = documentUploadRepository.save(node);
+            completeAfterCommit(mutation.getId());
             log.info("Document uploaded: knowledgeBaseId={}, documentId={}, bytes={}", knowledgeBaseId, saved.getId(), bytes.length);
             return saved;
         } catch (IOException ex) {
+            storageMutationService.recordFailure(mutation.getId(), ex);
             log.error(
                 "Binary storage failed during document upload: knowledgeBaseId={}, documentId={}, filename={}, message={}",
                 knowledgeBaseId,
@@ -115,6 +133,7 @@ public class DocumentUploadService {
 
     public List<DocumentUploadNode> listByKnowledgeBase(String knowledgeBaseId) {
         log.info("Listing uploaded documents: knowledgeBaseId={}", knowledgeBaseId);
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         List<DocumentUploadNode> documents = documentUploadRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
         log.info("Uploaded documents listed: knowledgeBaseId={}, count={}", knowledgeBaseId, documents.size());
         return documents;
@@ -138,6 +157,7 @@ public class DocumentUploadService {
             file.getContentType(),
             file.getSize()
         );
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         validateFile(file);
         DocumentUploadNode document = findInKnowledgeBase(knowledgeBaseId, documentId);
         byte[] bytes = readBytes(file);
@@ -148,10 +168,15 @@ public class DocumentUploadService {
         }
 
         String previousContentUri = document.getContentUri();
+        DocumentStorageMutationNode storeMutation = storageMutationService.begin(
+            DocumentStorageMutationType.STORE, knowledgeBaseId, documentId, null, previousContentUri
+        );
         URI replacementContentUri;
         try {
             replacementContentUri = binaryStorageService.store(knowledgeBaseId, documentId, file.getOriginalFilename(), bytes);
+            storageMutationService.recordStoredContent(storeMutation.getId(), replacementContentUri.toString());
         } catch (IOException ex) {
+            storageMutationService.recordFailure(storeMutation.getId(), ex);
             log.error(
                 "Binary storage failed during document replacement: knowledgeBaseId={}, documentId={}, filename={}, message={}",
                 knowledgeBaseId,
@@ -174,7 +199,8 @@ public class DocumentUploadService {
         document.setProcessedAt(null);
         document.setErrorMessage(null);
         DocumentUploadNode saved = documentUploadRepository.save(document);
-        deletePreviousContent(previousContentUri, replacementContentUri.toString(), documentId);
+        completeAfterCommit(storeMutation.getId());
+        schedulePreviousContentDeletion(knowledgeBaseId, documentId, previousContentUri, replacementContentUri.toString());
         log.info(
             "Document replaced: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
@@ -191,11 +217,21 @@ public class DocumentUploadService {
     @Transactional
     public void delete(String knowledgeBaseId, String documentId) {
         log.info("Deleting document: knowledgeBaseId={}, documentId={}", knowledgeBaseId, documentId);
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         DocumentUploadNode document = findInKnowledgeBase(knowledgeBaseId, documentId);
-        deletePrimaryContent(document);
+        DocumentStorageMutationNode mutation = storageMutationService.begin(
+            DocumentStorageMutationType.DELETE, knowledgeBaseId, documentId, document.getContentUri(), null
+        );
+        try {
+            deletePrimaryContent(document);
+        } catch (IllegalStateException ex) {
+            storageMutationService.recordFailure(mutation.getId(), ex);
+            throw ex;
+        }
         GraphArtifactCleanupService.DocumentArtifactCleanupResult cleanupResult =
             graphArtifactCleanupService.cleanupDocumentArtifacts(documentId);
         documentUploadRepository.delete(document);
+        completeAfterCommit(mutation.getId());
         log.info(
             "Document deleted: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
@@ -250,13 +286,23 @@ public class DocumentUploadService {
         }
     }
 
-    private void deletePreviousContent(String previousContentUri, String replacementContentUri, String documentId) {
+    private void schedulePreviousContentDeletion(
+        String knowledgeBaseId,
+        String documentId,
+        String previousContentUri,
+        String replacementContentUri
+    ) {
         if (previousContentUri == null || previousContentUri.isBlank() || previousContentUri.equals(replacementContentUri)) {
             return;
         }
+        DocumentStorageMutationNode mutation = storageMutationService.begin(
+            DocumentStorageMutationType.DELETE_REPLACED_CONTENT, knowledgeBaseId, documentId, previousContentUri, null
+        );
         try {
             binaryStorageService.delete(URI.create(previousContentUri));
+            completeAfterCommit(mutation.getId());
         } catch (IOException ex) {
+            storageMutationService.recordFailure(mutation.getId(), ex);
             log.warn(
                 "Previous document content cleanup failed after replacement: documentId={}, contentUri={}, message={}",
                 documentId,
@@ -265,6 +311,19 @@ public class DocumentUploadService {
                 ex
             );
         }
+    }
+
+    private void completeAfterCommit(String mutationId) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            storageMutationService.complete(mutationId);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                storageMutationService.complete(mutationId);
+            }
+        });
     }
 
 }

@@ -70,6 +70,8 @@ class DocumentProcessingServiceTest {
     private GraphExtractionService graphExtractionService;
     @Mock
     private KnowledgeBaseService knowledgeBaseService;
+    @Mock
+    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
 
     @Test
     void orchestratesParsingChunkingAndEmbedding() throws Exception {
@@ -122,7 +124,8 @@ class DocumentProcessingServiceTest {
             environment,
             graphExtractionService,
             TestAiObservationService.noop(),
-            knowledgeBaseService
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService
         );
         DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("preserveLineBreaks", false));
 
@@ -187,7 +190,8 @@ class DocumentProcessingServiceTest {
             environment,
             graphExtractionService,
             TestAiObservationService.noop(),
-            knowledgeBaseService
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService
         );
 
         DocumentUploadNode failed = service.process("doc-1");
@@ -279,7 +283,8 @@ class DocumentProcessingServiceTest {
             environment,
             graphExtractionService,
             TestAiObservationService.noop(),
-            knowledgeBaseService
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService
         );
 
         DocumentUploadNode processed = service.process("doc-1");
@@ -344,7 +349,8 @@ class DocumentProcessingServiceTest {
             environment,
             graphExtractionService,
             TestAiObservationService.noop(),
-            knowledgeBaseService
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService
         );
 
         DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("pdf.split-pages", true));

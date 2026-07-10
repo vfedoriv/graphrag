@@ -53,12 +53,21 @@ class DocumentControllerIntegrationTest {
     @BeforeEach
     void clearGraph() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        createKnowledgeBase("kb-1");
+        createKnowledgeBase("kb-2");
         TestDocumentStorage.clean();
     }
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
         TestDocumentStorage.clean();
+    }
+
+    private void createKnowledgeBase(String id) throws Exception {
+        mockMvc.perform(post("/api/v1/knowledge-bases")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":\"" + id + "\",\"name\":\"" + id + "\"}"))
+            .andExpect(status().isOk());
     }
 
     @Test

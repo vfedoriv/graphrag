@@ -5,13 +5,16 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.error.KnowledgeBaseNotEmptyException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.time.Instant;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,25 @@ public class KnowledgeBaseService {
     private final Neo4jClient neo4jClient;
     private final AiProfileService aiProfileService;
     private final DocumentChunkRepository documentChunkRepository;
+    private final DocumentUploadRepository documentUploadRepository;
+    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+
+    @Autowired
+    public KnowledgeBaseService(
+        KnowledgeBaseRepository knowledgeBaseRepository,
+        Neo4jClient neo4jClient,
+        AiProfileService aiProfileService,
+        DocumentChunkRepository documentChunkRepository,
+        DocumentUploadRepository documentUploadRepository,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+    ) {
+        this.knowledgeBaseRepository = knowledgeBaseRepository;
+        this.neo4jClient = neo4jClient;
+        this.aiProfileService = aiProfileService;
+        this.documentChunkRepository = documentChunkRepository;
+        this.documentUploadRepository = documentUploadRepository;
+        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+    }
 
     public KnowledgeBaseService(
         KnowledgeBaseRepository knowledgeBaseRepository,
@@ -30,10 +52,7 @@ public class KnowledgeBaseService {
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository
     ) {
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.neo4jClient = neo4jClient;
-        this.aiProfileService = aiProfileService;
-        this.documentChunkRepository = documentChunkRepository;
+        this(knowledgeBaseRepository, neo4jClient, aiProfileService, documentChunkRepository, null, null);
     }
 
     @Transactional
@@ -42,12 +61,9 @@ public class KnowledgeBaseService {
         if (knowledgeBaseRepository.existsById(id)) {
             throw new ConflictException("Knowledge base already exists: " + id);
         }
-        KnowledgeBaseNode node = new KnowledgeBaseNode();
-        node.setId(id);
-        node.setName(name);
-        node.setActiveAiProfileId(aiProfileService.defaultProfile().getId());
-        node.setCreatedAt(Instant.now());
-        KnowledgeBaseNode saved = knowledgeBaseRepository.save(node);
+        KnowledgeBaseNode saved = knowledgeBaseLifecycleService == null
+            ? createLegacy(id, name)
+            : knowledgeBaseLifecycleService.provision(id, name);
         log.info("Knowledge base created: knowledgeBaseId={}", saved.getId());
         return saved;
     }
@@ -125,11 +141,24 @@ public class KnowledgeBaseService {
         }
     }
 
+    private KnowledgeBaseNode createLegacy(String id, String name) {
+        KnowledgeBaseNode node = new KnowledgeBaseNode();
+        node.setId(id);
+        node.setName(name);
+        node.setActiveAiProfileId(aiProfileService.defaultProfile().getId());
+        node.setCreatedAt(Instant.now());
+        return knowledgeBaseRepository.save(node);
+    }
+
     @Transactional
     public void delete(String id) {
         log.info("Deleting knowledge base: knowledgeBaseId={}", id);
         if (!knowledgeBaseRepository.existsById(id)) {
             throw new NotFoundException("Knowledge base not found: " + id);
+        }
+        long documentCount = documentUploadRepository == null ? 0 : documentUploadRepository.countByKnowledgeBaseId(id);
+        if (documentCount > 0) {
+            throw new KnowledgeBaseNotEmptyException(id, documentCount);
         }
         neo4jClient.query("""
             MATCH (kb:KnowledgeBase {id: $id})

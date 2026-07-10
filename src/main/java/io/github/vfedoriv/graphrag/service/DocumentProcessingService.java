@@ -63,6 +63,7 @@ public class DocumentProcessingService {
     private final GraphExtractionService graphExtractionService;
     private final AiObservationService aiObservationService;
     private final KnowledgeBaseService knowledgeBaseService;
+    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
 
     public DocumentProcessingService(
         DocumentUploadRepository documentUploadRepository,
@@ -79,7 +80,8 @@ public class DocumentProcessingService {
         Environment environment,
         GraphExtractionService graphExtractionService,
         AiObservationService aiObservationService,
-        KnowledgeBaseService knowledgeBaseService
+        KnowledgeBaseService knowledgeBaseService,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
     ) {
         this.documentUploadRepository = documentUploadRepository;
         this.documentChunkRepository = documentChunkRepository;
@@ -96,6 +98,7 @@ public class DocumentProcessingService {
         this.graphExtractionService = graphExtractionService;
         this.aiObservationService = aiObservationService;
         this.knowledgeBaseService = knowledgeBaseService;
+        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
     }
 
     public DocumentUploadNode process(String documentId) {
@@ -110,6 +113,7 @@ public class DocumentProcessingService {
         long startNanos = System.nanoTime();
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+        knowledgeBaseLifecycleService.requireManaged(document.getKnowledgeBaseId());
         DocumentProcessingOptionSet optionSet = resolveOptionSet(document, requestedOptions);
         if (!allowOverwrite && Boolean.TRUE.equals(extractionRunRepository.hasCompletedRun(documentId))) {
             throw new ConflictException(

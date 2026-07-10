@@ -134,6 +134,13 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(KnowledgeBaseNotEmptyException.class)
+    public ProblemDetail handleKnowledgeBaseNotEmpty(KnowledgeBaseNotEmptyException ex, HttpServletRequest request) {
+        ProblemDetail detail = baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+        detail.setProperty("remainingDocumentCount", ex.getRemainingDocumentCount());
+        return detail;
+    }
+
     @ExceptionHandler(QueryRejectedException.class)
     public ProblemDetail handleQueryRejected(QueryRejectedException ex, HttpServletRequest request) {
         String errorSummary = LogSanitizer.preview(String.join(" | ", ex.getErrors()));

@@ -3,16 +3,21 @@ package io.github.vfedoriv.graphrag.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.storage.BinaryStorageService;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -29,8 +34,19 @@ class DocumentUploadServiceTest {
     private DocumentUploadRepository documentUploadRepository;
     @Mock
     private GraphArtifactCleanupService graphArtifactCleanupService;
+    @Mock
+    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    @Mock
+    private DocumentStorageMutationService storageMutationService;
     @InjectMocks
     private DocumentUploadService documentUploadService;
+
+    @BeforeEach
+    void prepareStorageMutation() {
+        DocumentStorageMutationNode mutation = new DocumentStorageMutationNode();
+        mutation.setId("mutation-1");
+        lenient().when(storageMutationService.begin(any(), any(), any(), any(), any())).thenReturn(mutation);
+    }
 
     @Test
     void computesSha256Deterministically() {
@@ -88,5 +104,18 @@ class DocumentUploadServiceTest {
         ArgumentCaptor<DocumentUploadNode> captor = ArgumentCaptor.forClass(DocumentUploadNode.class);
         verify(documentUploadRepository).save(captor.capture());
         assertThat(captor.getValue().getSha256()).isEqualTo(hash);
+    }
+
+    @Test
+    void rejectsUploadForMissingKnowledgeBaseBeforeWritingStorage() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "a.txt", "text/plain", "content".getBytes());
+        when(knowledgeBaseLifecycleService.requireManaged("missing"))
+            .thenThrow(new NotFoundException("Knowledge base not found: missing"));
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentUploadService.upload("missing", file))
+            .isInstanceOf(NotFoundException.class);
+
+        verify(binaryStorageService, never()).store(any(), any(), any(), any());
+        verify(documentUploadRepository, never()).save(any());
     }
 }

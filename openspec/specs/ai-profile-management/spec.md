@@ -41,11 +41,15 @@ The system SHALL seed an initial OpenAI-compatible AI profile from startup model
 - **AND** startup properties do not overwrite user-managed profile changes
 
 ### Requirement: Knowledge bases select active AI profiles
-The system SHALL let each knowledge base have an active AI provider profile used by knowledge-base-scoped AI workflows.
+The system SHALL let each knowledge base have an active AI provider profile used by knowledge-base-scoped AI workflows. Every supported knowledge-base provisioning path SHALL assign the default AI profile unless another profile is explicitly assigned by supported API behavior.
 
-#### Scenario: New knowledge base is created
+#### Scenario: Client creates a knowledge base
 - **WHEN** a client creates a knowledge base
 - **THEN** the knowledge base is assigned the default AI profile unless another profile is explicitly assigned by supported API behavior
+
+#### Scenario: Schema activation creates a knowledge base
+- **WHEN** schema activation creates a previously missing knowledge base
+- **THEN** the knowledge base is assigned the default AI profile before knowledge-base-scoped AI workflows can run
 
 #### Scenario: Client assigns a profile to a knowledge base
 - **WHEN** a client assigns an existing AI profile to a knowledge base

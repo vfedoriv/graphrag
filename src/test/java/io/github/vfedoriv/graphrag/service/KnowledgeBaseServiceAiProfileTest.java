@@ -12,7 +12,9 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.error.KnowledgeBaseNotEmptyException;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +90,26 @@ class KnowledgeBaseServiceAiProfileTest {
 
         assertThat(knowledgeBase.getActiveAiProfileId()).isEqualTo("profile-old");
         verify(knowledgeBaseRepository, never()).save(any(KnowledgeBaseNode.class));
+    }
+
+    @Test
+    void rejectsDeletionWhenDocumentsRemain() {
+        KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
+        DocumentUploadRepository documentUploadRepository = mock(DocumentUploadRepository.class);
+        when(knowledgeBaseRepository.existsById("kb-1")).thenReturn(true);
+        when(documentUploadRepository.countByKnowledgeBaseId("kb-1")).thenReturn(2L);
+        KnowledgeBaseService service = new KnowledgeBaseService(
+            knowledgeBaseRepository,
+            mock(Neo4jClient.class),
+            mock(AiProfileService.class),
+            mock(DocumentChunkRepository.class),
+            documentUploadRepository,
+            mock(KnowledgeBaseLifecycleService.class)
+        );
+
+        assertThatThrownBy(() -> service.delete("kb-1"))
+            .isInstanceOf(KnowledgeBaseNotEmptyException.class)
+            .hasMessageContaining("2 document");
     }
 
     private KnowledgeBaseNode knowledgeBase(String id, String profileId) {

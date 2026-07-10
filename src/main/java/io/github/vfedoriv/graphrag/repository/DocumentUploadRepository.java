@@ -10,4 +10,6 @@ public interface DocumentUploadRepository extends Neo4jRepository<DocumentUpload
     Optional<DocumentUploadNode> findByKnowledgeBaseIdAndSha256(String knowledgeBaseId, String sha256);
 
     List<DocumentUploadNode> findByKnowledgeBaseIdOrderByUploadedAtDesc(String knowledgeBaseId);
+
+    long countByKnowledgeBaseId(String knowledgeBaseId);
 }
