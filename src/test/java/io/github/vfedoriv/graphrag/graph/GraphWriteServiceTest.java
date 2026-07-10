@@ -50,6 +50,17 @@ class GraphWriteServiceTest {
     }
 
     @Test
+    void stableEvidenceId_isDistinctForDifferentSourcesOfTheSameCanonicalFact() {
+        String factId = "rel:canonical";
+        String idA = GraphWriteSupport.stableEvidenceId("relationship", "run-a", "document-a", "chunk-a", factId);
+        String idB = GraphWriteSupport.stableEvidenceId("relationship", "run-b", "document-b", "chunk-b", factId);
+
+        assertThat(idA).startsWith("evidence:");
+        assertThat(idA).isNotEqualTo(idB);
+        assertThat(idA).isEqualTo(GraphWriteSupport.stableEvidenceId("relationship", "run-a", "document-a", "chunk-a", factId));
+    }
+
+    @Test
     void stableNodeId_rejectsIncompleteIdentityMaterial() throws Exception {
         Method stableNodeId = GraphWriteService.class.getDeclaredMethod("stableNodeId", String.class, String.class, List.class, Map.class);
         stableNodeId.setAccessible(true);

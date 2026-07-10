@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -16,114 +18,257 @@ public class GraphArtifactCleanupService {
     }
 
     public DocumentArtifactCleanupResult cleanupDocumentArtifacts(String documentId) {
-        Map<String, Object> cleanupRow = neo4jClient.query("""
-            MATCH (document:DocumentUpload {id: $documentId})
-            OPTIONAL MATCH (document)-[:HAS_CHUNK]->(chunk:DocumentChunk)
-            WITH document, collect(DISTINCT chunk) AS chunks
-            FOREACH (chunk IN chunks | DETACH DELETE chunk)
-            WITH document, size(chunks) AS deletedChunks
-            OPTIONAL MATCH (document)-[:HAS_PROCESSING_RUN]->(processingRun:DocumentProcessingRun)
-            WITH document, deletedChunks, [run IN collect(DISTINCT processingRun) WHERE run IS NOT NULL] AS processingRunsToDelete
-            UNWIND CASE WHEN size(processingRunsToDelete) = 0 THEN [null] ELSE processingRunsToDelete END AS processingRunToDelete
-            OPTIONAL MATCH (processingRunToDelete)-[processingRunRel]-()
-            WITH document, deletedChunks, processingRunsToDelete, count(DISTINCT processingRunRel) AS deletedProcessingRunRelationshipCount
-            FOREACH (run IN processingRunsToDelete | DETACH DELETE run)
-            WITH document, deletedChunks, size(processingRunsToDelete) AS deletedProcessingRuns, deletedProcessingRunRelationshipCount
-            OPTIONAL MATCH (document)-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
-            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, [run IN collect(DISTINCT run) WHERE run IS NOT NULL] AS runsToDelete
-            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, [run IN runsToDelete | run.id] AS runIds
-            OPTIONAL MATCH ()-[graphRel]-()
-            WHERE graphRel.sourceDocumentId = $documentId
-                AND (size(runIds) = 0 OR graphRel.extractionRunId IN runIds)
-            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, collect(DISTINCT graphRel) AS graphRelationships
-            FOREACH (graphRel IN graphRelationships | DELETE graphRel)
-            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, size(graphRelationships) AS deletedGraphRelationshipCount
-            UNWIND CASE WHEN size(runsToDelete) = 0 THEN [null] ELSE runsToDelete END AS runToDelete
-            OPTIONAL MATCH (runToDelete)-[runRel]-()
-            WITH document, deletedChunks, deletedProcessingRuns, deletedProcessingRunRelationshipCount, runsToDelete, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
-            FOREACH (run IN runsToDelete | DETACH DELETE run)
-            WITH
-                document,
-                deletedChunks,
-                deletedProcessingRuns,
-                size(runsToDelete) AS deletedRuns,
-                deletedGraphRelationshipCount + deletedRunRelationshipCount + deletedProcessingRunRelationshipCount AS deletedRelationshipCount
-            OPTIONAL MATCH (obsoleteNode)
-            WHERE obsoleteNode.sourceDocumentId = $documentId
-                AND NOT obsoleteNode:ExtractionRun
-                AND NOT obsoleteNode:DocumentProcessingRun
-                AND NOT obsoleteNode:DocumentUpload
-                AND NOT obsoleteNode:DocumentChunk
-                AND NOT obsoleteNode:KnowledgeBase
-                AND NOT obsoleteNode:SchemaDefinition
-                AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
-            WITH deletedChunks, deletedProcessingRuns, deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
-            FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
-            RETURN
-                deletedChunks AS deletedChunks,
-                deletedProcessingRuns AS deletedProcessingRuns,
-                deletedRuns AS deletedRuns,
-                deletedRelationshipCount AS deletedRelationships,
-                size(obsoleteNodes) AS deletedObsoleteExtractedNodes
+        List<String> runIds = extractionRunIds(documentId);
+        EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, true);
+        long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
+        CleanupCounts cleanupCounts = deleteDocumentInfrastructure(documentId);
+        long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(evidenceResult.canonicalFactIds());
+        return new DocumentArtifactCleanupResult(
+            cleanupCounts.deletedChunks(),
+            cleanupCounts.deletedProcessingRuns(),
+            cleanupCounts.deletedRuns(),
+            evidenceResult.deletedEvidence(),
+            deletedLegacyFacts + deletedUnsupportedFacts,
+            deletedUnsupportedFacts
+        );
+    }
+
+    public ExtractionRunCleanupResult cleanupRunsAfterSuccessfulExtraction(String documentId, String runId, boolean allowOverwrite) {
+        List<String> runIds = staleExtractionRunIds(documentId, runId, allowOverwrite);
+        EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, false);
+        long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
+        long deletedRuns = deleteRuns(runIds);
+        long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(evidenceResult.canonicalFactIds());
+        return new ExtractionRunCleanupResult(
+            deletedRuns,
+            evidenceResult.deletedEvidence(),
+            deletedLegacyFacts + deletedUnsupportedFacts,
+            deletedUnsupportedFacts
+        );
+    }
+
+    private List<String> extractionRunIds(String documentId) {
+        return stringValues(neo4jClient.query("""
+            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
+            RETURN collect(run.id) AS runIds
             """)
             .bind(documentId).to("documentId")
             .fetch()
             .one()
-            .orElse(null);
-        DocumentArtifactCleanupResult result = documentCleanupResult(cleanupRow);
-        if (cleanupRow == null) {
-            log.warn("Document cleanup returned no row: documentId={}", documentId);
-        }
-        return result;
+            .orElse(Map.of()));
     }
 
-    public ExtractionRunCleanupResult cleanupRunsAfterSuccessfulExtraction(String documentId, String runId, boolean allowOverwrite) {
-        Map<String, Object> cleanupRow = neo4jClient.query("""
+    private List<String> staleExtractionRunIds(String documentId, String runId, boolean allowOverwrite) {
+        return stringValues(neo4jClient.query("""
             MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
             OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
             WHERE failed.id <> current.id
             OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(completed:ExtractionRun {status: 'COMPLETED'})
             WHERE $allowOverwrite = true AND completed.id <> current.id
-            WITH [run IN collect(DISTINCT failed) WHERE run IS NOT NULL] AS failedRuns,
-                 [run IN collect(DISTINCT completed) WHERE run IS NOT NULL] AS completedRuns
-            WITH failedRuns + completedRuns AS runsToDelete
-            WITH runsToDelete, [run IN runsToDelete | run.id] AS runIds
-            OPTIONAL MATCH ()-[graphRel]-()
-            WHERE graphRel.sourceDocumentId = $documentId AND graphRel.extractionRunId IN runIds
-            WITH runsToDelete, runIds, collect(DISTINCT graphRel) AS graphRelationships
-            FOREACH (graphRel IN graphRelationships | DELETE graphRel)
-            WITH runsToDelete, runIds, size(graphRelationships) AS deletedGraphRelationshipCount
-            UNWIND CASE WHEN size(runsToDelete) = 0 THEN [null] ELSE runsToDelete END AS runToDelete
-            OPTIONAL MATCH (runToDelete)-[runRel]-()
-            WITH runsToDelete, runIds, deletedGraphRelationshipCount, count(DISTINCT runRel) AS deletedRunRelationshipCount
-            FOREACH (run IN runsToDelete | DETACH DELETE run)
-            WITH size(runsToDelete) AS deletedRuns, deletedGraphRelationshipCount + deletedRunRelationshipCount AS deletedRelationshipCount
-            OPTIONAL MATCH (obsoleteNode)
-            WHERE deletedRuns > 0
-                AND obsoleteNode.sourceDocumentId = $documentId
-                AND NOT obsoleteNode:ExtractionRun
-                AND NOT obsoleteNode:DocumentProcessingRun
-                AND NOT obsoleteNode:DocumentUpload
-                AND NOT obsoleteNode:DocumentChunk
-                AND NOT obsoleteNode:KnowledgeBase
-                AND NOT obsoleteNode:SchemaDefinition
-                AND NOT (obsoleteNode)<-[:CREATED_NODE]-(:ExtractionRun)
-            WITH deletedRuns, deletedRelationshipCount, collect(DISTINCT obsoleteNode) AS obsoleteNodes
-            FOREACH (obsoleteNode IN obsoleteNodes | DETACH DELETE obsoleteNode)
-            RETURN
-                deletedRuns AS deletedRuns,
-                deletedRelationshipCount AS deletedRelationships,
-                size(obsoleteNodes) AS deletedObsoleteExtractedNodes
+            RETURN collect(DISTINCT failed.id) + collect(DISTINCT completed.id) AS runIds
             """)
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
             .bind(allowOverwrite).to("allowOverwrite")
             .fetch()
             .one()
-            .orElse(null);
-        ExtractionRunCleanupResult result = extractionRunCleanupResult(cleanupRow);
-        if (cleanupRow == null) {
-            log.warn("Cleanup returned no row: runId={}, documentId={}", runId, documentId);
+            .orElse(Map.of()));
+    }
+
+    private EvidenceCleanupResult cleanupEvidence(String documentId, List<String> runIds, boolean entireDocument) {
+        List<String> canonicalFactIds = entireDocument
+            ? evidenceFactIdsForDocument(documentId)
+            : evidenceFactIdsForRuns(runIds);
+        Map<String, Object> cleanupRow = entireDocument
+            ? deleteEvidenceForDocument(documentId)
+            : deleteEvidenceForRuns(runIds);
+        return new EvidenceCleanupResult(
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedEvidence")),
+            canonicalFactIds
+        );
+    }
+
+    private List<String> evidenceFactIdsForDocument(String documentId) {
+        return List.copyOf(neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {sourceDocumentId: $documentId})
+            RETURN DISTINCT e.canonicalFactId AS canonicalFactId
+            """)
+            .bind(documentId).to("documentId")
+            .fetchAs(String.class)
+            .all());
+    }
+
+    private List<String> evidenceFactIdsForRuns(List<String> runIds) {
+        if (runIds.isEmpty()) {
+            return List.of();
+        }
+        return List.copyOf(neo4jClient.query("""
+            MATCH (run:ExtractionRun)-[:HAS_GRAPH_EVIDENCE]->(e:GraphExtractionEvidence)
+            WHERE run.id IN $runIds
+            RETURN DISTINCT e.canonicalFactId AS canonicalFactId
+            """)
+            .bind(runIds).to("runIds")
+            .fetchAs(String.class)
+            .all());
+    }
+
+    private Map<String, Object> deleteEvidenceForDocument(String documentId) {
+        return neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {sourceDocumentId: $documentId})
+            WITH collect(DISTINCT e) AS evidence
+            FOREACH (e IN evidence | DETACH DELETE e)
+            RETURN size(evidence) AS deletedEvidence
+            """)
+            .bind(documentId).to("documentId")
+            .fetch()
+            .one()
+            .orElse(Map.of());
+    }
+
+    private Map<String, Object> deleteEvidenceForRuns(List<String> runIds) {
+        if (runIds.isEmpty()) {
+            return Map.of("deletedEvidence", 0L);
+        }
+        return neo4jClient.query("""
+            MATCH (run:ExtractionRun)-[:HAS_GRAPH_EVIDENCE]->(e:GraphExtractionEvidence)
+            WHERE run.id IN $runIds
+            WITH collect(DISTINCT e) AS evidence
+            FOREACH (e IN evidence | DETACH DELETE e)
+            RETURN size(evidence) AS deletedEvidence
+            """)
+            .bind(runIds).to("runIds")
+            .fetch()
+            .one()
+            .orElse(Map.of());
+    }
+
+    private long cleanupLegacyFacts(String documentId, List<String> runIds) {
+        long deletedRelationships = executeCount("""
+            MATCH ()-[legacyRelationship]->()
+            WHERE legacyRelationship.sourceDocumentId = $documentId
+                AND (size($runIds) = 0 OR legacyRelationship.extractionRunId IN $runIds)
+                AND NOT EXISTS {
+                    MATCH (:GraphExtractionEvidence {canonicalFactId: legacyRelationship.id})
+                }
+            DELETE legacyRelationship
+            RETURN count(legacyRelationship) AS count
+            """, documentId, runIds, "runIds");
+        long deletedNodes = executeCount("""
+            MATCH (legacyNode)
+            WHERE legacyNode.sourceDocumentId = $documentId
+                AND (size($runIds) = 0 OR legacyNode.extractionRunId IN $runIds)
+                AND NOT legacyNode:ExtractionRun
+                AND NOT legacyNode:DocumentProcessingRun
+                AND NOT legacyNode:DocumentUpload
+                AND NOT legacyNode:DocumentChunk
+                AND NOT legacyNode:KnowledgeBase
+                AND NOT legacyNode:SchemaDefinition
+                AND NOT EXISTS {
+                    MATCH (:GraphExtractionEvidence {canonicalFactId: legacyNode.id})
+                }
+            DETACH DELETE legacyNode
+            RETURN count(legacyNode) AS count
+            """, documentId, runIds, "runIds");
+        return deletedRelationships + deletedNodes;
+    }
+
+    private CleanupCounts deleteDocumentInfrastructure(String documentId) {
+        Map<String, Object> cleanupRow = neo4jClient.query("""
+            MATCH (document:DocumentUpload {id: $documentId})
+            OPTIONAL MATCH (document)-[:HAS_CHUNK]->(chunk:DocumentChunk)
+            WITH document, [entry IN collect(DISTINCT chunk) WHERE entry IS NOT NULL] AS chunks
+            FOREACH (chunk IN chunks | DETACH DELETE chunk)
+            WITH document, size(chunks) AS deletedChunks
+            OPTIONAL MATCH (document)-[:HAS_PROCESSING_RUN]->(processingRun:DocumentProcessingRun)
+            WITH document, deletedChunks, [entry IN collect(DISTINCT processingRun) WHERE entry IS NOT NULL] AS processingRuns
+            FOREACH (processingRun IN processingRuns | DETACH DELETE processingRun)
+            WITH document, deletedChunks, size(processingRuns) AS deletedProcessingRuns
+            OPTIONAL MATCH (document)-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
+            WITH deletedChunks, deletedProcessingRuns, [entry IN collect(DISTINCT run) WHERE entry IS NOT NULL] AS runs
+            FOREACH (run IN runs | DETACH DELETE run)
+            RETURN deletedChunks AS deletedChunks, deletedProcessingRuns AS deletedProcessingRuns, size(runs) AS deletedRuns
+            """)
+            .bind(documentId).to("documentId")
+            .fetch()
+            .one()
+            .orElse(Map.of());
+        return new CleanupCounts(
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedChunks")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedProcessingRuns")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns"))
+        );
+    }
+
+    private long deleteRuns(List<String> runIds) {
+        if (runIds.isEmpty()) {
+            return 0L;
+        }
+        return executeCount("""
+            MATCH (run:ExtractionRun)
+            WHERE run.id IN $runIds
+            DETACH DELETE run
+            RETURN count(run) AS count
+            """, null, runIds, "runIds");
+    }
+
+    private long deleteUnsupportedCanonicalFacts(List<String> canonicalFactIds) {
+        if (canonicalFactIds.isEmpty()) {
+            return 0L;
+        }
+        long deletedRelationships = executeCount("""
+            MATCH ()-[canonicalRelationship]->()
+            WHERE canonicalRelationship.id IN $canonicalFactIds
+                AND NOT EXISTS {
+                    MATCH (:GraphExtractionEvidence {canonicalFactId: canonicalRelationship.id})
+                }
+            DELETE canonicalRelationship
+            RETURN count(canonicalRelationship) AS count
+            """, null, canonicalFactIds, "canonicalFactIds");
+        long deletedNodes = executeCount("""
+            MATCH (canonicalNode)
+            WHERE canonicalNode.id IN $canonicalFactIds
+                AND canonicalNode.id STARTS WITH 'node:'
+                AND NOT EXISTS {
+                    MATCH (:GraphExtractionEvidence {canonicalFactId: canonicalNode.id})
+                }
+            DETACH DELETE canonicalNode
+            RETURN count(canonicalNode) AS count
+            """, null, canonicalFactIds, "canonicalFactIds");
+        return deletedRelationships + deletedNodes;
+    }
+
+    private long executeCount(String cypher, String documentId, List<String> ids, String idsParameterName) {
+        if (documentId != null) {
+            Map<String, Object> row = neo4jClient.query(cypher)
+                .bind(ids).to(idsParameterName)
+                .bind(documentId).to("documentId")
+                .fetch()
+                .one()
+                .orElse(Map.of());
+            return GraphExtractionCleanupSupport.toLong(row.get("count"));
+        }
+        Map<String, Object> row = neo4jClient.query(cypher)
+            .bind(ids).to(idsParameterName)
+            .fetch()
+            .one()
+            .orElse(Map.of());
+        return GraphExtractionCleanupSupport.toLong(row.get("count"));
+    }
+
+    private List<String> stringValues(Map<String, Object> row) {
+        return stringValues(row, "runIds");
+    }
+
+    private List<String> stringValues(Map<String, Object> row, String key) {
+        Object value = row.get(key);
+        if (!(value instanceof List<?> values)) {
+            return List.of();
+        }
+        List<String> result = new ArrayList<>();
+        for (Object entry : values) {
+            if (entry instanceof String string && !string.isBlank()) {
+                result.add(string);
+            }
         }
         return result;
     }
@@ -136,6 +281,7 @@ public class GraphArtifactCleanupService {
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedChunks")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedProcessingRuns")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedGraphEvidence")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRelationships")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
         );
@@ -147,6 +293,7 @@ public class GraphArtifactCleanupService {
         }
         return new ExtractionRunCleanupResult(
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns")),
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedGraphEvidence")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRelationships")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedObsoleteExtractedNodes"))
         );
@@ -156,21 +303,29 @@ public class GraphArtifactCleanupService {
         long deletedChunks,
         long deletedProcessingRuns,
         long deletedRuns,
+        long deletedGraphEvidence,
         long deletedRelationships,
         long deletedObsoleteExtractedNodes
     ) {
         public static DocumentArtifactCleanupResult zero() {
-            return new DocumentArtifactCleanupResult(0L, 0L, 0L, 0L, 0L);
+            return new DocumentArtifactCleanupResult(0L, 0L, 0L, 0L, 0L, 0L);
         }
     }
 
     public record ExtractionRunCleanupResult(
         long deletedRuns,
+        long deletedGraphEvidence,
         long deletedRelationships,
         long deletedObsoleteExtractedNodes
     ) {
         public static ExtractionRunCleanupResult zero() {
-            return new ExtractionRunCleanupResult(0L, 0L, 0L);
+            return new ExtractionRunCleanupResult(0L, 0L, 0L, 0L);
         }
+    }
+
+    private record EvidenceCleanupResult(long deletedEvidence, List<String> canonicalFactIds) {
+    }
+
+    private record CleanupCounts(long deletedChunks, long deletedProcessingRuns, long deletedRuns) {
     }
 }

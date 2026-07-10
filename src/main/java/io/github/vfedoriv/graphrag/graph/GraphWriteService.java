@@ -77,31 +77,44 @@ public class GraphWriteService {
         Set<String> allowedProperties = allowedNodeProperties(nodeDef);
         Map<String, Object> props = filterDeclaredProperties(node.properties(), allowedProperties, "node", node.label());
         props.put("id", entityId);
-        props.put("sourceDocumentId", documentId);
-        props.put("sourceChunkIds", java.util.List.of(chunkId));
         props.put("schemaId", schemaId);
-        props.put("extractionRunId", extractionRunId);
-        props.put("confidence", node.confidence());
         props.put("createdAt", Instant.now().toString());
 
         neo4jClient.query("""
             MERGE (n:%s {id: $id})
-            SET n += $props
+            ON CREATE SET n += $props
             """.formatted(label))
             .bind(entityId).to("id")
             .bind(props).to("props")
             .run();
 
+        String evidenceId = GraphWriteSupport.stableEvidenceId("node", extractionRunId, documentId, chunkId, entityId);
+        Map<String, Object> evidenceProps = evidenceProperties(
+            evidenceId,
+            "NODE",
+            entityId,
+            extractionRunId,
+            schemaId,
+            documentId,
+            chunkId,
+            node.confidence(),
+            node.properties()
+        );
         neo4jClient.query("""
             MATCH (r:ExtractionRun {id: $runId})
             MATCH (n:%s {id: $id})
             MATCH (c:DocumentChunk {id: $chunkId})
-            MERGE (r)-[:CREATED_NODE]->(n)
-            MERGE (c)-[:MENTIONS]->(n)
+            MERGE (e:GraphExtractionEvidence:NodeExtractionEvidence {id: $evidenceId})
+            ON CREATE SET e += $evidenceProps
+            MERGE (e)-[:ASSERTS_NODE]->(n)
+            MERGE (r)-[:HAS_GRAPH_EVIDENCE]->(e)
+            MERGE (c)-[:HAS_GRAPH_EVIDENCE]->(e)
             """.formatted(label))
             .bind(extractionRunId).to("runId")
             .bind(entityId).to("id")
             .bind(chunkId).to("chunkId")
+            .bind(evidenceId).to("evidenceId")
+            .bind(evidenceProps).to("evidenceProps")
             .run();
     }
 
@@ -126,24 +139,74 @@ public class GraphWriteService {
         Set<String> allowedProperties = allowedRelationshipProperties(schema, rel.type(), rel.fromLabel(), rel.toLabel());
         Map<String, Object> props = filterDeclaredProperties(rel.properties(), allowedProperties, "relationship", rel.type());
         props.put("id", relId);
-        props.put("sourceDocumentId", documentId);
-        props.put("sourceChunkIds", java.util.List.of(chunkId));
         props.put("schemaId", schemaId);
-        props.put("extractionRunId", extractionRunId);
-        props.put("confidence", rel.confidence());
         props.put("createdAt", Instant.now().toString());
 
         neo4jClient.query("""
             MATCH (from:%s {id: $fromId})
             MATCH (to:%s {id: $toId})
             MERGE (from)-[r:%s {id: $relId}]->(to)
-            SET r += $props
+            ON CREATE SET r += $props
             """.formatted(fromLabel, toLabel, type))
             .bind(fromId).to("fromId")
             .bind(toId).to("toId")
             .bind(relId).to("relId")
             .bind(props).to("props")
             .run();
+
+        String evidenceId = GraphWriteSupport.stableEvidenceId("relationship", extractionRunId, documentId, chunkId, relId);
+        Map<String, Object> evidenceProps = evidenceProperties(
+            evidenceId,
+            "RELATIONSHIP",
+            relId,
+            extractionRunId,
+            schemaId,
+            documentId,
+            chunkId,
+            rel.confidence(),
+            rel.properties()
+        );
+        neo4jClient.query("""
+            MATCH (r:ExtractionRun {id: $runId})
+            MATCH (c:DocumentChunk {id: $chunkId})
+            MERGE (e:GraphExtractionEvidence:RelationshipExtractionEvidence {id: $evidenceId})
+            ON CREATE SET e += $evidenceProps
+            MERGE (r)-[:HAS_GRAPH_EVIDENCE]->(e)
+            MERGE (c)-[:HAS_GRAPH_EVIDENCE]->(e)
+            """)
+            .bind(extractionRunId).to("runId")
+            .bind(chunkId).to("chunkId")
+            .bind(evidenceId).to("evidenceId")
+            .bind(evidenceProps).to("evidenceProps")
+            .run();
+    }
+
+    private Map<String, Object> evidenceProperties(
+        String evidenceId,
+        String factKind,
+        String canonicalFactId,
+        String extractionRunId,
+        String schemaId,
+        String documentId,
+        String chunkId,
+        Double confidence,
+        Map<String, Object> sourceProperties
+    ) {
+        Map<String, Object> evidenceProps = new HashMap<>();
+        if (sourceProperties != null) {
+            evidenceProps.putAll(sourceProperties);
+        }
+        evidenceProps.put("id", evidenceId);
+        evidenceProps.put("factKind", factKind);
+        evidenceProps.put("canonicalFactId", canonicalFactId);
+        evidenceProps.put("sourceDocumentId", documentId);
+        evidenceProps.put("sourceChunkId", chunkId);
+        evidenceProps.put("sourceChunkIds", List.of(chunkId));
+        evidenceProps.put("schemaId", schemaId);
+        evidenceProps.put("extractionRunId", extractionRunId);
+        evidenceProps.put("confidence", confidence);
+        evidenceProps.put("createdAt", Instant.now().toString());
+        return evidenceProps;
     }
 
     private String stableNodeId(String schemaId, String label, List<String> keyNames, Map<String, Object> keyProperties) {

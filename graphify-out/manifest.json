@@ -320,14 +320,14 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java": {
-    "mtime": 1779283922.7491245,
-    "ast_hash": "3fc3105d89aff9f8324bcd8bd6d8df8b",
-    "semantic_hash": "3fc3105d89aff9f8324bcd8bd6d8df8b"
+    "mtime": 1783623788.0584152,
+    "ast_hash": "ebabc519769a17df46f9dbeb40eb74cd",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java": {
-    "mtime": 1779283645.0423062,
-    "ast_hash": "6be51c2b7410214548680d0cb15abe15",
-    "semantic_hash": "6be51c2b7410214548680d0cb15abe15"
+    "mtime": 1783623782.0321994,
+    "ast_hash": "50e6b92d0ecfec779e59c02e56686d6a",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/graph/LLMGraphTransformerExt.java": {
     "mtime": 1779276222.2155764,
@@ -605,9 +605,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java": {
-    "mtime": 1778849582.4801078,
-    "ast_hash": "d6148594f1bc74ca3a2baf815b611e28",
-    "semantic_hash": "d6148594f1bc74ca3a2baf815b611e28"
+    "mtime": 1783666492.3247929,
+    "ast_hash": "5370d4656275acb0499bd457673cd265",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java": {
     "mtime": 1782823920.091956,
@@ -625,9 +625,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java": {
-    "mtime": 1779176382.6055944,
-    "ast_hash": "725b98edd451e62294e985256196b6f4",
-    "semantic_hash": "725b98edd451e62294e985256196b6f4"
+    "mtime": 1783668771.4064343,
+    "ast_hash": "5b9fe087971d955c46d65bb1764265df",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/GraphragApplicationTests.java": {
     "mtime": 1778080990.8141818,
@@ -735,9 +735,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteServiceTest.java": {
-    "mtime": 1779281943.3928525,
-    "ast_hash": "76cfdf72c8a1bd2d2cb8355509179f58",
-    "semantic_hash": "76cfdf72c8a1bd2d2cb8355509179f58"
+    "mtime": 1783666492.7048004,
+    "ast_hash": "c7d761b4625464da20a948e064b6b8c6",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupportTest.java": {
     "mtime": 1779285857.2339504,
@@ -2525,8 +2525,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupService.java": {
-    "mtime": 1782823543.9151585,
-    "ast_hash": "6b4ee5574dec49cdd03be3f26debe948",
+    "mtime": 1783668644.9454901,
+    "ast_hash": "fe6bcd0f18ab9acc0eaeca9d0aeb5e64",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupServiceTest.java": {
@@ -2605,8 +2605,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/ArchitectureBoundaryTest.java": {
-    "mtime": 1781111981.4522297,
-    "ast_hash": "56e3cc860c4675293b083cd44771f167",
+    "mtime": 1783667938.2068374,
+    "ast_hash": "0dfc762901d0fcb9ae321543f10f71d2",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-06-10-move-query-ask-orchestration/.openspec.yaml": {
@@ -3305,8 +3305,278 @@
     "semantic_hash": ""
   },
   "openspec/specs/neo4j-persistence-state-handling/spec.md": {
-    "mtime": 1782852689.5941756,
-    "ast_hash": "1ebf0cdc62616ed513c275bebfbb37c9",
+    "mtime": 1782890333.0046215,
+    "ast_hash": "461fc44c9dc6b78c7f97998a38f75c0a",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/GraphProvenanceMigrationService.java": {
+    "mtime": 1783623970.5181668,
+    "ast_hash": "002e9f1ad80dfdf7ec10d621bf5832f8",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/GraphProvenanceIntegrationTest.java": {
+    "mtime": 1783624161.2975776,
+    "ast_hash": "ba5c630458c9fdb92ee6db8c50911089",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/.openspec.yaml": {
+    "mtime": 1782889854.3358738,
+    "ast_hash": "bf78f855d6a0425db6bc305ffd968e0f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/design.md": {
+    "mtime": 1782889854.640885,
+    "ast_hash": "ee5c13fa2511ae12ae88a5dac2379220",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/proposal.md": {
+    "mtime": 1782889854.4828792,
+    "ast_hash": "8017d443712b85f5abab7bf05e5940a8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/specs/neo4j-persistence-state-handling/spec.md": {
+    "mtime": 1782889854.9818978,
+    "ast_hash": "7a4d06e8227c7dca57ca6beeb2268825",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/tasks.md": {
+    "mtime": 1782889854.8188918,
+    "ast_hash": "c1653d500a3749a12f00e43b440ce4a8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/.openspec.yaml": {
+    "mtime": 1783623052.8745522,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/design.md": {
+    "mtime": 1783623133.6717725,
+    "ast_hash": "1216dfd51e987b567f7dda29bdb5a1ae",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/proposal.md": {
+    "mtime": 1783623080.1699243,
+    "ast_hash": "75b06cd5ac6c88dca0211e0dffc68a30",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/specs/application-workflow-orchestration/spec.md": {
+    "mtime": 1783623134.0257785,
+    "ast_hash": "64fb4b7b956f99be1c63a2507054350a",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/specs/architecture-boundary-governance/spec.md": {
+    "mtime": 1783623135.0047956,
+    "ast_hash": "5a88c026122a6a99f43d3925a22d1927",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/specs/document-processing-run-history/spec.md": {
+    "mtime": 1783623134.3637843,
+    "ast_hash": "08009965144ff7bce51bf2637e12b43d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/specs/service-helper-utilities/spec.md": {
+    "mtime": 1783623134.624789,
+    "ast_hash": "df46de80af8fb056060d045b60c586ff",
+    "semantic_hash": ""
+  },
+  "openspec/changes/decompose-processing-orchestration/tasks.md": {
+    "mtime": 1783623161.8182776,
+    "ast_hash": "fff2eb409f23f15d6e80fe0e4cb6bcf1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/.openspec.yaml": {
+    "mtime": 1783622786.2206461,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/design.md": {
+    "mtime": 1783622893.9263413,
+    "ast_hash": "2b32bfa78c9d47f7adf1254e141312fa",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/proposal.md": {
+    "mtime": 1783622837.8063703,
+    "ast_hash": "eee38be757dd09855d02dd44065e9a50",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/specs/ai-profile-management/spec.md": {
+    "mtime": 1783622894.2833421,
+    "ast_hash": "33f1e00c317b089a82bf4a545f6b30e8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/specs/embedding-space-management/spec.md": {
+    "mtime": 1783622894.1033416,
+    "ast_hash": "998b01eb0e0138d2c2484da54b39c0b8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/specs/hybrid-search/spec.md": {
+    "mtime": 1783622894.4853425,
+    "ast_hash": "99c8c16b7caf4ff5e8100518eefdafc7",
+    "semantic_hash": ""
+  },
+  "openspec/changes/enforce-embedding-space-invariants/tasks.md": {
+    "mtime": 1783622918.5064104,
+    "ast_hash": "249a3ffa20a994833c746b8b2f048203",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/.openspec.yaml": {
+    "mtime": 1783622927.3394465,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/design.md": {
+    "mtime": 1783623012.2070804,
+    "ast_hash": "c34624a970f4ce964256403d35dbe193",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/proposal.md": {
+    "mtime": 1783622959.4586272,
+    "ast_hash": "db905e8cc1ca5da52dcfcdbc158e769b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/specs/cypher-validation/spec.md": {
+    "mtime": 1783623012.6090846,
+    "ast_hash": "e0895316cd4d7b7bb5fc770daea7b923",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/specs/query-execution-guardrails/spec.md": {
+    "mtime": 1783623012.4030824,
+    "ast_hash": "8a272c6faa0a648aa0233536d2e07b70",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/specs/runtime-application-settings/spec.md": {
+    "mtime": 1783623012.8180866,
+    "ast_hash": "9ee17b29f9b06c1bc06ce4da53c4e872",
+    "semantic_hash": ""
+  },
+  "openspec/changes/harden-query-runtime-guards/tasks.md": {
+    "mtime": 1783623041.3804085,
+    "ast_hash": "63a570acfb7c8cf43044e2eb0fc13925",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/.openspec.yaml": {
+    "mtime": 1783623171.4634595,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/design.md": {
+    "mtime": 1783623259.3893087,
+    "ast_hash": "d4a81a0c0050d87c06758b4b5dc7194d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/proposal.md": {
+    "mtime": 1783623201.960063,
+    "ast_hash": "2cd90f3a13d31810fbce81c5ae2306dc",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/specs/ai-observability-monitoring/spec.md": {
+    "mtime": 1783623259.7803178,
+    "ast_hash": "b2a7df5a5eb83099f1dcfdfce451f900",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/specs/documentation-alignment/spec.md": {
+    "mtime": 1783623259.9613218,
+    "ast_hash": "6cf32281d0116bb8f32813a8602cf4fd",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/specs/privacy-safe-operational-logging/spec.md": {
+    "mtime": 1783623259.582313,
+    "ast_hash": "ffe64eba4932a9a2839c18a66208b4ef",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/specs/test-coverage-governance/spec.md": {
+    "mtime": 1783623260.1583264,
+    "ast_hash": "0b616bb62445d8ca6889af7e74d53fce",
+    "semantic_hash": ""
+  },
+  "openspec/changes/improve-operational-logging-and-docs/tasks.md": {
+    "mtime": 1783623285.4079168,
+    "ast_hash": "8676f3f6a1df53f825b8bac53aa8a016",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/.openspec.yaml": {
+    "mtime": 1783622504.3504474,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/design.md": {
+    "mtime": 1783622608.1348174,
+    "ast_hash": "aa97bd1e36a88c37af41d49e26caa885",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/proposal.md": {
+    "mtime": 1783622542.5033805,
+    "ast_hash": "3d0322a7a63c79add0d238f7800d03fe",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/specs/extraction-run-cleanup/spec.md": {
+    "mtime": 1783622608.8837957,
+    "ast_hash": "9e0670311efef7e28b05a856e6fe1e58",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/specs/graph-artifact-cleanup/spec.md": {
+    "mtime": 1783622608.7098007,
+    "ast_hash": "14e792b4dc0e7007a6da7fc0864fc7cd",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/specs/graph-identity-persistence/spec.md": {
+    "mtime": 1783622608.5218062,
+    "ast_hash": "5e943ecae0dd4abbb9edd403fc08098f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/specs/multi-source-graph-provenance/spec.md": {
+    "mtime": 1783622608.3228118,
+    "ast_hash": "9b6356ce535a293b88e3b6b947fdd70e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/preserve-graph-provenance/tasks.md": {
+    "mtime": 1783669022.5368896,
+    "ast_hash": "cf33193da942384ac5078833ff9f2f0a",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/.openspec.yaml": {
+    "mtime": 1783622650.2467172,
+    "ast_hash": "aa7d11c7440c9ad5871bd22760ec6d6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/design.md": {
+    "mtime": 1783622752.1049724,
+    "ast_hash": "da41be48d6a65229edd1185e916578c1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/proposal.md": {
+    "mtime": 1783622680.330073,
+    "ast_hash": "e47eb5b873857f8fd8695790d896ae16",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/specs/ai-profile-management/spec.md": {
+    "mtime": 1783622752.7399652,
+    "ast_hash": "522ebd8edbbc858352efe1bf61d52b80",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/specs/document-management/spec.md": {
+    "mtime": 1783622752.9719627,
+    "ast_hash": "c3b3790f8192a57b9874a32ccbde3f10",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/specs/document-storage-reconciliation/spec.md": {
+    "mtime": 1783622752.5259676,
+    "ast_hash": "eabaa8218e6951b5976755836d0f4671",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/specs/knowledge-base-lifecycle/spec.md": {
+    "mtime": 1783622752.3209698,
+    "ast_hash": "ce170652b9e843c13300f37ab012fd48",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/specs/single-active-schema-per-knowledge-base/spec.md": {
+    "mtime": 1783622753.1789603,
+    "ast_hash": "6176bfd4bb1eb67551cf4ea8d7d15e64",
+    "semantic_hash": ""
+  },
+  "openspec/changes/unify-knowledge-base-lifecycle/tasks.md": {
+    "mtime": 1783622777.8097155,
+    "ast_hash": "806c9122eafe4cfb1a49ad594c4d7a16",
     "semantic_hash": ""
   }
 }

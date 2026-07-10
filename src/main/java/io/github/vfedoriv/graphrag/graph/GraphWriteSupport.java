@@ -41,6 +41,23 @@ final class GraphWriteSupport {
         return "rel:" + sha256(String.join("\n", canonical));
     }
 
+    static String stableEvidenceId(
+        String factKind,
+        String extractionRunId,
+        String documentId,
+        String chunkId,
+        String canonicalFactId
+    ) {
+        List<String> canonical = List.of(
+            "kind:" + factKind,
+            "run:" + extractionRunId,
+            "document:" + documentId,
+            "chunk:" + chunkId,
+            "fact:" + canonicalFactId
+        );
+        return "evidence:" + sha256(String.join("\n", canonical));
+    }
+
     static void requireCompleteIdentity(String label, List<String> keyNames, Map<String, Object> keyProperties) {
         if (keyNames == null || keyNames.isEmpty()) {
             throw new IllegalArgumentException("Missing schema key definition for node label: " + label);

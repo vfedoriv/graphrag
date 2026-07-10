@@ -135,17 +135,17 @@ class DocumentProcessingIntegrationTest {
         assertThat(anyParty).isEqualTo(1L);
         assertThat(relCount).isEqualTo(1L);
 
-        Long provenanceOnNode = neo4jClient.query("""
-            MATCH (n:Contract)
-            WHERE n.sourceDocumentId = $documentId AND n.schemaId IS NOT NULL AND n.extractionRunId IS NOT NULL
-            RETURN count(n) AS c
+        Long nodeEvidence = neo4jClient.query("""
+            MATCH (e:NodeExtractionEvidence {sourceDocumentId: $documentId})-[:ASSERTS_NODE]->(:Contract)
+            WHERE e.schemaId IS NOT NULL AND e.extractionRunId IS NOT NULL
+            RETURN count(e) AS c
             """)
             .bind(uploaded.getId()).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
-        Long provenanceOnRel = neo4jClient.query("""
-            MATCH (:Contract)-[r:HAS_PARTY]->(:Party)
-            WHERE r.sourceDocumentId = $documentId AND r.schemaId IS NOT NULL AND r.extractionRunId IS NOT NULL
-            RETURN count(r) AS c
+        Long relationshipEvidence = neo4jClient.query("""
+            MATCH (e:RelationshipExtractionEvidence {sourceDocumentId: $documentId})
+            WHERE e.schemaId IS NOT NULL AND e.extractionRunId IS NOT NULL
+            RETURN count(e) AS c
             """)
             .bind(uploaded.getId()).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
@@ -155,8 +155,8 @@ class DocumentProcessingIntegrationTest {
             """)
             .bind(uploaded.getId()).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
-        assertThat(provenanceOnNode).isEqualTo(1L);
-        assertThat(provenanceOnRel).isEqualTo(1L);
+        assertThat(nodeEvidence).isEqualTo(1L);
+        assertThat(relationshipEvidence).isEqualTo(1L);
         assertThat(extractionRuns).isEqualTo(1L);
     }
 

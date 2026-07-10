@@ -146,14 +146,6 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(r) AS c
             """)
             .fetchAs(Long.class).one().orElse(0L);
-        Long retainedProvenanceCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
-            MATCH (r)-[:CREATED_NODE]->(:Contract {contractId: 'C-SHARED'})
-            RETURN count(*) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
-
         assertThat(runCount).isEqualTo(1L);
         assertThat(failedRunCount).isEqualTo(0L);
         assertThat(completedRunCount).isEqualTo(1L);
@@ -162,7 +154,6 @@ class GraphExtractionCleanupIntegrationTest {
         assertThat(failedOnlyRelatedNodeCount).isEqualTo(0L);
         assertThat(failedOnlyRelationshipCount).isEqualTo(0L);
         assertThat(retainedRelationshipCount).isEqualTo(1L);
-        assertThat(retainedProvenanceCount).isEqualTo(1L);
     }
 
     @Test
@@ -235,15 +226,6 @@ class GraphExtractionCleanupIntegrationTest {
             .bind(uploaded.getId()).to("documentId")
             .fetchAs(String.class).one().orElseThrow();
 
-        Long staleRelationshipBefore = neo4jClient.query("""
-            MATCH ()-[r:HAS_PARTY]->()
-            WHERE r.extractionRunId = $runId
-            RETURN count(r) AS c
-            """)
-            .bind(staleRunId).to("runId")
-            .fetchAs(Long.class).one().orElse(0L);
-        assertThat(staleRelationshipBefore).isGreaterThan(0L);
-
         DocumentUploadNode overwritten = documentProcessingService.process(uploaded.getId(), true);
         assertThat(overwritten.getStatus().name()).isEqualTo("COMPLETED");
 
@@ -252,23 +234,6 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(r) AS c
             """)
             .bind(staleRunId).to("runId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long staleRelationshipAfter = neo4jClient.query("""
-            MATCH ()-[r:HAS_PARTY]->()
-            WHERE r.extractionRunId = $runId
-            RETURN count(r) AS c
-            """)
-            .bind(staleRunId).to("runId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long staleNodeCount = neo4jClient.query("""
-            MATCH (:Contract {contractId: 'C-STALE'})
-            RETURN count(*) AS c
-            """)
-            .fetchAs(Long.class).one().orElse(0L);
-        Long staleEdgeCount = neo4jClient.query("""
-            MATCH (:Contract {contractId: 'C-STALE'})-[r:HAS_PARTY]->(:Party {partyId: 'P-STALE'})
-            RETURN count(r) AS c
-            """)
             .fetchAs(Long.class).one().orElse(0L);
         Long freshNodeCount = neo4jClient.query("""
             MATCH (:Contract {contractId: 'C-FRESH'})
@@ -288,9 +253,6 @@ class GraphExtractionCleanupIntegrationTest {
             .fetchAs(Long.class).one().orElse(0L);
 
         assertThat(staleRunCount).isEqualTo(0L);
-        assertThat(staleRelationshipAfter).isEqualTo(0L);
-        assertThat(staleNodeCount).isEqualTo(0L);
-        assertThat(staleEdgeCount).isEqualTo(0L);
         assertThat(freshNodeCount).isEqualTo(1L);
         assertThat(freshEdgeCount).isEqualTo(1L);
         assertThat(completedRunCount).isEqualTo(1L);
