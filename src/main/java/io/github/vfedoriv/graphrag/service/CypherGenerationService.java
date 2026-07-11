@@ -10,6 +10,8 @@ import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
 import io.github.vfedoriv.graphrag.query.GeneratedCypher;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
+import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import io.github.vfedoriv.graphrag.dto.QueryPolicyResponse;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,10 @@ public class CypherGenerationService {
     }
 
     public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt) {
+        return generate(knowledgeBaseId, prompt, runtimeSettingsService.queryPolicy());
+    }
+
+    public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt, QueryPolicy policy) {
         long startNanos = System.nanoTime();
         log.info(
             "Generating Cypher: knowledgeBaseId={}, promptLength={}, promptPreview={}",
@@ -74,9 +80,9 @@ public class CypherGenerationService {
                 AiProfileNode activeProfile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
                 GeneratedCypher generated = AiProfileContext.withProfile(
                     activeProfile.getId(),
-                    () -> client.generate(schema, prompt, runtimeSettingsService.query().maxRows())
+                    () -> client.generate(schema, prompt, policy.maxRows())
                 );
-                QueryValidationResult validation = cypherValidationService.validate(schema, generated.cypher(), generated.parameters());
+                QueryValidationResult validation = cypherValidationService.validate(schema, generated.cypher(), generated.parameters(), policy);
                 workflow.highCardinalityAttribute("query.validation.valid", String.valueOf(validation.valid()));
                 workflow.highCardinalityAttribute("query.validation.error_count", String.valueOf(validation.errors().size()));
                 workflow.highCardinalityAttribute("query.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
@@ -87,10 +93,11 @@ public class CypherGenerationService {
                     toValidationResponse(validation)
                 );
                 log.info(
-                    "Cypher generated: knowledgeBaseId={}, valid={}, errorCount={}, cypherLength={}, elapsedMs={}",
+                    "Cypher generated: knowledgeBaseId={}, valid={}, errorCount={}, validationErrors={}, cypherLength={}, elapsedMs={}",
                     knowledgeBaseId,
                     validation.valid(),
                     validation.errors().size(),
+                    LogSanitizer.preview(String.join(" | ", validation.errors())),
                     LogSanitizer.length(generated.cypher()),
                     LogSanitizer.elapsedMillis(startNanos)
                 );
@@ -109,8 +116,9 @@ public class CypherGenerationService {
             result.cypher(),
             result.parameters(),
             result.errors(),
-            runtimeSettingsService.query().maxRows(),
-            runtimeSettingsService.query().timeoutSeconds()
+            result.policy().maxRows(),
+            result.policy().timeoutSeconds(),
+            QueryPolicyResponse.from(result.policy())
         );
     }
 

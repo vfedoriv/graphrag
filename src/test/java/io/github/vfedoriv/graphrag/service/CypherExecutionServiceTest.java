@@ -13,31 +13,35 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.Mockito;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 class CypherExecutionServiceTest {
 
     @Test
     void executesValidatedQueryAndMapsRows() {
         CypherValidationService validationService = Mockito.mock(CypherValidationService.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class, Answers.RETURNS_DEEP_STUBS);
+        QueryNeo4jExecutor queryNeo4jExecutor = Mockito.mock(QueryNeo4jExecutor.class);
 
-        when(validationService.validate("kb-1", "MATCH (c:Contract) RETURN c.contractId AS contractId", Map.of()))
+        when(validationService.validate(
+            Mockito.eq("kb-1"),
+            Mockito.eq("MATCH (c:Contract) RETURN c.contractId AS contractId"),
+            Mockito.eq(Map.of()),
+            Mockito.any()
+        ))
             .thenReturn(new QueryValidationResult(
                 true,
                 "MATCH (c:Contract) RETURN c.contractId AS contractId LIMIT $__limit",
                 Map.of("__limit", 200),
                 List.of()
             ));
-        when(neo4jClient.query("MATCH (c:Contract) RETURN c.contractId AS contractId LIMIT $__limit")
-            .bindAll(Map.of("__limit", 200))
-            .fetch()
-            .all())
+        when(queryNeo4jExecutor.execute(
+            Mockito.eq("MATCH (c:Contract) RETURN c.contractId AS contractId LIMIT $__limit"),
+            Mockito.eq(Map.of("__limit", 200)),
+            org.mockito.ArgumentMatchers.any()
+        ))
             .thenReturn(List.of(Map.of("contractId", "C-1")));
 
-        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, queryNeo4jExecutor);
         QueryExecutionResponse response = service.execute("kb-1", "MATCH (c:Contract) RETURN c.contractId AS contractId", Map.of());
 
         assertThat(response.validation().valid()).isTrue();
@@ -49,11 +53,11 @@ class CypherExecutionServiceTest {
     @Test
     void rejectsExecutionWhenValidationFails() {
         CypherValidationService validationService = Mockito.mock(CypherValidationService.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class, Answers.RETURNS_DEEP_STUBS);
-        when(validationService.validate("kb-1", "MATCH (c:Contract) DELETE c", Map.of()))
+        QueryNeo4jExecutor queryNeo4jExecutor = Mockito.mock(QueryNeo4jExecutor.class);
+        when(validationService.validate(Mockito.eq("kb-1"), Mockito.eq("MATCH (c:Contract) DELETE c"), Mockito.eq(Map.of()), Mockito.any()))
             .thenReturn(new QueryValidationResult(false, "MATCH (c:Contract) DELETE c", Map.of(), List.of("Blocked keyword")));
 
-        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, queryNeo4jExecutor);
 
         assertThatThrownBy(() -> service.execute("kb-1", "MATCH (c:Contract) DELETE c", Map.of()))
             .isInstanceOf(QueryRejectedException.class)
@@ -65,8 +69,8 @@ class CypherExecutionServiceTest {
     @Test
     void propagatesAllValidationErrorsInOriginalOrder() {
         CypherValidationService validationService = Mockito.mock(CypherValidationService.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class, Answers.RETURNS_DEEP_STUBS);
-        when(validationService.validate("kb-1", "MATCH (x:Unknown) RETURN x.missing", Map.of()))
+        QueryNeo4jExecutor queryNeo4jExecutor = Mockito.mock(QueryNeo4jExecutor.class);
+        when(validationService.validate(Mockito.eq("kb-1"), Mockito.eq("MATCH (x:Unknown) RETURN x.missing"), Mockito.eq(Map.of()), Mockito.any()))
             .thenReturn(new QueryValidationResult(
                 false,
                 "MATCH (x:Unknown) RETURN x.missing",
@@ -74,7 +78,7 @@ class CypherExecutionServiceTest {
                 List.of("Unknown label: Unknown", "Unknown property: missing")
             ));
 
-        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, neo4jClient);
+        CypherExecutionService service = new CypherExecutionService(TestRuntimeSettings.from(props()), validationService, queryNeo4jExecutor);
 
         assertThatThrownBy(() -> service.execute("kb-1", "MATCH (x:Unknown) RETURN x.missing", Map.of()))
             .isInstanceOf(QueryRejectedException.class)

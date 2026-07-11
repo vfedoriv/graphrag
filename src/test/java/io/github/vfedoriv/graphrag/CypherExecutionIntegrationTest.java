@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
@@ -30,7 +31,8 @@ import org.springframework.data.neo4j.core.Neo4jClient;
         + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
         + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
         + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+    "app.query.timeout-seconds=1"
 })
 class CypherExecutionIntegrationTest {
 
@@ -42,7 +44,7 @@ class CypherExecutionIntegrationTest {
     private CypherExecutionService cypherExecutionService;
 
     @Test
-    void executesValidatedReadOnlyQuery() {
+    void executesValidatedQuery() {
         neo4jClient.query("MATCH (n:ExecutionTestData) DETACH DELETE n").run();
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             {
@@ -69,6 +71,50 @@ class CypherExecutionIntegrationTest {
 
         assertThat(response.validation().valid()).isTrue();
         assertThat(response.rows()).containsExactly(Map.of("contractId", "C-1"));
+    }
+
+    @Test
+    void rejectsOversizedLiteralLimitBeforeExecution() {
+        activateContractSchema("kb-oversized-literal", "oversized-literal-contracts", 104);
+
+        assertThatThrownBy(() -> cypherExecutionService.execute(
+            "kb-oversized-literal",
+            "MATCH (c:Contract) RETURN c.contractId AS contractId LIMIT 201",
+            Map.of()
+        ))
+            .isInstanceOf(QueryRejectedException.class)
+            .satisfies(exception -> assertThat(((QueryRejectedException) exception).getErrors())
+                .containsExactly("LIMIT exceeds configured maximum rows: 200"));
+    }
+
+    @Test
+    void rejectsOversizedBoundLimitBeforeExecution() {
+        activateContractSchema("kb-oversized-bound", "oversized-bound-contracts", 105);
+
+        assertThatThrownBy(() -> cypherExecutionService.execute(
+            "kb-oversized-bound",
+            "MATCH (c:Contract) RETURN c.contractId AS contractId LIMIT $requested",
+            Map.of("requested", 201)
+        ))
+            .isInstanceOf(QueryRejectedException.class)
+            .satisfies(exception -> assertThat(((QueryRejectedException) exception).getErrors())
+                .containsExactly("LIMIT exceeds configured maximum rows: 200"));
+    }
+
+    @Test
+    void terminatesQueryThatExceedsRuntimeDeadline() {
+        activateContractSchema("kb-deadline", "deadline-contracts", 106);
+
+        assertThatThrownBy(() -> cypherExecutionService.execute(
+            "kb-deadline",
+            """
+                UNWIND range(1, 250) AS seed
+                RETURN reduce(total = seed, value IN range(1, 50000000) |
+                    total + sin(toFloat(value)) + cos(toFloat(value))) AS output
+                LIMIT 1
+                """,
+            Map.of()
+        )).isInstanceOf(QueryDeadlineExceededException.class);
     }
 
     @Test
@@ -140,5 +186,23 @@ class CypherExecutionIntegrationTest {
 
         Collection<Map<String, Object>> count = neo4jClient.query("MATCH (c:Contract) RETURN count(c) AS cnt").fetch().all();
         assertThat(count).containsExactly(Map.of("cnt", 1L));
+    }
+
+    private void activateContractSchema(String knowledgeBaseId, String schemaName, int version) {
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
+            {
+              "name": "%s",
+              "version": %d,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                }
+              ],
+              "relationships": []
+            }
+            """.formatted(schemaName, version), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema(knowledgeBaseId, schema.getId());
     }
 }

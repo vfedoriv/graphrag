@@ -28,6 +28,16 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void mapsQueryDeadlineWithoutRawQueryDetails() {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/v1/knowledge-bases/kb-1/queries/execute");
+
+        ProblemDetail deadline = handler.handleQueryDeadlineExceeded(new QueryDeadlineExceededException(new RuntimeException("MATCH secret")), request);
+
+        assertThat(deadline.getStatus()).isEqualTo(HttpStatus.GATEWAY_TIMEOUT.value());
+        assertThat(deadline.getDetail()).doesNotContain("MATCH");
+    }
+
+    @Test
     void schemaValidationProblemIncludesErrors() {
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/v1/schemas");
         SchemaValidationException exception = new SchemaValidationException(List.of("Node label is required"));

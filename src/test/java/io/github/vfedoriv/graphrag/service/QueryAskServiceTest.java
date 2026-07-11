@@ -14,6 +14,8 @@ import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
+import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -45,9 +47,9 @@ class QueryAskServiceTest {
             1,
             12
         );
-        when(generationService.generate("kb-1", "list contracts")).thenReturn(generated);
-        when(executionService.execute("kb-1", validation.cypher(), validation.parameters())).thenReturn(execution);
-        QueryAskService service = new QueryAskService(generationService, executionService, observationService);
+        when(generationService.generate(Mockito.eq("kb-1"), Mockito.eq("list contracts"), Mockito.any())).thenReturn(generated);
+        when(executionService.execute(Mockito.eq("kb-1"), Mockito.eq(validation.cypher()), Mockito.eq(validation.parameters()), Mockito.any())).thenReturn(execution);
+        QueryAskService service = new QueryAskService(generationService, executionService, observationService, runtimeSettingsService());
 
         QueryAskResponse response = service.ask("kb-1", "list contracts");
 
@@ -83,10 +85,10 @@ class QueryAskServiceTest {
             200,
             15
         );
-        when(generationService.generate("kb-1", "unsafe query")).thenReturn(
+        when(generationService.generate(Mockito.eq("kb-1"), Mockito.eq("unsafe query"), Mockito.any())).thenReturn(
             new GeneratedQueryResponse("MATCH (c:Contract) DELETE c", "Unsafe", Map.of(), invalid)
         );
-        QueryAskService service = new QueryAskService(generationService, executionService, observationService);
+        QueryAskService service = new QueryAskService(generationService, executionService, observationService, runtimeSettingsService());
 
         assertThatThrownBy(() -> service.ask("kb-1", "unsafe query"))
             .isInstanceOf(QueryRejectedException.class)
@@ -109,7 +111,7 @@ class QueryAskServiceTest {
         AiObservationScope workflow = Mockito.mock(AiObservationScope.class);
         when(observationService.startWorkflow(Mockito.any())).thenReturn(workflow);
         QueryValidationResponse validation = validValidation();
-        when(generationService.generate("kb-1", "list contracts")).thenReturn(
+        when(generationService.generate(Mockito.eq("kb-1"), Mockito.eq("list contracts"), Mockito.any())).thenReturn(
             new GeneratedQueryResponse(
                 "MATCH (c:Contract) RETURN c.contractId",
                 "List contract IDs",
@@ -118,8 +120,8 @@ class QueryAskServiceTest {
             )
         );
         IllegalStateException failure = new IllegalStateException("execution failed");
-        when(executionService.execute("kb-1", validation.cypher(), validation.parameters())).thenThrow(failure);
-        QueryAskService service = new QueryAskService(generationService, executionService, observationService);
+        when(executionService.execute(Mockito.eq("kb-1"), Mockito.eq(validation.cypher()), Mockito.eq(validation.parameters()), Mockito.any())).thenThrow(failure);
+        QueryAskService service = new QueryAskService(generationService, executionService, observationService, runtimeSettingsService());
 
         assertThatThrownBy(() -> service.ask("kb-1", "list contracts")).isSameAs(failure);
 
@@ -137,5 +139,11 @@ class QueryAskServiceTest {
             200,
             15
         );
+    }
+
+    private RuntimeSettingsService runtimeSettingsService() {
+        RuntimeSettingsService runtimeSettingsService = Mockito.mock(RuntimeSettingsService.class);
+        when(runtimeSettingsService.queryPolicy()).thenReturn(new QueryPolicy(200, Duration.ofSeconds(15), true, List.of("CREATE")));
+        return runtimeSettingsService;
     }
 }

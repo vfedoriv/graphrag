@@ -5,6 +5,8 @@ import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
+import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import io.github.vfedoriv.graphrag.dto.QueryPolicyResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -15,7 +17,6 @@ import org.neo4j.driver.Value;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Path;
 import org.neo4j.driver.types.Relationship;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,26 +25,35 @@ public class CypherExecutionService {
 
     private final RuntimeSettingsService runtimeSettingsService;
     private final CypherValidationService cypherValidationService;
-    private final Neo4jClient neo4jClient;
+    private final QueryNeo4jExecutor queryNeo4jExecutor;
 
     public CypherExecutionService(
         RuntimeSettingsService runtimeSettingsService,
         CypherValidationService cypherValidationService,
-        Neo4jClient neo4jClient
+        QueryNeo4jExecutor queryNeo4jExecutor
     ) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.cypherValidationService = cypherValidationService;
-        this.neo4jClient = neo4jClient;
+        this.queryNeo4jExecutor = queryNeo4jExecutor;
     }
 
     public QueryExecutionResponse execute(String knowledgeBaseId, String cypher, Map<String, Object> parameters) {
+        return execute(knowledgeBaseId, cypher, parameters, runtimeSettingsService.queryPolicy());
+    }
+
+    public QueryExecutionResponse execute(
+        String knowledgeBaseId,
+        String cypher,
+        Map<String, Object> parameters,
+        QueryPolicy policy
+    ) {
         log.info(
             "Executing Cypher: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
             knowledgeBaseId,
             LogSanitizer.length(cypher),
             parameters == null ? 0 : parameters.size()
         );
-        QueryValidationResult validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters);
+        QueryValidationResult validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters, policy);
         if (!validation.valid()) {
             String validationErrorSummary = LogSanitizer.preview(String.join(" | ", validation.errors()));
             log.info(
@@ -56,7 +66,7 @@ public class CypherExecutionService {
         }
         long start = System.nanoTime();
         List<Map<String, Object>> rawRows = new ArrayList<>(
-            neo4jClient.query(validation.cypher()).bindAll(validation.parameters()).fetch().all()
+            queryNeo4jExecutor.execute(validation.cypher(), validation.parameters(), validation.policy())
         );
         List<Map<String, Object>> rows = rawRows.stream()
             .map(this::normalizeRow)
@@ -86,14 +96,15 @@ public class CypherExecutionService {
         return response;
     }
 
-    QueryValidationResponse toValidationResponse(io.github.vfedoriv.graphrag.query.QueryValidationResult validation) {
+    public QueryValidationResponse toValidationResponse(io.github.vfedoriv.graphrag.query.QueryValidationResult validation) {
         return new QueryValidationResponse(
             validation.valid(),
             validation.cypher(),
             validation.parameters(),
             validation.errors(),
-            runtimeSettingsService.query().maxRows(),
-            runtimeSettingsService.query().timeoutSeconds()
+            validation.policy().maxRows(),
+            validation.policy().timeoutSeconds(),
+            QueryPolicyResponse.from(validation.policy())
         );
     }
 

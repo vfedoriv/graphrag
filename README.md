@@ -98,7 +98,7 @@ Primary runtime services:
 - `GraphExtractionService`: LLM extraction + validation + write orchestration.
 - `CypherGenerationService`: prompt-to-Cypher using active schema.
 - `CypherValidationService`: blocked keyword checks, schema checks, `EXPLAIN`, limit enforcement.
-- `CypherExecutionService`: executes only validated Cypher.
+- `CypherExecutionService`: executes only validated Cypher with the effective runtime row and timeout policy.
 - `RuntimeSettingsService`: allowlisted runtime setting overrides, restart lifecycle metadata, live logging control, and typed live accessors.
 - `AiProfileService`: OpenAI-compatible profile CRUD, default profile seeding, API-key masking, and cache invalidation.
 
@@ -295,6 +295,8 @@ Runtime settings catalog categories:
 - Read-only or restart-required visibility: `spring.application.name`, Spring AI bootstrap switches, Spring auto-configuration exclusions, Neo4j URI/username/database, multipart limits, actuator/health settings, tracing switches, OTLP endpoint and non-secret exporter headers.
 - Profile-managed visibility: `app.model.base-url`, model names/dimensions, and derived Spring AI OpenAI base URL/model aliases. Use AI profile management for operational provider changes.
 - Sensitive read-only: `app.model.api-key`, `spring.ai.openai.api-key`, `spring.neo4j.authentication.password`, and OTLP authorization headers. Responses indicate configured/masked status only.
+
+The query API rejects explicit `LIMIT` values above `app.query.max-rows`, applies `app.query.timeout-seconds` at the transaction boundary, and includes the immutable applied policy snapshot under `validation.policy`.
 
 ## Schema Format
 

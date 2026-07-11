@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.github.vfedoriv.graphrag.dto.QueryPolicyResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,20 @@ public record QueryValidationResponse(
     @Schema(description = "Maximum allowed rows for query execution.", example = "200")
     int maxRows,
     @Schema(description = "Execution timeout in seconds.", example = "15")
-    int timeoutSeconds
+    int timeoutSeconds,
+    @Schema(description = "Immutable runtime policy snapshot applied to this request.")
+    QueryPolicyResponse policy
 ) {
+
+    public QueryValidationResponse(
+        boolean valid,
+        String cypher,
+        Map<String, Object> parameters,
+        List<String> errors,
+        int maxRows,
+        int timeoutSeconds
+    ) {
+        this(valid, cypher, parameters, errors, maxRows, timeoutSeconds,
+            new QueryPolicyResponse(maxRows, timeoutSeconds, true, List.of()));
+    }
 }

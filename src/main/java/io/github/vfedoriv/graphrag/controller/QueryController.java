@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.controller;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
+import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryExecuteRequest;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
@@ -11,7 +11,6 @@ import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
-import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,27 +38,36 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class QueryController {
 
-    private final AppProperties appProperties;
     private final CypherGenerationService cypherGenerationService;
     private final CypherValidationService cypherValidationService;
     private final CypherExecutionService cypherExecutionService;
     private final QueryAskService queryAskService;
     private final HybridSearchService hybridSearchService;
 
+    @Autowired
     public QueryController(
-        AppProperties appProperties,
         CypherGenerationService cypherGenerationService,
         CypherValidationService cypherValidationService,
         CypherExecutionService cypherExecutionService,
         QueryAskService queryAskService,
         HybridSearchService hybridSearchService
     ) {
-        this.appProperties = appProperties;
         this.cypherGenerationService = cypherGenerationService;
         this.cypherValidationService = cypherValidationService;
         this.cypherExecutionService = cypherExecutionService;
         this.queryAskService = queryAskService;
         this.hybridSearchService = hybridSearchService;
+    }
+
+    public QueryController(
+        AppProperties ignored,
+        CypherGenerationService cypherGenerationService,
+        CypherValidationService cypherValidationService,
+        CypherExecutionService cypherExecutionService,
+        QueryAskService queryAskService,
+        HybridSearchService hybridSearchService
+    ) {
+        this(cypherGenerationService, cypherValidationService, cypherExecutionService, queryAskService, hybridSearchService);
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/generate")
@@ -143,14 +152,8 @@ public class QueryController {
             LogSanitizer.length(request.cypher()),
             request.parameters() == null ? 0 : request.parameters().size()
         );
-        QueryValidationResult result = cypherValidationService.validate(knowledgeBaseId, request.cypher(), request.parameters());
-        QueryValidationResponse response = new QueryValidationResponse(
-            result.valid(),
-            result.cypher(),
-            result.parameters(),
-            result.errors(),
-            appProperties.query().maxRows(),
-            appProperties.query().timeoutSeconds()
+        QueryValidationResponse response = cypherExecutionService.toValidationResponse(
+            cypherValidationService.validate(knowledgeBaseId, request.cypher(), request.parameters())
         );
         log.info(
             "Validate query completed: knowledgeBaseId={}, valid={}, errorCount={}",

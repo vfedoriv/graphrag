@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.logging.LogSanitizer;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
+import io.github.vfedoriv.graphrag.query.QueryPolicy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -20,18 +21,22 @@ public class QueryAskService {
     private final CypherGenerationService cypherGenerationService;
     private final CypherExecutionService cypherExecutionService;
     private final AiObservationService aiObservationService;
+    private final RuntimeSettingsService runtimeSettingsService;
 
     public QueryAskService(
         CypherGenerationService cypherGenerationService,
         CypherExecutionService cypherExecutionService,
-        AiObservationService aiObservationService
+        AiObservationService aiObservationService,
+        RuntimeSettingsService runtimeSettingsService
     ) {
         this.cypherGenerationService = cypherGenerationService;
         this.cypherExecutionService = cypherExecutionService;
         this.aiObservationService = aiObservationService;
+        this.runtimeSettingsService = runtimeSettingsService;
     }
 
     public QueryAskResponse ask(String knowledgeBaseId, String prompt) {
+        QueryPolicy policy = runtimeSettingsService.queryPolicy();
         Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("knowledge_base.id", knowledgeBaseId);
         attributes.put("query.prompt.length", String.valueOf(LogSanitizer.length(prompt)));
@@ -39,7 +44,7 @@ public class QueryAskService {
             new AiWorkflowContext(AiObservationService.WORKFLOW_QUERY, null, attributes)
         )) {
             try {
-                GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, prompt);
+                GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, prompt, policy);
                 workflow.highCardinalityAttribute("query.validation.valid", String.valueOf(generated.validation().valid()));
                 workflow.highCardinalityAttribute("query.validation.error_count", String.valueOf(generated.validation().errors().size()));
                 workflow.highCardinalityAttribute("query.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
@@ -56,7 +61,8 @@ public class QueryAskService {
                 QueryExecutionResponse execution = cypherExecutionService.execute(
                     knowledgeBaseId,
                     generated.validation().cypher(),
-                    generated.validation().parameters()
+                    generated.validation().parameters(),
+                    policy
                 );
                 workflow.highCardinalityAttribute("query.execution.row_count", String.valueOf(execution.rowCount()));
                 workflow.highCardinalityAttribute("query.execution.time_ms", String.valueOf(execution.executionTimeMs()));

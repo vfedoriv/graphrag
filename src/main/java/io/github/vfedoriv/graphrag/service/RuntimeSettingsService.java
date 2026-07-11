@@ -4,6 +4,8 @@ import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import java.time.Duration;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
 import java.nio.file.Path;
@@ -160,6 +162,17 @@ public class RuntimeSettingsService {
             integer("app.query.hybrid-search-default-graph-depth"),
             integer("app.query.hybrid-search-max-graph-depth"),
             bool("app.query.hybrid-search-include-chunk-text")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public QueryPolicy queryPolicy() {
+        QuerySettings settings = query();
+        return new QueryPolicy(
+            settings.maxRows(),
+            Duration.ofSeconds(settings.timeoutSeconds()),
+            settings.requireLimit(),
+            settings.blockedKeywords()
         );
     }
 

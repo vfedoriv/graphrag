@@ -14,16 +14,14 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 @ExtendWith(MockitoExtension.class)
 class CypherValidationServiceTest {
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private Neo4jClient neo4jClient;
+    @Mock
+    private QueryNeo4jExecutor queryNeo4jExecutor;
 
     @Test
     void rejectsUnsafeKeyword() {
@@ -157,6 +155,68 @@ class CypherValidationServiceTest {
     }
 
     @Test
+    void rejectsLiteralLimitAboveRuntimePolicy() {
+        CypherValidationService service = service();
+
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT 201", Map.of());
+
+        assertThat(result.valid()).isFalse();
+        assertThat(result.errors()).containsExactly("LIMIT exceeds configured maximum rows: 200");
+    }
+
+    @Test
+    void rejectsBoundLimitAboveRuntimePolicy() {
+        CypherValidationService service = service();
+
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT $requested", Map.of("requested", 201));
+
+        assertThat(result.valid()).isFalse();
+        assertThat(result.errors()).containsExactly("LIMIT exceeds configured maximum rows: 200");
+    }
+
+    @Test
+    void ignoresLimitTextInLiteralsAndCommentsBeforeInjectingLimit() {
+        stubExplain();
+        CypherValidationService service = service();
+
+        QueryValidationResult result = service.validate(
+            schema(),
+            "MATCH (n:Contract) WHERE n.title = 'LIMIT 1000' // LIMIT 1000\nRETURN n",
+            Map.of()
+        );
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.cypher()).endsWith("LIMIT $__limit");
+        assertThat(result.parameters()).containsEntry("__limit", 200);
+    }
+
+    @Test
+    void preservesBoundLimitWithinRuntimePolicy() {
+        stubExplain();
+        CypherValidationService service = service();
+
+        QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n LIMIT $requested", Map.of("requested", 25));
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.cypher()).doesNotContain("$__limit");
+    }
+
+    @Test
+    void acceptsBoundLimitParameterNamedLimit() {
+        stubExplain();
+        CypherValidationService service = service();
+
+        QueryValidationResult result = service.validate(
+            schema(),
+            "MATCH (n:Contract) RETURN n LIMIT $limit",
+            Map.of("limit", 25)
+        );
+
+        assertThat(result.valid()).isTrue();
+        assertThat(result.errors()).isEmpty();
+    }
+
+    @Test
     void resolvesActiveSchemaForKnowledgeBaseValidation() {
         stubExplain();
         ActiveSchemaResolver resolver = org.mockito.Mockito.mock(ActiveSchemaResolver.class);
@@ -174,7 +234,11 @@ class CypherValidationServiceTest {
     @Test
     void marksInvalidWhenExplainFails() {
         doThrow(new IllegalArgumentException("Invalid input"))
-            .when(neo4jClient).query(org.mockito.ArgumentMatchers.startsWith("EXPLAIN "));
+            .when(queryNeo4jExecutor).explain(
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyMap(),
+                org.mockito.ArgumentMatchers.any()
+            );
         CypherValidationService service = service();
         QueryValidationResult result = service.validate(schema(), "MATCH (n:Contract) RETURN n", Map.of());
         assertThat(result.valid()).isFalse();
@@ -196,13 +260,16 @@ class CypherValidationServiceTest {
                 new AppProperties.Extraction(40, 80, 2)
             )),
             activeSchemaResolver,
-            neo4jClient
+            queryNeo4jExecutor
         );
     }
 
     private void stubExplain() {
-        when(neo4jClient.query(org.mockito.ArgumentMatchers.anyString()).bindAll(org.mockito.ArgumentMatchers.anyMap()).fetch().all())
-            .thenReturn(List.of());
+        org.mockito.Mockito.doNothing().when(queryNeo4jExecutor).explain(
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyMap(),
+            org.mockito.ArgumentMatchers.any()
+        );
     }
 
     private SchemaDocument schema() {

@@ -163,6 +163,12 @@ public class GlobalExceptionHandler {
         return detail;
     }
 
+    @ExceptionHandler(QueryDeadlineExceededException.class)
+    public ProblemDetail handleQueryDeadlineExceeded(QueryDeadlineExceededException ex, HttpServletRequest request) {
+        log.warn("Query deadline exceeded at {}", request.getRequestURI());
+        return baseProblem(HttpStatus.GATEWAY_TIMEOUT, "Query execution deadline exceeded", request.getRequestURI());
+    }
+
     private ProblemDetail baseProblem(HttpStatus status, String title, String instancePath) {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, title);
         detail.setTitle(title);

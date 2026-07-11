@@ -85,7 +85,12 @@ class CypherGenerationServiceTest {
         when(activeSchemaResolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schemaDefinition, schema));
         KnowledgeBaseService knowledgeBaseService = org.mockito.Mockito.mock(KnowledgeBaseService.class);
         when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile());
-        when(validationService.validate(Mockito.any(io.github.vfedoriv.graphrag.schema.SchemaDocument.class), Mockito.anyString(), Mockito.anyMap())).thenReturn(
+        when(validationService.validate(
+            Mockito.any(io.github.vfedoriv.graphrag.schema.SchemaDocument.class),
+            Mockito.anyString(),
+            Mockito.anyMap(),
+            Mockito.any()
+        )).thenReturn(
             new QueryValidationResult(true, "MATCH (n:Contract) RETURN n LIMIT $__limit", Map.of("__limit", 200), List.of())
         );
 
