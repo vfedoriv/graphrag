@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.document.ParsedDocument;
@@ -21,6 +22,8 @@ import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkPersistenceAdapter;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
@@ -109,24 +112,7 @@ class DocumentProcessingServiceTest {
             savedRunStages.add(run.getStage());
             return run;
         });
-        DocumentProcessingService service = new DocumentProcessingService(
-            documentUploadRepository,
-            documentChunkRepository,
-            extractionRunRepository,
-            documentProcessingRunRepository,
-            documentUploadService,
-            documentParsingService,
-            chunkingService,
-            new DocumentProcessingOptionsRegistry(),
-            neo4jClient,
-            embeddingClientProvider,
-            embeddingModelProvider,
-            environment,
-            graphExtractionService,
-            TestAiObservationService.noop(),
-            knowledgeBaseService,
-            knowledgeBaseLifecycleService
-        );
+        DocumentProcessingService service = service(chunkingService);
         DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("preserveLineBreaks", false));
 
         assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
@@ -175,24 +161,7 @@ class DocumentProcessingServiceTest {
         )).thenThrow(new IllegalArgumentException("parse failed"));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
-        DocumentProcessingService service = new DocumentProcessingService(
-            documentUploadRepository,
-            documentChunkRepository,
-            extractionRunRepository,
-            documentProcessingRunRepository,
-            documentUploadService,
-            documentParsingService,
-            chunkingService,
-            new DocumentProcessingOptionsRegistry(),
-            neo4jClient,
-            embeddingClientProvider,
-            embeddingModelProvider,
-            environment,
-            graphExtractionService,
-            TestAiObservationService.noop(),
-            knowledgeBaseService,
-            knowledgeBaseLifecycleService
-        );
+        DocumentProcessingService service = service(chunkingService);
 
         DocumentUploadNode failed = service.process("doc-1");
 
@@ -268,24 +237,7 @@ class DocumentProcessingServiceTest {
         });
         when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
 
-        DocumentProcessingService service = new DocumentProcessingService(
-            documentUploadRepository,
-            documentChunkRepository,
-            extractionRunRepository,
-            documentProcessingRunRepository,
-            documentUploadService,
-            documentParsingService,
-            chunkingService,
-            new DocumentProcessingOptionsRegistry(),
-            neo4jClient,
-            embeddingClientProvider,
-            embeddingModelProvider,
-            environment,
-            graphExtractionService,
-            TestAiObservationService.noop(),
-            knowledgeBaseService,
-            knowledgeBaseLifecycleService
-        );
+        DocumentProcessingService service = service(chunkingService);
 
         DocumentUploadNode processed = service.process("doc-1");
         assertThat(processed.getStatus()).isEqualTo(DocumentStatus.COMPLETED);
@@ -334,24 +286,7 @@ class DocumentProcessingServiceTest {
             .thenReturn(List.of(new DocumentChunkNode(), new DocumentChunkNode(), new DocumentChunkNode(), new DocumentChunkNode()));
         when(documentUploadRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(documentProcessingRunRepository.save(any(DocumentProcessingRunNode.class))).thenAnswer(i -> i.getArgument(0));
-        DocumentProcessingService service = new DocumentProcessingService(
-            documentUploadRepository,
-            documentChunkRepository,
-            extractionRunRepository,
-            documentProcessingRunRepository,
-            documentUploadService,
-            documentParsingService,
-            chunkingService,
-            new DocumentProcessingOptionsRegistry(),
-            neo4jClient,
-            embeddingClientProvider,
-            embeddingModelProvider,
-            environment,
-            graphExtractionService,
-            TestAiObservationService.noop(),
-            knowledgeBaseService,
-            knowledgeBaseLifecycleService
-        );
+        DocumentProcessingService service = service(chunkingService);
 
         DocumentUploadNode processed = service.process("doc-1", false, java.util.Map.of("pdf.split-pages", true));
 
@@ -382,6 +317,41 @@ class DocumentProcessingServiceTest {
             new AppProperties.Chunking(800, 2, 10),
             new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
             new AppProperties.Extraction(40, 80, 2)
+        );
+    }
+
+    private DocumentProcessingService service(ChunkingService chunkingService) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProfileScopedAiClientResolver clientResolver = new ProfileScopedAiClientResolver(
+            embeddingClientProvider,
+            new EmptyObjectProvider<>(),
+            new EmptyObjectProvider<>()
+        );
+        DocumentChunkPersistenceAdapter persistenceAdapter = new DocumentChunkPersistenceAdapter(
+            documentChunkRepository,
+            neo4jClient,
+            new EmbeddingSpaceIndexService(neo4jClient)
+        );
+        return new DocumentProcessingService(
+            documentUploadRepository,
+            documentChunkRepository,
+            extractionRunRepository,
+            documentUploadService,
+            documentParsingService,
+            chunkingService,
+            new DocumentProcessingOptionsRegistry(),
+            clientResolver,
+            objectMapper,
+            graphExtractionService,
+            TestAiObservationService.noop(),
+            knowledgeBaseService,
+            knowledgeBaseLifecycleService,
+            new EmbeddingSpacePolicy(documentChunkRepository),
+            new io.github.vfedoriv.graphrag.application.processing.ProcessingRunLifecycle(
+                documentProcessingRunRepository,
+                objectMapper
+            ),
+            persistenceAdapter
         );
     }
 

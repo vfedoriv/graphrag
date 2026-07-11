@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class HybridSearchService {
 
     private final RuntimeSettingsService runtimeSettingsService;
-    private final ObjectProvider<EmbeddingClient> embeddingClientProvider;
+    private final ProfileScopedAiClientResolver aiClientResolver;
     private final Neo4jClient neo4jClient;
     private final KnowledgeBaseService knowledgeBaseService;
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
@@ -34,14 +35,14 @@ public class HybridSearchService {
     @Autowired
     public HybridSearchService(
         RuntimeSettingsService runtimeSettingsService,
-        ObjectProvider<EmbeddingClient> embeddingClientProvider,
+        ProfileScopedAiClientResolver aiClientResolver,
         Neo4jClient neo4jClient,
         KnowledgeBaseService knowledgeBaseService,
         EmbeddingSpacePolicy embeddingSpacePolicy,
         EmbeddingSpaceIndexService embeddingSpaceIndexService
     ) {
         this.runtimeSettingsService = runtimeSettingsService;
-        this.embeddingClientProvider = embeddingClientProvider;
+        this.aiClientResolver = aiClientResolver;
         this.neo4jClient = neo4jClient;
         this.knowledgeBaseService = knowledgeBaseService;
         this.embeddingSpacePolicy = embeddingSpacePolicy;
@@ -57,7 +58,11 @@ public class HybridSearchService {
     ) {
         this(
             runtimeSettingsService,
-            embeddingClientProvider,
+            new ProfileScopedAiClientResolver(
+                embeddingClientProvider,
+                new EmptyObjectProvider<>(),
+                new EmptyObjectProvider<>()
+            ),
             neo4jClient,
             knowledgeBaseService,
             new EmbeddingSpacePolicy(documentChunkRepository),
@@ -283,17 +288,7 @@ public class HybridSearchService {
     }
 
     private EmbeddingClient resolveEmbeddingClient() {
-        List<EmbeddingClient> clients = embeddingClientProvider.orderedStream().toList();
-        if (clients.isEmpty()) {
-            return null;
-        }
-        if (clients.size() == 1) {
-            return clients.getFirst();
-        }
-        return clients.stream()
-            .filter(client -> !client.getClass().getName().contains("SpringAi"))
-            .findFirst()
-            .orElse(clients.getFirst());
+        return aiClientResolver.embeddingClient();
     }
 
     private String hybridSearchCypher(int graphDepth) {

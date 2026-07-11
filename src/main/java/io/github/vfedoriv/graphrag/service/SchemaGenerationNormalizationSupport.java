@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-final class SchemaGenerationNormalizationSupport {
+public final class SchemaGenerationNormalizationSupport {
 
     private SchemaGenerationNormalizationSupport() {
     }
 
-    static String sanitizeLabel(String raw, String fallback) {
+    public static String sanitizeLabel(String raw, String fallback) {
         if (raw == null || raw.isBlank()) {
             return fallback;
         }
@@ -22,7 +22,7 @@ final class SchemaGenerationNormalizationSupport {
         return first + cleaned.substring(1);
     }
 
-    static String sanitizeRelation(String raw) {
+    public static String sanitizeRelation(String raw) {
         if (raw == null || raw.isBlank()) {
             return "RELATED_TO";
         }
@@ -31,14 +31,14 @@ final class SchemaGenerationNormalizationSupport {
         return cleaned.isBlank() ? "RELATED_TO" : cleaned;
     }
 
-    static String firstNonBlank(String left, String right) {
+    public static String firstNonBlank(String left, String right) {
         if (left != null && !left.isBlank()) {
             return left;
         }
         return (right == null || right.isBlank()) ? null : right;
     }
 
-    static String inferPropertyType(String value) {
+    public static String inferPropertyType(String value) {
         if (value == null || value.isBlank()) {
             return "string";
         }
@@ -61,7 +61,7 @@ final class SchemaGenerationNormalizationSupport {
         return "string";
     }
 
-    static List<String> inferKeyCandidates(List<SchemaDocument.PropertyDefinition> properties) {
+    public static List<String> inferKeyCandidates(List<SchemaDocument.PropertyDefinition> properties) {
         if (properties == null || properties.isEmpty()) {
             return List.of();
         }
@@ -78,7 +78,7 @@ final class SchemaGenerationNormalizationSupport {
         return names.size() == 1 ? List.of(names.getFirst()) : names.subList(0, 2);
     }
 
-    static boolean isSafePropertyName(String value) {
+    public static boolean isSafePropertyName(String value) {
         return value.matches("[A-Za-z_][A-Za-z0-9_]*");
     }
 }

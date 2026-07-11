@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.mock.env.MockEnvironment;
 
 class RuntimeSettingsServiceTest {
@@ -254,6 +256,26 @@ class RuntimeSettingsServiceTest {
                 .hasMessageContaining("must be one of");
         } finally {
             service.update("logging.level.root", "INFO");
+        }
+    }
+
+    @Test
+    void clearingRootLoggingLevelReappliesStartupDefault() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+        LoggingSystem loggingSystem = LoggingSystem.get(RuntimeSettingsService.class.getClassLoader());
+
+        try {
+            service.update("logging.level.root", "WARN");
+
+            RuntimeSettingResponse cleared = service.clear("logging.level.root");
+
+            assertThat(cleared.currentValue()).isEqualTo("INFO");
+            assertThat(cleared.activeValue()).isEqualTo("INFO");
+            assertThat(cleared.source()).isEqualTo("default");
+            assertThat(loggingSystem.getLoggerConfiguration("ROOT").getEffectiveLevel()).isEqualTo(LogLevel.INFO);
+        } finally {
+            loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
         }
     }
 
