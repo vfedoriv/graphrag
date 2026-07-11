@@ -23,7 +23,7 @@ import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionsResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkPersistenceAdapter;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
@@ -161,7 +161,7 @@ public class DocumentProcessingService {
                 log.info(
                     "Document processing completed successfully: documentId={}, elapsedMs={}",
                     documentId,
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
                 workflow.success();
                 return setStatus(document, DocumentStatus.COMPLETED, null);
@@ -169,10 +169,10 @@ public class DocumentProcessingService {
                 processingRunLifecycle.fail(processingRun, ex);
                 workflow.error(ex);
                 log.error(
-                    "Document processing failed: documentId={}, elapsedMs={}, message={}",
+                    "Document processing failed: documentId={}, elapsedMs={}, exceptionType={}",
                     documentId,
-                    LogSanitizer.elapsedMillis(startNanos),
-                    ex.getMessage(),
+                    LogMetadata.elapsedMillis(startNanos),
+                    LogMetadata.exceptionType(ex),
                     ex
                 );
                 return setStatus(document, DocumentStatus.FAILED, ex.getMessage());

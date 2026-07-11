@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.query.QueryPolicy;
 import io.github.vfedoriv.graphrag.dto.QueryPolicyResponse;
@@ -50,17 +50,15 @@ public class CypherExecutionService {
         log.info(
             "Executing Cypher: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
             knowledgeBaseId,
-            LogSanitizer.length(cypher),
+            LogMetadata.length(cypher),
             parameters == null ? 0 : parameters.size()
         );
         QueryValidationResult validation = cypherValidationService.validate(knowledgeBaseId, cypher, parameters, policy);
         if (!validation.valid()) {
-            String validationErrorSummary = LogSanitizer.preview(String.join(" | ", validation.errors()));
             log.info(
-                "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}, validationErrors={}",
+                "Cypher execution rejected by validation: knowledgeBaseId={}, errorCount={}",
                 knowledgeBaseId,
-                validation.errors().size(),
-                validationErrorSummary
+                validation.errors().size()
             );
             throw new QueryRejectedException(validation.errors());
         }

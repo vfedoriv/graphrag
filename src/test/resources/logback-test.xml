@@ -1,0 +1,15 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <logger name="io.github.vfedoriv.graphrag" level="INFO"/>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.springframework.test" level="ERROR"/>
+    <logger name="org.testcontainers" level="ERROR"/>
+    <logger name="org.neo4j" level="ERROR"/>
+    <logger name="org.apache.tomcat" level="ERROR"/>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

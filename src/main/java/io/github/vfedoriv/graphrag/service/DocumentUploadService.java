@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationType;
@@ -99,11 +100,11 @@ public class DocumentUploadService {
         } catch (IOException ex) {
             storageMutationService.recordFailure(mutation.getId(), ex);
             log.error(
-                "Binary storage failed during document upload: knowledgeBaseId={}, documentId={}, filename={}, message={}",
+                "Binary storage failed during document upload: knowledgeBaseId={}, documentId={}, filename={}, exceptionType={}",
                 knowledgeBaseId,
                 node.getId(),
                 file.getOriginalFilename(),
-                ex.getMessage(),
+                LogMetadata.exceptionType(ex),
                 ex
             );
             node.setStatus(DocumentStatus.FAILED);
@@ -117,7 +118,7 @@ public class DocumentUploadService {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             return HexFormat.of().formatHex(digest.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
-            log.error("SHA-256 digest algorithm is unavailable", e);
+            log.error("SHA-256 digest algorithm is unavailable: exceptionType={}", LogMetadata.exceptionType(e));
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }
@@ -178,11 +179,11 @@ public class DocumentUploadService {
         } catch (IOException ex) {
             storageMutationService.recordFailure(storeMutation.getId(), ex);
             log.error(
-                "Binary storage failed during document replacement: knowledgeBaseId={}, documentId={}, filename={}, message={}",
+                "Binary storage failed during document replacement: knowledgeBaseId={}, documentId={}, filename={}, exceptionType={}",
                 knowledgeBaseId,
                 documentId,
                 file.getOriginalFilename(),
-                ex.getMessage(),
+                LogMetadata.exceptionType(ex),
                 ex
             );
             throw new IllegalStateException("Binary storage failed: " + ex.getMessage(), ex);
@@ -248,7 +249,7 @@ public class DocumentUploadService {
         try {
             return file.getBytes();
         } catch (IOException e) {
-            log.error("Failed to read uploaded file bytes: filename={}, message={}", file.getOriginalFilename(), e.getMessage(), e);
+            log.error("Failed to read uploaded file bytes: filename={}, exceptionType={}", file.getOriginalFilename(), LogMetadata.exceptionType(e));
             throw new IllegalArgumentException("Cannot read uploaded file bytes", e);
         }
     }
@@ -276,10 +277,10 @@ public class DocumentUploadService {
             binaryStorageService.delete(URI.create(document.getContentUri()));
         } catch (IOException ex) {
             log.error(
-                "Binary storage failed during document deletion: documentId={}, contentUri={}, message={}",
+                "Binary storage failed during document deletion: documentId={}, contentUri={}, exceptionType={}",
                 document.getId(),
                 document.getContentUri(),
-                ex.getMessage(),
+                LogMetadata.exceptionType(ex),
                 ex
             );
             throw new IllegalStateException("Binary storage delete failed: " + ex.getMessage(), ex);
@@ -304,10 +305,10 @@ public class DocumentUploadService {
         } catch (IOException ex) {
             storageMutationService.recordFailure(mutation.getId(), ex);
             log.warn(
-                "Previous document content cleanup failed after replacement: documentId={}, contentUri={}, message={}",
+                "Previous document content cleanup failed after replacement: documentId={}, contentUri={}, exceptionType={}",
                 documentId,
                 previousContentUri,
-                ex.getMessage(),
+                LogMetadata.exceptionType(ex),
                 ex
             );
         }

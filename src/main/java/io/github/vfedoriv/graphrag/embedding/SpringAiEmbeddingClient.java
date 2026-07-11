@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.embedding;
 
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
@@ -69,7 +69,7 @@ public class SpringAiEmbeddingClient implements EmbeddingClient {
                     "Embedding response received: vectors={}, firstVectorSize={}, elapsedMs={}",
                     result.size(),
                     firstVectorSize,
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
                 observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(
                     "Embedding response with " + result.size() + " vectors and first vector size " + firstVectorSize

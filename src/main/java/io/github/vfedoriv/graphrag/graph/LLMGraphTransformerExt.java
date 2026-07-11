@@ -19,7 +19,7 @@ import dev.langchain4j.internal.RetryUtils;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.input.PromptTemplate;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -236,20 +236,23 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
                     ChatResponse chat = chatModel.chat(messages);
                     String rawText = chat.aiMessage().text();
                     log.info(
-                        "LLM graph transformer raw response attempt {}: responseLength={}, responsePreview={}",
+                        "LLM graph transformer raw response received: attempt={}, responseLength={}, responseFingerprint={}",
                         attempt,
-                        LogSanitizer.length(rawText),
-                        LogSanitizer.preview(rawText)
+                        LogMetadata.length(rawText),
+                        LogMetadata.fingerprint(rawText)
                     );
-                    if (log.isDebugEnabled()) {
-                        log.debug("LLM graph transformer raw response attempt {}: {}", attempt, rawText);
-                    }
                     String backtickText = getBacktickText(rawText);
                     List<Map<String, Object>> parsed = OBJECT_MAPPER.readValue(backtickText, new TypeReference<>() {});
-                    log.info("LLM graph transformer parsed response attempt {}: {}", attempt, summarizeParsedResponse(parsed));
+                    log.info(
+                        "LLM graph transformer parsed response: attempt={}, relationshipCount={}, nodeTypeCount={}, propertyKeyCount={}",
+                        attempt,
+                        parsed.size(),
+                        nodeTypeCount(parsed),
+                        propertyKeyCount(parsed)
+                    );
                     return parsed;
                 } catch (Exception e) {
-                    log.error("LLM graph transformer failed to parse response attempt {}", attempt, e);
+                    log.error("LLM graph transformer failed to parse response: attempt={}, exceptionType={}", attempt, LogMetadata.exceptionType(e));
                     throw (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
                 }
             },
@@ -257,45 +260,29 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
         );
     }
 
-    private static List<Map<String, Object>> summarizeParsedResponse(List<Map<String, Object>> parsed) {
+    private static long nodeTypeCount(List<Map<String, Object>> parsed) {
         return parsed.stream()
-            .map(rel -> Map.<String, Object>of(
-                "head", asText(rel.get("head")),
-                "headType", asText(rel.get("head_type")),
-                "headProperties", propertySummaryUnsafe(rel.get("head_properties")),
-                "relation", asText(rel.get("relation")),
-                "relationProperties", propertySummaryUnsafe(rel.get("relation_properties")),
-                "tail", asText(rel.get("tail")),
-                "tailType", asText(rel.get("tail_type")),
-                "tailProperties", propertySummaryUnsafe(rel.get("tail_properties"))))
-            .toList();
+            .flatMap(rel -> java.util.stream.Stream.of(rel.get("head_type"), rel.get("tail_type")))
+            .map(LLMGraphTransformerExt::asText)
+            .filter(type -> !isNullOrBlank(type))
+            .distinct()
+            .count();
     }
 
-    private static Map<String, Object> propertySummaryUnsafe(@Nullable Object rawProperties) {
-        Map<String, String> properties = extractPropertiesForSummary(rawProperties);
-        return Map.of(
-            "nonEmpty", !properties.isEmpty(),
-            "hasDescription", !isNullOrBlank(properties.get("description")),
-            "keys", properties.keySet());
-    }
-
-    private static Map<String, String> extractPropertiesForSummary(@Nullable Object rawProperties) {
-        if (!(rawProperties instanceof Map<?, ?> rawMap)) {
-            return Map.of();
-        }
-        Map<String, String> normalized = new LinkedHashMap<>();
-        for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
-            if (!(entry.getKey() instanceof String key) || isNullOrBlank(key)) {
-                continue;
-            }
-            Object value = entry.getValue();
-            if (value instanceof List<?> || value instanceof Map<?, ?>) {
-                normalized.put(key, "<non-scalar>");
-                continue;
-            }
-            normalized.put(key, asText(value));
-        }
-        return normalized;
+    private static long propertyKeyCount(List<Map<String, Object>> parsed) {
+        return parsed.stream()
+            .flatMap(rel -> java.util.stream.Stream.of(
+                rel.get("head_properties"),
+                rel.get("relation_properties"),
+                rel.get("tail_properties")))
+            .filter(Map.class::isInstance)
+            .map(Map.class::cast)
+            .flatMap(properties -> properties.keySet().stream())
+            .filter(String.class::isInstance)
+            .map(String.class::cast)
+            .filter(key -> !isNullOrBlank(String.valueOf(key)))
+            .distinct()
+            .count();
     }
 
     private static String getBacktickText(String text) {
@@ -356,7 +343,7 @@ public class LLMGraphTransformerExt extends LLMGraphTransformer {
             try {
                 return OBJECT_MAPPER.writeValueAsString(value);
             } catch (Exception e) {
-                log.error("Failed to serialize LLM graph transformer value to JSON: valueClass={}", value.getClass().getName(), e);
+                log.error("Failed to serialize LLM graph transformer value to JSON: valueClass={}, exceptionType={}", value.getClass().getName(), LogMetadata.exceptionType(e));
                 return String.valueOf(value);
             }
         }

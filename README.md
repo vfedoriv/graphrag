@@ -30,7 +30,7 @@ Out of scope (current implementation):
 
 ## Implemented Scope
 
-- Spring Boot 4.0.6 application foundation with validated config and test coverage.
+- Spring Boot 4.1.0 application foundation with validated config and test coverage.
 - Schema registry:
   - JSON schema parsing/validation,
   - immutable versioning,
@@ -162,10 +162,10 @@ flowchart TD
 ## Tech Stack
 
 - Java 25
-- Spring Boot 4.0.6
+- Spring Boot 4.1.0
 - Spring Data Neo4j
-- Spring AI 2.0.0-M5 (OpenAI-compatible chat + embeddings)
-- LangChain4j Tika parser integration
+- Spring AI 2.0.0 (OpenAI-compatible chat + embeddings)
+- LangChain4j 1.16.2 Tika parser integration
 - Neo4j 5.26.25
 - Maven + JUnit + Testcontainers
 
@@ -465,6 +465,14 @@ Generic high-cardinality trace attributes still include sanitized lengths, previ
 
 Do not enable full content capture or full Input/Output export for shared or production environments unless data handling and retention policies allow prompt/document content to be stored in the trace backend.
 
+### Operational Logging
+
+Application logs are metadata-first and independent from AI trace content capture. Normal log levels record workflow and entity identifiers, lengths, counts, timings, statuses, exception classes, and short non-reversible fingerprints where correlation is useful. They do not record document text, prompts, queries, model responses, generated schemas, or extracted graph payloads.
+
+The central `AiObservationService` is the only application-owned path that can attach controlled AI input/output content to observations. Its capture settings and length limits apply to trace attributes; enabling trace capture does not make application logs content-bearing. No local content diagnostic mode is enabled by default or implicitly through a normal logging level.
+
+Tests use `src/test/resources/logback-test.xml` to keep application warnings/errors visible while reducing routine Spring, Testcontainers, Neo4j, and payload noise. When diagnosing a failure, use the correlation identifiers and metadata in application logs, then inspect the opt-in trace backend according to its retention policy.
+
 ## Schema Bootstrap
 
 On startup, predefined schemas from `src/main/resources/schemas/*.json` are loaded into Neo4j (idempotent by schema name+version).
@@ -753,8 +761,8 @@ Compliance and governance:
 
 ## Reference Links
 
-- Spring Boot 4.0.6 docs: https://docs.spring.io/spring-boot/4.0.6/reference/
-- Spring Data Neo4j: https://docs.spring.io/spring-boot/4.0.6/reference/data/nosql.html#data.nosql.neo4j
+- Spring Boot 4.1.0 docs: https://docs.spring.io/spring-boot/4.1.0/reference/
+- Spring Data Neo4j: https://docs.spring.io/spring-boot/4.1.0/reference/data/nosql.html#data.nosql.neo4j
 - Spring AI OpenAI chat: https://docs.spring.io/spring-ai/reference/api/chat/openai-chat.html
 - Spring AI Neo4j vector store: https://docs.spring.io/spring-ai/reference/api/vectordbs/neo4j.html
 - LangChain4j docs: https://docs.langchain4j.dev/

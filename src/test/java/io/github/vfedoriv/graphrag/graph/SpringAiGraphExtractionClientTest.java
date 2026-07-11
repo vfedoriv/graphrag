@@ -11,14 +11,35 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
+@ExtendWith(OutputCaptureExtension.class)
 class SpringAiGraphExtractionClientTest {
+
+    @Test
+    void extractDoesNotLogDocumentOrModelContent(CapturedOutput output) {
+        String documentSentinel = "DOCUMENT_CONTENT_SENTINEL";
+        String modelSentinel = "MODEL_RESPONSE_SENTINEL";
+        SpringAiGraphExtractionClient client = new SpringAiGraphExtractionClient(
+            provider(chatModel("{\"nodes\":[],\"relationships\":[],\"note\":\"" + modelSentinel + "\"}")),
+            TestAiObservationService.noop(),
+            new EmptyObjectProvider<>()
+        );
+
+        client.extract(schema(), documentSentinel);
+
+        assertThat(output)
+            .contains("promptFingerprint=sha256:", "responseFingerprint=sha256:")
+            .doesNotContain(documentSentinel, modelSentinel);
+    }
 
     @Test
     void extract_ignoresUnknownFieldsInModelResponse() {

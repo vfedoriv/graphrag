@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Language:** Java 25, **Framework:** Spring Boot 4.0.6
+- **Language:** Java 25, **Framework:** Spring Boot 4.1.0
 - **Database:** Neo4j 5 (graph + vector index via Spring Data Neo4j)
-- **LLM Integration:** Spring AI 2.0 (OpenAI-compatible) + LangChain4j 1.14
+- **LLM Integration:** Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
 - **AI Observability:** OpenTelemetry + Micrometer, optional local Langfuse
 - **Document Parsing:** LangChain4j Apache Tika
 - **Build:** Maven (use `./mvnw`, never bare `mvn`)
@@ -80,6 +80,8 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides, restart lifecycle metadata, live logging control, expanded configuration catalog, and typed live accessors.
 - **`AiProfileService`** — OpenAI-compatible profile CRUD, default profile seeding from `app.model.*`, API-key masking, and profile cache invalidation.
 - **`AiRuntimeModelFactory`** — profile/revision-scoped Spring AI OpenAI chat and embedding model creation.
+
+Application logging is metadata-first and independent from AI observation content capture. Normal logs may include identifiers, lengths, counts, timings, statuses, exception classes, and non-reversible fingerprints, but must not include document text, prompts, queries, model responses, generated schemas, or extracted graph payloads. Controlled content belongs only in `AiObservationService` traces under explicit capture settings.
 
 ### Document Ingestion Pipeline
 

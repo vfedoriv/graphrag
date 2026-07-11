@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class SchemaParser {
         try {
             return mapper.readValue(jsonContent, SchemaDocument.class);
         } catch (IOException e) {
-            log.error("Invalid schema JSON: contentLength={}, message={}", jsonContent == null ? 0 : jsonContent.length(), e.getMessage(), e);
+            log.error("Invalid schema JSON: contentLength={}, exceptionType={}", jsonContent == null ? 0 : jsonContent.length(), LogMetadata.exceptionType(e));
             throw new IllegalArgumentException("Invalid schema JSON", e);
         }
     }

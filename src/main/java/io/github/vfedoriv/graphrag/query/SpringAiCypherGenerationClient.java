@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.query;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
@@ -55,18 +55,15 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
             %s
             """.formatted(toJson(schema), maxRows, prompt);
         log.info(
-            "Cypher generation model call started: schemaName={}, promptLength={}, requestLength={}, requestPreview={}",
+            "Cypher generation model call started: schemaName={}, promptLength={}, requestLength={}, requestFingerprint={}",
             schema.name(),
-            LogSanitizer.length(prompt),
+            LogMetadata.length(prompt),
             request.length(),
-            LogSanitizer.preview(request)
+            LogMetadata.fingerprint(request)
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Cypher generation model request: {}", request);
-        }
         Map<String, String> attributes = new HashMap<>(aiObservationService.contentAttributes("ai.prompt", request));
         attributes.putAll(aiObservationService.langfuseInputAttributes(request));
-        attributes.put("ai.user_prompt.length", String.valueOf(LogSanitizer.length(prompt)));
+        attributes.put("ai.user_prompt.length", String.valueOf(LogMetadata.length(prompt)));
         try (AiModelCallObservation observation = aiObservationService.startChatModelCall(
             AiObservationService.WORKFLOW_CYPHER_GENERATION,
             schema.name(),
@@ -81,14 +78,11 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
                 org.springframework.ai.chat.model.ChatResponse chatResponse = chatModel.call(new Prompt(request));
                 String content = chatResponse.getResult().getOutput().getText();
                 log.info(
-                    "Cypher generation model response received: responseLength={}, responsePreview={}",
-                    LogSanitizer.length(content),
-                    LogSanitizer.preview(content)
+                    "Cypher generation model response received: responseLength={}, responseFingerprint={}",
+                    LogMetadata.length(content),
+                    LogMetadata.fingerprint(content)
                 );
-                if (log.isDebugEnabled()) {
-                    log.debug("Cypher generation model response: {}", content);
-                }
-                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogMetadata.length(content)));
                 observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
                 Payload payload = objectMapper.readValue(content, Payload.class);
                 GeneratedCypher generated = new GeneratedCypher(
@@ -96,13 +90,13 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
                     payload.explanation(),
                     payload.parameters() == null ? Map.of() : payload.parameters()
                 );
-                observation.highCardinalityAttribute("ai.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
+                observation.highCardinalityAttribute("ai.cypher.length", String.valueOf(LogMetadata.length(generated.cypher())));
                 observation.highCardinalityAttribute("ai.cypher.parameter_count", String.valueOf(generated.parameters().size()));
                 log.info(
                     "Cypher generation model call completed: cypherLength={}, parameterCount={}, elapsedMs={}",
-                    LogSanitizer.length(generated.cypher()),
+                    LogMetadata.length(generated.cypher()),
                     generated.parameters().size(),
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
                 observation.success(AiTokenUsage.fromResponse(chatResponse));
                 return generated;
@@ -111,7 +105,7 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
                 throw ex;
             }
         } catch (Exception ex) {
-            log.error("Cypher generation model call failed: schemaName={}, message={}", schema.name(), ex.getMessage(), ex);
+            log.error("Cypher generation model call failed: schemaName={}, exceptionType={}, messageFingerprint={}", schema.name(), LogMetadata.exceptionType(ex), LogMetadata.exceptionMessageFingerprint(ex));
             throw new IllegalArgumentException("Cypher generation response is invalid", ex);
         }
     }
@@ -129,7 +123,7 @@ public class SpringAiCypherGenerationClient implements CypherGenerationClient {
         try {
             return objectMapper.writeValueAsString(schema);
         } catch (Exception ex) {
-            log.error("Failed to serialize schema for Cypher generation prompt: schemaName={}, message={}", schema.name(), ex.getMessage(), ex);
+            log.error("Failed to serialize schema for Cypher generation prompt: schemaName={}, exceptionType={}", schema.name(), LogMetadata.exceptionType(ex));
             return "{\"name\":\"unknown\",\"nodes\":[],\"relationships\":[]}";
         }
     }

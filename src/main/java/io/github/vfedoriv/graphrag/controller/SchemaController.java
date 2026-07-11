@@ -16,7 +16,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,7 +91,7 @@ public class SchemaController {
             "Create schema request: sourceType={}, knowledgeBaseId={}, contentLength={}",
             request.sourceType(),
             request.knowledgeBaseId(),
-            LogSanitizer.length(request.content())
+            LogMetadata.length(request.content())
         );
         SchemaResponse response = toResponse(schemaRegistryService.createSchema(request.content(), request.sourceType(), request.knowledgeBaseId()));
         log.info(
@@ -116,8 +116,8 @@ public class SchemaController {
             request.name(),
             request.version(),
             request.description() != null && !request.description().isBlank(),
-            LogSanitizer.length(request.text()),
-            LogSanitizer.length(request.example())
+            LogMetadata.length(request.text()),
+            LogMetadata.length(request.example())
         );
         SchemaGenerationResult result = schemaGenerationService.generate(
             request.name(),
@@ -233,7 +233,7 @@ public class SchemaController {
         try {
             return OBJECT_MAPPER.writeValueAsString(exampleValue);
         } catch (JsonProcessingException e) {
-            log.error("Failed to normalize schema generation example: message={}", e.getMessage(), e);
+            log.error("Failed to normalize schema generation example: exceptionType={}", LogMetadata.exceptionType(e));
             throw new IllegalArgumentException("request.example: invalid JSON", e);
         }
     }
@@ -250,8 +250,8 @@ public class SchemaController {
     public GenerateSchemaExampleResponse generateSchemaExample(@Valid @RequestBody GenerateSchemaExampleRequest request) {
         log.info(
             "Generate schema example request: textLength={}, userPromptLength={}",
-            LogSanitizer.length(request.text()),
-            LogSanitizer.length(request.userPrompt())
+            LogMetadata.length(request.text()),
+            LogMetadata.length(request.userPrompt())
         );
         String example = schemaGenerationService.generateExample(request.text(), request.userPrompt());
         log.info("Generate schema example completed: exampleLength={}", example.length());
@@ -274,7 +274,7 @@ public class SchemaController {
     ) {
         log.info(
             "Generate schema example from file request: userPromptLength={}, fileName='{}', fileContentType='{}', fileSize={}",
-            LogSanitizer.length(userPrompt),
+            LogMetadata.length(userPrompt),
             file.getOriginalFilename(),
             file.getContentType(),
             file.getSize()
@@ -363,7 +363,7 @@ public class SchemaController {
             "Update schema request: schemaId={}, sourceType={}, contentLength={}",
             schemaId,
             request.sourceType(),
-            LogSanitizer.length(request.content())
+            LogMetadata.length(request.content())
         );
         SchemaDetailsResponse response = toDetailsResponse(schemaRegistryService.updateSchema(schemaId, request.content(), request.sourceType()));
         log.info("Update schema completed: schemaId={}, name={}, version={}", response.id(), response.name(), response.version());
@@ -411,7 +411,7 @@ public class SchemaController {
         )
         @Valid @RequestBody ValidateSchemaRequest request
     ) {
-        log.info("Validate schema request: contentLength={}", LogSanitizer.length(request.content()));
+        log.info("Validate schema request: contentLength={}", LogMetadata.length(request.content()));
         List<String> errors = schemaRegistryService.validateJson(request.content());
         log.info("Validate schema completed: valid={}, errors={}", errors.isEmpty(), errors.size());
         return new SchemaValidationResponse(errors.isEmpty(), errors);
@@ -478,7 +478,7 @@ public class SchemaController {
         try {
             return documentParsingService.parse(file.getOriginalFilename(), file.getContentType(), file.getBytes());
         } catch (IOException e) {
-            log.error("Failed to read uploaded file: filename={}, message={}", file.getOriginalFilename(), e.getMessage(), e);
+            log.error("Failed to read uploaded file: filename={}, exceptionType={}", file.getOriginalFilename(), LogMetadata.exceptionType(e));
             throw new IllegalArgumentException("Failed to read uploaded file", e);
         }
     }

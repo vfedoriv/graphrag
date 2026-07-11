@@ -61,3 +61,16 @@ The system SHALL use active AI profile metadata for model/provider observation t
 #### Scenario: Model name tags are disabled at runtime
 - **WHEN** runtime settings disable model name tags
 - **THEN** subsequent model observations do not expose active profile model names as model tags
+
+### Requirement: Application logs do not mirror AI observation content
+The system SHALL keep application logging independent from AI observation input/output capture settings.
+
+#### Scenario: AI content capture is enabled
+- **WHEN** AI observability content capture is enabled for a model call
+- **THEN** the centralized observation contains content according to its configured privacy and length limits
+- **AND** normal application logs still contain only metadata and observation identifiers
+
+#### Scenario: AI content capture is disabled
+- **WHEN** AI observability content capture is disabled for a model call
+- **THEN** the observation uses its configured sanitized representation
+- **AND** application logs do not independently expose the input or output content

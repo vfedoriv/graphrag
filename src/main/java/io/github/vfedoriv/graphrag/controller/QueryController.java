@@ -10,7 +10,7 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
@@ -102,10 +102,10 @@ public class QueryController {
         @Valid @RequestBody QueryGenerateRequest request
     ) {
         log.info(
-            "Generate query request: knowledgeBaseId={}, promptLength={}, promptPreview={}",
+            "Generate query request: knowledgeBaseId={}, promptLength={}, promptFingerprint={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.prompt()),
-            LogSanitizer.preview(request.prompt())
+            LogMetadata.length(request.prompt()),
+            LogMetadata.fingerprint(request.prompt())
         );
         GeneratedQueryResponse response = cypherGenerationService.generate(knowledgeBaseId, request.prompt());
         log.info(
@@ -113,7 +113,7 @@ public class QueryController {
             knowledgeBaseId,
             response.validation().valid(),
             response.validation().errors().size(),
-            LogSanitizer.length(response.cypher())
+            LogMetadata.length(response.cypher())
         );
         return response;
     }
@@ -149,7 +149,7 @@ public class QueryController {
         log.info(
             "Validate query request: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.cypher()),
+            LogMetadata.length(request.cypher()),
             request.parameters() == null ? 0 : request.parameters().size()
         );
         QueryValidationResponse response = cypherExecutionService.toValidationResponse(
@@ -188,7 +188,7 @@ public class QueryController {
         log.info(
             "Execute query request: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.cypher()),
+            LogMetadata.length(request.cypher()),
             request.parameters() == null ? 0 : request.parameters().size()
         );
         QueryExecutionResponse response = cypherExecutionService.execute(knowledgeBaseId, request.cypher(), request.parameters());
@@ -223,10 +223,10 @@ public class QueryController {
         @Valid @RequestBody QueryGenerateRequest request
     ) {
         log.info(
-            "Ask query request: knowledgeBaseId={}, promptLength={}, promptPreview={}",
+            "Ask query request: knowledgeBaseId={}, promptLength={}, promptFingerprint={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.prompt()),
-            LogSanitizer.preview(request.prompt())
+            LogMetadata.length(request.prompt()),
+            LogMetadata.fingerprint(request.prompt())
         );
         return queryAskService.ask(knowledgeBaseId, request.prompt());
     }
@@ -260,10 +260,10 @@ public class QueryController {
         @Valid @RequestBody HybridSearchRequest request
     ) {
         log.info(
-            "Hybrid search request: knowledgeBaseId={}, queryLength={}, queryPreview={}, topK={}, graphDepth={}, includeChunkText={}",
+            "Hybrid search request: knowledgeBaseId={}, queryLength={}, queryFingerprint={}, topK={}, graphDepth={}, includeChunkText={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.query()),
-            LogSanitizer.preview(request.query()),
+            LogMetadata.length(request.query()),
+            LogMetadata.fingerprint(request.query()),
             request.topK(),
             request.graphDepth(),
             request.includeChunkText()

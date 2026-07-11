@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.error.QueryRejectedException;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -39,7 +39,7 @@ public class QueryAskService {
         QueryPolicy policy = runtimeSettingsService.queryPolicy();
         Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("knowledge_base.id", knowledgeBaseId);
-        attributes.put("query.prompt.length", String.valueOf(LogSanitizer.length(prompt)));
+        attributes.put("query.prompt.length", String.valueOf(LogMetadata.length(prompt)));
         try (AiObservationScope workflow = aiObservationService.startWorkflow(
             new AiWorkflowContext(AiObservationService.WORKFLOW_QUERY, null, attributes)
         )) {
@@ -47,7 +47,7 @@ public class QueryAskService {
                 GeneratedQueryResponse generated = cypherGenerationService.generate(knowledgeBaseId, prompt, policy);
                 workflow.highCardinalityAttribute("query.validation.valid", String.valueOf(generated.validation().valid()));
                 workflow.highCardinalityAttribute("query.validation.error_count", String.valueOf(generated.validation().errors().size()));
-                workflow.highCardinalityAttribute("query.cypher.length", String.valueOf(LogSanitizer.length(generated.cypher())));
+                workflow.highCardinalityAttribute("query.cypher.length", String.valueOf(LogMetadata.length(generated.cypher())));
                 if (!generated.validation().valid()) {
                     log.info(
                         "Ask query generated invalid Cypher: knowledgeBaseId={}, errorCount={}",
@@ -79,9 +79,9 @@ public class QueryAskService {
             } catch (RuntimeException e) {
                 workflow.error(e);
                 log.warn(
-                    "Ask query failed: knowledgeBaseId={}, message={}",
+                    "Ask query failed: knowledgeBaseId={}, exceptionType={}",
                     knowledgeBaseId,
-                    LogSanitizer.preview(e.getMessage())
+                    LogMetadata.exceptionType(e)
                 );
                 throw e;
             }

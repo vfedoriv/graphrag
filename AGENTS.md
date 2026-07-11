@@ -5,9 +5,9 @@ This file provides guidance to coding agents working in this repository.
 ## Stack
 
 - Java 25
-- Spring Boot 4.0.6
+- Spring Boot 4.1.0
 - Neo4j 5 (graph + vector index)
-- Spring AI 2.0 (OpenAI-compatible) + LangChain4j 1.14
+- Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
 - OpenTelemetry + Micrometer AI observability, optional local Langfuse
 - Maven Wrapper (`./mvnw`)
 
@@ -67,6 +67,8 @@ Key services:
 - `RuntimeSettingsService` (allowlisted runtime setting overrides, restart lifecycle metadata, live logging control + typed live accessors)
 - `AiProfileService` (OpenAI-compatible AI profile CRUD, write-only API keys, default profile seeding)
 - `AiRuntimeModelFactory` (profile/revision-scoped Spring AI OpenAI chat and embedding clients)
+
+Application logging is metadata-first and separate from AI observation content capture. Normal logs may include identifiers, lengths, counts, timings, statuses, exception classes, and non-reversible fingerprints, but must not include document text, prompts, queries, model responses, generated schemas, or extracted graph payloads. Use `AiObservationService` capture settings for controlled trace content; do not reintroduce previews through `INFO` or `DEBUG` logs.
 
 ## Profiles
 

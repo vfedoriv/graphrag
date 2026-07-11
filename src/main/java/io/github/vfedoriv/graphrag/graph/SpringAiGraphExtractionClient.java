@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
@@ -69,14 +69,11 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             %s
             """.formatted(schemaToCompactJson(schema), allowedRelationshipTriples(schema), chunkText);
         log.info(
-            "Graph extraction model request prepared: schemaName={}, promptLength={}, promptPreview={}",
+            "Graph extraction model request prepared: schemaName={}, promptLength={}, promptFingerprint={}",
             schema.name(),
             prompt.length(),
-            LogSanitizer.preview(prompt)
+            LogMetadata.fingerprint(prompt)
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Graph extraction model request: {}", prompt);
-        }
         Map<String, String> attributes = new HashMap<>(aiObservationService.contentAttributes("ai.prompt", prompt));
         attributes.putAll(aiObservationService.langfuseInputAttributes(prompt));
         attributes.put("ai.chunk.length", String.valueOf(chunkLength));
@@ -94,14 +91,11 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
                 org.springframework.ai.chat.model.ChatResponse chatResponse = chatModel.call(new Prompt(prompt));
                 String content = chatResponse.getResult().getOutput().getText();
                 log.info(
-                    "Graph extraction model call completed: responseLength={}, responsePreview={}",
-                    LogSanitizer.length(content),
-                    LogSanitizer.preview(content)
+                    "Graph extraction model call completed: responseLength={}, responseFingerprint={}",
+                    LogMetadata.length(content),
+                    LogMetadata.fingerprint(content)
                 );
-                if (log.isDebugEnabled()) {
-                    log.debug("Graph extraction model response: {}", content);
-                }
-                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(content)));
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogMetadata.length(content)));
                 observation.highCardinalityAttributes(aiObservationService.langfuseOutputAttributes(content));
                 String normalizedContent = extractJsonPayload(content);
                 JsonNode responseJson = objectMapper.readTree(normalizedContent);
@@ -116,7 +110,7 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
                     "Graph extraction model response parsed: nodes={}, relationships={}, elapsedMs={}",
                     result.nodes() == null ? 0 : result.nodes().size(),
                     result.relationships() == null ? 0 : result.relationships().size(),
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
                 observation.success(AiTokenUsage.fromResponse(chatResponse));
                 return result;
@@ -126,10 +120,10 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             }
         } catch (Exception e) {
             log.error(
-                "Graph extraction model call failed: chunkLength={}, elapsedMs={}, message={}",
+                "Graph extraction model call failed: chunkLength={}, elapsedMs={}, exceptionType={}",
                 chunkLength,
-                LogSanitizer.elapsedMillis(startNanos),
-                e.getMessage(),
+                LogMetadata.elapsedMillis(startNanos),
+                LogMetadata.exceptionType(e),
                 e
             );
             if (e instanceof RuntimeException runtimeException) {
@@ -179,7 +173,7 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
         try {
             return objectMapper.writeValueAsString(schema);
         } catch (Exception e) {
-            log.error("Failed to serialize schema for graph extraction prompt: schemaName={}, message={}", schema.name(), e.getMessage(), e);
+            log.error("Failed to serialize schema for graph extraction prompt: schemaName={}, exceptionType={}", schema.name(), LogMetadata.exceptionType(e));
             return "{\"name\":\"unknown\",\"nodes\":[],\"relationships\":[]}";
         }
     }
@@ -209,9 +203,6 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
             unknownNodeFields,
             unknownRelationshipFields
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Graph extraction response unknown field payload: {}", objectMapper.writeValueAsString(root));
-        }
     }
 
     private Set<String> collectUnknownFields(JsonNode entries, Set<String> allowedFields) {

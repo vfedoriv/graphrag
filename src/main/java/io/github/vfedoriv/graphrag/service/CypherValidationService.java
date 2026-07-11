@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.query.QueryPolicy;
@@ -49,7 +49,7 @@ public class CypherValidationService {
         log.info(
             "Validating Cypher for knowledge base: knowledgeBaseId={}, cypherLength={}, parameterCount={}",
             knowledgeBaseId,
-            LogSanitizer.length(cypher),
+            LogMetadata.length(cypher),
             parameters == null ? 0 : parameters.size()
         );
         ActiveSchemaContext schemaContext = activeSchemaResolver.resolve(knowledgeBaseId);
@@ -93,8 +93,8 @@ public class CypherValidationService {
             schema.name(),
             result.valid(),
             result.errors().size(),
-            LogSanitizer.length(result.cypher()),
-            LogSanitizer.elapsedMillis(startNanos)
+            LogMetadata.length(result.cypher()),
+            LogMetadata.elapsedMillis(startNanos)
         );
         return result;
     }
@@ -185,7 +185,7 @@ public class CypherValidationService {
         } catch (QueryDeadlineExceededException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.error("Cypher EXPLAIN failed: cypherLength={}, parameterCount={}, exceptionType={}", cypher.length(), params.size(), ex.getClass().getSimpleName(), ex);
+            log.error("Cypher EXPLAIN failed: cypherLength={}, parameterCount={}, exceptionType={}", cypher.length(), params.size(), ex.getClass().getSimpleName());
             errors.add("Cypher syntax or planner validation failed");
         }
     }

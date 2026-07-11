@@ -12,7 +12,7 @@ import io.github.vfedoriv.graphrag.application.schema.SchemaGenerationPromptFact
 import io.github.vfedoriv.graphrag.application.schema.SchemaGenerationWarningFactory;
 import io.github.vfedoriv.graphrag.application.schema.SchemaGraphMapper;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.infrastructure.ai.SchemaGenerationModelAdapter;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
@@ -89,26 +89,22 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
     public SchemaGenerationResult generate(String name, int version, String description, String text, String example) {
         long startNanos = System.nanoTime();
         log.info(
-            "Schema JSON generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textPreview={}",
+            "Schema JSON generation started: name={}, version={}, descriptionPresent={}, textLength={}, exampleLength={}, textFingerprint={}",
             name,
             version,
             description != null && !description.isBlank(),
-            LogSanitizer.length(text),
-            LogSanitizer.length(example),
-            LogSanitizer.preview(text)
+            LogMetadata.length(text),
+            LogMetadata.length(example),
+            LogMetadata.fingerprint(text)
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Schema JSON generation source text: {}", text);
-            log.debug("Schema JSON generation example: {}", example);
-        }
         try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
             AiObservationService.WORKFLOW_SCHEMA_GENERATION,
             name,
             Map.of(
                 "ai.schema.version", String.valueOf(version),
                 "ai.schema.description_present", String.valueOf(description != null && !description.isBlank()),
-                "ai.text.length", String.valueOf(LogSanitizer.length(text)),
-                "ai.example.length", String.valueOf(LogSanitizer.length(example))
+                "ai.text.length", String.valueOf(LogMetadata.length(text)),
+                "ai.example.length", String.valueOf(LogMetadata.length(example))
             )
         ))) {
             try {
@@ -124,18 +120,15 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
                     schema.relationships().size(),
                     warnings.size(),
                     json.length(),
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
-                if (log.isDebugEnabled()) {
-                    log.debug("Generated schema JSON: {}", json);
-                }
                 workflow.highCardinalityAttribute("ai.schema.node_count", String.valueOf(schema.nodes().size()));
                 workflow.highCardinalityAttribute("ai.schema.relationship_count", String.valueOf(schema.relationships().size()));
                 workflow.success();
                 return new SchemaGenerationResult(json, warnings);
             } catch (JsonProcessingException e) {
                 workflow.error(e);
-                log.error("Failed to serialize generated schema to JSON: name={}, version={}, message={}", name, version, e.getMessage(), e);
+                log.error("Failed to serialize generated schema to JSON: name={}, version={}, exceptionType={}", name, version, LogMetadata.exceptionType(e));
                 throw new IllegalStateException("Failed to serialize generated schema to JSON", e);
             } catch (RuntimeException e) {
                 workflow.error(e);
@@ -155,24 +148,18 @@ public class LangChain4jSchemaGenerationService implements SchemaGenerationServi
         long startNanos = System.nanoTime();
         String prompt = promptFactory.examplePrompt(text, userPrompt);
         log.info(
-            "Schema example generation started: textLength={}, userPromptLength={}, promptPreview={}",
-            LogSanitizer.length(text),
-            LogSanitizer.length(userPrompt),
-            LogSanitizer.preview(prompt)
+            "Schema example generation started: textLength={}, userPromptLength={}, promptFingerprint={}",
+            LogMetadata.length(text),
+            LogMetadata.length(userPrompt),
+            LogMetadata.fingerprint(prompt)
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Schema example generation prompt: {}", prompt);
-        }
         String response = modelAdapter.generateExample(prompt);
         log.info(
-            "Schema example generation completed: responseLength={}, responsePreview={}, elapsedMs={}",
-            LogSanitizer.length(response),
-            LogSanitizer.preview(response),
-            LogSanitizer.elapsedMillis(startNanos)
+            "Schema example generation completed: responseLength={}, responseFingerprint={}, elapsedMs={}",
+            LogMetadata.length(response),
+            LogMetadata.fingerprint(response),
+            LogMetadata.elapsedMillis(startNanos)
         );
-        if (log.isDebugEnabled()) {
-            log.debug("Schema example generation response: {}", response);
-        }
         return response;
     }
 

@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.observability;
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.AiProfileContext;
 import io.github.vfedoriv.graphrag.service.AiProfileService;
 import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
@@ -121,16 +121,16 @@ public class AiObservationService {
         }
         if (settings().contentCaptureEnabled()) {
             return Map.of(
-                prefix + ".length", String.valueOf(LogSanitizer.length(value)),
+                prefix + ".length", String.valueOf(LogMetadata.length(value)),
                 prefix + ".sha256", sha256(value),
-                prefix + ".preview", truncate(LogSanitizer.preview(value)),
+                prefix + ".preview", truncate(LogMetadata.contentPreview(value)),
                 prefix + ".content", truncate(value)
             );
         }
         return Map.of(
-            prefix + ".length", String.valueOf(LogSanitizer.length(value)),
+            prefix + ".length", String.valueOf(LogMetadata.length(value)),
             prefix + ".sha256", sha256(value),
-            prefix + ".preview", truncate(LogSanitizer.preview(value))
+            prefix + ".preview", truncate(LogMetadata.contentPreview(value))
         );
     }
 
@@ -438,12 +438,12 @@ public class AiObservationService {
     }
 
     private String langfuseIoValue(String value) {
-        int length = LogSanitizer.length(value);
+        int length = LogMetadata.length(value);
         String hash = value == null ? AiObservationAttributes.UNKNOWN : sha256(value);
         if (settings().inputOutputContentEnabled()) {
             return truncateInputOutput(value);
         }
-        String preview = LogSanitizer.preview(value);
+        String preview = LogMetadata.contentPreview(value);
         return truncateInputOutput(preview + "\n\nmetadata: length=" + length + ", sha256=" + hash);
     }
 

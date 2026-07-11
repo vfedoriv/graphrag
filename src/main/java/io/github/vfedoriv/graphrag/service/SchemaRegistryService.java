@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
@@ -272,7 +273,7 @@ public class SchemaRegistryService {
             byte[] hash = digest.digest(value.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {
-            log.error("SHA-256 digest algorithm is unavailable", e);
+            log.error("SHA-256 digest algorithm is unavailable: exceptionType={}", LogMetadata.exceptionType(e));
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }

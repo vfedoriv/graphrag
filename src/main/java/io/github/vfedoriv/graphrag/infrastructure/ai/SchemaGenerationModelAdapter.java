@@ -4,7 +4,7 @@ import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.data.document.Document;
 import io.github.vfedoriv.graphrag.graph.LLMGraphTransformerExt;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
@@ -48,7 +48,7 @@ public final class SchemaGenerationModelAdapter {
             try {
                 ChatResponse response = requireModel().call(new Prompt(prompt));
                 String text = responseText(response);
-                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogSanitizer.length(text)));
+                observation.highCardinalityAttribute("ai.response.length", String.valueOf(LogMetadata.length(text)));
                 observation.highCardinalityAttributes(observationService.langfuseOutputAttributes(text));
                 observation.success(AiTokenUsage.fromResponse(response));
                 return text;

@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.error;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         MethodArgumentNotValidException ex,
         HttpServletRequest request
     ) {
-        log.error("Validation failed at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Validation failed at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Validation failed", request.getRequestURI());
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     public ProblemDetail handleBindException(BindException ex, HttpServletRequest request) {
-        log.error("Bind error at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Bind error at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Invalid request", request.getRequestURI());
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
-        log.error("Constraint violation at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Constraint violation at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Constraint violation", request.getRequestURI());
         detail.setProperty(
             "errors",
@@ -64,13 +64,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex, HttpServletRequest request) {
-        log.error("Maximum upload size exceeded at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Maximum upload size exceeded at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.CONTENT_TOO_LARGE, "Maximum upload size exceeded", request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
-        log.error("Illegal argument at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Illegal argument at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
         GraphExtractionValidationException ex,
         HttpServletRequest request
     ) {
-        log.error("Graph extraction validation failed at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Graph extraction validation failed at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
         ProcessingOptionsValidationException ex,
         HttpServletRequest request
     ) {
-        log.error("Processing options validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
+        log.error("Processing options validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size());
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());
         return detail;
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
         String detailMessage = ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null
             ? ex.getMostSpecificCause().getMessage()
             : ex.getMessage();
-        log.error("Request conversion error at {}: {}", request.getRequestURI(), detailMessage, ex);
+        log.error("Request conversion error at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(
             HttpStatus.BAD_REQUEST,
             "Invalid request payload: " + detailMessage,
@@ -109,14 +109,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnhandled(Exception ex, HttpServletRequest request) {
-        log.error("Unhandled error at {}", request.getRequestURI(), ex);
+        log.error("Unhandled error at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         String message = ex.getMessage() == null || ex.getMessage().isBlank() ? "Unexpected error" : ex.getMessage();
         return baseProblem(HttpStatus.INTERNAL_SERVER_ERROR, message, request.getRequestURI());
     }
 
     @ExceptionHandler(SchemaValidationException.class)
     public ProblemDetail handleSchemaValidation(SchemaValidationException ex, HttpServletRequest request) {
-        log.error("Schema validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size(), ex);
+        log.error("Schema validation failed at {}: errorCount={}", request.getRequestURI(), ex.getErrors().size());
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, "Schema validation failed", request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());
         return detail;
@@ -124,13 +124,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
-        log.error("Resource not found at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Resource not found at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex, HttpServletRequest request) {
-        log.error("Conflict at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+        log.error("Conflict at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
@@ -150,13 +150,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QueryRejectedException.class)
     public ProblemDetail handleQueryRejected(QueryRejectedException ex, HttpServletRequest request) {
-        String errorSummary = LogSanitizer.preview(String.join(" | ", ex.getErrors()));
         log.error(
-            "Query rejected at {}: errorCount={}, validationErrors={}",
+            "Query rejected at {}: errorCount={}",
             request.getRequestURI(),
-            ex.getErrors().size(),
-            errorSummary,
-            ex
+            ex.getErrors().size()
         );
         ProblemDetail detail = baseProblem(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
         detail.setProperty("errors", ex.getErrors());

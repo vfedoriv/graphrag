@@ -59,7 +59,7 @@ class LLMGraphTransformerExtTest {
     }
 
     @Test
-    void transform_preservesNodeAndEdgeProperties(CapturedOutput output) {
+    void transform_preservesNodeAndEdgePropertiesWithoutLoggingModelContent(CapturedOutput output) {
         String payload = """
             [
               {
@@ -95,12 +95,11 @@ class LLMGraphTransformerExtTest {
         GraphEdge edge = graph.relationships().stream().findFirst().orElseThrow();
         assertThat(edge.properties()).containsEntry("description", "Counterparty relationship");
         assertThat(edge.properties()).containsEntry("role", "supplier");
-        assertThat(output).contains("LLM graph transformer raw response attempt 1");
-        assertThat(output).contains("\"head_properties\": {\"description\": \"Contract entity\", \"key\": \"contractId\", \"contractId\": \"C-1\", \"tags\": \"msa\"}");
-        assertThat(output).contains("LLM graph transformer parsed response attempt 1");
-        assertThat(output).contains("headProperties={");
-        assertThat(output).contains("relationProperties={");
-        assertThat(output).contains("nonEmpty=true");
+        assertThat(output)
+            .contains("LLM graph transformer raw response received")
+            .contains("responseFingerprint=sha256:")
+            .contains("LLM graph transformer parsed response")
+            .doesNotContain("Contract A", "Acme Corp", "Counterparty relationship", "C-1", "msa");
     }
 
     @Test

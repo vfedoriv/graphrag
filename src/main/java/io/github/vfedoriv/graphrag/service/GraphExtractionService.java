@@ -8,7 +8,7 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -132,10 +132,10 @@ public class GraphExtractionService {
                     );
                 } catch (Exception cleanupEx) {
                     log.error(
-                        "Cleanup failed after successful extraction: runId={}, documentId={}, message={}",
+                        "Cleanup failed after successful extraction: runId={}, documentId={}, exceptionType={}",
                         run.getId(),
                         document.getId(),
-                        cleanupEx.getMessage(),
+                        LogMetadata.exceptionType(cleanupEx),
                         cleanupEx
                     );
                 }
@@ -148,7 +148,7 @@ public class GraphExtractionService {
                     cleanupResult.deletedRuns(),
                     cleanupResult.deletedRelationships(),
                     cleanupResult.deletedObsoleteExtractedNodes(),
-                    LogSanitizer.elapsedMillis(startNanos)
+                    LogMetadata.elapsedMillis(startNanos)
                 );
                 workflow.highCardinalityAttribute("ai.graph.deleted_runs", String.valueOf(cleanupResult.deletedRuns()));
                 workflow.highCardinalityAttribute("ai.graph.deleted_relationships", String.valueOf(cleanupResult.deletedRelationships()));
@@ -160,11 +160,11 @@ public class GraphExtractionService {
                 run.setCompletedAt(Instant.now());
                 extractionRunRepository.save(run);
                 log.error(
-                    "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, message={}",
+                    "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, exceptionType={}",
                     run.getId(),
                     document.getId(),
-                    LogSanitizer.elapsedMillis(startNanos),
-                    ex.getMessage(),
+                    LogMetadata.elapsedMillis(startNanos),
+                    LogMetadata.exceptionType(ex),
                     ex
                 );
                 throw ex;

@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.graph;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.List;
@@ -129,22 +129,21 @@ public class GraphExtractionValidationService {
 
     private void logDroppedNode(String schemaName, GraphExtractionResult.ExtractedNode node, String reason) {
         log.warn(
-            "Dropped extracted node: schemaName={}, reason={}, label={}, propertyNames={}",
+            "Dropped extracted node: schemaName={}, reason={}, propertyCount={}, propertyNames={}",
             schemaName,
             reason,
-            LogSanitizer.preview(node.label()),
+            node.properties() == null ? 0 : node.properties().size(),
             GraphExtractionSupport.sanitizedPropertyNames(node.properties())
         );
     }
 
     private void logDroppedRelationship(String schemaName, GraphExtractionResult.ExtractedRelationship relationship, String reason) {
         log.warn(
-            "Dropped extracted relationship: schemaName={}, reason={}, triple={}, fromKeyNames={}, toKeyNames={}",
+            "Dropped extracted relationship: schemaName={}, reason={}, fromKeyCount={}, toKeyCount={}",
             schemaName,
             reason,
-            LogSanitizer.preview(GraphExtractionSupport.relationshipTriple(relationship.type(), relationship.fromLabel(), relationship.toLabel())),
-            GraphExtractionSupport.sanitizedPropertyNames(relationship.fromKey()),
-            GraphExtractionSupport.sanitizedPropertyNames(relationship.toKey())
+            relationship.fromKey() == null ? 0 : relationship.fromKey().size(),
+            relationship.toKey() == null ? 0 : relationship.toKey().size()
         );
     }
 
@@ -178,11 +177,11 @@ public class GraphExtractionValidationService {
 
     private void logNodeRepair(String schemaName, String label, String keyName, Object repairedValue) {
         log.warn(
-            "Repaired extracted node key: schemaName={}, reason=node_key_repaired, label={}, keyName={}, valuePreview={}",
+            "Repaired extracted node key: schemaName={}, reason=node_key_repaired, keyNamePresent={}, valueLength={}, valueFingerprint={}",
             schemaName,
-            LogSanitizer.preview(label),
-            LogSanitizer.preview(keyName),
-            LogSanitizer.preview(String.valueOf(repairedValue))
+            keyName != null && !keyName.isBlank(),
+            LogMetadata.length(String.valueOf(repairedValue)),
+            LogMetadata.fingerprint(String.valueOf(repairedValue))
         );
     }
 
@@ -195,25 +194,25 @@ public class GraphExtractionValidationService {
         Object repairedValue
     ) {
         log.warn(
-            "Repaired relationship endpoint key: schemaName={}, reason=endpoint_key_repaired, type={}, endpoint={}, label={}, keyName={}, valuePreview={}",
+            "Repaired relationship endpoint key: schemaName={}, reason=endpoint_key_repaired, endpoint={}, keyNamePresent={}, valueLength={}, valueFingerprint={}",
             schemaName,
-            LogSanitizer.preview(relationshipType),
             endpoint,
-            LogSanitizer.preview(label),
-            LogSanitizer.preview(keyName),
-            LogSanitizer.preview(String.valueOf(repairedValue))
+            keyName != null && !keyName.isBlank(),
+            LogMetadata.length(String.valueOf(repairedValue)),
+            LogMetadata.fingerprint(String.valueOf(repairedValue))
         );
     }
 
     private void logPayload(GraphExtractionResult result) {
         try {
             String payload = objectMapper.writeValueAsString(result);
-            log.info("Graph extraction payload before validation: length={}, preview={}", payload.length(), LogSanitizer.preview(payload));
-            if (log.isDebugEnabled()) {
-                log.debug("Graph extraction payload before validation: {}", payload);
-            }
+            log.info(
+                "Graph extraction payload before validation: length={}, fingerprint={}",
+                payload.length(),
+                LogMetadata.fingerprint(payload)
+            );
         } catch (Exception ex) {
-            log.error("Failed to serialize graph extraction payload for logging: {}", ex.getMessage(), ex);
+            log.error("Failed to serialize graph extraction payload for logging: exceptionType={}", LogMetadata.exceptionType(ex));
         }
     }
 }

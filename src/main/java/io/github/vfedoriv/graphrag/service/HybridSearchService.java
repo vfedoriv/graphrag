@@ -9,7 +9,7 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.logging.LogSanitizer;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -81,7 +81,7 @@ public class HybridSearchService {
         log.info(
             "Hybrid search starting: knowledgeBaseId={}, queryLength={}, topK={}, candidateCount={}, graphDepth={}, includeChunkText={}",
             knowledgeBaseId,
-            LogSanitizer.length(request.query()),
+            LogMetadata.length(request.query()),
             topK,
             candidateCount,
             graphDepth,
@@ -122,7 +122,7 @@ public class HybridSearchService {
             includeChunkText,
             hits,
             hits.size(),
-            LogSanitizer.elapsedMillis(startNanos)
+            LogMetadata.elapsedMillis(startNanos)
         );
         log.info(
             "Hybrid search completed: knowledgeBaseId={}, hitCount={}, executionTimeMs={}",
@@ -148,7 +148,7 @@ public class HybridSearchService {
             includeChunkText,
             List.of(),
             0,
-            LogSanitizer.elapsedMillis(startNanos)
+            LogMetadata.elapsedMillis(startNanos)
         );
         log.info("Hybrid search completed: knowledgeBaseId={}, hitCount=0, executionTimeMs={}",
             knowledgeBaseId, response.executionTimeMs());
