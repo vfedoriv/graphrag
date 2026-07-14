@@ -17,6 +17,8 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
 import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
@@ -25,6 +27,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.service.SchemaDiscoveryService;
+import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ResponseStatus;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -37,6 +41,43 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SchemaControllerTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @Test
+    void discoverSchemaDelegatesJsonSourcesWithoutChangingGenerationContract() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+        SchemaDiscoveryService discoveryService = Mockito.mock(SchemaDiscoveryService.class);
+        SchemaDiscoveryRequest request = new SchemaDiscoveryRequest(List.of("document-1"),
+            List.of(new SchemaDiscoveryRequest.TextSource("sample", "text")), null,
+            SchemaDiscoveryRequest.DiscoveryGuidance.empty());
+        SchemaDiscoveryResponse expected = new SchemaDiscoveryResponse(ResponseStatus.COMPLETED, List.of(), List.of(),
+            List.of(), List.of(), OBJECT_MAPPER.createObjectNode(), null);
+        when(discoveryService.discover("kb-01", request, List.of())).thenReturn(expected);
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService, discoveryService);
+
+        assertThat(controller.discoverSchema("kb-01", request)).isSameAs(expected);
+        verify(discoveryService).discover("kb-01", request, List.of());
+    }
+
+    @Test
+    void discoverSchemaFromFilesDelegatesMixedMetadataAndFiles() {
+        SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
+        SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
+        DocumentParsingService parsingService = Mockito.mock(DocumentParsingService.class);
+        SchemaDiscoveryService discoveryService = Mockito.mock(SchemaDiscoveryService.class);
+        SchemaDiscoveryRequest request = new SchemaDiscoveryRequest(List.of("document-1"), List.of(), null,
+            SchemaDiscoveryRequest.DiscoveryGuidance.empty());
+        MockMultipartFile first = new MockMultipartFile("files", "first.txt", "text/plain", "first".getBytes());
+        MockMultipartFile second = new MockMultipartFile("files", "second.txt", "text/plain", "second".getBytes());
+        SchemaDiscoveryResponse expected = new SchemaDiscoveryResponse(ResponseStatus.PARTIAL, List.of(), List.of(),
+            List.of(), List.of(), OBJECT_MAPPER.createObjectNode(), null);
+        when(discoveryService.discover("kb-01", request, List.of(first, second))).thenReturn(expected);
+        SchemaController controller = new SchemaController(registryService, generationService, parsingService, discoveryService);
+
+        assertThat(controller.discoverSchemaFromFiles("kb-01", request, List.of(first, second))).isSameAs(expected);
+        verify(discoveryService).discover("kb-01", request, List.of(first, second));
+    }
 
     @Test
     void generateSchemaReturnsJsonContent() {

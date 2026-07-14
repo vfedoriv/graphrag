@@ -28853,7 +28853,7 @@
       "label": "DiscoveryContracts",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L11",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts",
       "community": 695,
@@ -28863,7 +28863,7 @@
       "label": ".DiscoveryContracts()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L17",
+      "source_location": "L15",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_discoverycontracts",
       "community": 695,
@@ -28873,7 +28873,7 @@
       "label": "FailureCategory()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L34",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_failurecategory",
       "community": 695,
@@ -28883,7 +28883,7 @@
       "label": "retryable()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L38",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_retryable",
       "community": 90,
@@ -28893,7 +28893,7 @@
       "label": ".identity()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L90",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_identity",
       "community": 695,
@@ -28903,7 +28903,7 @@
       "label": "CandidateKind",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L90",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_discovery_discoverycontracts_java_candidatekind",
       "community": 695,
@@ -28913,7 +28913,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L90",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_discovery_discoverycontracts_java_string",
       "community": 695,
@@ -28923,7 +28923,7 @@
       "label": ".orderedOrigins()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L102",
+      "source_location": "L100",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_orderedorigins",
       "community": 695,
@@ -28933,7 +28933,7 @@
       "label": "Set",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L102",
+      "source_location": "L100",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_discovery_discoverycontracts_java_set",
       "community": 695,
@@ -28943,7 +28943,7 @@
       "label": "EvidenceOrigin",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L102",
+      "source_location": "L100",
       "_origin": "ast",
       "id": "evidenceorigin",
       "community": 695,
@@ -28953,7 +28953,7 @@
       "label": ".normalizeLabel()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L110",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_normalizelabel",
       "community": 695,
@@ -28963,7 +28963,7 @@
       "label": ".normalizeProperty()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L121",
+      "source_location": "L119",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_normalizeproperty",
       "community": 695,
@@ -28973,7 +28973,7 @@
       "label": ".normalizeRelationship()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L126",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_normalizerelationship",
       "community": 695,
@@ -28983,7 +28983,7 @@
       "label": ".words()",
       "file_type": "code",
       "source_file": "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java",
-      "source_location": "L130",
+      "source_location": "L128",
       "_origin": "ast",
       "id": "discovery_discoverycontracts_discoverycontracts_words",
       "community": 695,
@@ -30246,7 +30246,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "domain_aiprofilenode_aiprofilenode_getbaseurl",
-      "community": 61,
+      "community": 17,
       "norm_label": ".getbaseurl()"
     },
     {
@@ -30286,7 +30286,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "domain_aiprofilenode_aiprofilenode_getchatmodel",
-      "community": 17,
+      "community": 61,
       "norm_label": ".getchatmodel()"
     },
     {
@@ -32456,7 +32456,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "domain_schemadefinitionnode_schemadefinitionnode_getsourcetype",
-      "community": 86,
+      "community": 40,
       "norm_label": ".getsourcetype()"
     },
     {
@@ -33936,7 +33936,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "embeddingspaceconflictexception",
-      "community": 33,
+      "community": 48,
       "norm_label": "embeddingspaceconflictexception"
     },
     {
@@ -36786,7 +36786,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "logging_logmetadata_logmetadata_elapsedmillis",
-      "community": 72,
+      "community": 95,
       "norm_label": ".elapsedmillis()"
     },
     {
@@ -39356,7 +39356,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "service_activeschemaresolver",
-      "community": 750,
+      "community": 364,
       "norm_label": "activeschemaresolver.java"
     },
     {
@@ -39366,7 +39366,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "service_activeschemaresolver_activeschemaresolver",
-      "community": 750,
+      "community": 364,
       "norm_label": "activeschemaresolver"
     },
     {
@@ -39376,7 +39376,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "service_activeschemaresolver_activeschemaresolver_activeschemaresolver",
-      "community": 750,
+      "community": 364,
       "norm_label": ".activeschemaresolver()"
     },
     {
@@ -39386,7 +39386,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_activeschemaresolver_java_knowledgebaserepository",
-      "community": 750,
+      "community": 364,
       "norm_label": "knowledgebaserepository"
     },
     {
@@ -39396,7 +39396,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_activeschemaresolver_java_schemadefinitionrepository",
-      "community": 750,
+      "community": 364,
       "norm_label": "schemadefinitionrepository"
     },
     {
@@ -39406,7 +39406,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_activeschemaresolver_java_schemaparser",
-      "community": 750,
+      "community": 364,
       "norm_label": "schemaparser"
     },
     {
@@ -39416,7 +39416,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "service_activeschemaresolver_activeschemaresolver_resolve",
-      "community": 248,
+      "community": 364,
       "norm_label": ".resolve()"
     },
     {
@@ -39426,7 +39426,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_activeschemaresolver_java_string",
-      "community": 248,
+      "community": 364,
       "norm_label": "string"
     },
     {
@@ -39436,7 +39436,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "activeschemacontext",
-      "community": 248,
+      "community": 364,
       "norm_label": "activeschemacontext"
     },
     {
@@ -44566,7 +44566,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "service_langchain4jschemagenerationservice_langchain4jschemagenerationservice",
-      "community": 72,
+      "community": 95,
       "norm_label": "langchain4jschemagenerationservice"
     },
     {
@@ -44576,7 +44576,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "schemagenerationservice",
-      "community": 72,
+      "community": 95,
       "norm_label": "schemagenerationservice"
     },
     {
@@ -44676,7 +44676,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "service_langchain4jschemagenerationservice_langchain4jschemagenerationservice_generate",
-      "community": 72,
+      "community": 95,
       "norm_label": ".generate()"
     },
     {
@@ -44686,7 +44686,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_langchain4jschemagenerationservice_java_string",
-      "community": 72,
+      "community": 95,
       "norm_label": "string"
     },
     {
@@ -44706,7 +44706,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_langchain4jschemagenerationservice_java_override",
-      "community": 72,
+      "community": 95,
       "norm_label": "override"
     },
     {
@@ -44716,7 +44716,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "service_langchain4jschemagenerationservice_langchain4jschemagenerationservice_generateexample",
-      "community": 72,
+      "community": 95,
       "norm_label": ".generateexample()"
     },
     {
@@ -44726,7 +44726,7 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "service_langchain4jschemagenerationservice_langchain4jschemagenerationservice_inferschema",
-      "community": 72,
+      "community": 95,
       "norm_label": ".inferschema()"
     },
     {
@@ -53366,7 +53366,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "service_aiprofileservicetest_aiprofileservicetest_seedsdefaultprofilefromstartuppropertiesonlywhenmissing",
-      "community": 48,
+      "community": 17,
       "norm_label": ".seedsdefaultprofilefromstartuppropertiesonlywhenmissing()"
     },
     {
@@ -121174,9 +121174,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/discovery/CandidateExtractionModelAdapterTest.java",
       "source_location": "L22",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "discovery_candidateextractionmodeladaptertest",
-      "target": "openaichatoptions"
+      "target": "openaichatoptions",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -178501,9 +178501,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/discovery/CandidateExtractionModelAdapterTest.java",
       "source_location": "L26",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "discovery_candidateextractionmodeladaptertest_candidateextractionmodeladaptertest",
-      "target": "discovery_candidateextractionmodeladaptertest_candidateextractionmodeladaptertest_selectsprovidernativeoutputonlyforopenaimodel"
+      "target": "discovery_candidateextractionmodeladaptertest_candidateextractionmodeladaptertest_selectsprovidernativeoutputonlyforopenaimodel",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -178512,9 +178512,9 @@
       "source_location": "L26",
       "weight": 1.0,
       "context": "attribute",
-      "confidence_score": 1.0,
       "source": "discovery_candidateextractionmodeladaptertest_candidateextractionmodeladaptertest_selectsprovidernativeoutputonlyforopenaimodel",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_discovery_candidateextractionmodeladaptertest_java_test"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_discovery_candidateextractionmodeladaptertest_java_test",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -190223,9 +190223,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L31",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_capturedoutput"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_capturedoutput",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -190266,9 +190266,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L98",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_classifiestimeoutandoverloadwhilekeepingsuccessfulsources"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_classifiestimeoutandoverloadwhilekeepingsuccessfulsources",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -190276,9 +190276,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L128",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_neverexceedsconfiguredsourceconcurrency"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_neverexceedsconfiguredsourceconcurrency",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -190286,9 +190286,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L155",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_normallogsexcludealldiscoverycontent"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_normallogsexcludealldiscoverycontent",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -190391,9 +190391,9 @@
       "source_location": "L98",
       "weight": 1.0,
       "context": "attribute",
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_classifiestimeoutandoverloadwhilekeepingsuccessfulsources",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -190402,9 +190402,9 @@
       "source_location": "L128",
       "weight": 1.0,
       "context": "attribute",
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_neverexceedsconfiguredsourceconcurrency",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -190413,9 +190413,9 @@
       "source_location": "L155",
       "weight": 1.0,
       "context": "attribute",
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_normallogsexcludealldiscoverycontent",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_test",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -190457,9 +190457,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L103",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_classifiestimeoutandoverloadwhilekeepingsuccessfulsources",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_request"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_request",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -190468,9 +190468,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L100",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_classifiestimeoutandoverloadwhilekeepingsuccessfulsources",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -190479,9 +190479,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L131",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_neverexceedsconfiguredsourceconcurrency",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_request"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_request",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -190490,9 +190490,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L130",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_neverexceedsconfiguredsourceconcurrency",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -190501,9 +190501,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/service/SchemaDiscoveryServiceTest.java",
       "source_location": "L164",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_normallogsexcludealldiscoverycontent",
-      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source"
+      "target": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_source",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -190512,9 +190512,9 @@
       "source_location": "L155",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "service_schemadiscoveryservicetest_schemadiscoveryservicetest_normallogsexcludealldiscoverycontent",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_capturedoutput"
+      "target": "src_test_java_io_github_vfedoriv_graphrag_service_schemadiscoveryservicetest_java_capturedoutput",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",

@@ -59,7 +59,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 
 | Controller | Responsibility |
 |---|---|
-| `SchemaController` | CRUD, generation, example generation, validation, knowledge-base schema listing, and activation of JSON schemas |
+| `SchemaController` | CRUD, generation, review-only multi-source discovery, example generation, validation, knowledge-base schema listing, and activation of JSON schemas |
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, list, replace, delete, chunk retrieval, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
@@ -78,6 +78,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
 - **`AiObservationService`** — AI workflow spans, model call metrics, token counters, and privacy-controlled content metadata.
 - **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides, restart lifecycle metadata, live logging control, expanded configuration catalog, and typed live accessors.
+- **`SchemaDiscoveryService`** — bounded owned-document/text/file analysis using the active knowledge-base AI profile, deterministic conflict-aware aggregation, and a stateless review-only schema projection.
 - **`AiProfileService`** — OpenAI-compatible profile CRUD, default profile seeding from `app.model.*`, API-key masking, and profile cache invalidation.
 - **`AiRuntimeModelFactory`** — profile/revision-scoped Spring AI OpenAI chat and embedding model creation.
 

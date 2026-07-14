@@ -52,6 +52,16 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.extraction.max-entities-per-chunk", "extraction", appProperties.extraction().maxEntitiesPerChunk(), 1);
         addInt(map, "app.extraction.max-relationships-per-chunk", "extraction", appProperties.extraction().maxRelationshipsPerChunk(), 1);
         addInt(map, "app.extraction.max-retries", "extraction", appProperties.extraction().maxRetries(), 0);
+        addInt(map, "app.schema-discovery.max-sources", "schema-discovery", envInt("app.schema-discovery.max-sources", 12), 1);
+        addInt(map, "app.schema-discovery.max-source-bytes", "schema-discovery", envInt("app.schema-discovery.max-source-bytes", 5242880), 1);
+        addInt(map, "app.schema-discovery.max-total-bytes", "schema-discovery", envInt("app.schema-discovery.max-total-bytes", 20971520), 1);
+        addInt(map, "app.schema-discovery.max-source-characters", "schema-discovery", envInt("app.schema-discovery.max-source-characters", 200000), 1);
+        addInt(map, "app.schema-discovery.max-total-characters", "schema-discovery", envInt("app.schema-discovery.max-total-characters", 600000), 1);
+        addInt(map, "app.schema-discovery.chunk-characters", "schema-discovery", envInt("app.schema-discovery.chunk-characters", 12000), 1);
+        addInt(map, "app.schema-discovery.max-chunks-per-source", "schema-discovery", envInt("app.schema-discovery.max-chunks-per-source", 20), 1);
+        addInt(map, "app.schema-discovery.max-concurrency", "schema-discovery", envInt("app.schema-discovery.max-concurrency", 4), 1);
+        addInt(map, "app.schema-discovery.source-timeout-seconds", "schema-discovery", envInt("app.schema-discovery.source-timeout-seconds", 60), 1);
+        addInt(map, "app.schema-discovery.request-timeout-seconds", "schema-discovery", envInt("app.schema-discovery.request-timeout-seconds", 180), 1);
         addBool(map, "app.ai.observability.enabled", "ai-observability", observabilityProperties.enabled());
         addBool(map, "app.ai.observability.content-capture-enabled", "ai-observability", observabilityProperties.contentCaptureEnabled());
         addInt(map, "app.ai.observability.max-attribute-length", "ai-observability", observabilityProperties.maxAttributeLength(), 1);
@@ -157,6 +167,15 @@ public final class RuntimeSettingsCatalog {
 
     private String envOrDefault(String key, String defaultValue) {
         return environment == null ? defaultValue : environment.getProperty(key, defaultValue);
+    }
+
+    private int envInt(String key, int defaultValue) {
+        String value = envOrDefault(key, Integer.toString(defaultValue));
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Runtime setting " + key + " must be an integer", exception);
+        }
     }
 
     private String label(String key) {

@@ -38,6 +38,7 @@ Out of scope (current implementation):
   - Neo4j persistence,
   - activation per knowledge base,
   - schema generation from free text and uploaded files (optional save to registry).
+  - review-only multi-source schema discovery from owned documents, pasted text, and request-scoped files, with structured guidance, evidence, support counts, conflicts, and partial source outcomes.
 - Document ingestion:
   - multipart upload,
   - upload size limit: 100 MB,
@@ -93,6 +94,7 @@ io.github.vfedoriv.graphrag
 Primary runtime services:
 
 - `SchemaRegistryService`: parse/validate/store/activate schemas, with guarded inactive-schema update/delete.
+- `SchemaDiscoveryService`: bounded multi-source analysis using the knowledge-base AI profile, deterministic candidate aggregation, and review-only schema projection.
 - `DocumentUploadService`: upload metadata + binary storage + dedup, plus replace/delete cleanup.
 - `DocumentProcessingService`: parse -> chunk -> embed -> extract graph.
 - `GraphExtractionService`: LLM extraction + validation + write orchestration.
@@ -228,9 +230,9 @@ Domain-specific nodes/relationships are dynamic and schema-driven. Extracted gra
 
 On startup, the application seeds a default AI profile from `app.model.*` when no default exists. New knowledge bases are assigned that default profile. Profile API keys are write-only: create/update requests may supply or clear the secret, but read responses expose only configured/masked metadata.
 
-Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, and knowledge-base-scoped schema generation resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
+Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, knowledge-base-scoped schema generation, and multi-source schema discovery resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
 
-Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
+Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, schema-discovery source/size/chunk/concurrency/timeout limits, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
 
 The runtime settings list exposes `currentValue`, `defaultValue`, `activeValue`, `source`, and `lifecycleState`. Restart-required overrides report `pending-restart` while the saved desired value differs from the startup-active value and `active` after restart when the running default matches the persisted override. Profile-specific property files are resolved before the catalog is built, so listed defaults reflect active Spring profiles.
 
@@ -499,6 +501,8 @@ Base path: `/api/v1`
 - `POST /schemas/generate/from-file` (multipart form, part name: `file`)
 - `POST /schemas/generate/example`
 - `POST /schemas/generate/example/from-file` (multipart form, part name: `file`)
+- `POST /knowledge-bases/{knowledgeBaseId}/schemas/discover` (owned document IDs and pasted-text sources)
+- `POST /knowledge-bases/{knowledgeBaseId}/schemas/discover/from-files` (multipart `request` metadata plus repeated `files` parts)
 - `GET /schemas`
 - `GET /knowledge-bases/{knowledgeBaseId}/schemas`
 - `GET /schemas/{schemaId}`

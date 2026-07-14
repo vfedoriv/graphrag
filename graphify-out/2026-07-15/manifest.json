@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoveryContracts.java": {
-    "mtime": 1784064067.4256487,
-    "ast_hash": "ddaba13714a63ea52b4ddccc02b6f830",
+    "mtime": 1784062903.6389248,
+    "ast_hash": "953edbfe72bbe92a773bc94c384b6c91",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/discovery/DiscoverySourceAnalyzer.java": {

@@ -195,6 +195,22 @@ public class RuntimeSettingsService {
     }
 
     @Transactional(readOnly = true)
+    public DiscoverySettings discovery() {
+        return new DiscoverySettings(
+            integer("app.schema-discovery.max-sources"),
+            integer("app.schema-discovery.max-source-bytes"),
+            integer("app.schema-discovery.max-total-bytes"),
+            integer("app.schema-discovery.max-source-characters"),
+            integer("app.schema-discovery.max-total-characters"),
+            integer("app.schema-discovery.chunk-characters"),
+            integer("app.schema-discovery.max-chunks-per-source"),
+            integer("app.schema-discovery.max-concurrency"),
+            Duration.ofSeconds(integer("app.schema-discovery.source-timeout-seconds")),
+            Duration.ofSeconds(integer("app.schema-discovery.request-timeout-seconds"))
+        );
+    }
+
+    @Transactional(readOnly = true)
     public AiObservationSettings aiObservation() {
         return new AiObservationSettings(
             bool("app.ai.observability.enabled"),
@@ -313,6 +329,20 @@ public class RuntimeSettingsService {
     }
 
     public record ExtractionSettings(int maxEntitiesPerChunk, int maxRelationshipsPerChunk, int maxRetries) {
+    }
+
+    public record DiscoverySettings(
+        int maxSources,
+        int maxSourceBytes,
+        int maxTotalBytes,
+        int maxSourceCharacters,
+        int maxTotalCharacters,
+        int chunkCharacters,
+        int maxChunksPerSource,
+        int maxConcurrency,
+        Duration sourceTimeout,
+        Duration requestTimeout
+    ) {
     }
 
     public record AiObservationSettings(

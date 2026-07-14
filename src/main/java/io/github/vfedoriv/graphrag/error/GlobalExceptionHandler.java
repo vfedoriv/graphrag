@@ -166,6 +166,12 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.GATEWAY_TIMEOUT, "Query execution deadline exceeded", request.getRequestURI());
     }
 
+    @ExceptionHandler(SchemaDiscoveryFailedException.class)
+    public ProblemDetail handleSchemaDiscoveryFailed(SchemaDiscoveryFailedException ex, HttpServletRequest request) {
+        log.error("Schema discovery failed at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
+        return baseProblem(HttpStatus.BAD_GATEWAY, ex.getMessage(), request.getRequestURI());
+    }
+
     private ProblemDetail baseProblem(HttpStatus status, String title, String instancePath) {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, title);
         detail.setTitle(title);

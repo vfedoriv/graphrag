@@ -49,7 +49,7 @@ Use `./mvnw` instead of bare `mvn`.
 - Layering: Controllers -> Services -> Repositories -> Neo4j
 
 Main controllers:
-- `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, example generation, KB schema listing)
+- `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, review-only multi-source discovery, example generation, KB schema listing)
 - `KnowledgeBaseController`
 - `DocumentController` (upload/list/replace/delete/process/chunks)
 - `QueryController`
@@ -65,6 +65,7 @@ Key services:
 - `SchemaBootstrapService` (loads bootstrap schemas on startup)
 - `AiObservationService` (AI workflow spans, model call metrics, privacy-controlled content metadata)
 - `RuntimeSettingsService` (allowlisted runtime setting overrides, restart lifecycle metadata, live logging control + typed live accessors)
+- `SchemaDiscoveryService` (bounded owned-document/text/file analysis, active-profile source calls, deterministic conflict-aware aggregation, review-only projection)
 - `AiProfileService` (OpenAI-compatible AI profile CRUD, write-only API keys, default profile seeding)
 - `AiRuntimeModelFactory` (profile/revision-scoped Spring AI OpenAI chat and embedding clients)
 

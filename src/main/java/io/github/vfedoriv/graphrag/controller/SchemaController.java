@@ -13,12 +13,15 @@ import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
 import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaValidationResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.service.SchemaDiscoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -58,15 +62,59 @@ public class SchemaController {
     private final SchemaRegistryService schemaRegistryService;
     private final SchemaGenerationService schemaGenerationService;
     private final DocumentParsingService documentParsingService;
+    private final SchemaDiscoveryService schemaDiscoveryService;
+
+    @Autowired
+    public SchemaController(
+        SchemaRegistryService schemaRegistryService,
+        SchemaGenerationService schemaGenerationService,
+        DocumentParsingService documentParsingService,
+        SchemaDiscoveryService schemaDiscoveryService
+    ) {
+        this.schemaRegistryService = schemaRegistryService;
+        this.schemaGenerationService = schemaGenerationService;
+        this.documentParsingService = documentParsingService;
+        this.schemaDiscoveryService = schemaDiscoveryService;
+    }
 
     public SchemaController(
         SchemaRegistryService schemaRegistryService,
         SchemaGenerationService schemaGenerationService,
         DocumentParsingService documentParsingService
     ) {
-        this.schemaRegistryService = schemaRegistryService;
-        this.schemaGenerationService = schemaGenerationService;
-        this.documentParsingService = documentParsingService;
+        this(schemaRegistryService, schemaGenerationService, documentParsingService, null);
+    }
+
+    @PostMapping("/knowledge-bases/{knowledgeBaseId}/schemas/discover")
+    @Operation(summary = "Discover a schema from multiple sources", description = "Returns a review-only schema projection and evidence-backed candidates without persistence.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Discovery completed or partially completed"),
+        @ApiResponse(responseCode = "400", description = "Invalid guidance or source limits", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Knowledge base or owned document not found", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "502", description = "Every source analysis failed", content = @Content(schema = @Schema()))
+    })
+    public SchemaDiscoveryResponse discoverSchema(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Valid @RequestBody SchemaDiscoveryRequest request
+    ) {
+        return requireDiscoveryService().discover(knowledgeBaseId, request, List.of());
+    }
+
+    @PostMapping(path = "/knowledge-bases/{knowledgeBaseId}/schemas/discover/from-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Discover a schema from multiple files and metadata sources", description = "Analyzes request-scoped files alongside referenced documents and pasted text without persisting uploads.")
+    public SchemaDiscoveryResponse discoverSchemaFromFiles(
+        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
+        @Valid @RequestPart("request") SchemaDiscoveryRequest request,
+        @Parameter(description = "One or more request-scoped source files") @RequestPart("files") List<MultipartFile> files
+    ) {
+        return requireDiscoveryService().discover(knowledgeBaseId, request, files);
+    }
+
+    private SchemaDiscoveryService requireDiscoveryService() {
+        if (schemaDiscoveryService == null) {
+            throw new IllegalStateException("Schema discovery service is unavailable");
+        }
+        return schemaDiscoveryService;
     }
 
     @PostMapping("/schemas")
