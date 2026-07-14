@@ -9,6 +9,10 @@ public interface BinaryStorageService {
 
     URI store(String knowledgeBaseId, String documentId, String originalFilename, byte[] bytes) throws IOException;
 
+    URI storeDraftSource(
+        String knowledgeBaseId, String draftId, String sourceId, String originalFilename, byte[] bytes
+    ) throws IOException;
+
     InputStream read(URI contentUri) throws IOException;
 
     Path resolvePath(URI contentUri);

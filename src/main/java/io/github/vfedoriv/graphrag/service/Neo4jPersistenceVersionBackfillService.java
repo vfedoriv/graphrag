@@ -43,11 +43,29 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
             SET node.entityVersion = 0
             RETURN count(node) AS count
             """);
-        if (versionBackfilled > 0 || schemaBackfilled > 0) {
+        long draftBackfilled = executeCount("""
+            MATCH (node)
+            WHERE (
+                node:SchemaDraft OR
+                node:SchemaDraftSource OR
+                node:SchemaDraftSourceRevision OR
+                node:SchemaDraftAnalysisRun OR
+                node:SchemaDraftSourceResult OR
+                node:SchemaDraftAggregateRevision OR
+                node:SchemaDraftDecision OR
+                node:SchemaDraftConflict OR
+                node:SchemaDraftStorageMutation
+            )
+            AND node.persistenceVersion IS NULL
+            SET node.persistenceVersion = 0
+            RETURN count(node) AS count
+            """);
+        if (versionBackfilled > 0 || schemaBackfilled > 0 || draftBackfilled > 0) {
             log.info(
-                "Backfilled Neo4j persistence version metadata: versionNodes={}, schemaDefinitionNodes={}",
+                "Backfilled Neo4j persistence version metadata: versionNodes={}, schemaDefinitionNodes={}, schemaDraftNodes={}",
                 versionBackfilled,
-                schemaBackfilled
+                schemaBackfilled,
+                draftBackfilled
             );
         }
     }

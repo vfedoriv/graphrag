@@ -41,6 +41,10 @@ public class ProfileScopedAiClientResolver {
     }
 
     public ChatModel chatModel() {
+        ChatModel captured = AiProfileContext.capturedChatModel();
+        if (captured != null) {
+            return captured;
+        }
         String profileId = AiProfileContext.activeProfileId();
         AiRuntimeModelFactory factory = runtimeModelFactories.getIfAvailable();
         if (profileId != null && factory != null) {

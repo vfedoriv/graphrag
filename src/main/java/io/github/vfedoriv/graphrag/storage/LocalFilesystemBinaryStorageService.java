@@ -41,6 +41,28 @@ public class LocalFilesystemBinaryStorageService implements BinaryStorageService
     }
 
     @Override
+    public URI storeDraftSource(
+        String knowledgeBaseId, String draftId, String sourceId, String originalFilename, byte[] bytes
+    ) throws IOException {
+        Path draftPath = documentsRoot().resolve("drafts").resolve(knowledgeBaseId).resolve(draftId).normalize();
+        Files.createDirectories(draftPath);
+        String sanitizedFilename = sanitizeFilename(originalFilename);
+        Path target = draftPath.resolve(sourceId + "-" + sanitizedFilename).normalize();
+        if (!target.startsWith(draftPath)) {
+            throw new IOException("Invalid draft source storage path");
+        }
+        Files.write(target, bytes);
+        log.info(
+            "Draft source bytes stored: knowledgeBaseId={}, draftId={}, sourceId={}, bytes={}",
+            knowledgeBaseId,
+            draftId,
+            sourceId,
+            bytes == null ? 0 : bytes.length
+        );
+        return target.toUri();
+    }
+
+    @Override
     public InputStream read(URI contentUri) throws IOException {
         Path path = resolvePath(contentUri);
         log.info("Opening document content stream: uri={}, path={}", contentUri, path);

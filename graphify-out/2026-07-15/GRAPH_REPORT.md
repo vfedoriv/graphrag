@@ -1,11 +1,11 @@
 # Graph Report - graphrag  (2026-07-15)
 
 ## Corpus Check
-- 761 files · ~495,447 words
+- 761 files · ~495,440 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8588 nodes · 12607 edges · 765 communities (701 shown, 64 thin omitted)
+- 8588 nodes · 12607 edges · 764 communities (699 shown, 65 thin omitted)
 - Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1403 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -298,7 +298,6 @@
 - [[_COMMUNITY_Community 361|Community 361]]
 - [[_COMMUNITY_Community 362|Community 362]]
 - [[_COMMUNITY_Community 363|Community 363]]
-- [[_COMMUNITY_Community 364|Community 364]]
 - [[_COMMUNITY_Community 365|Community 365]]
 - [[_COMMUNITY_Community 366|Community 366]]
 - [[_COMMUNITY_Community 367|Community 367]]
@@ -724,7 +723,7 @@
 ## Hyperedges (group relationships)
 - **Agreement Scope** — documents_contract_sample_master_supply_agreement, documents_contract_sample_supply_obligations, documents_contract_sample_pricing [EXTRACTED 1.00]
 
-## Communities (765 total, 64 thin omitted)
+## Communities (764 total, 65 thin omitted)
 
 ### Community 0 - "Graph Extraction"
 Cohesion: 0.23
@@ -860,7 +859,7 @@ Nodes (15): Consumer, RuntimeSettingCodecs, RuntimeSettingLiveAppliers, RuntimeS
 
 ### Community 33 - "Embedding Search"
 Cohesion: 0.13
-Nodes (18): AiProfileService, AiProfileNode, AiProfileRepository, AiProfileResponse, AiRuntimeModelFactory, ApplicationArguments, AppProperties, Autowired (+10 more)
+Nodes (19): EmbeddingSpaceConflictException, AiProfileService, AiProfileNode, AiProfileRepository, AiProfileResponse, AiRuntimeModelFactory, ApplicationArguments, AppProperties (+11 more)
 
 ### Community 34 - "Document Processing"
 Cohesion: 0.25
@@ -887,7 +886,7 @@ Cohesion: 0.01
 Nodes (363): importMap, AGENTS.md, CLAUDE.md, .codex/settings.local.json, .codex/skills/openspec-apply-change/SKILL.md, .codex/skills/openspec-archive-change/SKILL.md, .codex/skills/openspec-explore/SKILL.md, .codex/skills/openspec-propose/SKILL.md (+355 more)
 
 ### Community 40 - "Schema Management"
-Cohesion: 0.29
+Cohesion: 0.32
 Nodes (6): SchemaRegistryService, List, SchemaDefinitionNode, SchemaSourceType, String, Transactional
 
 ### Community 41 - "Graph Extraction"
@@ -919,8 +918,8 @@ Cohesion: 0.17
 Nodes (11): EmbeddingSpaceMigrationService, AiProfileNode, AiProfileService, ApplicationArguments, EmbeddingSpace, EmbeddingSpaceIndexService, KnowledgeBaseNode, KnowledgeBaseRepository (+3 more)
 
 ### Community 48 - "Embedding Search"
-Cohesion: 0.23
-Nodes (9): EmbeddingSpaceConflictException, AiProfileServiceTest, AiProfileNode, AiProfileRepository, AiProfileService, AppProperties, Map, String (+1 more)
+Cohesion: 0.25
+Nodes (8): AiProfileServiceTest, AiProfileNode, AiProfileRepository, AiProfileService, AppProperties, Map, String, Test
 
 ### Community 49 - "Document Processing"
 Cohesion: 0.01
@@ -971,7 +970,7 @@ Cohesion: 0.25
 Nodes (8): ChatRequest, Document, LLMGraphTransformerExtTest, Override, CapturedOutput, ChatModel, String, Test
 
 ### Community 61 - "Embedding Search"
-Cohesion: 0.23
+Cohesion: 0.24
 Nodes (6): AiRuntimeModelFactory, AiProfileNode, AiProfileService, ChatModel, EmbeddingModel, String
 
 ### Community 62 - "Document Processing"
@@ -1011,8 +1010,8 @@ Cohesion: 0.42
 Nodes (5): HybridSearchService, List, Map, Object, String
 
 ### Community 72 - "Schema Management"
-Cohesion: 0.17
-Nodes (13): AiObservationService, AiRuntimeModelFactory, Autowired, ChatModel, GraphDocument, KnowledgeBaseService, List, ObjectMapper (+5 more)
+Cohesion: 0.14
+Nodes (17): SchemaGenerationService, LangChain4jSchemaGenerationService, AiObservationService, AiRuntimeModelFactory, Autowired, ChatModel, GraphDocument, KnowledgeBaseService (+9 more)
 
 ### Community 73 - "Query and Search"
 Cohesion: 0.24
@@ -1067,7 +1066,7 @@ Cohesion: 0.19
 Nodes (7): AutoCloseable, AiObservationScope, Map, Observation, Scope, String, Throwable
 
 ### Community 86 - "Schema Management"
-Cohesion: 0.17
+Cohesion: 0.16
 Nodes (5): SchemaDefinitionNode, Instant, Long, SchemaSourceType, String
 
 ### Community 87 - "Document Processing"
@@ -1101,10 +1100,6 @@ Nodes (34): MODIFIED Requirements, Requirement: Runtime setting updates are vali
 ### Community 94 - "Embedding Search"
 Cohesion: 0.27
 Nodes (8): AiModelOwnershipGuard, ApplicationArguments, ChatModel, EmbeddingModel, Environment, Map, Override, String
-
-### Community 95 - "Schema Management"
-Cohesion: 0.24
-Nodes (6): SchemaGenerationPromptFactory, SchemaGenerationService, LangChain4jSchemaGenerationService, String, Override, String
 
 ### Community 96 - "Document Processing"
 Cohesion: 0.29
@@ -1339,8 +1334,8 @@ Cohesion: 0.08
 Nodes (24): code, config, docs, infra, script, batch, java, json (+16 more)
 
 ### Community 248 - "Community 248"
-Cohesion: 0.25
-Nodes (5): SchemaRegistryIntegrationTest, Order, Long, String, Test
+Cohesion: 0.21
+Nodes (7): ActiveSchemaContext, SchemaRegistryIntegrationTest, Order, String, Long, String, Test
 
 ### Community 249 - "Community 249"
 Cohesion: 0.08
@@ -1801,10 +1796,6 @@ Nodes (9): batchFiles, batchImportData, AGENTS.md, CLAUDE.md, compose.yaml, mvnw
 ### Community 363 - "Community 363"
 Cohesion: 0.22
 Nodes (8): Add tests around exported attributes, not Langfuse UI behavior, Centralize Langfuse input/output propagation, Context, Decisions, Goals / Non-Goals, Preserve privacy configuration semantics, Risks / Trade-offs, Treat chat and embedding outputs differently
-
-### Community 364 - "Community 364"
-Cohesion: 0.31
-Nodes (6): ActiveSchemaContext, ActiveSchemaResolver, KnowledgeBaseRepository, SchemaDefinitionRepository, SchemaParser, String
 
 ### Community 365 - "Community 365"
 Cohesion: 0.22
@@ -3131,8 +3122,8 @@ Cohesion: 0.31
 Nodes (3): LangChain4jSchemaGenerationServiceTest, KnowledgeBaseService, Test
 
 ### Community 750 - "Community 750"
-Cohesion: 0.26
-Nodes (6): DiscoverySourcePreparerTest, empty(), NotFoundException, DiscoveryGuidance, BeforeEach, Test
+Cohesion: 0.17
+Nodes (10): DiscoverySourcePreparerTest, empty(), NotFoundException, ActiveSchemaResolver, DiscoveryGuidance, KnowledgeBaseRepository, SchemaDefinitionRepository, SchemaParser (+2 more)
 
 ### Community 751 - "Community 751"
 Cohesion: 0.30
@@ -3185,14 +3176,14 @@ Nodes (3): LangChain4jProviderModelUsageTest, Path, Test
 ## Knowledge Gaps
 - **4351 isolated node(s):** `PreToolUse`, `allow`, `primaryBuildTool`, `testFramework`, `database` (+4346 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **64 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **65 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `text()` connect `Schema Management` to `Document Processing`, `Document Processing`, `Community 294`, `Document Processing`, `Community 330`, `Query and Search`, `Document Processing`, `Graph Extraction`, `Document Processing`, `Project Components`, `API Controllers`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `SchemaDefinitionNode` connect `Schema Management` to `Community 248`, `Schema Management`, `Document Processing`, `Community 301`?**
+- **Why does `SchemaDefinitionNode` connect `Schema Management` to `Community 248`, `Document Processing`, `Community 301`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `DocumentUploadNode` connect `Document Processing` to `Graph Extraction`, `Document Processing`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._

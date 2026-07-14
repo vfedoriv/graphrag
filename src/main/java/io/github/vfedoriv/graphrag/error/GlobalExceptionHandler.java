@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 @RestControllerAdvice
 @Slf4j
@@ -132,6 +133,14 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleConflict(ConflictException ex, HttpServletRequest request) {
         log.error("Conflict at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ProblemDetail handleOptimisticLockingFailure(
+        OptimisticLockingFailureException ex, HttpServletRequest request
+    ) {
+        log.error("Optimistic locking conflict at {}: exceptionType={}", request.getRequestURI(), LogMetadata.exceptionType(ex));
+        return baseProblem(HttpStatus.CONFLICT, "Resource was concurrently modified", request.getRequestURI());
     }
 
     @ExceptionHandler(EmbeddingSpaceConflictException.class)

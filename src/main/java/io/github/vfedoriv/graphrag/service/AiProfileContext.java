@@ -1,16 +1,22 @@
 package io.github.vfedoriv.graphrag.service;
 
 import java.util.function.Supplier;
+import org.springframework.ai.chat.model.ChatModel;
 
 public final class AiProfileContext {
 
     private static final ThreadLocal<String> ACTIVE_PROFILE_ID = new ThreadLocal<>();
+    private static final ThreadLocal<ChatModel> CAPTURED_CHAT_MODEL = new ThreadLocal<>();
 
     private AiProfileContext() {
     }
 
     public static String activeProfileId() {
         return ACTIVE_PROFILE_ID.get();
+    }
+
+    public static ChatModel capturedChatModel() {
+        return CAPTURED_CHAT_MODEL.get();
     }
 
     public static <T> T withProfile(String profileId, Supplier<T> supplier) {
@@ -32,5 +38,19 @@ public final class AiProfileContext {
             runnable.run();
             return null;
         });
+    }
+
+    public static <T> T withCapturedChatModel(String profileId, ChatModel chatModel, Supplier<T> supplier) {
+        ChatModel previous = CAPTURED_CHAT_MODEL.get();
+        CAPTURED_CHAT_MODEL.set(chatModel);
+        try {
+            return withProfile(profileId, supplier);
+        } finally {
+            if (previous == null) {
+                CAPTURED_CHAT_MODEL.remove();
+            } else {
+                CAPTURED_CHAT_MODEL.set(previous);
+            }
+        }
     }
 }
