@@ -51,7 +51,7 @@ The system SHALL accept free-form additional instructions and typed generation g
 - **THEN** the system rejects the request before model invocation with field-specific validation errors
 
 ### Requirement: Each source produces typed evidence-backed candidates
-The system SHALL convert each successful source analysis into typed node, node-property, node-key, relationship, and relationship-property candidates rather than accepting a complete model-authored schema as the aggregate result.
+The system SHALL request each source's typed node, node-property, node-key, relationship, and relationship-property candidates through the provider-independent prompt-based structured-output contract, SHALL convert normal assistant content into the typed candidate container, and SHALL validate converted candidates before aggregation. The system SHALL NOT require provider-native JSON Schema support or interpret reasoning metadata as final candidate output.
 
 #### Scenario: Observed candidate is returned
 - **WHEN** a source analysis identifies a schema element supported by an analysis chunk
@@ -65,11 +65,16 @@ The system SHALL convert each successful source analysis into typed node, node-p
 
 #### Scenario: Provider-native structured output is unavailable
 - **WHEN** the active chat model does not support provider-native structured output
-- **THEN** the system uses the portable structured-output conversion contract
-- **AND** it validates the converted result before aggregation
+- **THEN** the system requests a prompt-formatted candidate object in normal assistant content and converts it through the typed structured-output converter
+- **AND** it validates the converted candidates before aggregation
+
+#### Scenario: Reasoning metadata accompanies a response
+- **WHEN** an OpenAI-compatible provider returns reasoning metadata in addition to or instead of normal assistant content
+- **THEN** the system does not interpret the reasoning metadata as candidate output
+- **AND** only valid normal assistant content may contribute candidates
 
 #### Scenario: Model output violates the candidate contract
-- **WHEN** a source model response cannot be converted or fails candidate validation
+- **WHEN** normal assistant content is missing, blank, cannot be converted, or fails candidate validation
 - **THEN** that source has a failed outcome with a privacy-safe error classification
 - **AND** invalid candidates from that source do not enter the aggregate
 

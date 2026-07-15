@@ -32,9 +32,8 @@ public class DiscoverySourceAnalyzer {
         List<Candidate> candidates = new ArrayList<>();
         List<AliasSuggestion> aliases = new ArrayList<>();
         for (PreparedDiscoverySource.AnalysisChunk chunk : source.chunks()) {
-            String nativePrompt = promptFactory.prompt(source, chunk, request, null);
             String portablePrompt = promptFactory.prompt(source, chunk, request, converter.getFormat());
-            CandidateExtractionResult result = modelAdapter.extract(nativePrompt, portablePrompt);
+            CandidateExtractionResult result = modelAdapter.extract(portablePrompt);
             candidates.addAll(toCandidates(source, chunk, result));
             aliases.addAll(result.aliasSuggestions());
         }

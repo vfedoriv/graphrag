@@ -12,8 +12,6 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,15 +27,12 @@ public class CandidateExtractionModelAdapter {
         this.observationService = observationService;
     }
 
-    public CandidateExtractionResult extract(String promptWithoutFormat, String portablePrompt) {
+    public CandidateExtractionResult extract(String portablePrompt) {
         ChatModel model = requireModel();
         BeanOutputConverter<CandidateExtractionResult> converter = new BeanOutputConverter<>(CandidateExtractionResult.class);
-        boolean providerNative = supportsProviderNative(model);
-        Prompt prompt = providerNative
-            ? new Prompt(promptWithoutFormat, nativeOptions(converter.getJsonSchema()))
-            : new Prompt(portablePrompt);
+        Prompt prompt = portablePrompt(model, portablePrompt);
         Map<String, String> attributes = new HashMap<>(observationService.contentAttributes("ai.prompt", prompt.getContents()));
-        attributes.put("ai.structured_output.mode", providerNative ? "provider-native" : "portable");
+        attributes.put("ai.structured_output.mode", "portable");
         attributes.putAll(observationService.langfuseInputAttributes(prompt.getContents()));
         try (AiModelCallObservation observation = observationService.startChatModelCall(
             AiObservationService.WORKFLOW_SCHEMA_DISCOVERY, null, attributes
@@ -60,18 +55,6 @@ public class CandidateExtractionModelAdapter {
         }
     }
 
-    boolean supportsProviderNative(ChatModel model) {
-        return model instanceof OpenAiChatModel;
-    }
-
-    private OpenAiChatOptions nativeOptions(String jsonSchema) {
-        OpenAiChatModel.ResponseFormat responseFormat = OpenAiChatModel.ResponseFormat.builder()
-            .type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA)
-            .jsonSchema(jsonSchema)
-            .build();
-        return OpenAiChatOptions.builder().responseFormat(responseFormat).outputSchema(jsonSchema).build();
-    }
-
     private ChatModel requireModel() {
         ChatModel model = clientResolver.chatModel();
         if (model == null) {
@@ -80,11 +63,22 @@ public class CandidateExtractionModelAdapter {
         return model;
     }
 
+    Prompt portablePrompt(ChatModel model, String content) {
+        return new Prompt(content);
+    }
+
     private String responseText(ChatResponse response) {
         if (response == null || response.getResult() == null) {
-            return "";
+            throw new IllegalArgumentException("Candidate model response is missing a result");
         }
         AssistantMessage message = response.getResult().getOutput();
-        return message == null || message.getText() == null ? "" : message.getText().trim();
+        if (message == null) {
+            throw new IllegalArgumentException("Candidate model response is missing an assistant message");
+        }
+        String content = message.getText() == null ? "" : message.getText().trim();
+        if (content.isBlank()) {
+            throw new IllegalArgumentException("Candidate model response has blank normal assistant content");
+        }
+        return content;
     }
 }

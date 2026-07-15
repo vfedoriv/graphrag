@@ -42,7 +42,7 @@ The system SHALL reuse a completed source-analysis result only when the draft so
 - **THEN** the prior source result is not reused for replacement content
 
 ### Requirement: Analysis persists incremental progress and supports retry
-The system SHALL persist each source outcome independently so interruption or partial failure does not discard completed source work.
+The system SHALL persist each source outcome independently so interruption or partial failure does not discard completed source work, and SHALL retain privacy-safe progress and failure diagnostics for a failed source.
 
 #### Scenario: All eligible sources succeed
 - **WHEN** every source in the analysis snapshot completes or is validly reused
@@ -67,6 +67,17 @@ The system SHALL persist each source outcome independently so interruption or pa
 - **WHEN** the application starts with a run still marked `RUNNING`
 - **THEN** the interrupted run is closed with a retryable interruption outcome
 - **AND** already completed source results remain eligible for reuse by retry
+
+#### Scenario: Prepared source fails during candidate analysis
+- **WHEN** source preparation produced analysis chunks and candidate model invocation or conversion later fails
+- **THEN** the failed source outcome records the number of prepared chunks rather than zero
+- **AND** the operational warning includes the exception type and a non-reversible exception-message fingerprint
+- **AND** the warning does not include source content, prompts, normal or reasoning model output, or candidate payloads
+
+#### Scenario: Source fails before preparation completes
+- **WHEN** a source fails before any prepared analysis chunks are available
+- **THEN** the failed source outcome records a chunk count of zero
+- **AND** it retains the privacy-safe failure category and retryability metadata
 
 ### Requirement: Only a matching draft snapshot becomes current
 The system SHALL promote a completed or partial aggregate as the draft's current analysis result only when the analyzed draft revision and source membership still match the current draft state.

@@ -154,8 +154,8 @@ class SchemaDiscoveryIntegrationTest {
         CandidateExtractionModelAdapter deterministicCandidateExtractionModelAdapter() {
             return new CandidateExtractionModelAdapter(null, null) {
                 @Override
-                public CandidateExtractionResult extract(String promptWithoutFormat, String portablePrompt) {
-                    String type = promptWithoutFormat.contains("date variant") ? "DATE" : "STRING";
+                public CandidateExtractionResult extract(String portablePrompt) {
+                    String type = portablePrompt.contains("date variant") ? "DATE" : "STRING";
                     return new CandidateExtractionResult(
                         List.of(new CandidateExtractionResult.NodeCandidate("Person", null, 0.9, "OBSERVED")),
                         List.of(new CandidateExtractionResult.NodePropertyCandidate("Person", "birthDate", type, false, 0.8, "OBSERVED")),

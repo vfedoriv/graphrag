@@ -645,6 +645,47 @@ class SchemaDraftLifecycleIntegrationTest {
     }
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void retainsPreparedChunkCountsAndLogsOnlySafeFailureMetadata(CapturedOutput output) throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"failure-progress\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        JsonNode preparedFailure = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"prepared\",\"text\":\"FAIL_CANDIDATE_PRIVATE_SOURCE\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        JsonNode preparationFailure = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"unavailable\",\"text\":\"PRIVATE_PREPARATION_SOURCE\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        neo4jClient.query("MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.contentUri = $contentUri")
+            .bind(preparationFailure.path("id").asText()).to("sourceId")
+            .bind("file:///private-missing-source.txt").to("contentUri").run();
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        JsonNode failed = awaitTerminal(draftId, accepted.path("runId").asText());
+
+        assertThat(failed.path("status").asText()).isEqualTo("FAILED");
+        JsonNode outcomes = failed.path("sourceOutcomes").path("content");
+        JsonNode preparedOutcome = java.util.stream.StreamSupport.stream(outcomes.spliterator(), false)
+            .filter(value -> preparedFailure.path("id").asText().equals(value.path("sourceId").asText()))
+            .findFirst().orElseThrow();
+        JsonNode preparationOutcome = java.util.stream.StreamSupport.stream(outcomes.spliterator(), false)
+            .filter(value -> preparationFailure.path("id").asText().equals(value.path("sourceId").asText()))
+            .findFirst().orElseThrow();
+        assertThat(preparedOutcome.path("chunkCount").asInt()).isEqualTo(1);
+        assertThat(preparationOutcome.path("chunkCount").asInt()).isZero();
+        assertThat(output.getAll()).contains(
+            "preparedChunkCount=1", "preparedChunkCount=0", "exceptionType=IllegalArgumentException",
+            "messageFingerprint=sha256:");
+        assertThat(output.getAll()).doesNotContain(
+            "FAIL_CANDIDATE_PRIVATE_SOURCE", "PRIVATE_PREPARATION_SOURCE",
+            "PRIVATE_CANDIDATE_RESPONSE");
+    }
+
+    @Test
     void readsLegacyGuidanceShapesAndCanonicalizesThemOnUpdate() throws Exception {
         List<String> legacyValues = List.of(
             "{\"domainDescription\":\"direct\",\"intendedQuestions\":[\"who\"]}",
@@ -791,7 +832,10 @@ class SchemaDraftLifecycleIntegrationTest {
         CandidateExtractionModelAdapter deterministicDraftCandidateExtractionModelAdapter() {
             return new CandidateExtractionModelAdapter(null, null) {
                 @Override
-                public CandidateExtractionResult extract(String promptWithoutFormat, String portablePrompt) {
+                public CandidateExtractionResult extract(String portablePrompt) {
+                    if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
+                        throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");
+                    }
                     if (BLOCK_MODEL.get()) {
                         MODEL_ENTERED.countDown();
                         try {

@@ -11,7 +11,7 @@ import java.util.TreeSet;
 public final class DiscoveryContracts {
 
     public static final String PROMPT_CONTRACT_REVISION = "schema-discovery-prompt-v1";
-    public static final String CANDIDATE_CONTRACT_REVISION = "schema-discovery-candidates-v1";
+    public static final String CANDIDATE_CONTRACT_REVISION = "schema-discovery-candidates-v2";
     public static final String LIMITS_REVISION = "schema-discovery-limits-v1";
 
     private DiscoveryContracts() {

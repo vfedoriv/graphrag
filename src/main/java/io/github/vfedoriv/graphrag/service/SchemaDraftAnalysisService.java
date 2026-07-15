@@ -30,6 +30,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
+import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -271,24 +272,27 @@ public class SchemaDraftAnalysisService {
         for (SourceSnapshot snapshot : snapshots) {
             SchemaDraftSourceNode source = sourceRepository.findByIdAndDraftId(snapshot.id(), run.getDraftId()).orElse(null);
             if (source == null || source.getRevision() != snapshot.revision() || !source.getSha256().equals(snapshot.sha256())) {
-                persistFailure(run, snapshot, FailureCategory.VALIDATION_ERROR, false, 0);
+                IllegalStateException exception = new IllegalStateException("Schema draft source snapshot is stale");
+                persistFailure(run, snapshot, FailureCategory.VALIDATION_ERROR, false, 0, exception);
                 continue;
             }
             String reuseKey = reuseKey(run, snapshot);
             java.util.Optional<SchemaDraftSourceResultNode> reusable = resultRepository
                 .findFirstByDraftIdAndReuseKeyAndStatusOrderByCompletedAtDesc(
                     run.getDraftId(), reuseKey, SchemaDraftSourceResultStatus.SUCCEEDED);
+            PreparedDiscoverySource prepared = null;
             try {
-                PreparedDiscoverySource prepared = sourceFactory.prepare(source);
+                prepared = sourceFactory.prepare(source);
+                PreparedDiscoverySource preparedForAnalysis = prepared;
                 if (reusable.isPresent()) {
                     StoredAnalysis stored = jsonSupport.read(reusable.get().getCandidatesJson(), StoredAnalysis.class);
                     DiscoverySourceAnalyzer.SourceAnalysis analysis = new DiscoverySourceAnalyzer.SourceAnalysis(
-                        prepared, stored.candidates(), stored.aliases());
+                        preparedForAnalysis, stored.candidates(), stored.aliases());
                     persistSuccess(run, source, reuseKey, analysis, true);
                     successes.add(analysis);
                 } else {
                     DiscoverySourceAnalyzer.SourceAnalysis analysis = AiProfileContext.withCapturedChatModel(
-                        run.getAiProfileId(), capturedModel, () -> sourceAnalyzer.analyze(prepared, request));
+                        run.getAiProfileId(), capturedModel, () -> sourceAnalyzer.analyze(preparedForAnalysis, request));
                     persistSuccess(run, source, reuseKey, analysis, false);
                     successes.add(analysis);
                 }
@@ -302,7 +306,8 @@ public class SchemaDraftAnalysisService {
                     source.setStatus(SchemaDraftSourceStatus.UNAVAILABLE);
                     sourceRepository.save(source);
                 }
-                persistFailure(run, snapshot, category, category.retryable(), 0);
+                int preparedChunkCount = prepared == null ? 0 : prepared.chunks().size();
+                persistFailure(run, snapshot, category, category.retryable(), preparedChunkCount, exception);
             }
         }
         return successes;
@@ -410,7 +415,8 @@ public class SchemaDraftAnalysisService {
     }
 
     private void persistFailure(
-        SchemaDraftAnalysisRunNode run, SourceSnapshot source, FailureCategory category, boolean retryable, int chunks
+        SchemaDraftAnalysisRunNode run, SourceSnapshot source, FailureCategory category, boolean retryable, int chunks,
+        RuntimeException exception
     ) {
         SchemaDraftSourceResultNode result = baseResult(run, source);
         result.setReuseKey(reuseKey(run, source));
@@ -421,8 +427,9 @@ public class SchemaDraftAnalysisService {
         result.setCompletedAt(Instant.now());
         SchemaDraftSourceResultNode saved = resultRepository.save(result);
         graphService.attach(run.getDraftId(), "SchemaDraftSourceResult", saved.getId());
-        log.warn("Schema draft source analysis failed: draftId={}, runId={}, sourceId={}, sourceRevision={}, failureCategory={}, retryable={}",
-            run.getDraftId(), run.getId(), source.id(), source.revision(), category, retryable);
+        log.warn("Schema draft source analysis failed: draftId={}, runId={}, sourceId={}, sourceRevision={}, failureCategory={}, retryable={}, preparedChunkCount={}, exceptionType={}, messageFingerprint={}",
+            run.getDraftId(), run.getId(), source.id(), source.revision(), category, retryable, chunks,
+            LogMetadata.exceptionType(exception), LogMetadata.exceptionMessageFingerprint(exception));
     }
 
     private SchemaDraftSourceResultNode baseResult(SchemaDraftAnalysisRunNode run, SourceSnapshot source) {
