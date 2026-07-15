@@ -37,6 +37,9 @@ public class AiObservationService {
     public static final String WORKFLOW_GRAPH_EXTRACTION = "graph-extraction";
     public static final String WORKFLOW_SCHEMA_GENERATION = "schema-generation";
     public static final String WORKFLOW_SCHEMA_DISCOVERY = "schema-discovery";
+    public static final String WORKFLOW_SCHEMA_DRAFT_EVALUATION = "schema-draft-evaluation";
+    public static final String WORKFLOW_SCHEMA_DRAFT_PUBLICATION = "schema-draft-publication";
+    public static final String WORKFLOW_SCHEMA_REPROCESSING = "schema-reprocessing";
     public static final String WORKFLOW_CYPHER_GENERATION = "cypher-generation";
     public static final String WORKFLOW_QUERY = "query";
 

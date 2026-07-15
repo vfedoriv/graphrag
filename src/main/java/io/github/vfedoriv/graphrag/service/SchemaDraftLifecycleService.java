@@ -200,10 +200,14 @@ public class SchemaDraftLifecycleService {
     }
 
     public DraftResponse toResponse(SchemaDraftNode draft) {
+        String currentPublishedHash = draft.getPublicationSchemaId() == null ? null
+            : schemaRepository.findById(draft.getPublicationSchemaId()).map(SchemaDefinitionNode::getContentHash).orElse(null);
         return new DraftResponse(draft.getId(), draft.getKnowledgeBaseId(), draft.getTargetName(), draft.getTargetVersion(),
             draft.getBaseSchemaId(), draft.getStatus(), draft.getRevision(), draft.getGuidanceRevision(),
             draft.getGuidanceFingerprint(), draft.getCurrentAggregateId(), draft.getPublicationSchemaId(),
-            draft.getPublicationContentHash(), draft.getActiveAiProfileId(), draft.getActiveAiProfileRevision(),
+            draft.getPublicationContentHash(), currentPublishedHash,
+            draft.getPublicationContentHash() != null && !draft.getPublicationContentHash().equals(currentPublishedHash),
+            draft.getActiveAiProfileId(), draft.getActiveAiProfileRevision(),
             draft.getCreatedAt(), draft.getUpdatedAt());
     }
 }

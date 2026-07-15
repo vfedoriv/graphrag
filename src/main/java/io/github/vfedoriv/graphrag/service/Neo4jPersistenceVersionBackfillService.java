@@ -54,7 +54,12 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
                 node:SchemaDraftAggregateRevision OR
                 node:SchemaDraftDecision OR
                 node:SchemaDraftConflict OR
-                node:SchemaDraftStorageMutation
+                node:SchemaDraftStorageMutation OR
+                node:SchemaDraftEvaluationRun OR
+                node:SchemaDraftEvaluationOutcome OR
+                node:SchemaDraftPublication OR
+                node:SchemaReprocessingPlan OR
+                node:SchemaReprocessingItem
             )
             AND node.persistenceVersion IS NULL
             SET node.persistenceVersion = 0

@@ -120,6 +120,11 @@ public class SchemaRegistryService {
         return saved;
     }
 
+    @Transactional
+    public SchemaDefinitionNode createGeneratedInactiveSchema(String json, String knowledgeBaseId) {
+        return createSchema(json, SchemaSourceType.GENERATED, knowledgeBaseId);
+    }
+
     @Transactional(readOnly = true)
     public List<SchemaDefinitionNode> listSchemas() {
         log.info("Listing schemas");

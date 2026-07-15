@@ -94,6 +94,9 @@ io.github.vfedoriv.graphrag
 Primary runtime services:
 
 - `SchemaRegistryService`: parse/validate/store/activate schemas, with guarded inactive-schema update/delete.
+- `SchemaDraftEvaluationService`: durable held-out dry extraction and deterministic draft quality metrics.
+- `SchemaDraftPublicationService`: revision-specific readiness and atomic publication of inactive generated schemas.
+- `SchemaReprocessingPlanService`: bounded post-activation orchestration over existing overwrite processing.
 - `SchemaDiscoveryService`: bounded multi-source analysis using the knowledge-base AI profile, deterministic candidate aggregation, and review-only schema projection.
 - `DocumentUploadService`: upload metadata + binary storage + dedup, plus replace/delete cleanup.
 - `DocumentProcessingService`: parse -> chunk -> embed -> extract graph.
@@ -662,6 +665,22 @@ Query flow:
 1. `/queries/generate`, `/queries/validate`, `/queries/execute`, and `/queries/ask` use the active schema to generate and validate read-only Cypher before execution.
 2. `/queries/hybrid-search` embeds the query text, searches the existing `document_chunk_embedding` vector index, filters hits to the requested knowledge base, and expands bounded `MENTIONS` graph context.
 3. Hybrid search returns evidence-first results ordered by vector score, with optional chunk text and source document metadata.
+
+## Schema Draft Evaluation, Publication, and Reprocessing
+
+Draft evaluation accepts explicitly selected knowledge-base documents that are outside the active discovery evidence set. It snapshots the projection, review decisions, document SHA-256 values, AI profile revision, prompt/contract revisions, and settings. Dry evaluation parses, chunks, extracts, and validates in memory; it does not persist chunks, embeddings, extraction runs, nodes, or relationships.
+
+Contractual metrics use these formulas:
+
+- recognized entity rate = recognized entity observations / (recognized + unknown entity observations),
+- dropped relationship rate = schema-rejected relationship observations / all relationship observations,
+- key availability rate = recognized node observations containing every configured key / recognized node observations requiring keys.
+
+Property type conflicts and missing required properties are counts. Low-support and guided-without-evidence counts come from the snapshotted aggregate. A zero denominator is returned as `applicable=false` with a `null` value. Intended-question and schema-noise fields are always labeled advisory and retain profile/prompt reproducibility metadata; an advisory failure or unavailable adapter does not remove deterministic metrics.
+
+Publication readiness is revision-specific and returns the canonical projection content hash plus every blocking reason ID. Publishing that exact revision/hash creates and associates one normal `INACTIVE` generated schema. It does not activate the schema and does not process documents. The existing activation API remains an explicit second operation. Published inactive schemas remain editable/deletable under normal registry rules; publication responses preserve the original hash and report drift if later inactive edits change the live content hash.
+
+Reprocessing is an explicit third operation available after the published schema is active. A durable plan snapshots the active schema/hash, AI profile revision, processing options, and document hashes, then invokes existing document processing with overwrite enabled. Items commit independently. Source changes become `STALE_SOURCE`; an active-schema/hash change blocks queued work. Startup recovery marks queued/running evaluation and plan work interrupted and retryable. Retry creates a linked resource, retains matching successes, and requires explicit resnapshotting of unresolved reprocessing items.
 
 ## Query Safety Model
 

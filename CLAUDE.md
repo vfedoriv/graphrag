@@ -69,6 +69,9 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 ### Core Services
 
 - **`SchemaRegistryService`** — parse/validate/store schema versions; `name + version` identity is immutable; inactive schemas can be replaced or deleted under guard.
+- **`SchemaDraftEvaluationService`** — durable held-out dry extraction and deterministic draft metrics without graph writes.
+- **`SchemaDraftPublicationService`** — revision-specific readiness and atomic inactive-schema publication.
+- **`SchemaReprocessingPlanService`** — durable bounded post-activation orchestration over overwrite processing.
 - **`DocumentUploadService`** — multipart upload with SHA-256 dedup; stores binary to filesystem via `BinaryStorageService` interface; replace/delete paths clean document-scoped artifacts.
 - **`DocumentProcessingService`** — orchestrates: parse → chunk → embed → graph-extract → persist.
 - **`GraphExtractionService`** — LLM-based entity/relationship extraction constrained by the active schema; validates against schema before any DB write.

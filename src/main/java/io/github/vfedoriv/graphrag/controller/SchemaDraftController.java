@@ -17,10 +17,18 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateGuidanceRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.PublicationReadinessResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.PublishDraftRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.PublicationResponse;
 import io.github.vfedoriv.graphrag.service.SchemaDraftAnalysisService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftLifecycleService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftSourceService;
+import io.github.vfedoriv.graphrag.service.SchemaDraftEvaluationService;
+import io.github.vfedoriv.graphrag.service.SchemaDraftPublicationService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -46,17 +54,23 @@ public class SchemaDraftController {
     private final SchemaDraftSourceService sourceService;
     private final SchemaDraftAnalysisService analysisService;
     private final SchemaDraftReviewService reviewService;
+    private final SchemaDraftEvaluationService evaluationService;
+    private final SchemaDraftPublicationService publicationService;
 
     public SchemaDraftController(
         SchemaDraftLifecycleService lifecycleService,
         SchemaDraftSourceService sourceService,
         SchemaDraftAnalysisService analysisService,
-        SchemaDraftReviewService reviewService
+        SchemaDraftReviewService reviewService,
+        SchemaDraftEvaluationService evaluationService,
+        SchemaDraftPublicationService publicationService
     ) {
         this.lifecycleService = lifecycleService;
         this.sourceService = sourceService;
         this.analysisService = analysisService;
         this.reviewService = reviewService;
+        this.evaluationService = evaluationService;
+        this.publicationService = publicationService;
     }
 
     @PostMapping
@@ -230,5 +244,54 @@ public class SchemaDraftController {
     @GetMapping("/{draftId}/diff")
     public DiffResponse diff(@PathVariable String knowledgeBaseId, @PathVariable String draftId) {
         return reviewService.diff(knowledgeBaseId, draftId);
+    }
+
+    @PostMapping("/{draftId}/evaluation-runs")
+    public ResponseEntity<StartEvaluationResponse> startEvaluation(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @Valid @RequestBody StartEvaluationRequest request
+    ) {
+        StartEvaluationResponse response = evaluationService.start(knowledgeBaseId, draftId, request);
+        return ResponseEntity.accepted().location(URI.create(response.statusLocation())).body(response);
+    }
+
+    @GetMapping("/{draftId}/evaluation-runs/{runId}")
+    public EvaluationRunResponse evaluationStatus(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId, @PathVariable String runId,
+        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
+    ) {
+        return evaluationService.get(knowledgeBaseId, draftId, runId, page, size);
+    }
+
+    @PostMapping("/{draftId}/evaluation-runs/{runId}/retry")
+    public ResponseEntity<StartEvaluationResponse> retryEvaluation(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId, @PathVariable String runId,
+        @Valid @RequestBody RevisionRequest request
+    ) {
+        StartEvaluationResponse response = evaluationService.retry(
+            knowledgeBaseId, draftId, runId, request.revision());
+        return ResponseEntity.accepted().location(URI.create(response.statusLocation())).body(response);
+    }
+
+    @GetMapping("/{draftId}/publication-readiness")
+    public PublicationReadinessResponse publicationReadiness(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId
+    ) {
+        return publicationService.readiness(knowledgeBaseId, draftId);
+    }
+
+    @PostMapping("/{draftId}/publish")
+    public PublicationResponse publish(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @Valid @RequestBody PublishDraftRequest request
+    ) {
+        return publicationService.publish(knowledgeBaseId, draftId, request);
+    }
+
+    @GetMapping("/{draftId}/publication")
+    public PublicationResponse publication(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId
+    ) {
+        return publicationService.get(knowledgeBaseId, draftId);
     }
 }

@@ -56,6 +56,9 @@ Main controllers:
 
 Key services:
 - `SchemaRegistryService` (schema parse/validate/versioning + guarded inactive-schema update/delete)
+- `SchemaDraftEvaluationService` (held-out dry extraction + durable deterministic evaluation results)
+- `SchemaDraftPublicationService` (revision-specific readiness + inactive schema publication)
+- `SchemaReprocessingPlanService` (durable bounded post-activation overwrite orchestration)
 - `DocumentUploadService` (multipart upload + SHA-256 dedup + replace/delete artifact cleanup)
 - `DocumentProcessingService` (parse -> chunk -> embed -> graph extract -> persist)
 - `GraphExtractionService` (schema-constrained extraction + validation)

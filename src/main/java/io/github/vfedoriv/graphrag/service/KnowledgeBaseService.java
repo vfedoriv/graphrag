@@ -106,6 +106,11 @@ public class KnowledgeBaseService {
         return aiProfileService.getNode(profileId);
     }
 
+    @Transactional(readOnly = true)
+    public AiProfileNode aiProfile(String profileId) {
+        return aiProfileService.getNode(profileId);
+    }
+
     @Transactional
     public AiProfileResponse getActiveAiProfile(String knowledgeBaseId) {
         return aiProfileService.toResponse(activeAiProfile(knowledgeBaseId));

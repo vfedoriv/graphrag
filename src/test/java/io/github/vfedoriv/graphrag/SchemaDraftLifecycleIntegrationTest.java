@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,18 +14,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,6 +54,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
@@ -73,12 +82,14 @@ class SchemaDraftLifecycleIntegrationTest {
     private static final String KNOWLEDGE_BASE_ID = "kb-draft";
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final AtomicBoolean BLOCK_MODEL = new AtomicBoolean();
+    private static final AtomicBoolean FAIL_REPROCESSING = new AtomicBoolean();
     private static volatile CountDownLatch MODEL_ENTERED = new CountDownLatch(1);
     private static volatile CountDownLatch RELEASE_MODEL = new CountDownLatch(1);
 
     @Autowired private MockMvc mockMvc;
     @Autowired private Neo4jClient neo4jClient;
     @Autowired private SchemaRegistryService schemaRegistryService;
+    @Autowired private DocumentUploadService documentUploadService;
     @Autowired private SchemaDraftRepository draftRepository;
     @Autowired private SchemaDraftSourceRepository sourceRepository;
     @Autowired private SchemaDraftAnalysisRunRepository runRepository;
@@ -89,6 +100,7 @@ class SchemaDraftLifecycleIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         resetModelGate();
+        FAIL_REPROCESSING.set(false);
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         TestDocumentStorage.clean();
         mockMvc.perform(post("/api/v1/knowledge-bases")
@@ -101,6 +113,7 @@ class SchemaDraftLifecycleIntegrationTest {
     void cleanStorage() throws Exception {
         RELEASE_MODEL.countDown();
         BLOCK_MODEL.set(false);
+        FAIL_REPROCESSING.set(false);
         TestDocumentStorage.clean();
     }
 
@@ -204,6 +217,90 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(draftId)).isEmpty();
         assertThat(aggregateRepository.findByDraftIdOrderByRevisionDesc(draftId)).isEmpty();
         assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value");
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void evaluatesPublishesActivatesAndRetriesAPartialReprocessingPlan(CapturedOutput output) throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"evaluated-people\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"evidence\",\"text\":\"Person personId discovery evidence\"}",
+            KNOWLEDGE_BASE_ID, draftId);
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        assertThat(awaitTerminal(draftId, analysis.path("runId").asText()).path("status").asText())
+            .isEqualTo("COMPLETED");
+
+        String heldOutText = "held-out-private-content Person P-100";
+        DocumentUploadNode heldOut = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "held-out.txt", "text/plain", heldOutText.getBytes()));
+        JsonNode evaluation = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+            "{\"revision\":1,\"documentIds\":[\"%s\"],\"advisoryEnabled\":true}"
+                .formatted(heldOut.getId()), KNOWLEDGE_BASE_ID, draftId));
+        JsonNode evaluated = awaitEvaluationTerminal(draftId, evaluation.path("runId").asText());
+        assertThat(evaluated.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(evaluated.path("succeededDocuments").asInt()).isEqualTo(1);
+        assertThat(evaluated.path("advisoryAssessment").path("status").asText())
+            .isEqualTo("COMPLETED_WITHOUT_MODEL_JUDGMENT");
+        assertThat(countNodes("DocumentChunk") + countNodes("ExtractionRun")).isZero();
+
+        JsonNode readiness = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publication-readiness",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(readiness.path("ready").asBoolean()).isTrue();
+        String projectionHash = readiness.path("projectionContentHash").asText();
+        JsonNode publication = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publish",
+            "{\"revision\":1,\"projectionContentHash\":\"%s\"}".formatted(projectionHash),
+            KNOWLEDGE_BASE_ID, draftId));
+        String schemaId = publication.path("schemaId").asText();
+        assertThat(schemaRegistryService.getSchema(schemaId).getStatus().name()).isEqualTo("INACTIVE");
+        assertThat(countNodes("DocumentChunk") + countNodes("ExtractionRun")).isZero();
+        JsonNode repeated = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publish",
+            "{\"revision\":1,\"projectionContentHash\":\"%s\"}".formatted(projectionHash),
+            KNOWLEDGE_BASE_ID, draftId));
+        assertThat(repeated.path("publicationId").asText()).isEqualTo(publication.path("publicationId").asText());
+
+        SchemaDefinitionNode published = schemaRegistryService.getSchema(schemaId);
+        String editedContent = published.getContent().replace("\"relationships\":[]",
+            "\"relationships\":[],\"description\":\"editable while inactive\"");
+        schemaRegistryService.updateSchema(schemaId, editedContent, SchemaSourceType.GENERATED);
+        JsonNode drifted = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publication",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(drifted.path("contentDrifted").asBoolean()).isTrue();
+
+        schemaRegistryService.activateSchema(KNOWLEDGE_BASE_ID, schemaId);
+        assertThatThrownBy(() -> schemaRegistryService.updateSchema(schemaId, editedContent, SchemaSourceType.GENERATED))
+            .isInstanceOf(ConflictException.class);
+
+        DocumentUploadNode failing = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "failing.txt", "text/plain", "FAIL_REPROCESSING".getBytes()));
+        FAIL_REPROCESSING.set(true);
+        JsonNode plan = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans",
+            "{\"draftId\":\"%s\",\"schemaId\":\"%s\",\"allDocuments\":true,\"processingOptions\":{}}"
+                .formatted(draftId, schemaId), KNOWLEDGE_BASE_ID));
+        JsonNode partial = awaitPlanTerminal(plan.path("planId").asText());
+        assertThat(partial.path("status").asText()).isEqualTo("PARTIAL");
+        assertThat(partial.path("succeededDocuments").asInt()).isEqualTo(1);
+        assertThat(partial.path("failedDocuments").asInt()).isEqualTo(1);
+
+        FAIL_REPROCESSING.set(false);
+        JsonNode retry = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans/{planId}/retry",
+            "{\"resnapshotUnresolvedDocuments\":true}", KNOWLEDGE_BASE_ID, plan.path("planId").asText()));
+        JsonNode completed = awaitPlanTerminal(retry.path("planId").asText());
+        assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(completed.path("totalDocuments").asInt()).isEqualTo(1);
+        assertThat(completed.path("items").get(0).path("documentId").asText()).isEqualTo(failing.getId());
+        assertThat(output.getAll()).doesNotContain(heldOutText, "Person P-100");
     }
 
     @Test
@@ -343,6 +440,34 @@ class SchemaDraftLifecycleIntegrationTest {
         throw new AssertionError("Analysis did not complete: " + response);
     }
 
+    private JsonNode awaitEvaluationTerminal(String draftId, String runId) throws Exception {
+        return awaitAsyncStatus(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs/{runId}",
+            KNOWLEDGE_BASE_ID, draftId, runId);
+    }
+
+    private JsonNode awaitPlanTerminal(String planId) throws Exception {
+        return awaitAsyncStatus("/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans/{planId}",
+            KNOWLEDGE_BASE_ID, planId);
+    }
+
+    private JsonNode awaitAsyncStatus(String path, Object... variables) throws Exception {
+        Instant deadline = Instant.now().plus(Duration.ofSeconds(20));
+        JsonNode response;
+        do {
+            response = json(mockMvc.perform(get(path, variables)).andExpect(status().isOk()).andReturn());
+            String state = response.path("status").asText();
+            if (!"QUEUED".equals(state) && !"RUNNING".equals(state)) return response;
+            Thread.sleep(25);
+        } while (Instant.now().isBefore(deadline));
+        throw new AssertionError("Async operation did not complete: " + response);
+    }
+
+    private long countNodes(String label) {
+        return neo4jClient.query("MATCH (n:" + label + ") RETURN count(n)")
+            .fetchAs(Long.class).one().orElse(0L);
+    }
+
     private String createDraftWithText(String name) throws Exception {
         JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
             "{\"targetName\":\"" + name + "\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
@@ -392,6 +517,25 @@ class SchemaDraftLifecycleIntegrationTest {
                         List.of(), List.of(), List.of()
                     );
                 }
+            };
+        }
+
+        @Bean
+        @Primary
+        EmbeddingClient deterministicEmbeddingClient() {
+            return texts -> texts.stream().map(text -> List.of(0.1, 0.2, 0.3)).toList();
+        }
+
+        @Bean
+        @Primary
+        GraphExtractionClient deterministicGraphExtractionClient() {
+            return (schema, chunkText) -> {
+                if (FAIL_REPROCESSING.get() && chunkText.contains("FAIL_REPROCESSING")) {
+                    throw new IllegalStateException("Deterministic extraction failure");
+                }
+                return new GraphExtractionResult(List.of(
+                    new GraphExtractionResult.ExtractedNode("Person", Map.of("personId", "P-100"), 0.99)
+                ), List.of());
             };
         }
     }

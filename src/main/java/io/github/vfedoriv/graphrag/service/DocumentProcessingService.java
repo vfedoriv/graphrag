@@ -253,6 +253,10 @@ public class DocumentProcessingService {
     }
 
     private AiProfileNode activeProfile(String knowledgeBaseId) {
+        String capturedProfileId = AiProfileContext.activeProfileId();
+        if (capturedProfileId != null) {
+            return knowledgeBaseService.aiProfile(capturedProfileId);
+        }
         return knowledgeBaseService.activeAiProfile(knowledgeBaseId);
     }
 

@@ -28,7 +28,8 @@ public class SchemaDraftGraphService {
         return switch (label) {
             case "SchemaDraftSource", "SchemaDraftSourceRevision", "SchemaDraftAnalysisRun", "SchemaDraftSourceResult",
                 "SchemaDraftAggregateRevision", "SchemaDraftDecision", "SchemaDraftConflict",
-                "SchemaDraftStorageMutation" -> true;
+                "SchemaDraftStorageMutation", "SchemaDraftEvaluationRun", "SchemaDraftEvaluationOutcome",
+                "SchemaDraftPublication" -> true;
             default -> false;
         };
     }
