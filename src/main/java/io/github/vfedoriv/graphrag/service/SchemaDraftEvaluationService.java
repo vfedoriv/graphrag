@@ -19,6 +19,9 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceType;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomeResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomePageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationMetricsResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AdvisoryAssessmentResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
@@ -79,6 +82,8 @@ public class SchemaDraftEvaluationService {
     private final SchemaDraftEvaluationMetricsCalculator metricsCalculator;
     private final SchemaParser schemaParser;
     private final SchemaDraftJsonSupport jsonSupport;
+    private final SchemaDraftGuidanceMapper guidanceMapper;
+    private final SchemaDraftEvaluationContractMapper contractMapper;
     private final ObjectMapper objectMapper;
     private final SchemaDraftEvaluationProperties properties;
     private final AiObservationService observationService;
@@ -102,6 +107,8 @@ public class SchemaDraftEvaluationService {
         SchemaDraftEvaluationMetricsCalculator metricsCalculator,
         SchemaParser schemaParser,
         SchemaDraftJsonSupport jsonSupport,
+        SchemaDraftGuidanceMapper guidanceMapper,
+        SchemaDraftEvaluationContractMapper contractMapper,
         ObjectMapper objectMapper,
         SchemaDraftEvaluationProperties properties,
         AiObservationService observationService,
@@ -124,6 +131,8 @@ public class SchemaDraftEvaluationService {
         this.metricsCalculator = metricsCalculator;
         this.schemaParser = schemaParser;
         this.jsonSupport = jsonSupport;
+        this.guidanceMapper = guidanceMapper;
+        this.contractMapper = contractMapper;
         this.objectMapper = objectMapper;
         this.properties = properties;
         this.observationService = observationService;
@@ -171,9 +180,11 @@ public class SchemaDraftEvaluationService {
     ) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftEvaluationRunNode run = requireRun(draftId, runId);
+        int boundedPage = Math.max(0, page);
+        int boundedSize = Math.max(1, Math.min(100, size));
         Page<SchemaDraftEvaluationOutcomeNode> outcomes = outcomeRepository.findByRunIdOrderByDocumentIdAsc(
-            runId, PageRequest.of(Math.max(0, page), Math.max(1, Math.min(100, size))));
-        return toResponse(run, outcomes.getContent(), outcomes.getTotalElements());
+            runId, PageRequest.of(boundedPage, boundedSize));
+        return toResponse(run, boundedPage, boundedSize, outcomes.getContent(), outcomes.getTotalElements());
     }
 
     private StartEvaluationResponse createRun(
@@ -315,7 +326,8 @@ public class SchemaDraftEvaluationService {
                     "relationship:" + relationship.type() + ":" + relationship.fromLabel() + ":" + relationship.toLabel()));
             }
             outcome.setChunkCount(chunks.size());
-            outcome.setMetricsJson(jsonSupport.canonical(metricsCalculator.combine(metrics)));
+            outcome.setMetricsJson(jsonSupport.canonical(contractMapper.metrics(
+                metricsCalculator.combine(metrics), List.copyOf(coordinates))));
             outcome.setEvidenceCoordinatesJson(jsonSupport.canonical(coordinates));
             completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.SUCCEEDED, null, false);
         } catch (Exception exception) {
@@ -348,9 +360,9 @@ public class SchemaDraftEvaluationService {
         run.setStatus(succeeded == outcomes.size() ? SchemaDraftEvaluationStatus.COMPLETED
             : succeeded > 0 ? SchemaDraftEvaluationStatus.PARTIAL : SchemaDraftEvaluationStatus.FAILED);
         List<Metrics> metrics = outcomes.stream().filter(value -> value.getMetricsJson() != null)
-            .map(value -> objectMapper.convertValue(jsonSupport.parse(value.getMetricsJson()), Metrics.class)).toList();
-        run.setMetricsJson(jsonSupport.canonical(metricsCalculator.combine(metrics)));
-        run.setAdvisoryJson(jsonSupport.canonical(advisory(run)));
+            .map(value -> contractMapper.domainMetrics(value.getMetricsJson())).toList();
+        run.setMetricsJson(jsonSupport.canonical(contractMapper.metrics(metricsCalculator.combine(metrics), List.of())));
+        run.setAdvisoryJson(jsonSupport.canonical(contractMapper.advisory(advisory(run), run.getContractRevision())));
         run.setRetryable(run.getStatus() != SchemaDraftEvaluationStatus.COMPLETED);
         run.setCompletedAt(Instant.now());
         runRepository.save(run);
@@ -361,14 +373,10 @@ public class SchemaDraftEvaluationService {
             return new AdvisoryAssessment("NOT_REQUESTED", List.of(), List.of(), run.getAiProfileId(),
                 run.getAiProfileRevision(), run.getPromptRevision(), null);
         }
-        JsonNode guidance = run.getGuidanceJson() == null ? objectMapper.createObjectNode()
-            : jsonSupport.parse(run.getGuidanceJson());
         List<QuestionAssessment> questions = new ArrayList<>();
-        JsonNode intended = guidance.path("intendedQuestions");
-        if (intended.isArray()) {
-            for (JsonNode question : intended) {
-                questions.add(new QuestionAssessment(jsonSupport.fingerprint(question.asText()), "UNASSESSED", List.of()));
-            }
+        List<String> intended = guidanceMapper.read(run.getGuidanceJson()).guidance().intendedQuestions();
+        for (String question : intended) {
+            questions.add(new QuestionAssessment(jsonSupport.fingerprint(question), "UNASSESSED", List.of()));
         }
         SupportRisk risk = supportRisk(run.getAggregateRevisionId());
         List<CoordinateAssessment> noise = risk.riskyCoordinates().stream()
@@ -413,27 +421,29 @@ public class SchemaDraftEvaluationService {
     }
 
     private EvaluationRunResponse toResponse(
-        SchemaDraftEvaluationRunNode run, List<SchemaDraftEvaluationOutcomeNode> outcomes, long total
+        SchemaDraftEvaluationRunNode run, int page, int size,
+        List<SchemaDraftEvaluationOutcomeNode> outcomes, long total
     ) {
         List<EvaluationOutcomeResponse> responses = outcomes.stream().map(this::toResponse).toList();
+        EvaluationMetricsResponse metrics = contractMapper.metrics(run.getMetricsJson(), List.of());
+        AdvisoryAssessmentResponse advisory = contractMapper.advisory(run.getAdvisoryJson(), run.getContractRevision());
         return new EvaluationRunResponse(run.getId(), run.getStatus(), run.getDraftRevision(), run.getAggregateRevisionId(),
             run.getProjectionContentHash(), run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(),
             run.getContractRevision(), run.getRetryOfRunId(), run.getTotalDocuments(), run.getSucceededDocuments(),
-            run.getFailedDocuments(), run.getStaleDocuments(), plain(run.getMetricsJson()), plain(run.getAdvisoryJson()),
-            run.getFailureCategory(), run.isRetryable(), run.getCreatedAt(), run.getStartedAt(), run.getCompletedAt(), responses, total);
+            run.getFailedDocuments(), run.getStaleDocuments(), metrics, advisory,
+            run.getFailureCategory(), run.isRetryable(), run.getCreatedAt(), run.getStartedAt(), run.getCompletedAt(),
+            new EvaluationOutcomePageResponse(page, size, total, responses));
     }
 
     private EvaluationOutcomeResponse toResponse(SchemaDraftEvaluationOutcomeNode outcome) {
         List<String> coordinates = outcome.getEvidenceCoordinatesJson() == null ? List.of()
             : objectMapper.convertValue(jsonSupport.parse(outcome.getEvidenceCoordinatesJson()), new TypeReference<List<String>>() { });
         return new EvaluationOutcomeResponse(outcome.getId(), outcome.getDocumentId(), outcome.getDocumentSha256(),
-            outcome.getStatus(), outcome.isReused(), outcome.getChunkCount(), plain(outcome.getMetricsJson()), coordinates,
+            outcome.getStatus(), outcome.isReused(), outcome.getChunkCount(),
+            contractMapper.metrics(outcome.getMetricsJson(), coordinates), coordinates,
             outcome.getFailureCategory(), outcome.isRetryable(), outcome.getStartedAt(), outcome.getCompletedAt());
     }
 
-    private Object plain(String json) {
-        return json == null ? null : objectMapper.convertValue(jsonSupport.parse(json), Object.class);
-    }
     private SchemaDraftEvaluationRunNode requireRun(String draftId, String runId) {
         return runRepository.findByIdAndDraftId(runId, draftId)
             .orElseThrow(() -> new NotFoundException("Schema draft evaluation not found: " + runId));

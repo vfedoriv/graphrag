@@ -5,6 +5,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AddDocumentSourceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AddTextSourceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CreateDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionResponse;
@@ -30,6 +31,9 @@ import io.github.vfedoriv.graphrag.service.SchemaDraftSourceService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftEvaluationService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftPublicationService;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -197,7 +201,8 @@ public class SchemaDraftController {
     }
 
     @GetMapping("/{draftId}/candidates")
-    public Object candidates(
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = CandidatePageResponse.class)))
+    public CandidatePageResponse candidates(
         @PathVariable String knowledgeBaseId, @PathVariable String draftId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size
     ) {

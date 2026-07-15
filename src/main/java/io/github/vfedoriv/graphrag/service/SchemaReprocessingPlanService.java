@@ -14,6 +14,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
@@ -163,9 +164,11 @@ public class SchemaReprocessingPlanService {
     @Transactional(readOnly = true)
     public PlanResponse get(String knowledgeBaseId, String planId, int page, int size) {
         SchemaReprocessingPlanNode plan = requirePlan(knowledgeBaseId, planId);
+        int boundedPage = Math.max(0, page);
+        int boundedSize = Math.max(1, Math.min(100, size));
         Page<SchemaReprocessingItemNode> items = itemRepository.findByPlanIdOrderByDocumentIdAsc(
-            planId, PageRequest.of(Math.max(0, page), Math.max(1, Math.min(100, size))));
-        return toResponse(plan, items.getContent(), items.getTotalElements());
+            planId, PageRequest.of(boundedPage, boundedSize));
+        return toResponse(plan, boundedPage, boundedSize, items.getContent(), items.getTotalElements());
     }
 
     void execute(String planId) {
@@ -325,7 +328,10 @@ public class SchemaReprocessingPlanService {
         return planRepository.findByIdAndKnowledgeBaseId(planId, knowledgeBaseId)
             .orElseThrow(() -> new NotFoundException("Reprocessing plan not found in knowledge base: " + planId));
     }
-    private PlanResponse toResponse(SchemaReprocessingPlanNode plan, List<SchemaReprocessingItemNode> items, long total) {
+    private PlanResponse toResponse(
+        SchemaReprocessingPlanNode plan, int page, int size,
+        List<SchemaReprocessingItemNode> items, long total
+    ) {
         List<PlanItemResponse> responses = items.stream().map(value -> new PlanItemResponse(
             value.getId(), value.getDocumentId(), value.getDocumentSha256(), value.getStatus(), value.getFailureCategory(),
             value.isRetryable(), value.getPriorItemId(), value.getStartedAt(), value.getCompletedAt())).toList();
@@ -333,7 +339,8 @@ public class SchemaReprocessingPlanService {
             plan.getSchemaId(), plan.getSchemaContentHash(), plan.getAiProfileId(), plan.getAiProfileRevision(),
             plan.getRetryOfPlanId(), plan.getTotalDocuments(), plan.getQueuedDocuments(), plan.getRunningDocuments(),
             plan.getSucceededDocuments(), plan.getFailedDocuments(), plan.getStaleDocuments(), plan.getBlockedDocuments(),
-            plan.getCreatedAt(), plan.getStartedAt(), plan.getCompletedAt(), responses, total);
+            plan.getCreatedAt(), plan.getStartedAt(), plan.getCompletedAt(),
+            new PlanItemPageResponse(page, size, total, responses));
     }
     private String statusLocation(SchemaReprocessingPlanNode plan) {
         return "/api/v1/knowledge-bases/" + plan.getKnowledgeBaseId() + "/reprocessing-plans/" + plan.getId();

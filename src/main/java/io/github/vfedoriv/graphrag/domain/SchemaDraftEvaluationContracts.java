@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class SchemaDraftEvaluationContracts {
-    public static final String CONTRACT_REVISION = "schema-draft-evaluation-v1";
+    public static final String CONTRACT_REVISION = "schema-draft-evaluation-v2";
     public static final String PROMPT_REVISION = "schema-draft-advisory-v1";
 
     private SchemaDraftEvaluationContracts() { }

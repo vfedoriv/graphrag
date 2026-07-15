@@ -17,6 +17,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftReviewState;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidateResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DiffItem;
@@ -86,18 +88,24 @@ public class SchemaDraftReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Object candidates(String knowledgeBaseId, String draftId, int page, int size) {
+    public CandidatePageResponse candidates(String knowledgeBaseId, String draftId, int page, int size) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         List<Candidate> candidates = effectiveCandidates(draft);
+        Map<String, SchemaDraftDecisionNode> latest = latestDecisions(draftId);
+        List<CandidateResponse> responses = candidates.stream().map(candidate -> {
+            SchemaDraftDecisionNode decision = latest.get(candidate.identity());
+            return new CandidateResponse(candidate.kind(), candidate.identity(), candidate.label(), candidate.property(),
+                candidate.propertyType(), candidate.keys(), candidate.relationshipType(), candidate.fromLabel(),
+                candidate.toLabel(), candidate.originalLabel(), candidate.originalProperty(),
+                candidate.originalRelationshipType(), candidate.confidence(), candidate.origins(), candidate.evidence(),
+                candidate.supportCount(), candidate.reviewState(), decision == null ? null : decision.getReviewState(),
+                decision == null ? null : decision.getId());
+        }).toList();
         int boundedSize = Math.max(1, Math.min(size, 100));
-        int from = Math.min(Math.max(0, page) * boundedSize, candidates.size());
-        int to = Math.min(from + boundedSize, candidates.size());
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("page", Math.max(0, page));
-        response.put("size", boundedSize);
-        response.put("totalElements", candidates.size());
-        response.put("content", candidates.subList(from, to));
-        return response;
+        int boundedPage = Math.max(0, page);
+        int from = (int) Math.min((long) boundedPage * boundedSize, responses.size());
+        int to = Math.min(from + boundedSize, responses.size());
+        return new CandidatePageResponse(boundedPage, boundedSize, responses.size(), responses.subList(from, to));
     }
 
     @Transactional

@@ -15,6 +15,7 @@ import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.error.ConflictException;
@@ -128,7 +129,7 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
             """
                 {"targetName":"people","targetVersion":2,"baseSchemaId":"%s",
-                "guidance":{"requiredConcepts":[{"name":"Person","identityKeys":["personId"]}]}}
+                "guidance":{"guidance":{"requiredConcepts":[{"name":"Person","identityKeys":["personId"]}]}}}
                 """.formatted(base.getId()), KNOWLEDGE_BASE_ID));
         String draftId = draft.path("id").asText();
         assertThat(draft.path("revision").asLong()).isZero();
@@ -149,14 +150,23 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode completed = awaitTerminal(draftId, firstRunId);
         assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
         assertThat(completed.path("currentResult").asBoolean()).isTrue();
-        assertThat(completed.path("sourceOutcomes").get(0).path("reused").asBoolean()).isFalse();
+        assertThat(completed.path("sourceOutcomes").path("content").get(0).path("reused").asBoolean()).isFalse();
+        assertThat(completed.path("sourceOutcomes").path("page").asInt()).isZero();
+        assertThat(completed.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(1);
+        JsonNode emptyAnalysisPage = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}",
+                KNOWLEDGE_BASE_ID, draftId, firstRunId).param("page", "3").param("size", "1"))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(emptyAnalysisPage.path("sourceOutcomes").path("content")).isEmpty();
+        assertThat(emptyAnalysisPage.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(1);
+        assertThat(emptyAnalysisPage.path("succeededSources").asInt()).isEqualTo(1);
 
         JsonNode retryAccepted = json(postJson(
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
             "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId, firstRunId));
         JsonNode retryCompleted = awaitTerminal(draftId, retryAccepted.path("runId").asText());
         assertThat(retryCompleted.path("status").asText()).isEqualTo("COMPLETED");
-        assertThat(retryCompleted.path("sourceOutcomes").get(0).path("reused").asBoolean()).isTrue();
+        assertThat(retryCompleted.path("sourceOutcomes").path("content").get(0).path("reused").asBoolean()).isTrue();
 
         JsonNode candidates = json(mockMvc.perform(get(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/candidates",
@@ -168,9 +178,19 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode decision = json(postJson(
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/decisions",
             """
-                {"revision":1,"type":"ACCEPT","candidateIdentity":"%s","rationale":"reviewed"}
+                {"revision":1,"type":"REJECT","candidateIdentity":"%s","rationale":"reviewed"}
                 """.formatted(candidateIdentity), KNOWLEDGE_BASE_ID, draftId));
-        assertThat(decision.path("reviewState").asText()).isEqualTo("ACCEPTED");
+        assertThat(decision.path("reviewState").asText()).isEqualTo("REJECTED");
+        JsonNode reviewedCandidates = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/candidates",
+                KNOWLEDGE_BASE_ID, draftId).param("size", "100"))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode rejected = java.util.stream.StreamSupport.stream(
+                reviewedCandidates.path("content").spliterator(), false)
+            .filter(value -> candidateIdentity.equals(value.path("identity").asText())).findFirst().orElseThrow();
+        assertThat(rejected.path("effectiveReviewState").asText()).isEqualTo("REJECTED");
+        assertThat(rejected.path("latestDecisionId").asText()).isEqualTo(decision.path("id").asText());
+        assertThat(rejected.path("evidence").isArray()).isTrue();
 
         mockMvc.perform(get("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/projection",
                 KNOWLEDGE_BASE_ID, draftId))
@@ -206,7 +226,7 @@ class SchemaDraftLifecycleIntegrationTest {
             "{\"revision\":3}", KNOWLEDGE_BASE_ID, draftId));
         JsonNode secondCompleted = awaitTerminal(draftId, secondAccepted.path("runId").asText());
         assertThat(secondCompleted.path("status").asText()).isEqualTo("COMPLETED");
-        assertThat(secondCompleted.path("sourceOutcomes").get(0).path("reused").asBoolean()).isFalse();
+        assertThat(secondCompleted.path("sourceOutcomes").path("content").get(0).path("reused").asBoolean()).isFalse();
         assertThat(decisionRepository.findByDraftIdOrderBySequenceAsc(draftId)).hasSize(1);
 
         mockMvc.perform(delete("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}",
@@ -216,7 +236,8 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(sourceRepository.findByDraftIdOrderByCreatedAtAsc(draftId)).isEmpty();
         assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(draftId)).isEmpty();
         assertThat(aggregateRepository.findByDraftIdOrderByRevisionDesc(draftId)).isEmpty();
-        assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value");
+        assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value",
+            "node-property:Person:displayName", "displayName", "node:Person");
     }
 
     @Test
@@ -246,6 +267,11 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(evaluated.path("succeededDocuments").asInt()).isEqualTo(1);
         assertThat(evaluated.path("advisoryAssessment").path("status").asText())
             .isEqualTo("COMPLETED_WITHOUT_MODEL_JUDGMENT");
+        assertThat(evaluated.path("contractRevision").asText()).isEqualTo("schema-draft-evaluation-v2");
+        assertThat(evaluated.path("outcomes").path("totalElements").asLong()).isEqualTo(1);
+        assertThat(evaluated.path("metrics").path("rates").isArray()).isTrue();
+        assertThat(evaluated.path("advisoryAssessment").path("reproducibility")
+            .path("contractRevision").asText()).isEqualTo("schema-draft-evaluation-v2");
         assertThat(countNodes("DocumentChunk") + countNodes("ExtractionRun")).isZero();
 
         JsonNode readiness = json(mockMvc.perform(get(
@@ -291,6 +317,24 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(partial.path("status").asText()).isEqualTo("PARTIAL");
         assertThat(partial.path("succeededDocuments").asInt()).isEqualTo(1);
         assertThat(partial.path("failedDocuments").asInt()).isEqualTo(1);
+        JsonNode firstPlanPage = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans/{planId}",
+                KNOWLEDGE_BASE_ID, plan.path("planId").asText()).param("page", "0").param("size", "1"))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode laterPlanPage = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans/{planId}",
+                KNOWLEDGE_BASE_ID, plan.path("planId").asText()).param("page", "1").param("size", "1"))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode emptyPlanPage = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans/{planId}",
+                KNOWLEDGE_BASE_ID, plan.path("planId").asText()).param("page", "9").param("size", "1"))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(firstPlanPage.path("items").path("content")).hasSize(1);
+        assertThat(laterPlanPage.path("items").path("content")).hasSize(1);
+        assertThat(emptyPlanPage.path("items").path("content")).isEmpty();
+        assertThat(emptyPlanPage.path("items").path("totalElements").asLong()).isEqualTo(2);
+        assertThat(emptyPlanPage.path("succeededDocuments").asInt()).isEqualTo(1);
+        assertThat(emptyPlanPage.path("failedDocuments").asInt()).isEqualTo(1);
 
         FAIL_REPROCESSING.set(false);
         JsonNode retry = json(postJson(
@@ -299,8 +343,9 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode completed = awaitPlanTerminal(retry.path("planId").asText());
         assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
         assertThat(completed.path("totalDocuments").asInt()).isEqualTo(1);
-        assertThat(completed.path("items").get(0).path("documentId").asText()).isEqualTo(failing.getId());
-        assertThat(output.getAll()).doesNotContain(heldOutText, "Person P-100");
+        assertThat(completed.path("items").path("content").get(0).path("documentId").asText()).isEqualTo(failing.getId());
+        assertThat(output.getAll()).doesNotContain(heldOutText, "Person P-100", "node:Person",
+            "schema-draft-evaluation-v2\"", "POSSIBLE_NOISE");
     }
 
     @Test
@@ -334,7 +379,7 @@ class SchemaDraftLifecycleIntegrationTest {
         mockMvc.perform(put(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/guidance",
                 KNOWLEDGE_BASE_ID, draftIds.get(0)).contentType("application/json")
-                .content("{\"revision\":1,\"guidance\":{\"domainDescription\":\"changed\"}}"))
+                .content("{\"revision\":1,\"guidance\":{\"guidance\":{\"domainDescription\":\"changed\"}}}"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.revision").value(2));
 
@@ -419,6 +464,61 @@ class SchemaDraftLifecycleIntegrationTest {
             currentPayload, KNOWLEDGE_BASE_ID, draftId));
         assertThat(duplicate.path("id").asText()).isEqualTo(first.path("id").asText());
         assertThat(draftRepository.findById(draftId).orElseThrow().getRevision()).isEqualTo(1);
+    }
+
+    @Test
+    void readsLegacyGuidanceShapesAndCanonicalizesThemOnUpdate() throws Exception {
+        List<String> legacyValues = List.of(
+            "{\"domainDescription\":\"direct\",\"intendedQuestions\":[\"who\"]}",
+            "{\"additionalInstructions\":\"instructions only\"}",
+            "{\"additionalInstructions\":\"wrapped instructions\",\"guidance\":{\"domainDescription\":\"wrapped\"}}"
+        );
+        for (int index = 0; index < legacyValues.size(); index++) {
+            JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+                "{\"targetName\":\"legacy-" + index + "\",\"targetVersion\":1,\"guidance\":{}}",
+                KNOWLEDGE_BASE_ID));
+            String draftId = created.path("id").asText();
+            String legacy = legacyValues.get(index);
+            neo4jClient.query("MATCH (d:SchemaDraft {id: $id}) SET d.guidanceJson = $guidance")
+                .bind(draftId).to("id").bind(legacy).to("guidance").run();
+
+            JsonNode read = json(mockMvc.perform(get(
+                    "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}", KNOWLEDGE_BASE_ID, draftId))
+                .andExpect(status().isOk()).andReturn());
+            assertThat(read.path("guidance").path("guidance").path("intendedQuestions").isArray()).isTrue();
+
+            JsonNode updated = json(mockMvc.perform(put(
+                    "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/guidance",
+                    KNOWLEDGE_BASE_ID, draftId).contentType("application/json")
+                    .content("{\"revision\":0,\"guidance\":{\"additionalInstructions\":\"canonical\"}}"))
+                .andExpect(status().isOk()).andReturn());
+            assertThat(updated.path("guidance").path("additionalInstructions").asText()).isEqualTo("canonical");
+            assertThat(draftRepository.findById(draftId).orElseThrow().getGuidanceJson())
+                .contains("\"additionalInstructions\":\"canonical\"", "\"guidance\"");
+        }
+    }
+
+    @Test
+    void invalidGuidanceDoesNotMutateDraftState() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"strict-guidance\",\"targetVersion\":1,\"guidance\":{\"additionalInstructions\":\"saved\"}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        String savedGuidance = draftRepository.findById(draftId).orElseThrow().getGuidanceJson();
+
+        mockMvc.perform(put("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/guidance",
+                KNOWLEDGE_BASE_ID, draftId).contentType("application/json")
+                .content("{\"revision\":0,\"guidance\":{\"unknown\":true}}"))
+            .andExpect(status().isBadRequest());
+        mockMvc.perform(put("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/guidance",
+                KNOWLEDGE_BASE_ID, draftId).contentType("application/json")
+                .content("{\"revision\":0,\"guidance\":{\"guidance\":{\"propertyRules\":[{\"owner\":\"Person\",\"name\":\"id\",\"type\":\"INVALID\"}]}}}"))
+            .andExpect(status().isBadRequest());
+
+        SchemaDraftNode unchanged = draftRepository.findById(draftId).orElseThrow();
+        assertThat(unchanged.getRevision()).isZero();
+        assertThat(unchanged.getGuidanceRevision()).isZero();
+        assertThat(unchanged.getGuidanceJson()).isEqualTo(savedGuidance);
     }
 
     private MvcResult postJson(String path, String content, Object... variables) throws Exception {

@@ -24,6 +24,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomeResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
@@ -69,6 +70,7 @@ public class SchemaDraftAnalysisService {
     private final DiscoverySourceAnalyzer sourceAnalyzer;
     private final DiscoveryAggregator aggregator;
     private final SchemaDraftJsonSupport jsonSupport;
+    private final SchemaDraftGuidanceMapper guidanceMapper;
     private final ObjectMapper objectMapper;
     private final RuntimeSettingsService runtimeSettingsService;
     private final KnowledgeBaseService knowledgeBaseService;
@@ -91,6 +93,7 @@ public class SchemaDraftAnalysisService {
         DiscoverySourceAnalyzer sourceAnalyzer,
         DiscoveryAggregator aggregator,
         SchemaDraftJsonSupport jsonSupport,
+        SchemaDraftGuidanceMapper guidanceMapper,
         ObjectMapper objectMapper,
         RuntimeSettingsService runtimeSettingsService,
         KnowledgeBaseService knowledgeBaseService,
@@ -111,6 +114,7 @@ public class SchemaDraftAnalysisService {
         this.sourceAnalyzer = sourceAnalyzer;
         this.aggregator = aggregator;
         this.jsonSupport = jsonSupport;
+        this.guidanceMapper = guidanceMapper;
         this.objectMapper = objectMapper;
         this.runtimeSettingsService = runtimeSettingsService;
         this.knowledgeBaseService = knowledgeBaseService;
@@ -180,7 +184,7 @@ public class SchemaDraftAnalysisService {
         int boundedSize = Math.max(1, Math.min(size, 100));
         Page<SchemaDraftSourceResultNode> outcomes = resultRepository.findPageByRunId(
             runId, PageRequest.of(Math.max(0, page), boundedSize));
-        return toResponse(run, outcomes.getContent(), outcomes.getTotalElements());
+        return toResponse(run, Math.max(0, page), boundedSize, outcomes.getContent(), outcomes.getTotalElements());
     }
 
     private SchemaDraftAnalysisRunNode createRun(
@@ -427,21 +431,8 @@ public class SchemaDraftAnalysisService {
     }
 
     private SchemaDiscoveryRequest discoveryRequest(SchemaDraftNode draft) {
-        JsonNode root = jsonSupport.parse(draft.getGuidanceJson());
-        JsonNode guidanceNode;
-        if (root.has("guidance")) {
-            guidanceNode = root.get("guidance");
-        } else if (root.isObject() && root.has("additionalInstructions")) {
-            ObjectNode structured = ((ObjectNode) root).deepCopy();
-            structured.remove("additionalInstructions");
-            guidanceNode = structured;
-        } else {
-            guidanceNode = root;
-        }
-        SchemaDiscoveryRequest.DiscoveryGuidance guidance = objectMapper.convertValue(
-            guidanceNode, SchemaDiscoveryRequest.DiscoveryGuidance.class);
-        String instructions = root.hasNonNull("additionalInstructions") ? root.get("additionalInstructions").asText() : null;
-        return new SchemaDiscoveryRequest(List.of(), List.of(), instructions, guidance);
+        io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DraftGuidance guidance = guidanceMapper.read(draft.getGuidanceJson());
+        return new SchemaDiscoveryRequest(List.of(), List.of(), guidance.additionalInstructions(), guidance.guidance());
     }
 
     private List<SchemaDraftSourceNode> activeSources(String draftId) {
@@ -521,7 +512,8 @@ public class SchemaDraftAnalysisService {
     }
 
     private AnalysisRunResponse toResponse(
-        SchemaDraftAnalysisRunNode run, List<SchemaDraftSourceResultNode> outcomes, long total
+        SchemaDraftAnalysisRunNode run, int page, int size,
+        List<SchemaDraftSourceResultNode> outcomes, long total
     ) {
         List<SourceOutcomeResponse> responses = outcomes.stream().map(value -> new SourceOutcomeResponse(
             value.getId(), value.getSourceId(), value.getSourceRevision(), value.getStatus(), value.isReused(),
@@ -530,7 +522,7 @@ public class SchemaDraftAnalysisService {
             run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(), run.getCandidateRevision(),
             run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(), run.isCurrentResult(),
             run.getAggregateRevisionId(), run.getFailureCategory(), run.isRetryable(), run.getCreatedAt(),
-            run.getStartedAt(), run.getCompletedAt(), responses, total);
+            run.getStartedAt(), run.getCompletedAt(), new SourceOutcomePageResponse(page, size, total, responses));
     }
 
     private record SourceSnapshot(String id, long revision, String sha256) {

@@ -37,6 +37,7 @@ public class SchemaDraftLifecycleService {
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     private final KnowledgeBaseService knowledgeBaseService;
     private final SchemaDraftJsonSupport jsonSupport;
+    private final SchemaDraftGuidanceMapper guidanceMapper;
     private final BinaryStorageService storageService;
 
     public SchemaDraftLifecycleService(
@@ -47,6 +48,7 @@ public class SchemaDraftLifecycleService {
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
         KnowledgeBaseService knowledgeBaseService,
         SchemaDraftJsonSupport jsonSupport,
+        SchemaDraftGuidanceMapper guidanceMapper,
         BinaryStorageService storageService
     ) {
         this.draftRepository = draftRepository;
@@ -56,6 +58,7 @@ public class SchemaDraftLifecycleService {
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.jsonSupport = jsonSupport;
+        this.guidanceMapper = guidanceMapper;
         this.storageService = storageService;
     }
 
@@ -65,7 +68,7 @@ public class SchemaDraftLifecycleService {
         String targetName = request.targetName().strip();
         SchemaDefinitionNode base = validateBase(knowledgeBaseId, request.baseSchemaId(), targetName, request.targetVersion());
         AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
-        String guidanceJson = jsonSupport.canonical(request.guidance());
+        String guidanceJson = guidanceMapper.canonical(request.guidance());
         Instant now = Instant.now();
         SchemaDraftNode draft = new SchemaDraftNode();
         draft.setId(UUID.randomUUID().toString());
@@ -114,7 +117,7 @@ public class SchemaDraftLifecycleService {
     @Transactional
     public DraftResponse updateGuidance(String knowledgeBaseId, String draftId, UpdateGuidanceRequest request) {
         SchemaDraftNode draft = requireMutable(knowledgeBaseId, draftId, request.revision());
-        String canonical = jsonSupport.canonical(request.guidance());
+        String canonical = guidanceMapper.canonical(request.guidance());
         if (!canonical.equals(draft.getGuidanceJson())) {
             draft.setGuidanceJson(canonical);
             draft.setGuidanceFingerprint(jsonSupport.fingerprint(canonical));
@@ -203,7 +206,8 @@ public class SchemaDraftLifecycleService {
         String currentPublishedHash = draft.getPublicationSchemaId() == null ? null
             : schemaRepository.findById(draft.getPublicationSchemaId()).map(SchemaDefinitionNode::getContentHash).orElse(null);
         return new DraftResponse(draft.getId(), draft.getKnowledgeBaseId(), draft.getTargetName(), draft.getTargetVersion(),
-            draft.getBaseSchemaId(), draft.getStatus(), draft.getRevision(), draft.getGuidanceRevision(),
+            draft.getBaseSchemaId(), draft.getStatus(), draft.getRevision(), guidanceMapper.read(draft.getGuidanceJson()),
+            draft.getGuidanceRevision(),
             draft.getGuidanceFingerprint(), draft.getCurrentAggregateId(), draft.getPublicationSchemaId(),
             draft.getPublicationContentHash(), currentPublishedHash,
             draft.getPublicationContentHash() != null && !draft.getPublicationContentHash().equals(currentPublishedHash),
