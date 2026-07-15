@@ -23,6 +23,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceResultStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomeResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
@@ -78,6 +79,7 @@ public class SchemaDraftAnalysisService {
     private final AiObservationService observationService;
     private final SchemaDraftReviewService reviewService;
     private final ThreadPoolTaskExecutor executor;
+    private final SchemaDraftWorkflowNavigationService workflowNavigationService;
     private final String workerId = UUID.randomUUID().toString();
 
     public SchemaDraftAnalysisService(
@@ -100,6 +102,7 @@ public class SchemaDraftAnalysisService {
         AiRuntimeModelFactory modelFactory,
         AiObservationService observationService,
         SchemaDraftReviewService reviewService,
+        SchemaDraftWorkflowNavigationService workflowNavigationService,
         @Qualifier("schemaDraftAnalysisExecutor") ThreadPoolTaskExecutor executor
     ) {
         this.lifecycleService = lifecycleService;
@@ -121,10 +124,17 @@ public class SchemaDraftAnalysisService {
         this.modelFactory = modelFactory;
         this.observationService = observationService;
         this.reviewService = reviewService;
+        this.workflowNavigationService = workflowNavigationService;
         this.executor = executor;
     }
 
-    public synchronized StartAnalysisResponse start(String knowledgeBaseId, String draftId, long revision) {
+    public StartAnalysisResponse start(String knowledgeBaseId, String draftId, long revision) {
+        return start(knowledgeBaseId, draftId, revision, null);
+    }
+
+    private synchronized StartAnalysisResponse start(
+        String knowledgeBaseId, String draftId, long revision, String retryOfRunId
+    ) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, revision);
         List<SchemaDraftSourceNode> sources = activeSources(draftId);
         if (sources.isEmpty()) {
@@ -150,7 +160,8 @@ public class SchemaDraftAnalysisService {
             && executor.getActiveCount() >= executor.getMaxPoolSize()) {
             throw new ConflictException("Schema draft analysis queue is full");
         }
-        SchemaDraftAnalysisRunNode run = createRun(draft, sources, profile, membership, settings, snapshot);
+        SchemaDraftAnalysisRunNode run = createRun(
+            draft, sources, profile, membership, settings, snapshot, retryOfRunId);
         if (!reserveAnalysis(draftId, run.getId())) {
             runRepository.deleteById(run.getId());
             throw new ConflictException("Schema draft already has a running analysis");
@@ -173,7 +184,12 @@ public class SchemaDraftAnalysisService {
         if (prior.getStatus() == SchemaDraftAnalysisStatus.RUNNING) {
             throw new ConflictException("Running analysis cannot be retried");
         }
-        return start(knowledgeBaseId, draftId, revision);
+        return start(knowledgeBaseId, draftId, revision, prior.getId());
+    }
+
+    public AnalysisRunPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
+        SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
+        return workflowNavigationService.analysisPage(draft, page, size);
     }
 
     public AnalysisRunResponse get(
@@ -189,7 +205,7 @@ public class SchemaDraftAnalysisService {
 
     private SchemaDraftAnalysisRunNode createRun(
         SchemaDraftNode draft, List<SchemaDraftSourceNode> sources, AiProfileNode profile,
-        String membership, String settings, String snapshot
+        String membership, String settings, String snapshot, String retryOfRunId
     ) {
         Instant now = Instant.now();
         SchemaDraftAnalysisRunNode run = new SchemaDraftAnalysisRunNode();
@@ -208,6 +224,7 @@ public class SchemaDraftAnalysisService {
         run.setCandidateRevision(DiscoveryContracts.CANDIDATE_CONTRACT_REVISION);
         run.setSettingsFingerprint(settings);
         run.setSnapshotFingerprint(snapshot);
+        run.setRetryOfRunId(retryOfRunId);
         run.setTotalSources(sources.size());
         run.setCreatedAt(now);
         run.setStartedAt(now);
@@ -520,8 +537,10 @@ public class SchemaDraftAnalysisService {
             value.getFailureCategory(), value.isRetryable(), value.getChunkCount(), value.getCompletedAt())).toList();
         return new AnalysisRunResponse(run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(),
             run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(), run.getCandidateRevision(),
-            run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(), run.isCurrentResult(),
-            run.getAggregateRevisionId(), run.getFailureCategory(), run.isRetryable(), run.getCreatedAt(),
+            run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(),
+            workflowNavigationService.isAnalysisCurrent(
+                draftRepository.findById(run.getDraftId()).orElse(null), run),
+            run.getAggregateRevisionId(), run.getFailureCategory(), run.isRetryable(), run.getRetryOfRunId(), run.getCreatedAt(),
             run.getStartedAt(), run.getCompletedAt(), new SourceOutcomePageResponse(page, size, total, responses));
     }
 

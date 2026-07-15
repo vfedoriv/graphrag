@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AddDocumentSourceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AddTextSourceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CreateDraftRequest;
@@ -19,6 +20,8 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateGuidanceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.PublicationReadinessResponse;
@@ -191,6 +194,14 @@ public class SchemaDraftController {
         return analysisService.get(knowledgeBaseId, draftId, runId, page, size);
     }
 
+    @GetMapping("/{draftId}/analysis-runs")
+    public AnalysisRunPageResponse analysisRuns(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
+    ) {
+        return analysisService.list(knowledgeBaseId, draftId, page, size);
+    }
+
     @PostMapping("/{draftId}/analysis-runs/{runId}/retry")
     public ResponseEntity<StartAnalysisResponse> retryAnalysis(
         @PathVariable String knowledgeBaseId, @PathVariable String draftId, @PathVariable String runId,
@@ -266,6 +277,22 @@ public class SchemaDraftController {
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
     ) {
         return evaluationService.get(knowledgeBaseId, draftId, runId, page, size);
+    }
+
+    @GetMapping("/{draftId}/evaluation-runs")
+    public EvaluationRunPageResponse evaluationRuns(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
+    ) {
+        return evaluationService.list(knowledgeBaseId, draftId, page, size);
+    }
+
+    @GetMapping("/{draftId}/evaluation-eligible-documents")
+    public EvaluationEligibleDocumentPageResponse evaluationEligibleDocuments(
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
+    ) {
+        return evaluationService.eligibleDocuments(knowledgeBaseId, draftId, page, size);
     }
 
     @PostMapping("/{draftId}/evaluation-runs/{runId}/retry")

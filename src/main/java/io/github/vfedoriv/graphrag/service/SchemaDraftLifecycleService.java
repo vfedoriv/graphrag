@@ -22,6 +22,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class SchemaDraftLifecycleService {
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftGuidanceMapper guidanceMapper;
     private final BinaryStorageService storageService;
+    private final SchemaDraftWorkflowNavigationService workflowNavigationService;
 
     public SchemaDraftLifecycleService(
         SchemaDraftRepository draftRepository,
@@ -49,7 +51,8 @@ public class SchemaDraftLifecycleService {
         KnowledgeBaseService knowledgeBaseService,
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftGuidanceMapper guidanceMapper,
-        BinaryStorageService storageService
+        BinaryStorageService storageService,
+        SchemaDraftWorkflowNavigationService workflowNavigationService
     ) {
         this.draftRepository = draftRepository;
         this.sourceRepository = sourceRepository;
@@ -60,6 +63,7 @@ public class SchemaDraftLifecycleService {
         this.jsonSupport = jsonSupport;
         this.guidanceMapper = guidanceMapper;
         this.storageService = storageService;
+        this.workflowNavigationService = workflowNavigationService;
     }
 
     @Transactional
@@ -95,8 +99,10 @@ public class SchemaDraftLifecycleService {
     @Transactional(readOnly = true)
     public List<DraftResponse> list(String knowledgeBaseId) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
-        return draftRepository.findByKnowledgeBaseIdOrderByUpdatedAtDesc(knowledgeBaseId).stream()
-            .map(this::toResponse).toList();
+        List<SchemaDraftNode> drafts = draftRepository.findByKnowledgeBaseIdOrderByUpdatedAtDesc(knowledgeBaseId);
+        Map<String, SchemaDraftWorkflowNavigationService.WorkflowReferences> references =
+            workflowNavigationService.references(drafts);
+        return drafts.stream().map(draft -> toResponse(draft, references.get(draft.getId()))).toList();
     }
 
     @Transactional(readOnly = true)
@@ -203,6 +209,14 @@ public class SchemaDraftLifecycleService {
     }
 
     public DraftResponse toResponse(SchemaDraftNode draft) {
+        SchemaDraftWorkflowNavigationService.WorkflowReferences references = workflowNavigationService
+            .references(List.of(draft)).get(draft.getId());
+        return toResponse(draft, references);
+    }
+
+    private DraftResponse toResponse(
+        SchemaDraftNode draft, SchemaDraftWorkflowNavigationService.WorkflowReferences references
+    ) {
         String currentPublishedHash = draft.getPublicationSchemaId() == null ? null
             : schemaRepository.findById(draft.getPublicationSchemaId()).map(SchemaDefinitionNode::getContentHash).orElse(null);
         return new DraftResponse(draft.getId(), draft.getKnowledgeBaseId(), draft.getTargetName(), draft.getTargetVersion(),
@@ -212,6 +226,9 @@ public class SchemaDraftLifecycleService {
             draft.getPublicationContentHash(), currentPublishedHash,
             draft.getPublicationContentHash() != null && !draft.getPublicationContentHash().equals(currentPublishedHash),
             draft.getActiveAiProfileId(), draft.getActiveAiProfileRevision(),
+            references == null ? null : references.currentAnalysis(),
+            references == null ? null : references.latestEvaluation(),
+            references == null ? null : references.latestReprocessing(),
             draft.getCreatedAt(), draft.getUpdatedAt());
     }
 }

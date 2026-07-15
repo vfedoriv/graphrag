@@ -8,7 +8,11 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomePageResp
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.MetricApplicability;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.QuestionCoverage;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;
@@ -22,6 +26,10 @@ class SchemaDraftOpenApiContractTest {
         assertPageSchema("SchemaDraftAnalysisSourceOutcomePage", SourceOutcomePageResponse.class);
         assertPageSchema("SchemaDraftEvaluationOutcomePage", EvaluationOutcomePageResponse.class);
         assertPageSchema("SchemaReprocessingPlanItemPage", PlanItemPageResponse.class);
+        assertPageSchema("SchemaDraftAnalysisRunPage", AnalysisRunPageResponse.class);
+        assertPageSchema("SchemaDraftEvaluationRunPage", EvaluationRunPageResponse.class);
+        assertPageSchema("SchemaDraftEvaluationEligibleDocumentPage", EvaluationEligibleDocumentPageResponse.class);
+        assertPageSchema("SchemaReprocessingPlanPage", PlanPageResponse.class);
     }
 
     @Test
@@ -52,7 +60,8 @@ class SchemaDraftOpenApiContractTest {
 
         assertThat(draftSchemas).containsKeys("DraftResponse", "DraftGuidance", "DiscoveryGuidance");
         assertThat(draftSchemas.get("DraftResponse").getProperties()).containsKeys(
-            "guidance", "guidanceRevision", "guidanceFingerprint");
+            "guidance", "guidanceRevision", "guidanceFingerprint", "currentAnalysis",
+            "latestEvaluation", "latestReprocessing");
         assertThat(candidateSchemas).containsKey("CandidateResponse");
         assertThat(candidateSchemas.get("CandidateResponse").getProperties()).containsKeys(
             "recommendationState", "effectiveReviewState", "latestDecisionId", "evidence");

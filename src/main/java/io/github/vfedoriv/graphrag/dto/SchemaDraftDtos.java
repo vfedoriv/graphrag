@@ -229,8 +229,24 @@ public final class SchemaDraftDtos {
         boolean publicationContentDrifted,
         String activeAiProfileId,
         long activeAiProfileRevision,
+        AnalysisWorkflowReference currentAnalysis,
+        EvaluationWorkflowReference latestEvaluation,
+        ReprocessingWorkflowReference latestReprocessing,
         Instant createdAt,
         Instant updatedAt
+    ) { }
+
+    public record AnalysisWorkflowReference(
+        String id, SchemaDraftAnalysisStatus status, boolean current, String statusLocation
+    ) { }
+
+    public record EvaluationWorkflowReference(
+        String id, SchemaDraftEvaluationStatus status, boolean current, boolean latest, String statusLocation
+    ) { }
+
+    public record ReprocessingWorkflowReference(
+        String id, io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus status,
+        boolean targetCurrent, boolean latest, String statusLocation
     ) { }
 
     public record SourceResponse(
@@ -285,11 +301,28 @@ public final class SchemaDraftDtos {
         String aggregateRevisionId,
         String failureCategory,
         boolean retryable,
+        String retryOfRunId,
         Instant createdAt,
         Instant startedAt,
         Instant completedAt,
         SourceOutcomePageResponse sourceOutcomes
     ) { }
+
+    public record AnalysisRunSummaryResponse(
+        String id, SchemaDraftAnalysisStatus status, long draftRevision, long guidanceRevision,
+        int totalSources, int succeededSources, int failedSources, boolean current,
+        String aggregateRevisionId, String failureCategory, boolean retryable, String retryOfRunId,
+        Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation
+    ) { }
+
+    @Schema(name = "SchemaDraftAnalysisRunPage")
+    public static final class AnalysisRunPageResponse extends PageResponse<AnalysisRunSummaryResponse> {
+        public AnalysisRunPageResponse(
+            int page, int size, long totalElements, List<AnalysisRunSummaryResponse> content
+        ) {
+            super(page, size, totalElements, content);
+        }
+    }
 
     public record CandidateResponse(
         CandidateKind kind,
@@ -435,6 +468,55 @@ public final class SchemaDraftDtos {
         String failureCategory, boolean retryable, Instant createdAt, Instant startedAt, Instant completedAt,
         EvaluationOutcomePageResponse outcomes
     ) { }
+
+    public record EvaluationRunSummaryResponse(
+        String id, SchemaDraftEvaluationStatus status, long draftRevision, String aggregateRevisionId,
+        String projectionContentHash, String aiProfileId, long aiProfileRevision,
+        String promptRevision, String contractRevision, String retryOfRunId,
+        int totalDocuments, int succeededDocuments, int failedDocuments, int staleDocuments,
+        boolean current, boolean retryable, String failureCategory,
+        Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation
+    ) { }
+
+    @Schema(name = "SchemaDraftEvaluationRunPage")
+    public static final class EvaluationRunPageResponse extends PageResponse<EvaluationRunSummaryResponse> {
+        public EvaluationRunPageResponse(
+            int page, int size, long totalElements, List<EvaluationRunSummaryResponse> content
+        ) {
+            super(page, size, totalElements, content);
+        }
+    }
+
+    public enum EvaluationIneligibilityReason { ACTIVE_DISCOVERY_EVIDENCE }
+
+    public record EvaluationEligibleDocumentResponse(
+        String documentId, String filename, String contentType, long sizeBytes, String sha256,
+        Instant uploadedAt, boolean eligible, EvaluationIneligibilityReason ineligibilityReason
+    ) { }
+
+    @Schema(name = "SchemaDraftEvaluationEligibleDocumentPage")
+    public static final class EvaluationEligibleDocumentPageResponse
+        extends PageResponse<EvaluationEligibleDocumentResponse> {
+        private final long draftRevision;
+        private final String currentAggregateId;
+
+        public EvaluationEligibleDocumentPageResponse(
+            long draftRevision, String currentAggregateId, int page, int size, long totalElements,
+            List<EvaluationEligibleDocumentResponse> content
+        ) {
+            super(page, size, totalElements, content);
+            this.draftRevision = draftRevision;
+            this.currentAggregateId = currentAggregateId;
+        }
+
+        public long getDraftRevision() {
+            return draftRevision;
+        }
+
+        public String getCurrentAggregateId() {
+            return currentAggregateId;
+        }
+    }
 
     public record ReadinessBlockingReason(String id, String category, String detail) { }
 

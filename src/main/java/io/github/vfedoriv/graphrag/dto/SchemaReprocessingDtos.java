@@ -34,4 +34,19 @@ public final class SchemaReprocessingDtos {
         int succeededDocuments, int failedDocuments, int staleDocuments, int blockedDocuments,
         Instant createdAt, Instant startedAt, Instant completedAt, PlanItemPageResponse items
     ) { }
+
+    public record PlanSummaryResponse(
+        String id, SchemaReprocessingPlanStatus status, String draftId, String schemaId,
+        String schemaContentHash, String retryOfPlanId, int totalDocuments, int queuedDocuments,
+        int runningDocuments, int succeededDocuments, int failedDocuments, int staleDocuments,
+        int blockedDocuments, boolean latest, boolean targetCurrent, boolean retryable,
+        Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation
+    ) { }
+
+    @Schema(name = "SchemaReprocessingPlanPage")
+    public static final class PlanPageResponse extends PageResponse<PlanSummaryResponse> {
+        public PlanPageResponse(int page, int size, long totalElements, List<PlanSummaryResponse> content) {
+            super(page, size, totalElements, content);
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryPlanRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse;
 import io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService;
@@ -37,6 +38,16 @@ public class SchemaReprocessingPlanController {
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
     ) {
         return service.get(knowledgeBaseId, planId, page, size);
+    }
+
+    @GetMapping
+    public PlanPageResponse list(
+        @PathVariable String knowledgeBaseId,
+        @RequestParam(required = false) String draftId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return service.list(knowledgeBaseId, draftId, page, size);
     }
 
     @PostMapping("/{planId}/retry")

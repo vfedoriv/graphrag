@@ -22,4 +22,16 @@ public interface SchemaDraftSourceResultRepository extends Neo4jRepository<Schem
         MATCH (result:SchemaDraftSourceResult {runId: $runId}) RETURN count(result)
         """)
     Page<SchemaDraftSourceResultNode> findPageByRunId(String runId, Pageable pageable);
+
+    @Query("""
+        MATCH (draft:SchemaDraft {id: $draftId})
+        MATCH (aggregate:SchemaDraftAggregateRevision {id: draft.currentAggregateId, draftId: draft.id})
+        MATCH (result:SchemaDraftSourceResult {runId: aggregate.runId, status: 'SUCCEEDED'})
+        MATCH (source:SchemaDraftSource {
+            id: result.sourceId, draftId: draft.id, status: 'ACTIVE', type: 'DOCUMENT'
+        })
+        WHERE source.revision = result.sourceRevision AND source.documentId IS NOT NULL
+        RETURN DISTINCT source.documentId AS documentId
+        """)
+    List<String> findContributingDocumentIds(String draftId);
 }

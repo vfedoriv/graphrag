@@ -27,6 +27,7 @@ public class SchemaDraftAnalysisRunNode {
     private String candidateRevision;
     private String settingsFingerprint;
     private String snapshotFingerprint;
+    private String retryOfRunId;
     private String claimedBy;
     private Instant claimedAt;
     private int totalSources;

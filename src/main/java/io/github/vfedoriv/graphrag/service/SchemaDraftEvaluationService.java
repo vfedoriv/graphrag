@@ -16,13 +16,13 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationOutcomeStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceType;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomeResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationMetricsResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AdvisoryAssessmentResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationResponse;
@@ -40,7 +40,6 @@ import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationOutcomeRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
@@ -67,7 +66,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SchemaDraftEvaluationService {
     private final SchemaDraftLifecycleService lifecycleService;
     private final SchemaDraftReviewService reviewService;
-    private final SchemaDraftSourceRepository sourceRepository;
     private final DocumentUploadRepository documentRepository;
     private final SchemaDraftEvaluationRunRepository runRepository;
     private final SchemaDraftEvaluationOutcomeRepository outcomeRepository;
@@ -88,11 +86,12 @@ public class SchemaDraftEvaluationService {
     private final SchemaDraftEvaluationProperties properties;
     private final AiObservationService observationService;
     private final TaskExecutor executor;
+    private final SchemaDraftEvaluationEligibilityService eligibilityService;
+    private final SchemaDraftWorkflowNavigationService workflowNavigationService;
 
     public SchemaDraftEvaluationService(
         SchemaDraftLifecycleService lifecycleService,
         SchemaDraftReviewService reviewService,
-        SchemaDraftSourceRepository sourceRepository,
         DocumentUploadRepository documentRepository,
         SchemaDraftEvaluationRunRepository runRepository,
         SchemaDraftEvaluationOutcomeRepository outcomeRepository,
@@ -112,11 +111,12 @@ public class SchemaDraftEvaluationService {
         ObjectMapper objectMapper,
         SchemaDraftEvaluationProperties properties,
         AiObservationService observationService,
+        SchemaDraftEvaluationEligibilityService eligibilityService,
+        SchemaDraftWorkflowNavigationService workflowNavigationService,
         @Qualifier("schemaDraftEvaluationExecutor") TaskExecutor executor
     ) {
         this.lifecycleService = lifecycleService;
         this.reviewService = reviewService;
-        this.sourceRepository = sourceRepository;
         this.documentRepository = documentRepository;
         this.runRepository = runRepository;
         this.outcomeRepository = outcomeRepository;
@@ -136,6 +136,8 @@ public class SchemaDraftEvaluationService {
         this.objectMapper = objectMapper;
         this.properties = properties;
         this.observationService = observationService;
+        this.eligibilityService = eligibilityService;
+        this.workflowNavigationService = workflowNavigationService;
         this.executor = executor;
     }
 
@@ -144,9 +146,10 @@ public class SchemaDraftEvaluationService {
         String knowledgeBaseId, String draftId, StartEvaluationRequest request
     ) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, request.revision());
+        String capturedAggregateId = draft.getCurrentAggregateId();
         List<String> documentIds = distinctIds(request.documentIds());
         if (documentIds.isEmpty()) throw new IllegalArgumentException("At least one held-out document is required");
-        Set<String> evidenceDocuments = activeEvidenceDocuments(draftId);
+        Set<String> evidenceDocuments = eligibilityService.contributingDocumentIds(draftId);
         List<DocumentSnapshot> snapshots = new ArrayList<>();
         for (String documentId : documentIds) {
             DocumentUploadNode document = documentRepository.findByIdAndKnowledgeBaseId(documentId, knowledgeBaseId)
@@ -156,7 +159,11 @@ public class SchemaDraftEvaluationService {
             }
             snapshots.add(new DocumentSnapshot(document.getId(), document.getSha256()));
         }
-        return createRun(draft, snapshots, request.advisoryEnabled(), null);
+        SchemaDraftNode current = lifecycleService.requireMutable(knowledgeBaseId, draftId, request.revision());
+        if (!java.util.Objects.equals(capturedAggregateId, current.getCurrentAggregateId())) {
+            throw new ConflictException("Schema draft aggregate changed while evaluation eligibility was checked");
+        }
+        return createRun(current, snapshots, request.advisoryEnabled(), null);
     }
 
     @Transactional
@@ -185,6 +192,18 @@ public class SchemaDraftEvaluationService {
         Page<SchemaDraftEvaluationOutcomeNode> outcomes = outcomeRepository.findByRunIdOrderByDocumentIdAsc(
             runId, PageRequest.of(boundedPage, boundedSize));
         return toResponse(run, boundedPage, boundedSize, outcomes.getContent(), outcomes.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public EvaluationRunPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
+        SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
+        return workflowNavigationService.evaluationPage(draft, page, size);
+    }
+
+    public EvaluationEligibleDocumentPageResponse eligibleDocuments(
+        String knowledgeBaseId, String draftId, int page, int size
+    ) {
+        return eligibilityService.list(knowledgeBaseId, draftId, page, size);
     }
 
     private StartEvaluationResponse createRun(
@@ -451,13 +470,6 @@ public class SchemaDraftEvaluationService {
     private List<String> distinctIds(List<String> ids) {
         if (ids == null) return List.of();
         return ids.stream().map(String::strip).filter(value -> !value.isBlank()).distinct().toList();
-    }
-    private Set<String> activeEvidenceDocuments(String draftId) {
-        Set<String> ids = new LinkedHashSet<>();
-        sourceRepository.findByDraftIdAndStatusOrderByCreatedAtAsc(draftId, SchemaDraftSourceStatus.ACTIVE).stream()
-            .filter(value -> value.getType() == SchemaDraftSourceType.DOCUMENT && value.getDocumentId() != null)
-            .forEach(value -> ids.add(value.getDocumentId()));
-        return Set.copyOf(ids);
     }
     private String reuseKey(SchemaDraftEvaluationRunNode run, DocumentSnapshot snapshot) {
         return jsonSupport.fingerprint(snapshot.documentId() + snapshot.sha256() + run.getProjectionContentHash()

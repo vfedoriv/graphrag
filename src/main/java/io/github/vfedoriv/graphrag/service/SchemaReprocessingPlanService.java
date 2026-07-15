@@ -16,6 +16,8 @@ import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanSummaryResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
@@ -62,6 +64,8 @@ public class SchemaReprocessingPlanService {
     private final ObjectMapper objectMapper;
     private final TaskExecutor executor;
     private final AiObservationService observationService;
+    private final SchemaDraftLifecycleService draftLifecycleService;
+    private final SchemaDraftWorkflowNavigationService workflowNavigationService;
 
     public SchemaReprocessingPlanService(
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
@@ -76,6 +80,8 @@ public class SchemaReprocessingPlanService {
         SchemaDraftJsonSupport jsonSupport,
         ObjectMapper objectMapper,
         AiObservationService observationService,
+        SchemaDraftLifecycleService draftLifecycleService,
+        SchemaDraftWorkflowNavigationService workflowNavigationService,
         @Qualifier("schemaReprocessingExecutor") TaskExecutor executor
     ) {
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
@@ -90,6 +96,8 @@ public class SchemaReprocessingPlanService {
         this.jsonSupport = jsonSupport;
         this.objectMapper = objectMapper;
         this.observationService = observationService;
+        this.draftLifecycleService = draftLifecycleService;
+        this.workflowNavigationService = workflowNavigationService;
         this.executor = executor;
     }
 
@@ -135,6 +143,9 @@ public class SchemaReprocessingPlanService {
         SchemaDefinitionNode schema = requireActiveTarget(knowledgeBaseId, prior.getSchemaId());
         List<SchemaReprocessingItemNode> unresolved = itemRepository.findByPlanIdOrderByDocumentIdAsc(planId).stream()
             .filter(value -> value.getStatus() != SchemaReprocessingItemStatus.SUCCEEDED).toList();
+        if (unresolved.isEmpty()) {
+            throw new ConflictException("Reprocessing plan has no unresolved documents: " + planId);
+        }
         AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
         SchemaReprocessingPlanNode retry = new SchemaReprocessingPlanNode();
         retry.setId(UUID.randomUUID().toString());
@@ -169,6 +180,28 @@ public class SchemaReprocessingPlanService {
         Page<SchemaReprocessingItemNode> items = itemRepository.findByPlanIdOrderByDocumentIdAsc(
             planId, PageRequest.of(boundedPage, boundedSize));
         return toResponse(plan, boundedPage, boundedSize, items.getContent(), items.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public PlanPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
+        if (draftId != null && !draftId.isBlank()) {
+            draftLifecycleService.requireOwned(knowledgeBaseId, draftId);
+        }
+        int boundedPage = Math.max(0, page);
+        int boundedSize = Math.max(1, Math.min(100, size));
+        Page<SchemaReprocessingPlanNode> plans = draftId == null || draftId.isBlank()
+            ? planRepository.findPageByKnowledgeBaseId(knowledgeBaseId, PageRequest.of(boundedPage, boundedSize))
+            : planRepository.findPageByKnowledgeBaseIdAndDraftId(
+                knowledgeBaseId, draftId, PageRequest.of(boundedPage, boundedSize));
+        List<String> draftIds = plans.getContent().stream().map(SchemaReprocessingPlanNode::getDraftId).distinct().toList();
+        Set<String> latestIds = draftIds.isEmpty() ? Set.of() : planRepository.findLatestForDraftIds(draftIds).stream()
+            .map(SchemaReprocessingPlanNode::getId).collect(Collectors.toSet());
+        Map<String, Boolean> targetCurrent = workflowNavigationService.targetCurrent(plans.getContent());
+        List<PlanSummaryResponse> content = plans.getContent().stream()
+            .map(plan -> toSummary(
+                plan, latestIds.contains(plan.getId()), targetCurrent.getOrDefault(plan.getId(), false))).toList();
+        return new PlanPageResponse(boundedPage, boundedSize, plans.getTotalElements(), content);
     }
 
     void execute(String planId) {
@@ -344,5 +377,19 @@ public class SchemaReprocessingPlanService {
     }
     private String statusLocation(SchemaReprocessingPlanNode plan) {
         return "/api/v1/knowledge-bases/" + plan.getKnowledgeBaseId() + "/reprocessing-plans/" + plan.getId();
+    }
+
+    private PlanSummaryResponse toSummary(
+        SchemaReprocessingPlanNode plan, boolean latest, boolean targetCurrent
+    ) {
+        boolean terminal = plan.getStatus() != SchemaReprocessingPlanStatus.QUEUED
+            && plan.getStatus() != SchemaReprocessingPlanStatus.RUNNING;
+        int unresolved = plan.getTotalDocuments() - plan.getSucceededDocuments();
+        return new PlanSummaryResponse(
+            plan.getId(), plan.getStatus(), plan.getDraftId(), plan.getSchemaId(), plan.getSchemaContentHash(),
+            plan.getRetryOfPlanId(), plan.getTotalDocuments(), plan.getQueuedDocuments(), plan.getRunningDocuments(),
+            plan.getSucceededDocuments(), plan.getFailedDocuments(), plan.getStaleDocuments(),
+            plan.getBlockedDocuments(), latest, targetCurrent, terminal && targetCurrent && unresolved > 0,
+            plan.getCreatedAt(), plan.getStartedAt(), plan.getCompletedAt(), statusLocation(plan));
     }
 }
