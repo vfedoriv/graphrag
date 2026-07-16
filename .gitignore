@@ -2,6 +2,7 @@ target/
 var/
 graphify-out/cost.json
 graphify-out/cache/
+.understand-anything/.trash-*/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
