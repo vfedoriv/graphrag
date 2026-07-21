@@ -15,6 +15,8 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationIneligibilityReason;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DiffResponse;
+import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -93,6 +95,25 @@ class SchemaDraftOpenApiContractTest {
             .contains("immutable aggregate revision");
         assertThat(((Schema) conflict.getProperties().get("current")).getDescription())
             .contains("currently promoted aggregate");
+    }
+
+    @Test
+    void documentsRevisionBoundDiffBaselineContract() {
+        assertThat(List.of(DiffBaselineType.values())).extracting(Enum::name)
+            .containsExactly("BASE_SCHEMA", "PREVIOUS_AGGREGATE", "EMPTY");
+        Map<String, Schema> schemas = ModelConverters.getInstance().readAll(DiffResponse.class);
+        Schema response = schemas.get("DiffResponse");
+        Schema baseline = schemas.get("DiffBaseline");
+
+        assertThat(response.getProperties()).containsKeys("aggregateRevisionId", "draftRevision", "baseline", "changes");
+        assertThat(response.getDescription()).contains("strict-client");
+        assertThat(baseline.getProperties()).containsKeys("type", "id", "contentHash");
+        assertThat(((Schema) baseline.getProperties().get("type")).getEnum())
+            .containsExactly("BASE_SCHEMA", "PREVIOUS_AGGREGATE", "EMPTY");
+        assertThat(((Schema) baseline.getProperties().get("id")).getDescription())
+            .contains("null for EMPTY");
+        assertThat(((Schema) baseline.getProperties().get("contentHash")).getDescription())
+            .contains("SHA-256", "canonical JSON");
     }
 
     @Test

@@ -380,10 +380,7 @@ public class SchemaDraftAnalysisService {
         if (!membershipFingerprint(activeSources(run.getDraftId())).equals(run.getSourceMembershipFingerprint())) {
             return false;
         }
-        draft.setCurrentAggregateId(aggregate.getId());
-        draft.setUpdatedAt(Instant.now());
-        draftRepository.save(draft);
-        return true;
+        return reviewService.promoteIfRevisionCurrent(run.getDraftId(), aggregate.getId(), run.getDraftRevision());
     }
 
     private void persistSuccess(

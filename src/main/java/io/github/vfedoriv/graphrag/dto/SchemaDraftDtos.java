@@ -14,6 +14,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftCompatibility;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionType;
+import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftReviewState;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceResultStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
@@ -406,7 +407,29 @@ public final class SchemaDraftDtos {
 
     public record ProjectionResponse(String aggregateRevisionId, long draftRevision, Object schema, boolean publicationReady) { }
     public record DiffItem(String coordinate, SchemaDraftCompatibility compatibility, String operation, Object before, Object after) { }
-    public record DiffResponse(String aggregateRevisionId, List<DiffItem> changes) { }
+    @Schema(description = "Immutable comparison baseline used to produce the before side of a schema-draft diff.")
+    public record DiffBaseline(
+        @Schema(description = "Kind of immutable comparison baseline.", example = "PREVIOUS_AGGREGATE")
+        DiffBaselineType type,
+        @Schema(description = "Base schema ID for BASE_SCHEMA, predecessor aggregate ID for PREVIOUS_AGGREGATE, "
+            + "and null for EMPTY.", nullable = true,
+            example = "4f3e8c25-ecaa-41e3-8cf1-58822a93085d")
+        String id,
+        @Schema(description = "Lowercase SHA-256 hash of the exact canonical JSON comparison content.",
+            example = "2e1cfa82b035c26cbd95ef85d56f9f635af58a71d92e4a43db6f3f3bbbeadca2")
+        String contentHash
+    ) { }
+
+    @Schema(description = "Revision-bound compatibility diff. Deploy strict-client support for draftRevision and "
+        + "baseline before rolling out this expanded response.")
+    public record DiffResponse(
+        @Schema(description = "Identifier of the current aggregate used for the reviewed projection.")
+        String aggregateRevisionId,
+        @Schema(description = "Draft decision revision used to compute the reviewed projection.", example = "3")
+        long draftRevision,
+        DiffBaseline baseline,
+        List<DiffItem> changes
+    ) { }
 
     public record StartEvaluationRequest(
         @PositiveOrZero long revision,

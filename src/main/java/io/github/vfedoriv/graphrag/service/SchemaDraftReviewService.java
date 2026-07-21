@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Candidate;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.CandidateKind;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftCompatibility;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
@@ -23,6 +24,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidateResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DiffItem;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DiffBaseline;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DiffResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ResolveConflictRequest;
@@ -204,8 +206,10 @@ public class SchemaDraftReviewService {
     @Transactional(readOnly = true)
     public DiffResponse diff(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
+        SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
         ProjectionResponse projection = projection(knowledgeBaseId, draftId);
-        JsonNode before = comparisonSchema(draft);
+        BaselineSnapshot baseline = comparisonBaseline(draft, aggregate);
+        JsonNode before = jsonSupport.parse(baseline.schemaJson());
         Map<String, JsonNode> oldValues = flatten(before);
         Map<String, JsonNode> newValues = flatten(objectMapper.valueToTree(projection.schema()));
         Set<String> coordinates = new java.util.TreeSet<>();
@@ -222,7 +226,29 @@ public class SchemaDraftReviewService {
             changes.add(new DiffItem(coordinate, classify(coordinate, oldValue, newValue), operation,
                 toPlain(oldValue), toPlain(newValue)));
         }
-        return new DiffResponse(projection.aggregateRevisionId(), List.copyOf(changes));
+        return new DiffResponse(projection.aggregateRevisionId(), projection.draftRevision(),
+            new DiffBaseline(baseline.type(), baseline.id(), baseline.contentHash()), List.copyOf(changes));
+    }
+
+    @Transactional
+    public boolean promoteIfRevisionCurrent(String draftId, String aggregateId, long expectedDraftRevision) {
+        SchemaDraftNode draft = draftRepository.findById(draftId).orElse(null);
+        if (draft == null || draft.getRevision() != expectedDraftRevision) {
+            return false;
+        }
+        SchemaDraftAggregateRevisionNode aggregate = aggregateRepository.findById(aggregateId).orElseThrow();
+        if (aggregate.getDiffBaselineType() == null) {
+            BaselineSnapshot baseline = promotionBaseline(draft);
+            aggregate.setDiffBaselineType(baseline.type());
+            aggregate.setDiffBaselineId(baseline.id());
+            aggregate.setDiffBaselineSchemaJson(baseline.schemaJson());
+            aggregate.setDiffBaselineContentHash(baseline.contentHash());
+            aggregateRepository.save(aggregate);
+        }
+        draft.setCurrentAggregateId(aggregateId);
+        draft.setUpdatedAt(Instant.now());
+        draftRepository.save(draft);
+        return true;
     }
 
     @Transactional
@@ -274,7 +300,12 @@ public class SchemaDraftReviewService {
     }
 
     private List<Candidate> effectiveCandidates(SchemaDraftNode draft) {
-        SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
+        return effectiveCandidates(draft, currentAggregate(draft));
+    }
+
+    private List<Candidate> effectiveCandidates(
+        SchemaDraftNode draft, SchemaDraftAggregateRevisionNode aggregate
+    ) {
         List<Candidate> values = readCandidates(aggregate.getCandidatesJson());
         Map<String, Candidate> candidates = new TreeMap<>();
         inherited(draft).forEach(value -> candidates.put(value.identity(), value));
@@ -395,15 +426,54 @@ public class SchemaDraftReviewService {
         return schema;
     }
 
-    private JsonNode comparisonSchema(SchemaDraftNode draft) {
+    private BaselineSnapshot promotionBaseline(SchemaDraftNode draft) {
         if (draft.getBaseSchemaId() != null) {
-            return jsonSupport.parse(schemaRepository.findById(draft.getBaseSchemaId()).orElseThrow().getContent());
+            String schemaJson = canonicalSchema(schemaRepository.findById(draft.getBaseSchemaId()).orElseThrow().getContent());
+            return baseline(DiffBaselineType.BASE_SCHEMA, draft.getBaseSchemaId(), schemaJson);
         }
-        List<SchemaDraftAggregateRevisionNode> revisions = aggregateRepository.findByDraftIdOrderByRevisionDesc(draft.getId());
-        if (revisions.size() > 1) {
-            return jsonSupport.parse(revisions.get(1).getSchemaJson());
+        if (draft.getCurrentAggregateId() != null) {
+            SchemaDraftAggregateRevisionNode previous = currentAggregate(draft);
+            String schemaJson = jsonSupport.canonical(project(draft, applyDecisions(
+                draft, effectiveCandidates(draft, previous))));
+            return baseline(DiffBaselineType.PREVIOUS_AGGREGATE, previous.getId(), schemaJson);
         }
-        return objectMapper.createObjectNode();
+        return emptyBaseline();
+    }
+
+    private BaselineSnapshot comparisonBaseline(
+        SchemaDraftNode draft, SchemaDraftAggregateRevisionNode aggregate
+    ) {
+        if (aggregate.getDiffBaselineType() != null) {
+            return new BaselineSnapshot(aggregate.getDiffBaselineType(), aggregate.getDiffBaselineId(),
+                aggregate.getDiffBaselineSchemaJson(), aggregate.getDiffBaselineContentHash());
+        }
+        if (draft.getBaseSchemaId() != null) {
+            String schemaJson = canonicalSchema(schemaRepository.findById(draft.getBaseSchemaId()).orElseThrow().getContent());
+            return baseline(DiffBaselineType.BASE_SCHEMA, draft.getBaseSchemaId(), schemaJson);
+        }
+        SchemaDraftAggregateRevisionNode previous = aggregateRepository
+            .findLegacyPreviousPromoted(draft.getId(), aggregate.getId()).orElse(null);
+        if (previous == null) {
+            previous = aggregateRepository.findByDraftIdOrderByRevisionDesc(draft.getId()).stream()
+                .filter(value -> value.getRevision() < aggregate.getRevision()).findFirst().orElse(null);
+        }
+        if (previous != null) {
+            String schemaJson = canonicalSchema(previous.getSchemaJson());
+            return baseline(DiffBaselineType.PREVIOUS_AGGREGATE, previous.getId(), schemaJson);
+        }
+        return emptyBaseline();
+    }
+
+    private BaselineSnapshot emptyBaseline() {
+        return baseline(DiffBaselineType.EMPTY, null, jsonSupport.canonical(objectMapper.createObjectNode()));
+    }
+
+    private BaselineSnapshot baseline(DiffBaselineType type, String id, String schemaJson) {
+        return new BaselineSnapshot(type, id, schemaJson, jsonSupport.fingerprint(schemaJson));
+    }
+
+    private String canonicalSchema(String schemaJson) {
+        return jsonSupport.canonical(jsonSupport.parse(schemaJson));
     }
 
     private Map<String, JsonNode> flatten(JsonNode schema) {
@@ -537,4 +607,5 @@ public class SchemaDraftReviewService {
 
     private <T> List<T> safe(List<T> values) { return values == null ? List.of() : values; }
     private Iterable<JsonNode> iterable(JsonNode value) { return value != null && value.isArray() ? value : List.of(); }
+    private record BaselineSnapshot(DiffBaselineType type, String id, String schemaJson, String contentHash) { }
 }

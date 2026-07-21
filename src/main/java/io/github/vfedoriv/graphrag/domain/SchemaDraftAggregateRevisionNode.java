@@ -21,6 +21,10 @@ public class SchemaDraftAggregateRevisionNode {
     private String warningsJson;
     private String schemaJson;
     private String contentHash;
+    private DiffBaselineType diffBaselineType;
+    private String diffBaselineId;
+    private String diffBaselineSchemaJson;
+    private String diffBaselineContentHash;
     private boolean partial;
     private Instant createdAt;
 }

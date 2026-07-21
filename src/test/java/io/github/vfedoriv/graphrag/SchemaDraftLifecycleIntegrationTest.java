@@ -16,8 +16,10 @@ import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
@@ -33,6 +35,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
 import java.time.Duration;
@@ -96,6 +99,7 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private Neo4jClient neo4jClient;
     @Autowired private SchemaRegistryService schemaRegistryService;
+    @Autowired private SchemaDraftReviewService reviewService;
     @Autowired private DocumentUploadService documentUploadService;
     @Autowired private SchemaDraftRepository draftRepository;
     @Autowired private SchemaDraftSourceRepository sourceRepository;
@@ -231,6 +235,28 @@ class SchemaDraftLifecycleIntegrationTest {
             .andReturn();
         assertThat(secondDiff.getResponse().getContentAsString())
             .isEqualTo(firstDiff.getResponse().getContentAsString());
+        JsonNode firstDiffJson = json(firstDiff);
+        assertThat(firstDiffJson.path("draftRevision").asLong()).isEqualTo(2);
+        assertThat(firstDiffJson.path("baseline").path("type").asText()).isEqualTo("BASE_SCHEMA");
+        assertThat(firstDiffJson.path("baseline").path("id").asText()).isEqualTo(base.getId());
+        SchemaDraftAggregateRevisionNode snapshotted = aggregateRepository
+            .findById(firstDiffJson.path("aggregateRevisionId").asText()).orElseThrow();
+        assertThat(snapshotted.getDiffBaselineType()).isEqualTo(DiffBaselineType.BASE_SCHEMA);
+        assertThat(firstDiffJson.path("baseline").path("contentHash").asText())
+            .isEqualTo(snapshotted.getDiffBaselineContentHash());
+
+        schemaRegistryService.updateSchema(base.getId(), """
+            {"name":"people","version":1,"nodes":[{"label":"Person","key":["personId"],
+            "properties":[{"name":"personId","type":"STRING","required":true},
+            {"name":"status","type":"STRING","required":false}]}],"relationships":[]}
+            """, SchemaSourceType.PREDEFINED);
+        JsonNode afterBaseEdit = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/diff",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(afterBaseEdit.path("baseline")).isEqualTo(firstDiffJson.path("baseline"));
+        assertThat(aggregateRepository.findById(snapshotted.getId()).orElseThrow().getDiffBaselineSchemaJson())
+            .isEqualTo(snapshotted.getDiffBaselineSchemaJson());
 
         JsonNode updated = json(mockMvc.perform(put(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/guidance",
@@ -302,6 +328,85 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(history.get(0).path("current").asBoolean()).isFalse();
         assertThat(history.get(1).path("current").asBoolean()).isTrue();
         assertThat(history.get(3).path("current").asBoolean()).isFalse();
+    }
+
+    @Test
+    void snapshotsEmptyAndActualPreviousPromotionWhileIgnoringRetainedAggregates() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"baseline-lineage\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        saveAggregate(draftId, "aggregate-first", 1);
+
+        assertThat(reviewService.promoteIfRevisionCurrent(draftId, "aggregate-first", 0)).isTrue();
+        JsonNode firstDiff = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/diff",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(firstDiff.path("baseline").path("type").asText()).isEqualTo("EMPTY");
+        assertThat(firstDiff.path("baseline").path("id").isNull()).isTrue();
+        assertThat(firstDiff.path("baseline").path("contentHash").asText())
+            .isEqualTo("44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a");
+
+        saveAggregate(draftId, "aggregate-retained", 2);
+        saveAggregate(draftId, "aggregate-successor", 3);
+        assertThat(reviewService.promoteIfRevisionCurrent(draftId, "aggregate-successor", 0)).isTrue();
+
+        SchemaDraftAggregateRevisionNode successor = aggregateRepository.findById("aggregate-successor").orElseThrow();
+        assertThat(successor.getDiffBaselineType()).isEqualTo(DiffBaselineType.PREVIOUS_AGGREGATE);
+        assertThat(successor.getDiffBaselineId()).isEqualTo("aggregate-first");
+        assertThat(successor.getDiffBaselineId()).isNotEqualTo("aggregate-retained");
+        String immutableSnapshot = successor.getDiffBaselineSchemaJson();
+        String immutableHash = successor.getDiffBaselineContentHash();
+
+        SchemaDraftAggregateRevisionNode first = aggregateRepository.findById("aggregate-first").orElseThrow();
+        first.setSchemaJson("{\"nodes\":[{\"label\":\"Changed\"}],\"relationships\":[]}");
+        aggregateRepository.save(first);
+        JsonNode successorDiff = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/diff",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(successorDiff.path("baseline").path("type").asText()).isEqualTo("PREVIOUS_AGGREGATE");
+        assertThat(successorDiff.path("baseline").path("id").asText()).isEqualTo("aggregate-first");
+        assertThat(successorDiff.path("baseline").path("contentHash").asText()).isEqualTo(immutableHash);
+        assertThat(aggregateRepository.findById("aggregate-successor").orElseThrow().getDiffBaselineSchemaJson())
+            .isEqualTo(immutableSnapshot);
+    }
+
+    @Test
+    void resolvesLegacyBaselineFromPriorPromotedEvidenceBeforeRevisionOrder() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"legacy-baseline\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        saveAggregate(draftId, "aggregate-promoted", 1);
+        saveAggregate(draftId, "aggregate-retained", 2);
+        saveAggregate(draftId, "aggregate-legacy-current", 3);
+        SchemaDraftAnalysisRunNode promotedRun = new SchemaDraftAnalysisRunNode();
+        promotedRun.setId("run-promoted");
+        promotedRun.setDraftId(draftId);
+        promotedRun.setAggregateRevisionId("aggregate-promoted");
+        promotedRun.setCurrentResult(true);
+        promotedRun.setCreatedAt(Instant.parse("2026-07-01T00:00:00Z"));
+        runRepository.save(promotedRun);
+        SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
+        draft.setCurrentAggregateId("aggregate-legacy-current");
+        draftRepository.save(draft);
+
+        JsonNode first = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/diff",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode second = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/diff",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+
+        assertThat(first).isEqualTo(second);
+        assertThat(first.path("baseline").path("type").asText()).isEqualTo("PREVIOUS_AGGREGATE");
+        assertThat(first.path("baseline").path("id").asText()).isEqualTo("aggregate-promoted");
+        assertThat(first.path("baseline").path("id").asText()).isNotEqualTo("aggregate-retained");
+        assertThat(first.path("changes")).isEqualTo(second.path("changes"));
     }
 
     @Test

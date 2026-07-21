@@ -272,6 +272,13 @@ public class SchemaDraftController {
     }
 
     @GetMapping("/{draftId}/diff")
+    @Operation(
+        summary = "Get the schema draft compatibility diff",
+        description = "Returns a diff bound to the current aggregate and draft revision. The baseline descriptor "
+            + "identifies an immutable BASE_SCHEMA, PREVIOUS_AGGREGATE, or EMPTY snapshot; baseline.id is null only "
+            + "for EMPTY and baseline.contentHash is the SHA-256 of the exact canonical comparison JSON. This response "
+            + "expands the prior contract, so strict clients must accept draftRevision and baseline before deployment."
+    )
     public DiffResponse diff(@PathVariable String knowledgeBaseId, @PathVariable String draftId) {
         return reviewService.diff(knowledgeBaseId, draftId);
     }
