@@ -5,6 +5,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationIneligibilityReason;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
+import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
 import java.util.Set;
@@ -38,22 +40,51 @@ public class SchemaDraftEvaluationEligibilityService {
         int boundedSize = Math.max(1, Math.min(100, size));
         Page<DocumentUploadNode> documents = documentRepository.findPageByKnowledgeBaseId(
             knowledgeBaseId, PageRequest.of(boundedPage, boundedSize));
-        Set<String> contributing = contributingDocumentIds(draftId);
+        EligibilitySnapshot eligibility = resolve(draft);
         return new EvaluationEligibleDocumentPageResponse(
-            draft.getRevision(), draft.getCurrentAggregateId(), boundedPage, boundedSize, documents.getTotalElements(),
-            documents.getContent().stream().map(document -> response(document, contributing)).toList());
+            draft.getRevision(), draft.getCurrentAggregateId(), eligibility.readiness(), eligibility.blockingReason(),
+            boundedPage, boundedSize, documents.getTotalElements(),
+            documents.getContent().stream().map(document -> response(document, eligibility)).toList());
     }
 
     @Transactional(readOnly = true)
-    public Set<String> contributingDocumentIds(String draftId) {
-        return Set.copyOf(resultRepository.findContributingDocumentIds(draftId));
+    public EligibilitySnapshot resolve(SchemaDraftNode draft) {
+        if (draft.getCurrentAggregateId() == null || draft.getCurrentAggregateId().isBlank()) {
+            return new EligibilitySnapshot(
+                EvaluationReadiness.NOT_READY, EvaluationIneligibilityReason.DRAFT_ANALYSIS_REQUIRED,
+                Set.of(), Set.of());
+        }
+        return new EligibilitySnapshot(
+            EvaluationReadiness.READY, null,
+            Set.copyOf(resultRepository.findContributingSourceSha256s(draft.getId())),
+            Set.copyOf(resultRepository.findHistoricalContributingDocumentIds(draft.getId())));
     }
 
-    private EvaluationEligibleDocumentResponse response(DocumentUploadNode document, Set<String> contributing) {
-        boolean eligible = !contributing.contains(document.getId());
+    public void requireReady(EligibilitySnapshot eligibility) {
+        if (eligibility.readiness() != EvaluationReadiness.READY) {
+            throw new ConflictException("Schema draft analysis is required before held-out evaluation can start");
+        }
+    }
+
+    public boolean isEligible(DocumentUploadNode document, EligibilitySnapshot eligibility) {
+        return eligibility.readiness() == EvaluationReadiness.READY
+            && !eligibility.contributingSha256s().contains(document.getSha256())
+            && !eligibility.historicalDocumentIds().contains(document.getId());
+    }
+
+    private EvaluationEligibleDocumentResponse response(DocumentUploadNode document, EligibilitySnapshot eligibility) {
+        boolean eligible = isEligible(document, eligibility);
+        EvaluationIneligibilityReason reason = eligibility.readiness() == EvaluationReadiness.READY
+            ? EvaluationIneligibilityReason.ACTIVE_DISCOVERY_EVIDENCE
+            : eligibility.blockingReason();
         return new EvaluationEligibleDocumentResponse(
             document.getId(), document.getOriginalFilename(), document.getContentType(), document.getSizeBytes(),
             document.getSha256(), document.getUploadedAt(), eligible,
-            eligible ? null : EvaluationIneligibilityReason.ACTIVE_DISCOVERY_EVIDENCE);
+            eligible ? null : reason);
     }
+
+    public record EligibilitySnapshot(
+        EvaluationReadiness readiness, EvaluationIneligibilityReason blockingReason,
+        Set<String> contributingSha256s, Set<String> historicalDocumentIds
+    ) { }
 }

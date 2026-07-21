@@ -11,6 +11,8 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationIneligibilityReason;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -51,6 +53,16 @@ class SchemaDraftOpenApiContractTest {
             .containsExactly("NOT_REQUESTED", "COMPLETED", "COMPLETED_WITHOUT_MODEL_JUDGMENT", "FAILED");
         assertThat(((Schema) schemas.get("QuestionAssessmentResponse").getProperties().get("coverage")).getEnum())
             .containsExactly("SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "UNASSESSED");
+        assertThat(List.of(EvaluationReadiness.values())).extracting(Enum::name)
+            .containsExactly("READY", "NOT_READY");
+        assertThat(List.of(EvaluationIneligibilityReason.values())).extracting(Enum::name)
+            .containsExactly("ACTIVE_DISCOVERY_EVIDENCE", "DRAFT_ANALYSIS_REQUIRED");
+
+        Map<String, Schema> eligibilitySchemas = ModelConverters.getInstance()
+            .readAll(EvaluationEligibleDocumentPageResponse.class);
+        assertThat(eligibilitySchemas.get("SchemaDraftEvaluationEligibleDocumentPage").getProperties())
+            .containsKeys("draftRevision", "currentAggregateId", "readiness", "blockingReason",
+                "page", "size", "totalElements", "content");
     }
 
     @Test

@@ -34,6 +34,7 @@ import io.github.vfedoriv.graphrag.service.SchemaDraftSourceService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftEvaluationService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftPublicationService;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -263,6 +264,12 @@ public class SchemaDraftController {
     }
 
     @PostMapping("/{draftId}/evaluation-runs")
+    @Operation(
+        summary = "Start held-out schema draft evaluation",
+        description = "Starts evaluation only when discovery analysis is current and every selected document has "
+            + "a SHA-256 that did not successfully contribute to the current draft aggregate. Exact binary hashes "
+            + "are compared across DOCUMENT, FILE, and TEXT discovery sources."
+    )
     public ResponseEntity<StartEvaluationResponse> startEvaluation(
         @PathVariable String knowledgeBaseId, @PathVariable String draftId,
         @Valid @RequestBody StartEvaluationRequest request
@@ -288,6 +295,12 @@ public class SchemaDraftController {
     }
 
     @GetMapping("/{draftId}/evaluation-eligible-documents")
+    @Operation(
+        summary = "List held-out evaluation candidates",
+        description = "Returns knowledge-base documents with draft-wide evaluation readiness and per-document "
+            + "eligibility. ACTIVE_DISCOVERY_EVIDENCE means the exact SHA-256 contributed to the current aggregate. "
+            + "DRAFT_ANALYSIS_REQUIRED means discovery must be analyzed again before any document can be selected."
+    )
     public EvaluationEligibleDocumentPageResponse evaluationEligibleDocuments(
         @PathVariable String knowledgeBaseId, @PathVariable String draftId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size

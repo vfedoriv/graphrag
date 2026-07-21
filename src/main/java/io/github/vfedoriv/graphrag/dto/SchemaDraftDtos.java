@@ -487,7 +487,9 @@ public final class SchemaDraftDtos {
         }
     }
 
-    public enum EvaluationIneligibilityReason { ACTIVE_DISCOVERY_EVIDENCE }
+    public enum EvaluationReadiness { READY, NOT_READY }
+
+    public enum EvaluationIneligibilityReason { ACTIVE_DISCOVERY_EVIDENCE, DRAFT_ANALYSIS_REQUIRED }
 
     public record EvaluationEligibleDocumentResponse(
         String documentId, String filename, String contentType, long sizeBytes, String sha256,
@@ -499,14 +501,19 @@ public final class SchemaDraftDtos {
         extends PageResponse<EvaluationEligibleDocumentResponse> {
         private final long draftRevision;
         private final String currentAggregateId;
+        private final EvaluationReadiness readiness;
+        private final EvaluationIneligibilityReason blockingReason;
 
         public EvaluationEligibleDocumentPageResponse(
-            long draftRevision, String currentAggregateId, int page, int size, long totalElements,
+            long draftRevision, String currentAggregateId, EvaluationReadiness readiness,
+            EvaluationIneligibilityReason blockingReason, int page, int size, long totalElements,
             List<EvaluationEligibleDocumentResponse> content
         ) {
             super(page, size, totalElements, content);
             this.draftRevision = draftRevision;
             this.currentAggregateId = currentAggregateId;
+            this.readiness = readiness;
+            this.blockingReason = blockingReason;
         }
 
         public long getDraftRevision() {
@@ -515,6 +522,14 @@ public final class SchemaDraftDtos {
 
         public String getCurrentAggregateId() {
             return currentAggregateId;
+        }
+
+        public EvaluationReadiness getReadiness() {
+            return readiness;
+        }
+
+        public EvaluationIneligibilityReason getBlockingReason() {
+            return blockingReason;
         }
     }
 

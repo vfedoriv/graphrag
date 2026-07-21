@@ -27,11 +27,20 @@ public interface SchemaDraftSourceResultRepository extends Neo4jRepository<Schem
         MATCH (draft:SchemaDraft {id: $draftId})
         MATCH (aggregate:SchemaDraftAggregateRevision {id: draft.currentAggregateId, draftId: draft.id})
         MATCH (result:SchemaDraftSourceResult {runId: aggregate.runId, status: 'SUCCEEDED'})
-        MATCH (source:SchemaDraftSource {
-            id: result.sourceId, draftId: draft.id, status: 'ACTIVE', type: 'DOCUMENT'
-        })
-        WHERE source.revision = result.sourceRevision AND source.documentId IS NOT NULL
-        RETURN DISTINCT source.documentId AS documentId
+        WHERE trim(coalesce(result.sourceSha256, '')) <> ''
+        RETURN DISTINCT result.sourceSha256 AS sourceSha256
         """)
-    List<String> findContributingDocumentIds(String draftId);
+    List<String> findContributingSourceSha256s(String draftId);
+
+    @Query("""
+        MATCH (draft:SchemaDraft {id: $draftId})
+        MATCH (aggregate:SchemaDraftAggregateRevision {id: draft.currentAggregateId, draftId: draft.id})
+        MATCH (result:SchemaDraftSourceResult {runId: aggregate.runId, status: 'SUCCEEDED'})
+        MATCH (revision:SchemaDraftSourceRevision {
+            draftId: draft.id, sourceId: result.sourceId, revision: result.sourceRevision
+        })
+        WHERE trim(coalesce(result.sourceSha256, '')) = '' AND revision.documentId IS NOT NULL
+        RETURN DISTINCT revision.documentId AS documentId
+        """)
+    List<String> findHistoricalContributingDocumentIds(String draftId);
 }

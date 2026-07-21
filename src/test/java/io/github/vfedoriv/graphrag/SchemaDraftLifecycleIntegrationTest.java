@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +27,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
@@ -93,6 +95,7 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private DocumentUploadService documentUploadService;
     @Autowired private SchemaDraftRepository draftRepository;
     @Autowired private SchemaDraftSourceRepository sourceRepository;
+    @Autowired private SchemaDraftSourceResultRepository sourceResultRepository;
     @Autowired private SchemaDraftAnalysisRunRepository runRepository;
     @Autowired private SchemaDraftAggregateRevisionRepository aggregateRepository;
     @Autowired private SchemaDraftDecisionRepository decisionRepository;
@@ -431,6 +434,8 @@ class SchemaDraftLifecycleIntegrationTest {
             .andExpect(status().isOk()).andReturn());
         JsonNode evidenceEligibility = findDocument(eligibility.path("content"), evidence.getId());
         JsonNode heldOutEligibility = findDocument(eligibility.path("content"), heldOut.getId());
+        assertThat(eligibility.path("readiness").asText()).isEqualTo("READY");
+        assertThat(eligibility.path("blockingReason").isNull()).isTrue();
         assertThat(evidenceEligibility.path("eligible").asBoolean()).isFalse();
         assertThat(evidenceEligibility.path("ineligibilityReason").asText())
             .isEqualTo("ACTIVE_DISCOVERY_EVIDENCE");
@@ -445,13 +450,13 @@ class SchemaDraftLifecycleIntegrationTest {
             evidence.getId(), false);
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
             "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.revision = 1",
-            evidence.getId(), true);
+            evidence.getId(), false);
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
             "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.revision = 0, source.status = 'REMOVED'",
-            evidence.getId(), true);
+            evidence.getId(), false);
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
             "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.status = 'ACTIVE', source.type = 'TEXT'",
-            evidence.getId(), true);
+            evidence.getId(), false);
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
             "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.type = 'DOCUMENT'",
             evidence.getId(), false);
@@ -518,6 +523,148 @@ class SchemaDraftLifecycleIntegrationTest {
         mockMvc.perform(get("/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans", KNOWLEDGE_BASE_ID)
                 .param("draftId", "foreign-draft"))
             .andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    void excludesSuccessfulDiscoveryContentAcrossDocumentFileAndTextSources() throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"content-boundaries\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        byte[] documentBytes = "Person DOCUMENT-1 discovery".getBytes();
+        byte[] fileBytes = "Person FILE-1 discovery".getBytes();
+        String text = "Person TEXT-1 discovery";
+        DocumentUploadNode documentEvidence = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "document.txt", "text/plain", documentBytes));
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/documents",
+            "{\"revision\":0,\"documentId\":\"%s\"}".formatted(documentEvidence.getId()),
+            KNOWLEDGE_BASE_ID, draftId);
+        mockMvc.perform(multipart(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/files",
+                KNOWLEDGE_BASE_ID, draftId)
+                .file(new MockMultipartFile("file", "file.txt", "text/plain", fileBytes))
+                .param("revision", "1"))
+            .andExpect(status().isOk());
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":2,\"name\":\"text\",\"text\":\"%s\"}".formatted(text),
+            KNOWLEDGE_BASE_ID, draftId);
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":3}", KNOWLEDGE_BASE_ID, draftId));
+        awaitTerminal(draftId, analysis.path("runId").asText());
+
+        DocumentUploadNode fileEvidence = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "uploaded-file.txt", "text/plain", fileBytes));
+        DocumentUploadNode textEvidence = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "uploaded-text.txt", "text/plain", text.getBytes()));
+        DocumentUploadNode unrelated = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "unrelated.txt", "text/plain", "Person HELD-OUT".getBytes()));
+        neo4jClient.query("""
+            CREATE (:SchemaDraftSourceResult {
+                id: 'non-current-result', draftId: $draftId, runId: 'non-current-run',
+                sourceId: 'non-current-source', sourceRevision: 0, sourceSha256: $sha256, status: 'SUCCEEDED'
+            })
+            """).bind(draftId).to("draftId").bind(unrelated.getSha256()).to("sha256").run();
+
+        JsonNode eligibility = eligibility(draftId);
+        assertThat(List.of(documentEvidence, fileEvidence, textEvidence)).allSatisfy(document -> {
+            JsonNode item = findDocument(eligibility.path("content"), document.getId());
+            assertThat(item.path("eligible").asBoolean()).isFalse();
+            assertThat(item.path("ineligibilityReason").asText()).isEqualTo("ACTIVE_DISCOVERY_EVIDENCE");
+        });
+        assertThat(findDocument(eligibility.path("content"), unrelated.getId()).path("eligible").asBoolean()).isTrue();
+        assertThat(sourceResultRepository.findContributingSourceSha256s(draftId))
+            .containsExactlyInAnyOrder(documentEvidence.getSha256(), fileEvidence.getSha256(), textEvidence.getSha256());
+        long evaluationRunCount = countNodes("SchemaDraftEvaluationRun");
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+                KNOWLEDGE_BASE_ID, draftId).contentType("application/json")
+                .content("{\"revision\":3,\"documentIds\":[\"%s\"],\"advisoryEnabled\":false}"
+                    .formatted(fileEvidence.getId())))
+            .andExpect(status().isBadRequest());
+        assertThat(countNodes("SchemaDraftEvaluationRun")).isEqualTo(evaluationRunCount);
+
+        neo4jClient.query("""
+            MATCH (result:SchemaDraftSourceResult {runId: $runId})
+            WHERE result.sourceSha256 = $sha256
+            SET result.status = 'FAILED'
+            """).bind(analysis.path("runId").asText()).to("runId")
+            .bind(fileEvidence.getSha256()).to("sha256").run();
+        assertThat(findDocument(eligibility(draftId).path("content"), fileEvidence.getId())
+            .path("eligible").asBoolean()).isTrue();
+
+        neo4jClient.query("""
+            MATCH (result:SchemaDraftSourceResult {runId: $runId})
+            WHERE result.sourceSha256 = $sha256
+            REMOVE result.sourceSha256
+            """).bind(analysis.path("runId").asText()).to("runId")
+            .bind(documentEvidence.getSha256()).to("sha256").run();
+        assertThat(sourceResultRepository.findHistoricalContributingDocumentIds(draftId))
+            .containsExactly(documentEvidence.getId());
+        assertThat(findDocument(eligibility(draftId).path("content"), documentEvidence.getId())
+            .path("eligible").asBoolean()).isFalse();
+    }
+
+    @Test
+    void requiresCurrentAnalysisBeforeListingOrStartingHeldOutEvaluation() throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"analysis-required\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        DocumentUploadNode candidate = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "candidate.txt", "text/plain", "Person CANDIDATE".getBytes()));
+
+        JsonNode eligibility = eligibility(draftId);
+        assertThat(eligibility.path("readiness").asText()).isEqualTo("NOT_READY");
+        assertThat(eligibility.path("blockingReason").asText()).isEqualTo("DRAFT_ANALYSIS_REQUIRED");
+        assertThat(eligibility.path("totalElements").asLong()).isEqualTo(1);
+        assertThat(eligibility.path("content").get(0).path("eligible").asBoolean()).isFalse();
+        assertThat(eligibility.path("content").get(0).path("ineligibilityReason").asText())
+            .isEqualTo("DRAFT_ANALYSIS_REQUIRED");
+
+        long runCount = countNodes("SchemaDraftEvaluationRun");
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+                KNOWLEDGE_BASE_ID, draftId).contentType("application/json")
+                .content("{\"revision\":0,\"documentIds\":[\"%s\"],\"advisoryEnabled\":false}"
+                    .formatted(candidate.getId())))
+            .andExpect(status().isConflict());
+        assertThat(countNodes("SchemaDraftEvaluationRun")).isEqualTo(runCount);
+        assertThat(MODEL_ENTERED.getCount()).isEqualTo(1);
+    }
+
+    @Test
+    void normalDocumentUploadAndProcessingDoNotMutateDraftAnalysisState() throws Exception {
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
+            {"name":"document-boundary","version":1,"nodes":[{"label":"Person","key":["personId"],
+            "properties":[{"name":"personId","type":"STRING","required":true}]}],"relationships":[]}
+            """, SchemaSourceType.GENERATED, KNOWLEDGE_BASE_ID);
+        schemaRegistryService.activateSchema(KNOWLEDGE_BASE_ID, schema.getId());
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"document-boundary\",\"targetVersion\":2,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"source\",\"text\":\"Person SOURCE-1\"}",
+            KNOWLEDGE_BASE_ID, draftId);
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        awaitTerminal(draftId, analysis.path("runId").asText());
+        SchemaDraftNode before = draftRepository.findById(draftId).orElseThrow();
+        long revision = before.getRevision();
+        String aggregateId = before.getCurrentAggregateId();
+
+        DocumentUploadNode heldOut = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "held-out.txt", "text/plain", "Person HELD-1".getBytes()));
+        SchemaDraftNode afterUpload = draftRepository.findById(draftId).orElseThrow();
+        assertThat(afterUpload.getRevision()).isEqualTo(revision);
+        assertThat(afterUpload.getCurrentAggregateId()).isEqualTo(aggregateId);
+
+        mockMvc.perform(post("/api/v1/documents/{documentId}/process", heldOut.getId()))
+            .andExpect(status().isOk());
+        SchemaDraftNode afterProcessing = draftRepository.findById(draftId).orElseThrow();
+        assertThat(afterProcessing.getRevision()).isEqualTo(revision);
+        assertThat(afterProcessing.getCurrentAggregateId()).isEqualTo(aggregateId);
+        assertThat(findDocument(eligibility(draftId).path("content"), heldOut.getId())
+            .path("eligible").asBoolean()).isTrue();
     }
 
     @Test
@@ -811,6 +958,13 @@ class SchemaDraftLifecycleIntegrationTest {
         return java.util.stream.StreamSupport.stream(documents.spliterator(), false)
             .filter(document -> documentId.equals(document.path("documentId").asText()))
             .findFirst().orElseThrow();
+    }
+
+    private JsonNode eligibility(String draftId) throws Exception {
+        return json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-eligible-documents",
+                KNOWLEDGE_BASE_ID, draftId).param("size", "100"))
+            .andExpect(status().isOk()).andReturn());
     }
 
     private void assertEligibilityAfterMutation(

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
@@ -111,16 +112,68 @@ class SchemaDraftWorkflowNavigationServiceTest {
         when(lifecycleService.requireOwned("kb", "draft")).thenReturn(draft);
         when(documentRepository.findPageByKnowledgeBaseId("kb", PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(List.of(evidence, heldOut), PageRequest.of(0, 20), 2));
-        when(resultRepository.findContributingDocumentIds("draft")).thenReturn(List.of("evidence"));
+        when(resultRepository.findContributingSourceSha256s("draft")).thenReturn(List.of("evidence-sha"));
+        when(resultRepository.findHistoricalContributingDocumentIds("draft")).thenReturn(List.of());
 
         EvaluationEligibleDocumentPageResponse page = eligibilityService.list("kb", "draft", 0, 20);
 
         assertThat(page.getDraftRevision()).isEqualTo(2);
         assertThat(page.getCurrentAggregateId()).isEqualTo("aggregate");
+        assertThat(page.getReadiness()).hasToString("READY");
+        assertThat(page.getBlockingReason()).isNull();
         assertThat(page.getContent()).extracting(value -> value.documentId() + ":" + value.eligible())
             .containsExactly("evidence:false", "held-out:true");
         assertThat(page.getContent().getFirst().ineligibilityReason()).hasToString("ACTIVE_DISCOVERY_EVIDENCE");
         assertThat(page.getContent().get(1).ineligibilityReason()).isNull();
+    }
+
+    @Test
+    void eligibilityRequiresCurrentAnalysisAndPreservesDocumentPageMetadata() {
+        SchemaDraftLifecycleService lifecycleService = mock(SchemaDraftLifecycleService.class);
+        DocumentUploadRepository documentRepository = mock(DocumentUploadRepository.class);
+        SchemaDraftSourceResultRepository resultRepository = mock(SchemaDraftSourceResultRepository.class);
+        SchemaDraftEvaluationEligibilityService eligibilityService = new SchemaDraftEvaluationEligibilityService(
+            lifecycleService, documentRepository, resultRepository);
+        SchemaDraftNode draft = draft();
+        draft.setCurrentAggregateId(null);
+        when(lifecycleService.requireOwned("kb", "draft")).thenReturn(draft);
+        when(documentRepository.findPageByKnowledgeBaseId("kb", PageRequest.of(1, 1)))
+            .thenReturn(new PageImpl<>(List.of(document("candidate")), PageRequest.of(1, 1), 3));
+
+        EvaluationEligibleDocumentPageResponse page = eligibilityService.list("kb", "draft", 1, 1);
+
+        assertThat(page.getReadiness()).hasToString("NOT_READY");
+        assertThat(page.getBlockingReason()).hasToString("DRAFT_ANALYSIS_REQUIRED");
+        assertThat(page.getPage()).isEqualTo(1);
+        assertThat(page.getSize()).isEqualTo(1);
+        assertThat(page.getTotalElements()).isEqualTo(3);
+        assertThat(page.getContent().getFirst().eligible()).isFalse();
+        assertThat(page.getContent().getFirst().ineligibilityReason()).hasToString("DRAFT_ANALYSIS_REQUIRED");
+        verifyNoInteractions(resultRepository);
+    }
+
+    @Test
+    void eligibilityClassifiesDuplicateFingerprintsAndHistoricalDocumentFallback() {
+        SchemaDraftLifecycleService lifecycleService = mock(SchemaDraftLifecycleService.class);
+        DocumentUploadRepository documentRepository = mock(DocumentUploadRepository.class);
+        SchemaDraftSourceResultRepository resultRepository = mock(SchemaDraftSourceResultRepository.class);
+        SchemaDraftEvaluationEligibilityService eligibilityService = new SchemaDraftEvaluationEligibilityService(
+            lifecycleService, documentRepository, resultRepository);
+        SchemaDraftNode draft = draft();
+        DocumentUploadNode firstDuplicate = document("first");
+        DocumentUploadNode secondDuplicate = document("second");
+        secondDuplicate.setSha256(firstDuplicate.getSha256());
+        DocumentUploadNode historical = document("historical");
+        when(lifecycleService.requireOwned("kb", "draft")).thenReturn(draft);
+        when(documentRepository.findPageByKnowledgeBaseId("kb", PageRequest.of(0, 20)))
+            .thenReturn(new PageImpl<>(List.of(firstDuplicate, secondDuplicate, historical), PageRequest.of(0, 20), 3));
+        when(resultRepository.findContributingSourceSha256s("draft")).thenReturn(List.of("first-sha"));
+        when(resultRepository.findHistoricalContributingDocumentIds("draft")).thenReturn(List.of("historical"));
+
+        EvaluationEligibleDocumentPageResponse page = eligibilityService.list("kb", "draft", 0, 20);
+
+        assertThat(page.getContent()).extracting(value -> value.documentId() + ":" + value.eligible())
+            .containsExactly("first:false", "second:false", "historical:false");
     }
 
     @Test

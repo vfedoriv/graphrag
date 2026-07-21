@@ -149,12 +149,13 @@ public class SchemaDraftEvaluationService {
         String capturedAggregateId = draft.getCurrentAggregateId();
         List<String> documentIds = distinctIds(request.documentIds());
         if (documentIds.isEmpty()) throw new IllegalArgumentException("At least one held-out document is required");
-        Set<String> evidenceDocuments = eligibilityService.contributingDocumentIds(draftId);
+        SchemaDraftEvaluationEligibilityService.EligibilitySnapshot eligibility = eligibilityService.resolve(draft);
+        eligibilityService.requireReady(eligibility);
         List<DocumentSnapshot> snapshots = new ArrayList<>();
         for (String documentId : documentIds) {
             DocumentUploadNode document = documentRepository.findByIdAndKnowledgeBaseId(documentId, knowledgeBaseId)
                 .orElseThrow(() -> new NotFoundException("Held-out document not found in knowledge base: " + documentId));
-            if (evidenceDocuments.contains(documentId)) {
+            if (!eligibilityService.isEligible(document, eligibility)) {
                 throw new IllegalArgumentException("Document contributed active discovery evidence and is not held out: " + documentId);
             }
             snapshots.add(new DocumentSnapshot(document.getId(), document.getSha256()));

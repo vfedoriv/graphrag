@@ -147,6 +147,19 @@ flowchart TD
     O --> P[Write domain graph + provenance]
 ```
 
+### Schema draft held-out evaluation
+
+Discovery evidence and held-out evaluation content are separated by exact binary SHA-256 identity. A knowledge-base
+document is ineligible when its hash matches a successful `DOCUMENT`, draft-owned `FILE`, or pasted `TEXT` result in
+the analysis run that produced the draft's current aggregate. Different encodings or file packaging are not treated as
+matches. Normal document upload and processing do not change draft revisions or aggregates unless the document is
+explicitly added as a draft source.
+
+The evaluation-eligible document response exposes draft-wide `readiness` and `blockingReason` fields in addition to
+the existing page metadata. `NOT_READY` with `DRAFT_ANALYSIS_REQUIRED` makes every returned document non-selectable;
+run draft analysis again before starting evaluation. `ACTIVE_DISCOVERY_EVIDENCE` identifies documents whose content
+contributed to the current aggregate.
+
 ### Q&A (`/ask`) execution flow
 
 ```mermaid

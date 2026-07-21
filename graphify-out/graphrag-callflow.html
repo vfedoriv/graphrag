@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 10092 nodes, 16349 edges, 879 communities. Commit: 03e5cd6</p>
+<p class="subtitle">Generated from graphify knowledge graph: 8282 nodes, 14780 edges, 700 communities. Commit: c5734ed</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>4946 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>4397 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>3620 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2359 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>177 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -118,7 +118,20 @@ flowchart LR
     class COMMUNITY_313_5126B3C6 module;
     OTHER_D0941E68("Other<br/><small>552 nodes</small>")
     class OTHER_D0941E68 module;
-    BUILD_GRAPH_321CBB04 -->|contains| EXTRACT_PIPELINE_5F350230
+    EXTRACT_PIPELINE_5F350230 -.-> BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -.-> ANALYSIS_CLUSTERING_C79796DA
+    ANALYSIS_CLUSTERING_C79796DA -.-> OUTPUTS_DOCS_ED82387C
+    OUTPUTS_DOCS_ED82387C -.-> CLI_SKILLS_9964CBB8
+    CLI_SKILLS_9964CBB8 -.-> INGEST_CACHE_UPDATE_FF457338
+    INGEST_CACHE_UPDATE_FF457338 -.-> SERVE_API_35EC8E86
+    SERVE_API_35EC8E86 -.-> SECURITY_GLOBAL_5B9C6A04
+    SECURITY_GLOBAL_5B9C6A04 -.-> TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -.-> COMMUNITY_269_0760C396
+    COMMUNITY_269_0760C396 -.-> COMMUNITY_272_4F75581B
+    COMMUNITY_272_4F75581B -.-> COMMUNITY_285_962252BC
+    COMMUNITY_285_962252BC -.-> COMMUNITY_286_F8337588
+    COMMUNITY_286_F8337588 -.-> COMMUNITY_313_5126B3C6
+    COMMUNITY_313_5126B3C6 -.-> OTHER_D0941E68
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -135,36 +148,36 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>4946</td><td><code>67, 2, 57, 23, 6, 3, 5, 45, 4, 18, 15, 84, 16, 58, 14, 90, 108, 68, 30, 46, 36, 86, 42, 124, 33, 54, 10, 19, 301, 825, 12, 305, 104, 76, 29, 31, 40, 9, 17, 116, 25, 117, 304, 72, 0, 1, 130, 139, 20, 24, 268, 364, 53, 62, 52, 56, 245, 246, 248, 7, 81, 21, 22, 32, 35, 28, 73, 752, 106, 254, 34, 8, 97, 27, 41, 43, 756, 760, 80, 44, 47, 65, 750, 37, 427, 48, 50, 539, 60, 95, 127, 348, 428, 536, 540, 763, 765, 776, 26, 280, 55, 59, 64, 683, 690, 762, 781, 284, 295, 61, 63, 66, 694, 71, 747, 771, 772, 132, 161, 261, 275, 287, 748, 754, 78, 79, 790, 817, 82, 83, 140, 296, 74, 75, 758, 767, 769, 770, 87, 100, 122, 749, 755, 787, 94, 96, 98, 11, 741, 77, 773, 92, 105, 107, 109, 110, 118, 330, 792, 793, 826, 85, 111, 112, 753, 818, 821, 851, 120, 757, 777, 778, 837, 849, 853, 123, 70, 759, 775, 782, 783, 784, 785, 822, 823, 824, 857, 131, 133, 488, 489, 505, 764, 766, 829, 831, 13, 134, 135, 137, 138, 141, 142, 143, 51, 788, 819, 832, 863, 864, 865, 866, 867, 145, 146, 148, 150, 151, 152, 585, 601, 617, 618, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 695, 855, 868, 869, 870, 153, 154, 155, 156, 157, 158, 159, 671, 682, 871, 872, 873, 874, 875, 876, 878, 163, 164, 795, 796, 797, 798, 799, 800, 801, 802, 803, 838, 839, 840, 841, 842, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>3620</td><td><code>39, 49, 69, 38, 89, 91, 114, 149, 160, 101, 162, 103, 113, 115, 121, 129, 537, 247, 252, 128, 253, 255, 256, 538, 257, 258, 260, 306, 265, 266, 267, 273, 274, 277, 278, 279, 282, 283, 289, 290, 292, 293, 297, 298, 302, 303, 307, 308, 309, 310, 311, 312, 768, 774, 780, 789, 294, 314, 319, 320, 321, 323, 346, 327, 331, 333, 334, 335, 830, 833, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 362, 834, 366, 367, 368, 369, 370, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 125, 126, 429, 431, 433, 435, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 779, 854, 856, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 751, 761, 786, 827, 828, 835, 836, 858, 859, 860, 861, 862, 558, 559, 561, 562, 563, 564, 568, 569, 570, 571, 794, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 616, 658, 791, 850, 852, 659, 660, 661, 662, 664, 665, 668, 672, 678, 684, 877, 693, 696, 697, 698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 739, 742, 743</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>177</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688</code></td></tr><tr><td>Outputs &amp; Docs</td><td>53</td><td><code>288, 432, 436, 566, 567, 609, 614</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>249, 281, 337, 687, 740, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>175</td><td><code>88, 93, 147, 291, 336, 359, 509, 548, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>277</td><td><code>99, 102, 119, 250, 262, 263, 271, 276, 318, 352, 434, 495, 504, 547, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>20</td><td><code>338, 371</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>134</td><td><code>259, 264, 270, 300, 322, 499, 500, 503, 136, 144, 594, 598, 615, 670</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 272</td><td>17</td><td><code>272</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 313</td><td>12</td><td><code>313</code></td></tr><tr><td>Other</td><td>552</td><td><code>315, 316, 317, 324, 329, 340, 342, 344, 345, 347, 349, 363, 365, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 553, 554, 555, 557, 560, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 666, 667, 669, 675, 676, 677, 679, 681, 685, 691, 692</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>4397</td><td><code>0, 57, 4, 45, 34, 84, 124, 14, 30, 46, 15, 86, 10, 22, 68, 18, 33, 81, 42, 825, 19, 23, 301, 6, 12, 76, 17, 305, 29, 304, 9, 13, 31, 3, 78, 104, 16, 25, 5, 1, 20, 24, 49, 58, 65, 32, 90, 108, 248, 53, 7, 21, 28, 35, 36, 364, 52, 72, 771, 54, 96, 47, 756, 8, 27, 40, 43, 77, 80, 2, 268, 41, 44, 261, 37, 427, 50, 51, 863, 865, 95, 103, 130, 275, 428, 540, 56, 60, 67, 763, 140, 26, 48, 539, 59, 62, 64, 683, 690, 762, 765, 781, 79, 254, 284, 295, 297, 55, 61, 63, 66, 694, 71, 741, 747, 772, 106, 132, 161, 362, 375, 376, 70, 74, 75, 770, 775, 817, 83, 87, 107, 287, 296, 377, 378, 749, 752, 758, 767, 769, 776, 790, 122, 773, 787, 92, 94, 97, 98, 11, 113, 115, 695, 73, 100, 105, 109, 110, 111, 112, 118, 330, 379, 380, 381, 382, 782, 792, 793, 85, 150, 383, 753, 818, 120, 139, 245, 777, 778, 821, 837, 853, 123, 246, 247, 384, 759, 783, 784, 785, 822, 824, 849, 131, 133, 385, 488, 489, 505, 829, 831, 134, 135, 137, 138, 141, 142, 143, 298, 386, 387, 388, 389, 390, 760, 788, 832, 866, 127, 145, 146, 148, 151, 152, 391, 585, 601, 868, 869, 870, 153, 154, 155, 156, 157, 158, 159, 671, 682, 163, 372, 164, 373, 795, 796, 797, 798, 799, 800, 801, 802, 803, 838, 839, 840, 841, 842, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2359</td><td><code>39, 69, 38, 89, 114, 91, 160, 149, 101, 162, 121, 129, 537, 252, 128, 253, 255, 256, 538, 258, 260, 306, 265, 266, 267, 273, 274, 277, 278, 279, 282, 283, 82, 289, 290, 292, 293, 302, 307, 308, 309, 310, 311, 312, 768, 774, 780, 789, 294, 314, 319, 320, 321, 323, 346, 116, 117, 327, 331, 333, 334, 335, 833, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 834, 366, 367, 368, 369, 370, 125, 126, 429, 431, 433, 435, 779, 854, 856, 257, 280, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 751, 761, 786, 827, 828, 835, 836, 858, 859, 861, 862, 558, 561, 562, 563, 564, 568, 569, 794, 303, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 658, 791, 850, 852, 348, 659, 660, 661, 662, 664, 665, 668, 672, 678, 693, 737, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>177</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688</code></td></tr><tr><td>Outputs &amp; Docs</td><td>53</td><td><code>288, 432, 436, 566, 567, 609, 614</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>249, 281, 337, 687, 740, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>175</td><td><code>88, 93, 147, 291, 336, 359, 509, 548, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>277</td><td><code>99, 102, 119, 250, 262, 263, 271, 276, 318, 352, 434, 495, 504, 547, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>20</td><td><code>338, 371</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>134</td><td><code>259, 264, 270, 300, 322, 499, 500, 503, 136, 144, 594, 598, 615, 670</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 272</td><td>17</td><td><code>272</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 313</td><td>12</td><td><code>313</code></td></tr><tr><td>Other</td><td>552</td><td><code>315, 316, 317, 324, 329, 340, 342, 344, 345, 347, 349, 363, 365, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 553, 554, 555, 557, 560, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 666, 667, 669, 675, 676, 677, 679, 681, 685, 691, 692</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API</div>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>10092 nodes · 16349 edges · 879 communities (795 shown, 84 thin omitted)</li>
-      <li>Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 2366 edges (avg confidence: 0.8)</li>
+      <li>8282 nodes · 14780 edges · 700 communities (664 shown, 36 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2419 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `of()` - 392 edges</li>
-      <li>2. `importMap` - 363 edges</li>
-      <li>3. `importMap` - 363 edges</li>
+      <li>1. `importMap` - 478 edges</li>
+      <li>2. `of()` - 400 edges</li>
+      <li>3. `SchemaDraftReviewService` - 35 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in .understand-anything/intermediate/batches.json, graphrag/controller/SchemaDraftController.java, graphrag/service/SchemaDraftReviewService.java. This section covers 4946 nodes and 11625 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/controller/SchemaDraftController.java, graphrag/service/SchemaDraftReviewService.java, graphrag/service/SchemaDraftAnalysisService.java. This section covers 4397 nodes and 11237 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (4946 nodes, 11625 edges)
+    %% Section: Extraction Pipeline (4397 nodes, 11237 edges)
     subgraph extract_pipeline_application_processing_Embeddin_09e956e3["application/processing/EmbeddingPersistenceStage.java"]
         processing_embeddingpersistencestage_embeddingpe_649ad490("EmbeddingPersistenceStage<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
         processing_embeddingpersistencestage_embeddingpe_be731052("EmbeddingPersistenceStage()<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
@@ -201,7 +214,7 @@ flowchart LR
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_6709bf2e
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_43394c3b
     processing_embeddingpersistencestage_embeddingpe_6709bf2e -->|calls| processing_embeddingpersistencestage_embeddingpe_43394c3b
-    %% Omitted for readability: 4928 nodes, 0 edges
+    %% Omitted for readability: 4379 nodes, 0 edges
     class processing_embeddingpersistencestage_embeddingpe_649ad490 klass;
     class processing_embeddingpersistencestage_embeddingpe_be731052 function;
     class processing_embeddingpersistencestage_embeddingpe_6709bf2e function;
@@ -243,243 +256,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>exportsByPath</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode.java</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Exports documentation data to a target format.</td>
+  <td><code>Instant</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td>ExtractionRunNode.java node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>.gitattributes</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>getCompletedAt()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small><br><code>getDocumentId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small><br><code>getErrorMessage()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small><br>+14 more</td>
+  <td>ExtractionRunNode node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>mvnw</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
+  <td><code>.getId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>mvnw node in .understand-anything/intermediate/batches.json.</td>
+  <td>.getId() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/config/AiObservabilityProperties.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td>String node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/config/AiObservationConfiguration.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td>.setId() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/config/AppProperties.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getVersion()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td>.getVersion() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/config/OpenApiConfig.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>Long</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td>Long node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/controller/DocumentController.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getDocumentId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.getDocumentId() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/controller/KnowledgeBaseController.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setDocumentId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.setDocumentId() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/controller/package-info.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>.setSchemaId()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><code>create()</code><br><small style="color:var(--muted)">graphrag/service/SchemaReprocessingPlanService.java</small><br><code>extract()</code><br><small style="color:var(--muted)">graphrag/service/GraphExtractionService.java</small><br><code>publishObserved()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftPublicationService.java</small><br>+1 more</td>
+  <td>.setSchemaId() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/controller/QueryController.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>.getModel()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><code>extract()</code><br><small style="color:var(--muted)">graphrag/service/GraphExtractionService.java</small></td>
+  <td>.getModel() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/controller/SchemaController.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>.setModel()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><code>extract()</code><br><small style="color:var(--muted)">graphrag/service/GraphExtractionService.java</small></td>
+  <td>.setModel() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/document/ChunkingService.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getStatus()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.getStatus() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/document/DocumentParsingService.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>ExtractionRunStatus</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>GraphExtractionService.java</code><br><small style="color:var(--muted)">graphrag/service/GraphExtractionService.java</small><br><code>GraphExtractionServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/GraphExtractionServiceTest.java</small></td>
+  <td>ExtractionRunStatus node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/document/package-info.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setStatus()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.setStatus() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getStartedAt()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.getStartedAt() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/DocumentChunkNode.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>Instant</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ExtractionRunNode.java</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>Instant node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStatus.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setStartedAt()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.setStartedAt() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getCompletedAt()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.getCompletedAt() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setCompletedAt()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.setCompletedAt() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getErrorMessage()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.getErrorMessage() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/KnowledgeBaseNode.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setErrorMessage()</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExtractionRunNode</code><br><small style="color:var(--muted)">graphrag/domain/ExtractionRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.setErrorMessage() node in graphrag/domain/ExtractionRunNode.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/package-info.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>GraphArtifactCleanupService.java</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>Map</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>Neo4jClient</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDefinitionNode.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>GraphArtifactCleanupService</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>cleanupDocumentArtifacts()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>cleanupEvidence()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>cleanupLegacyFacts()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br>+15 more</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/SchemaFormat.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.GraphArtifactCleanupService()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphArtifactCleanupService</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/SchemaSourceType.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>Neo4jClient</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-cmd">Entry</span></td>
+  <td><code>GraphArtifactCleanupService.java</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>Neo4jClient node in graphrag/service/GraphArtifactCleanupService.java.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/domain/SchemaStatus.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>.cleanupDocumentArtifacts()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>delete()</code><br><small style="color:var(--muted)">graphrag/service/DocumentUploadService.java</small><br><code>GraphArtifactCleanupService</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>reconcileDelete()</code><br><small style="color:var(--muted)">graphrag/service/DocumentStorageReconciliationService.java</small><br>+1 more</td>
+  <td><code>cleanupEvidence()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>cleanupLegacyFacts()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>completesPendingDocumentDeletionAfterStorageCleanup()</code><br><small style="color:var(--muted)">graphrag/service/DocumentStorageReconciliationServiceTest.java</small><br>+4 more</td>
+  <td>.cleanupDocumentArtifacts() node in graphrag/service/GraphArtifactCleanupService.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/dto/BaseRequest.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>String node in graphrag/service/GraphArtifactCleanupService.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/dto/CreateKnowledgeBaseRequest.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
+  <td><code>DocumentArtifactCleanupResult</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>DocumentArtifactCleanupResult node in graphrag/service/GraphArtifactCleanupService.java.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>src/main/java/io/github/vfedoriv/graphrag/dto/CreateSchemaRequest.java</code><br><small style="color:var(--muted)">.understand-anything/intermediate/batches.json</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td><code>.cleanupRunsAfterSuccessfulExtraction()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphArtifactCleanupService</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small></td>
+  <td><code>cleanupEvidence()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>cleanupLegacyFacts()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br><code>deleteRuns()</code><br><small style="color:var(--muted)">graphrag/service/GraphArtifactCleanupService.java</small><br>+6 more</td>
+  <td>.cleanupRunsAfterSuccessfulExtraction() node in graphrag/service/GraphArtifactCleanupService.java.</td>
 </tr>
 </table>
 
@@ -488,31 +501,31 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.understand-anything/intermediate/batches.json</code></td><td>173 nodes</td></tr>
-<tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>77 nodes</td></tr>
+      <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>78 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>73 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftAnalysisService.java</code></td><td>71 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>60 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>50 nodes</td></tr>
+<tr><td><code>graphrag/dto/SchemaDraftDtos.java</code></td><td>46 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x3865, method x1812, imports x1456, calls x1184. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x3891, method x1829, imports x1470, calls x1213. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around schema, openspec, understand, anything, mostly in .understand-anything/fingerprints.json, .understand-anything/intermediate/scan-result.json, .understand-anything/tmp/ua-import-map-output.json. This section covers 3620 nodes and 3370 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-generation-with-examples/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 2359 nodes and 2190 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (3620 nodes, 3370 edges)
+    %% Section: Graph Build (2359 nodes, 2190 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -527,16 +540,18 @@ flowchart LR
         codex_hooks_hooks_33f35617("hooks<br/><small>.codex/hooks.json</small>")
         codex_hooks_hooks_pretooluse_27d57a05("PreToolUse<br/><small>.codex/hooks.json</small>")
     end
-    subgraph build_graph_understand_anything_domain_graph_jso_d31a7489[".understand-anything/domain-graph.json"]
-        understand_anything_domain_graph_3f1cce63("domain-graph.json")
-        understand_anything_domain_graph_edges_b8252148("edges<br/><small>.understand-anything/domain-graph.json</small>")
+    subgraph build_graph_understand_anything_config_json_238c7898[".understand-anything/config.json"]
+        understand_anything_config_d54d881b("config.json")
+        understand_anything_config_outputlanguage_5559b7c8("outputLanguage<br/><small>.understand-anything/config.json</small>")
     end
-    understand_anything_fingerprints_files_a5f8cc80("files<br/><small>.understand-anything/fingerprints.json</small>")
-    intermediate_scan_result_importmap_841c8ae7("importMap<br/><small>.understand-anything/intermediate/scan-result.json</small>")
-    tmp_ua_file_analyzer_input_37_batchimportdata_f957d13f("batchImportData<br/><small>.understand-anything/tmp/ua-file-analyzer-input-37.json</small>")
-    tmp_ua_file_analyzer_input_38_batchimportdata_8e194f92("batchImportData<br/><small>.understand-anything/tmp/ua-file-analyzer-input-38.json</small>")
-    tmp_ua_import_map_output_importmap_06cc02f8("importMap<br/><small>.understand-anything/tmp/ua-import-map-output.json</small>")
+    subgraph build_graph_understand_anything_intermediate_sca_62763169[".understand-anything/intermediate/scan-result.json"]
+        intermediate_scan_result_importmap_841c8ae7("importMap<br/><small>.understand-anything/intermediate/scan-result.json</small>")
+        intermediate_scan_result_1433a9c3("scan-result.json")
+    end
     readme_graphrag_673e820d("GraphRAG<br/><small>README.md</small>")
+    extraction_run_cleanup_spec_requirements_5217fc1c("Requirements<br/><small>specs/extraction-run-cleanup/spec.md</small>")
+    schema_draft_evaluation_spec_requirements_1ecd452a("Requirements<br/><small>specs/schema-draft-evaluation/spec.md</small>")
+    schema_generation_with_examples_spec_requirement_16449c56("Requirements<br/><small>specs/schema-generation-with-examples/spec.md</small>")
     codex_hooks_5c51c57a -->|contains| codex_hooks_hooks_33f35617
     codex_hooks_hooks_33f35617 -->|contains| codex_hooks_hooks_pretooluse_27d57a05
     codex_settings_local_9fdd8b31 -->|contains| codex_settings_local_permissions_f495c3bb
@@ -545,8 +560,9 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_database_65995144
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
-    understand_anything_domain_graph_3f1cce63 -->|contains| understand_anything_domain_graph_edges_b8252148
-    %% Omitted for readability: 3602 nodes, 0 edges
+    understand_anything_config_d54d881b -->|contains| understand_anything_config_outputlanguage_5559b7c8
+    intermediate_scan_result_1433a9c3 -->|contains| intermediate_scan_result_importmap_841c8ae7
+    %% Omitted for readability: 2341 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -557,14 +573,14 @@ flowchart LR
     class codex_hooks_5c51c57a ui;
     class codex_hooks_hooks_33f35617 ui;
     class codex_hooks_hooks_pretooluse_27d57a05 klass;
-    class understand_anything_domain_graph_3f1cce63 function;
-    class understand_anything_domain_graph_edges_b8252148 function;
-    class understand_anything_fingerprints_files_a5f8cc80 function;
+    class understand_anything_config_d54d881b function;
+    class understand_anything_config_outputlanguage_5559b7c8 function;
     class intermediate_scan_result_importmap_841c8ae7 function;
-    class tmp_ua_file_analyzer_input_37_batchimportdata_f957d13f function;
-    class tmp_ua_file_analyzer_input_38_batchimportdata_8e194f92 function;
-    class tmp_ua_import_map_output_importmap_06cc02f8 function;
+    class intermediate_scan_result_1433a9c3 function;
     class readme_graphrag_673e820d concept;
+    class extraction_run_cleanup_spec_requirements_5217fc1c concept;
+    class schema_draft_evaluation_spec_requirements_1ecd452a concept;
+    class schema_generation_with_examples_spec_requirement_16449c56 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -596,6 +612,14 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
+  <td><code>.codex/hooks.json</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.codex/hooks.json node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>.codex/settings.local.json</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -603,48 +627,40 @@ flowchart LR
   <td>.codex/settings.local.json node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>3</td>
-  <td><code>.codex/skills/openspec-apply-change/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>.codex/skills/openspec-apply-change/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
   <td>4</td>
-  <td><code>.codex/skills/openspec-archive-change/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>.codex/skills/graphify/.graphify_version</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.codex/skills/openspec-archive-change/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>.codex/skills/openspec-explore/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>.codex/skills/graphify/references/add-watch.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.codex/skills/openspec-explore/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>.codex/skills/openspec-propose/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>.codex/skills/graphify/references/exports.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.codex/skills/openspec-propose/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>.gitattributes</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>.codex/skills/graphify/references/extraction-spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>.github/workflows/claude.yml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>.codex/skills/graphify/references/github-and-merge.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -652,6 +668,94 @@ flowchart LR
 </tr>
 <tr>
   <td>9</td>
+  <td><code>.codex/skills/graphify/references/hooks.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>.codex/skills/graphify/references/query.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.codex/skills/graphify/references/transcribe.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.codex/skills/graphify/references/update.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.codex/skills/graphify/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.codex/skills/openspec-apply-change/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.codex/skills/openspec-apply-change/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.codex/skills/openspec-archive-change/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.codex/skills/openspec-archive-change/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.codex/skills/openspec-explore/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.codex/skills/openspec-explore/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>.codex/skills/openspec-propose/SKILL.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.codex/skills/openspec-propose/SKILL.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>.gitattributes</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Turns a local path or remote repository into analysis context.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.github/workflows/claude.yml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Turns a local path or remote repository into analysis context.</td>
+</tr>
+<tr>
+  <td>20</td>
   <td><code>.mvn/wrapper/maven-wrapper.properties</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -659,7 +763,7 @@ flowchart LR
   <td>.mvn/wrapper/maven-wrapper.properties node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>21</td>
   <td><code>AGENTS.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -667,7 +771,7 @@ flowchart LR
   <td>AGENTS.md node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>22</td>
   <td><code>CLAUDE.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -675,7 +779,7 @@ flowchart LR
   <td>CLAUDE.md node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>23</td>
   <td><code>compose.yaml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -683,7 +787,23 @@ flowchart LR
   <td>compose.yaml node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>24</td>
+  <td><code>docs/ONBOARDING.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>docs/ONBOARDING.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>docs/SCHEMA_DRAFTS.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>docs/SCHEMA_DRAFTS.md node in .understand-anything/intermediate/scan-result.json.</td>
+</tr>
+<tr>
+  <td>26</td>
   <td><code>mvnw</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -691,7 +811,7 @@ flowchart LR
   <td>mvnw node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>27</td>
   <td><code>mvnw.cmd</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -699,132 +819,28 @@ flowchart LR
   <td>mvnw.cmd node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
-  <td>15</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/.openspec.yaml node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/design.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/proposal.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-example-generation/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-example-generation/spec.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-generation-with-examples/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/specs/schema-generation-with-examples/spec.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-09-improve-schema-generation-examples/tasks.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/.openspec.yaml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/design.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/proposal.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/specs/schema-generation-with-examples/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>openspec/changes/archive/2026-05-10-extend-llm-graph-transformer-properties/tasks.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/.openspec.yaml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/.openspec.yaml node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/design.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/design.md node in .understand-anything/intermediate/scan-result.json.</td>
-</tr>
-<tr>
   <td>28</td>
-  <td><code>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/proposal.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>openspec/config.yaml</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/proposal.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/specs/schema-generation-with-examples/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>openspec/specs/active-schema-resolution/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/specs/schema-generation-with-examples/spec.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>openspec/specs/active-schema-resolution/spec.md node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/tasks.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
+  <td><code>openspec/specs/ai-observability-monitoring/spec.md</code><br><small style="color:var(--muted)">.understand-anything/intermediate/scan-result.json</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>openspec/changes/archive/2026-05-10-improve-schema-inference-properties-descriptions/tasks.md node in .understand-anything/intermediate/scan-result.json.</td>
+  <td>openspec/specs/ai-observability-monitoring/spec.md node in .understand-anything/intermediate/scan-result.json.</td>
 </tr>
 </table>
 
@@ -833,19 +849,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.understand-anything/fingerprints.json</code></td><td>501 nodes</td></tr>
-<tr><td><code>.understand-anything/intermediate/scan-result.json</code></td><td>372 nodes</td></tr>
-<tr><td><code>.understand-anything/tmp/ua-import-map-output.json</code></td><td>369 nodes</td></tr>
+      <tr><td><code>.understand-anything/intermediate/scan-result.json</code></td><td>487 nodes</td></tr>
 <tr><td><code>specs/schema-generation-with-examples/spec.md</code></td><td>47 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>43 nodes</td></tr>
 <tr><td><code>specs/schema-draft-evaluation/spec.md</code></td><td>43 nodes</td></tr>
-<tr><td><code>README.md</code></td><td>42 nodes</td></tr>
+<tr><td><code>specs/schema-draft-analysis/spec.md</code></td><td>36 nodes</td></tr>
 <tr><td><code>specs/extraction-run-cleanup/spec.md</code></td><td>35 nodes</td></tr>
-<tr><td><code>specs/schema-draft-analysis/spec.md</code></td><td>34 nodes</td></tr>
+<tr><td><code>specs/multi-source-schema-discovery/spec.md</code></td><td>34 nodes</td></tr>
+<tr><td><code>specs/schema-draft-lifecycle/spec.md</code></td><td>33 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x3370. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2190. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4613,18 +4629,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>10092</td></tr>
-      <tr><td>Edges</td><td>16349</td></tr>
+      <tr><td>Nodes</td><td>8282</td></tr>
+      <tr><td>Edges</td><td>14780</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>879</td></tr>
+      <tr><td>Communities</td><td>700</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>13983</td></tr>
-      <tr><td>INFERRED</td><td>2366</td></tr>
+      <tr><td>EXTRACTED</td><td>12361</td></tr>
+      <tr><td>INFERRED</td><td>2419</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4632,7 +4648,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-15 11:29 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-21 06:38 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
