@@ -17,6 +17,7 @@ public class SchemaDraftConflictNode {
     private String aggregateRevisionId;
     private SchemaDraftConflictType type;
     private String coordinate;
+    private String semanticKey;
     private String alternativesJson;
     private String evidenceJson;
     private boolean resolved;

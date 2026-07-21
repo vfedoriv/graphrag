@@ -381,6 +381,10 @@ public final class SchemaDraftDtos {
         String rationale
     ) { }
 
+    @Schema(description = "Conflict list scope. CURRENT is the active review surface; ALL is immutable draft history.",
+        example = "CURRENT")
+    public enum ConflictListScope { CURRENT, ALL }
+
     public record ConflictResponse(
         String id,
         SchemaDraftConflictType type,
@@ -390,6 +394,12 @@ public final class SchemaDraftDtos {
         boolean resolved,
         String selectedAlternative,
         Object customResolution,
+        @Schema(description = "Identifier of the immutable aggregate revision that owns this conflict.",
+            example = "4f3e8c25-ecaa-41e3-8cf1-58822a93085d")
+        String aggregateRevisionId,
+        @Schema(description = "True when aggregateRevisionId is the draft's currently promoted aggregate.",
+            example = "true")
+        boolean current,
         Instant createdAt,
         Instant resolvedAt
     ) { }

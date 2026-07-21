@@ -17,6 +17,9 @@ import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.error.ConflictException;
@@ -25,6 +28,7 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
@@ -99,6 +103,7 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftAnalysisRunRepository runRepository;
     @Autowired private SchemaDraftAggregateRevisionRepository aggregateRepository;
     @Autowired private SchemaDraftDecisionRepository decisionRepository;
+    @Autowired private SchemaDraftConflictRepository conflictRepository;
     @Autowired private Neo4jPersistenceVersionBackfillService versionBackfillService;
 
     @BeforeEach
@@ -255,6 +260,111 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(aggregateRepository.findByDraftIdOrderByRevisionDesc(draftId)).isEmpty();
         assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value",
             "node-property:Person:displayName", "displayName", "node:Person");
+    }
+
+    @Test
+    void scopesConflictReviewToTheCurrentAggregateAndOrdersExplicitHistory() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"conflict-history\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        saveAggregate(draftId, "aggregate-old", 1);
+        saveAggregate(draftId, "aggregate-current", 2);
+        saveAggregate(draftId, "aggregate-stale", 3);
+        SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
+        draft.setCurrentAggregateId("aggregate-current");
+        draftRepository.save(draft);
+
+        saveConflict(draftId, "aggregate-old", "old-conflict", "node-property:Person:age");
+        saveConflict(draftId, "aggregate-current", "current-z", "node-property:Person:name");
+        saveConflict(draftId, "aggregate-current", "current-a", "node-property:Person:age");
+        saveConflict(draftId, "aggregate-stale", "stale-conflict", "node-property:Person:status");
+
+        JsonNode current = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/conflicts",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(current).hasSize(2);
+        assertThat(current.get(0).path("id").asText()).isEqualTo("current-a");
+        assertThat(current.get(1).path("id").asText()).isEqualTo("current-z");
+        assertThat(current).allSatisfy(value -> {
+            assertThat(value.path("aggregateRevisionId").asText()).isEqualTo("aggregate-current");
+            assertThat(value.path("current").asBoolean()).isTrue();
+        });
+
+        JsonNode history = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/conflicts",
+                KNOWLEDGE_BASE_ID, draftId).param("scope", "ALL"))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(history).hasSize(4);
+        assertThat(history).extracting(value -> value.path("id").asText())
+            .containsExactly("stale-conflict", "current-a", "current-z", "old-conflict");
+        assertThat(history.get(0).path("current").asBoolean()).isFalse();
+        assertThat(history.get(1).path("current").asBoolean()).isTrue();
+        assertThat(history.get(3).path("current").asBoolean()).isFalse();
+    }
+
+    @Test
+    void returnsNoCurrentConflictsWithoutAPromotedAggregateButRetainsHistory() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"conflict-without-current\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        saveAggregate(draftId, "aggregate-historical", 1);
+        saveConflict(draftId, "aggregate-historical", "historical-conflict", "node-key:Person");
+
+        JsonNode current = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/conflicts",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode history = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/conflicts",
+                KNOWLEDGE_BASE_ID, draftId).param("scope", "ALL"))
+            .andExpect(status().isOk()).andReturn());
+
+        assertThat(current).isEmpty();
+        assertThat(history).hasSize(1);
+        assertThat(history.get(0).path("current").asBoolean()).isFalse();
+    }
+
+    @Test
+    void nonPromotedConflictsDoNotBlockCurrentProjectionOrPublicationReadiness() throws Exception {
+        JsonNode created = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"conflict-readiness\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String draftId = created.path("id").asText();
+        saveAggregate(draftId, "aggregate-current", 1);
+        saveAggregate(draftId, "aggregate-stale", 2);
+        SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
+        draft.setCurrentAggregateId("aggregate-current");
+        draftRepository.save(draft);
+        saveConflict(draftId, "aggregate-stale", "stale-blocking", "node-property:Person:age");
+
+        JsonNode projection = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/projection",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode readiness = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publication-readiness",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+
+        assertThat(projection.path("publicationReady").asBoolean()).isTrue();
+        assertThat(readiness.path("blockingReasons").toString()).doesNotContain("stale-blocking", "UNRESOLVED_TYPE");
+
+        saveConflict(draftId, "aggregate-current", "current-blocking", "node-property:Person:age");
+        JsonNode blockedProjection = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/projection",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode blockedReadiness = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publication-readiness",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+
+        assertThat(blockedProjection.path("publicationReady").asBoolean()).isFalse();
+        assertThat(blockedReadiness.path("blockingReasons").toString())
+            .contains("current-blocking", "UNRESOLVED_TYPE");
     }
 
     @Test
@@ -885,6 +995,36 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(unchanged.getRevision()).isZero();
         assertThat(unchanged.getGuidanceRevision()).isZero();
         assertThat(unchanged.getGuidanceJson()).isEqualTo(savedGuidance);
+    }
+
+    private void saveAggregate(String draftId, String aggregateId, long revision) {
+        SchemaDraftAggregateRevisionNode aggregate = new SchemaDraftAggregateRevisionNode();
+        aggregate.setId(aggregateId);
+        aggregate.setDraftId(draftId);
+        aggregate.setRunId("run-" + aggregateId);
+        aggregate.setRevision(revision);
+        aggregate.setCandidatesJson("[]");
+        aggregate.setConflictsJson("[]");
+        aggregate.setWarningsJson("[]");
+        aggregate.setSchemaJson("{\"nodes\":[],\"relationships\":[]}");
+        aggregate.setContentHash("hash-" + aggregateId);
+        aggregate.setCreatedAt(Instant.parse("2026-07-01T00:00:00Z").plusSeconds(revision));
+        aggregateRepository.save(aggregate);
+    }
+
+    private void saveConflict(
+        String draftId, String aggregateId, String conflictId, String coordinate
+    ) {
+        SchemaDraftConflictNode conflict = new SchemaDraftConflictNode();
+        conflict.setId(conflictId);
+        conflict.setDraftId(draftId);
+        conflict.setAggregateRevisionId(aggregateId);
+        conflict.setType(SchemaDraftConflictType.TYPE);
+        conflict.setCoordinate(coordinate);
+        conflict.setAlternativesJson("[\"INTEGER\",\"STRING\"]");
+        conflict.setEvidenceJson("[]");
+        conflict.setCreatedAt(Instant.parse("2026-07-01T00:00:00Z"));
+        conflictRepository.save(conflict);
     }
 
     private MvcResult postJson(String path, String content, Object... variables) throws Exception {

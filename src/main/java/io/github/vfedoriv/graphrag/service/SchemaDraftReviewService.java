@@ -17,6 +17,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftReviewState;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictListScope;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidateResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionRequest;
@@ -57,6 +58,7 @@ public class SchemaDraftReviewService {
     private final SchemaDraftAggregateRevisionRepository aggregateRepository;
     private final SchemaDraftDecisionRepository decisionRepository;
     private final SchemaDraftConflictRepository conflictRepository;
+    private final SchemaDraftConflictService conflictService;
     private final SchemaDefinitionRepository schemaRepository;
     private final SchemaParser schemaParser;
     private final SchemaDraftJsonSupport jsonSupport;
@@ -69,6 +71,7 @@ public class SchemaDraftReviewService {
         SchemaDraftAggregateRevisionRepository aggregateRepository,
         SchemaDraftDecisionRepository decisionRepository,
         SchemaDraftConflictRepository conflictRepository,
+        SchemaDraftConflictService conflictService,
         SchemaDefinitionRepository schemaRepository,
         SchemaParser schemaParser,
         SchemaDraftJsonSupport jsonSupport,
@@ -80,6 +83,7 @@ public class SchemaDraftReviewService {
         this.aggregateRepository = aggregateRepository;
         this.decisionRepository = decisionRepository;
         this.conflictRepository = conflictRepository;
+        this.conflictService = conflictService;
         this.schemaRepository = schemaRepository;
         this.schemaParser = schemaParser;
         this.jsonSupport = jsonSupport;
@@ -150,9 +154,18 @@ public class SchemaDraftReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ConflictResponse> conflicts(String knowledgeBaseId, String draftId) {
-        lifecycleService.requireOwned(knowledgeBaseId, draftId);
-        return conflictRepository.findByDraftIdOrderByCoordinateAsc(draftId).stream().map(this::toResponse).toList();
+    public List<ConflictResponse> conflicts(
+        String knowledgeBaseId, String draftId, ConflictListScope scope
+    ) {
+        SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
+        String currentAggregateId = draft.getCurrentAggregateId();
+        if (scope == ConflictListScope.CURRENT && currentAggregateId == null) {
+            return List.of();
+        }
+        List<SchemaDraftConflictNode> conflicts = scope == ConflictListScope.ALL
+            ? conflictRepository.findHistory(draftId)
+            : conflictRepository.findByAggregateRevision(draftId, currentAggregateId);
+        return conflicts.stream().map(value -> toResponse(value, currentAggregateId)).toList();
     }
 
     @Transactional
@@ -165,22 +178,11 @@ public class SchemaDraftReviewService {
         if (conflict.isResolved()) {
             throw new ConflictException("Draft conflict is already resolved");
         }
-        JsonNode alternatives = jsonSupport.parse(conflict.getAlternativesJson());
-        boolean selected = request.selectedAlternative() != null && alternatives.isArray()
-            && java.util.stream.StreamSupport.stream(alternatives.spliterator(), false)
-                .anyMatch(value -> request.selectedAlternative().equals(value.asText()));
-        boolean custom = request.customResolution() != null;
-        if (selected == custom) {
-            throw new IllegalArgumentException("Choose exactly one valid alternative or a custom resolution");
-        }
-        conflict.setResolved(true);
-        conflict.setSelectedAlternative(request.selectedAlternative());
-        conflict.setCustomResolutionJson(custom ? jsonSupport.canonical(request.customResolution()) : null);
-        conflict.setResolvedAt(Instant.now());
+        conflictService.resolve(conflict, request.selectedAlternative(), request.customResolution());
         SchemaDraftConflictNode saved = conflictRepository.save(conflict);
         lifecycleService.advance(draft);
         draftRepository.save(draft);
-        return toResponse(saved);
+        return toResponse(saved, draft.getCurrentAggregateId());
     }
 
     @Transactional(readOnly = true)
@@ -189,8 +191,7 @@ public class SchemaDraftReviewService {
         SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
         List<Candidate> candidates = applyDecisions(draft, effectiveCandidates(draft));
         JsonNode schema = project(draft, candidates);
-        boolean unresolvedConflict = conflictRepository.findByDraftIdOrderByCoordinateAsc(draftId).stream()
-            .filter(value -> aggregate.getId().equals(value.getAggregateRevisionId()))
+        boolean unresolvedConflict = conflictRepository.findByAggregateRevision(draftId, aggregate.getId()).stream()
             .anyMatch(value -> !value.isResolved());
         boolean unresolvedGuidance = candidates.stream().anyMatch(value ->
             value.origins().contains(EvidenceOrigin.GUIDED)
@@ -263,23 +264,13 @@ public class SchemaDraftReviewService {
         List<String> alternatives,
         String evidence
     ) {
-        boolean exists = conflictRepository.findByDraftIdOrderByCoordinateAsc(draftId).stream()
-            .anyMatch(value -> aggregateId.equals(value.getAggregateRevisionId()) && type == value.getType()
-                && coordinate.equals(value.getCoordinate()));
+        boolean exists = conflictRepository.findByAggregateRevision(draftId, aggregateId).stream()
+            .anyMatch(value -> type == value.getType() && coordinate.equals(value.getCoordinate()));
         if (exists) {
             return;
         }
-        SchemaDraftConflictNode conflict = new SchemaDraftConflictNode();
-        conflict.setId(UUID.randomUUID().toString());
-        conflict.setDraftId(draftId);
-        conflict.setAggregateRevisionId(aggregateId);
-        conflict.setType(type);
-        conflict.setCoordinate(coordinate);
-        conflict.setAlternativesJson(jsonSupport.canonical(alternatives));
-        conflict.setEvidenceJson(evidence == null ? "[]" : evidence);
-        conflict.setCreatedAt(Instant.now());
-        SchemaDraftConflictNode saved = conflictRepository.save(conflict);
-        graphService.attach(draftId, "SchemaDraftConflict", saved.getId());
+        conflictService.create(draftId, aggregateId, type, coordinate, alternatives,
+            evidence == null ? List.of() : jsonSupport.parse(evidence));
     }
 
     private List<Candidate> effectiveCandidates(SchemaDraftNode draft) {
@@ -514,10 +505,11 @@ public class SchemaDraftReviewService {
             plainOrNull(decision.getResultingValueJson()), decision.getRationale(), decision.getCreatedAt());
     }
 
-    private ConflictResponse toResponse(SchemaDraftConflictNode conflict) {
+    private ConflictResponse toResponse(SchemaDraftConflictNode conflict, String currentAggregateId) {
         return new ConflictResponse(conflict.getId(), conflict.getType(), conflict.getCoordinate(),
             toPlain(jsonSupport.parse(conflict.getAlternativesJson())), toPlain(jsonSupport.parse(conflict.getEvidenceJson())),
             conflict.isResolved(), conflict.getSelectedAlternative(), plainOrNull(conflict.getCustomResolutionJson()),
+            conflict.getAggregateRevisionId(), conflict.getAggregateRevisionId().equals(currentAggregateId),
             conflict.getCreatedAt(), conflict.getResolvedAt());
     }
 

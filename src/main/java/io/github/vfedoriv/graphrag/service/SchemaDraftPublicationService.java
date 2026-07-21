@@ -112,9 +112,9 @@ public class SchemaDraftPublicationService {
         for (int index = 0; index < validationErrors.size(); index++) {
             reasons.add(new ReadinessBlockingReason("registry-validation:" + index, "REGISTRY_VALIDATION", validationErrors.get(index)));
         }
-        for (SchemaDraftConflictNode conflict : conflictRepository.findByDraftIdOrderByCoordinateAsc(draftId)) {
-            if (projection.aggregateRevisionId().equals(conflict.getAggregateRevisionId()) && !conflict.isResolved()
-                && BLOCKING_CONFLICTS.contains(conflict.getType())) {
+        for (SchemaDraftConflictNode conflict : conflictRepository.findByAggregateRevision(
+            draftId, projection.aggregateRevisionId())) {
+            if (!conflict.isResolved() && BLOCKING_CONFLICTS.contains(conflict.getType())) {
                 reasons.add(new ReadinessBlockingReason(conflict.getId(), "UNRESOLVED_" + conflict.getType().name(), conflict.getCoordinate()));
             }
         }

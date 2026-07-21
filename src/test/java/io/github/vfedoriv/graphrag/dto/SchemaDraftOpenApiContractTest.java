@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AdvisoryExecutionStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictListScope;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.MetricApplicability;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.QuestionCoverage;
@@ -77,6 +79,20 @@ class SchemaDraftOpenApiContractTest {
         assertThat(candidateSchemas).containsKey("CandidateResponse");
         assertThat(candidateSchemas.get("CandidateResponse").getProperties()).containsKeys(
             "recommendationState", "effectiveReviewState", "latestDecisionId", "evidence");
+    }
+
+    @Test
+    void documentsCurrentAndHistoricalConflictLineage() {
+        assertThat(List.of(ConflictListScope.values())).extracting(Enum::name)
+            .containsExactly("CURRENT", "ALL");
+        Map<String, Schema> schemas = ModelConverters.getInstance().readAll(ConflictResponse.class);
+        Schema conflict = schemas.get("ConflictResponse");
+
+        assertThat(conflict.getProperties()).containsKeys("aggregateRevisionId", "current");
+        assertThat(((Schema) conflict.getProperties().get("aggregateRevisionId")).getDescription())
+            .contains("immutable aggregate revision");
+        assertThat(((Schema) conflict.getProperties().get("current")).getDescription())
+            .contains("currently promoted aggregate");
     }
 
     @Test

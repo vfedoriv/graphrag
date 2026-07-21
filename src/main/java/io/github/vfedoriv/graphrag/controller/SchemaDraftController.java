@@ -6,6 +6,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AddTextSourceRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ConflictListScope;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CandidatePageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.CreateDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionRequest;
@@ -35,6 +36,7 @@ import io.github.vfedoriv.graphrag.service.SchemaDraftEvaluationService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftPublicationService;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -237,10 +239,21 @@ public class SchemaDraftController {
     }
 
     @GetMapping("/{draftId}/conflicts")
+    @Operation(
+        summary = "List schema draft conflicts",
+        description = "Returns only conflicts from the currently promoted aggregate by default. "
+            + "Use scope=ALL for deterministic draft-wide history, including non-promoted and superseded aggregates. "
+            + "Every item includes aggregateRevisionId and a derived current flag."
+    )
     public List<ConflictResponse> conflicts(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId
+        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
+        @Parameter(
+            description = "CURRENT (default) returns active review work; ALL returns complete conflict history.",
+            example = "CURRENT"
+        )
+        @RequestParam(defaultValue = "CURRENT") ConflictListScope scope
     ) {
-        return reviewService.conflicts(knowledgeBaseId, draftId);
+        return reviewService.conflicts(knowledgeBaseId, draftId, scope);
     }
 
     @PostMapping("/{draftId}/conflicts/{conflictId}/resolution")

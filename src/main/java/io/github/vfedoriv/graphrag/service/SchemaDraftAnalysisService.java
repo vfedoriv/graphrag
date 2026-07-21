@@ -14,7 +14,6 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;
@@ -36,7 +35,6 @@ import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
@@ -66,7 +64,7 @@ public class SchemaDraftAnalysisService {
     private final SchemaDraftAnalysisRunRepository runRepository;
     private final SchemaDraftSourceResultRepository resultRepository;
     private final SchemaDraftAggregateRevisionRepository aggregateRepository;
-    private final SchemaDraftConflictRepository conflictRepository;
+    private final SchemaDraftConflictService conflictService;
     private final SchemaDraftGraphService graphService;
     private final SchemaDraftAnalysisSourceFactory sourceFactory;
     private final DiscoverySourceAnalyzer sourceAnalyzer;
@@ -90,7 +88,7 @@ public class SchemaDraftAnalysisService {
         SchemaDraftAnalysisRunRepository runRepository,
         SchemaDraftSourceResultRepository resultRepository,
         SchemaDraftAggregateRevisionRepository aggregateRepository,
-        SchemaDraftConflictRepository conflictRepository,
+        SchemaDraftConflictService conflictService,
         SchemaDraftGraphService graphService,
         SchemaDraftAnalysisSourceFactory sourceFactory,
         DiscoverySourceAnalyzer sourceAnalyzer,
@@ -112,7 +110,7 @@ public class SchemaDraftAnalysisService {
         this.runRepository = runRepository;
         this.resultRepository = resultRepository;
         this.aggregateRepository = aggregateRepository;
-        this.conflictRepository = conflictRepository;
+        this.conflictService = conflictService;
         this.graphService = graphService;
         this.sourceFactory = sourceFactory;
         this.sourceAnalyzer = sourceAnalyzer;
@@ -369,17 +367,8 @@ public class SchemaDraftAnalysisService {
         String draftId, String aggregateId, DiscoveryAggregator.AggregateResult aggregate
     ) {
         aggregate.conflicts().forEach(value -> {
-            SchemaDraftConflictNode conflict = new SchemaDraftConflictNode();
-            conflict.setId(UUID.randomUUID().toString());
-            conflict.setDraftId(draftId);
-            conflict.setAggregateRevisionId(aggregateId);
-            conflict.setType(conflictType(value.category().name()));
-            conflict.setCoordinate(value.coordinate());
-            conflict.setAlternativesJson(jsonSupport.canonical(value.alternatives()));
-            conflict.setEvidenceJson(jsonSupport.canonical(value.evidence()));
-            conflict.setCreatedAt(Instant.now());
-            SchemaDraftConflictNode saved = conflictRepository.save(conflict);
-            graphService.attach(draftId, "SchemaDraftConflict", saved.getId());
+            conflictService.create(draftId, aggregateId, conflictType(value.category().name()),
+                value.coordinate(), value.alternatives(), value.evidence());
         });
     }
 
