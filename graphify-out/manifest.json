@@ -3035,9 +3035,9 @@
     "semantic_hash": "0e279a431ef606bac7cf2dc67fe82af5"
   },
   "src/main/java/io/github/vfedoriv/graphrag/config/LegacyJacksonConfiguration.java": {
-    "mtime": 1783771284.6953998,
-    "ast_hash": "f79f7c7c5c0c95dd9e11abcc42d24b50",
-    "semantic_hash": "f79f7c7c5c0c95dd9e11abcc42d24b50"
+    "mtime": 1784632269.650853,
+    "ast_hash": "4f28d544ab6868b5c5ba219b69049908",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/DocumentChunkPersistenceAdapter.java": {
     "mtime": 1783772243.1924615,
@@ -3545,8 +3545,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java": {
-    "mtime": 1784626156.3316405,
-    "ast_hash": "b6fa634045540e86be4f959352450b03",
+    "mtime": 1784632309.3377824,
+    "ast_hash": "bd06db189deafcb2a7288a1372f6f3ae",
     "semantic_hash": ""
   },
   "docs/SCHEMA_DRAFTS.md": {
@@ -3780,8 +3780,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/schema-draft-review/spec.md": {
-    "mtime": 1784619904.0297542,
-    "ast_hash": "d1b7eb949be5311e36355df8d8d58456",
+    "mtime": 1784632005.5354939,
+    "ast_hash": "a11ee7723914c23dc99aa4feb7593871",
     "semantic_hash": ""
   },
   "openspec/specs/schema-draft-sources/spec.md": {
@@ -4069,29 +4069,59 @@
     "ast_hash": "7bceebea8af555b1fe08ec58fc8db23f",
     "semantic_hash": ""
   },
-  "openspec/changes/clarify-schema-draft-diff-baseline/.openspec.yaml": {
+  "src/test/java/io/github/vfedoriv/graphrag/config/LegacyJacksonConfigurationTest.java": {
+    "mtime": 1784632269.865858,
+    "ast_hash": "0ffcf1ceeb917b65982a5e1ecafd86ba",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-21-clarify-schema-draft-diff-baseline/.openspec.yaml": {
     "mtime": 1784625526.4967184,
     "ast_hash": "2095a54390accb548fae2548dcee20bd",
     "semantic_hash": ""
   },
-  "openspec/changes/clarify-schema-draft-diff-baseline/design.md": {
+  "openspec/changes/archive/2026-07-21-clarify-schema-draft-diff-baseline/design.md": {
     "mtime": 1784625625.6997228,
     "ast_hash": "b9ecd6b926e5f600dc4b4d36368413ca",
     "semantic_hash": ""
   },
-  "openspec/changes/clarify-schema-draft-diff-baseline/proposal.md": {
+  "openspec/changes/archive/2026-07-21-clarify-schema-draft-diff-baseline/proposal.md": {
     "mtime": 1784625547.7401476,
     "ast_hash": "ca492f1b75cd53623fe93de62639fe4c",
     "semantic_hash": ""
   },
-  "openspec/changes/clarify-schema-draft-diff-baseline/specs/schema-draft-review/spec.md": {
+  "openspec/changes/archive/2026-07-21-clarify-schema-draft-diff-baseline/specs/schema-draft-review/spec.md": {
     "mtime": 1784625625.8907266,
     "ast_hash": "fcad2213e0c9e938a9a2d2efea70156d",
     "semantic_hash": ""
   },
-  "openspec/changes/clarify-schema-draft-diff-baseline/tasks.md": {
-    "mtime": 1784626546.7776952,
-    "ast_hash": "631c68c0e3c4cdf17d8c32e232a922fc",
+  "openspec/changes/archive/2026-07-21-clarify-schema-draft-diff-baseline/tasks.md": {
+    "mtime": 1784626568.3261375,
+    "ast_hash": "1af0ad115cb7d0069b9614a6d529ac08",
+    "semantic_hash": ""
+  },
+  "openspec/changes/fix-legacy-jackson-java-time/.openspec.yaml": {
+    "mtime": 1784631146.7749755,
+    "ast_hash": "2095a54390accb548fae2548dcee20bd",
+    "semantic_hash": ""
+  },
+  "openspec/changes/fix-legacy-jackson-java-time/design.md": {
+    "mtime": 1784631219.6964688,
+    "ast_hash": "699a8f5895c811f2f6e1e4ffc7b9391f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/fix-legacy-jackson-java-time/proposal.md": {
+    "mtime": 1784631167.1863937,
+    "ast_hash": "b9ba0e38797bbb4853312c6aad69f6ee",
+    "semantic_hash": ""
+  },
+  "openspec/changes/fix-legacy-jackson-java-time/specs/schema-draft-evaluation/spec.md": {
+    "mtime": 1784631219.8974729,
+    "ast_hash": "1256be82c263057a3a1c514eb56a20a1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/fix-legacy-jackson-java-time/tasks.md": {
+    "mtime": 1784632656.515645,
+    "ast_hash": "cc043ac54e86318b733b2f917a550f03",
     "semantic_hash": ""
   }
 }

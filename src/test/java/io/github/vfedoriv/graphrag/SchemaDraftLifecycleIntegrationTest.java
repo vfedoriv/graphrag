@@ -22,6 +22,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.error.ConflictException;
@@ -30,12 +31,14 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
+import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
 import java.time.Duration;
@@ -107,7 +110,9 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftAnalysisRunRepository runRepository;
     @Autowired private SchemaDraftAggregateRevisionRepository aggregateRepository;
     @Autowired private SchemaDraftDecisionRepository decisionRepository;
+    @Autowired private SchemaDraftEvaluationRunRepository evaluationRunRepository;
     @Autowired private SchemaDraftConflictRepository conflictRepository;
+    @Autowired private SchemaDraftJsonSupport jsonSupport;
     @Autowired private Neo4jPersistenceVersionBackfillService versionBackfillService;
 
     @BeforeEach
@@ -470,6 +475,47 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(blockedProjection.path("publicationReady").asBoolean()).isFalse();
         assertThat(blockedReadiness.path("blockingReasons").toString())
             .contains("current-blocking", "UNRESOLVED_TYPE");
+    }
+
+    @Test
+    void evaluationSnapshotsCompleteDecisionHistoryWithIso8601Timestamp() throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"decision-snapshot\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"evidence\",\"text\":\"Person personId displayName\"}",
+            KNOWLEDGE_BASE_ID, draftId);
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        assertThat(awaitTerminal(draftId, analysis.path("runId").asText()).path("status").asText())
+            .isEqualTo("COMPLETED");
+
+        JsonNode decision = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/decisions",
+            """
+                {"revision":1,"type":"REJECT","candidateIdentity":"node-property:Person:displayName",
+                 "rationale":"not part of the domain"}
+                """, KNOWLEDGE_BASE_ID, draftId));
+        DocumentUploadNode heldOut = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "held-out-decision.txt", "text/plain",
+                "held-out Person P-200".getBytes()));
+
+        JsonNode evaluation = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+            "{\"revision\":2,\"documentIds\":[\"%s\"],\"advisoryEnabled\":false}"
+                .formatted(heldOut.getId()), KNOWLEDGE_BASE_ID, draftId));
+        SchemaDraftEvaluationRunNode persisted = evaluationRunRepository
+            .findByIdAndDraftId(evaluation.path("runId").asText(), draftId).orElseThrow();
+        String expectedDecisions = jsonSupport.canonical(reviewService.decisions(KNOWLEDGE_BASE_ID, draftId));
+        JsonNode decisionSnapshot = MAPPER.readTree(persisted.getDecisionsJson());
+
+        assertThat(persisted.getDecisionsJson()).isEqualTo(expectedDecisions);
+        assertThat(decisionSnapshot).hasSize(1);
+        assertThat(decisionSnapshot.get(0).path("id").asText()).isEqualTo(decision.path("id").asText());
+        assertThat(decisionSnapshot.get(0).path("createdAt").isTextual()).isTrue();
+        assertThat(decisionSnapshot.get(0).path("createdAt").asText())
+            .isEqualTo(decision.path("createdAt").asText());
     }
 
     @Test

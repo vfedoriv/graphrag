@@ -4,12 +4,17 @@
 TBD - created by archiving change add-schema-draft-validation-and-publication. Update Purpose after archive.
 ## Requirements
 ### Requirement: Draft evaluation uses explicitly held-out documents
-The system SHALL allow a client to start a durable evaluation of the current reviewed draft projection against selected documents owned by the draft knowledge base whose content did not contribute active evidence to that projection.
+The system SHALL allow a client to start a durable evaluation of the current reviewed draft projection against selected documents owned by the draft knowledge base whose content did not contribute active evidence to that projection. Its canonical decision snapshot SHALL support non-empty decision history and preserve each decision timestamp as an ISO-8601 string.
 
 #### Scenario: Start a held-out evaluation
 - **WHEN** a client selects eligible knowledge-base documents and starts evaluation for a current draft revision
 - **THEN** the system snapshots the draft projection, decisions, document SHA-256 values, AI profile identifier and revision, prompt revision, and evaluation settings
 - **AND** returns an accepted response with a durable evaluation run identifier and status location
+
+#### Scenario: Start an evaluation with decision history
+- **WHEN** a current draft has one or more recorded decisions and a client starts evaluation with eligible held-out documents
+- **THEN** the system creates the durable evaluation run without a decision-serialization failure
+- **AND** the run's canonical decision snapshot contains every decision and represents each `createdAt` value as an ISO-8601 string
 
 #### Scenario: Discovery source is selected as held-out
 - **WHEN** a selected document's SHA-256 matches a successful source result in the analysis run that produced the current aggregate
