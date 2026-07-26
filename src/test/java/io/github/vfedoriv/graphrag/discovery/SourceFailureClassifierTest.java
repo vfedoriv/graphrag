@@ -69,6 +69,21 @@ class SourceFailureClassifierTest {
     }
 
     @Test
+    void preservesDistinctRetryableWorkflowDeadlineCodes() {
+        SourceFailureDecision source = classifier.classify(
+            new DiscoveryDeadlineExceededException(SourceFailureCode.SOURCE_DEADLINE_EXCEEDED));
+        SourceFailureDecision request = classifier.classify(
+            new DiscoveryDeadlineExceededException(SourceFailureCode.REQUEST_DEADLINE_EXCEEDED));
+
+        assertThat(source.category()).isEqualTo(FailureCategory.TIMEOUT);
+        assertThat(source.code()).isEqualTo(SourceFailureCode.SOURCE_DEADLINE_EXCEEDED);
+        assertThat(source.retryable()).isTrue();
+        assertThat(request.category()).isEqualTo(FailureCategory.TIMEOUT);
+        assertThat(request.code()).isEqualTo(SourceFailureCode.REQUEST_DEADLINE_EXCEEDED);
+        assertThat(request.retryable()).isTrue();
+    }
+
+    @Test
     void boundsAndDeduplicatesCyclicCauseChains() {
         RuntimeException first = new RuntimeException("first");
         RuntimeException second = new RuntimeException("second");

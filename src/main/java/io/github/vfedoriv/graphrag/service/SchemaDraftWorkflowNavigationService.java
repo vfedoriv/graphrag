@@ -167,7 +167,9 @@ public class SchemaDraftWorkflowNavigationService {
     ) {
         boolean terminal = run.getStatus() != SchemaDraftAnalysisStatus.RUNNING;
         return new AnalysisRunSummaryResponse(
-            run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(), run.getTotalSources(),
+            run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(),
+            run.getDiscoveryMaxConcurrency(), run.getDiscoverySourceTimeoutMillis(),
+            run.getDiscoveryRequestTimeoutMillis(), run.getTotalSources(),
             run.getSucceededSources(), run.getFailedSources(), isAnalysisCurrent(draft, run), run.getAggregateRevisionId(),
             run.getFailureCategory(), terminal && !hasRunning && draft.getStatus() == SchemaDraftStatus.OPEN,
             run.getRetryOfRunId(), run.getCreatedAt(),

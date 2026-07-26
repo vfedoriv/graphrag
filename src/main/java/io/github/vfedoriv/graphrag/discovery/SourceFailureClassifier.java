@@ -36,6 +36,11 @@ public class SourceFailureClassifier {
     }
 
     private DecisionCore decision(List<Throwable> chain, Integer status) {
+        DiscoveryDeadlineExceededException deadlineFailure = first(
+            chain, DiscoveryDeadlineExceededException.class);
+        if (deadlineFailure != null) {
+            return new DecisionCore(FailureCategory.TIMEOUT, deadlineFailure.failureCode(), true);
+        }
         ModelOutputException outputFailure = first(chain, ModelOutputException.class);
         if (outputFailure != null) {
             FailureCategory category = outputFailure.failureCode() == SourceFailureCode.MALFORMED_MODEL_RESPONSE

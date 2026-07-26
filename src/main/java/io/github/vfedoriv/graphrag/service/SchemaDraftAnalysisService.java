@@ -8,7 +8,7 @@ import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryAggregator;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Candidate;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory;
+import io.github.vfedoriv.graphrag.discovery.DiscoveryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
 import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
@@ -46,11 +46,22 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -151,7 +162,9 @@ public class SchemaDraftAnalysisService {
         ChatModel capturedModel = modelFactory.chatModel(profile.getId());
         SchemaDiscoveryRequest request = discoveryRequest(draft);
         String membership = membershipFingerprint(sources);
-        String settings = settingsFingerprint();
+        RuntimeSettingsService.DiscoverySettings discoverySettings = runtimeSettingsService.discovery();
+        String settings = settingsFingerprint(discoverySettings);
+        DiscoveryExecutionPolicy policy = DiscoveryExecutionPolicy.from(discoverySettings, settings);
         String snapshot = jsonSupport.fingerprint(String.join("|", Long.toString(draft.getRevision()),
             Long.toString(draft.getGuidanceRevision()), membership, profile.getId(), Long.toString(profile.getRevision()),
             DiscoveryContracts.PROMPT_CONTRACT_REVISION, DiscoveryContracts.CANDIDATE_CONTRACT_REVISION, settings));
@@ -168,20 +181,22 @@ public class SchemaDraftAnalysisService {
             throw new ConflictException("Schema draft analysis queue is full");
         }
         SchemaDraftAnalysisRunNode run = createRun(
-            draft, sources, profile, membership, settings, snapshot, retryOfRunId);
+            draft, sources, profile, membership, policy, snapshot, retryOfRunId);
         if (!reserveAnalysis(draftId, run.getId())) {
             runRepository.deleteById(run.getId());
             throw new ConflictException("Schema draft already has a running analysis");
         }
         try {
-            executor.execute(() -> process(run.getId(), request, capturedModel));
+            executor.execute(() -> process(run.getId(), request, capturedModel, policy));
         } catch (RejectedExecutionException exception) {
             draftRepository.releaseAnalysis(draftId, run.getId());
             runRepository.deleteById(run.getId());
             throw new ConflictException("Schema draft analysis queue is full");
         }
-        log.info("Schema draft analysis accepted: knowledgeBaseId={}, draftId={}, runId={}, sourceCount={}, draftRevision={}, profileId={}, profileRevision={}",
-            knowledgeBaseId, draftId, run.getId(), sources.size(), draft.getRevision(), profile.getId(), profile.getRevision());
+        log.info("Schema draft analysis accepted: knowledgeBaseId={}, draftId={}, runId={}, sourceCount={}, draftRevision={}, profileId={}, profileRevision={}, sourceConcurrency={}, sourceTimeoutMs={}, requestTimeoutMs={}",
+            knowledgeBaseId, draftId, run.getId(), sources.size(), draft.getRevision(), profile.getId(),
+            profile.getRevision(), policy.maxConcurrency(), policy.sourceTimeout().toMillis(),
+            policy.requestTimeout().toMillis());
         return startResponse(knowledgeBaseId, draftId, run);
     }
 
@@ -212,7 +227,7 @@ public class SchemaDraftAnalysisService {
 
     private SchemaDraftAnalysisRunNode createRun(
         SchemaDraftNode draft, List<SchemaDraftSourceNode> sources, AiProfileNode profile,
-        String membership, String settings, String snapshot, String retryOfRunId
+        String membership, DiscoveryExecutionPolicy policy, String snapshot, String retryOfRunId
     ) {
         Instant now = Instant.now();
         SchemaDraftAnalysisRunNode run = new SchemaDraftAnalysisRunNode();
@@ -231,7 +246,10 @@ public class SchemaDraftAnalysisService {
         run.setConfiguredSdkMaxRetries(profile.getMaxRetries());
         run.setPromptRevision(DiscoveryContracts.PROMPT_CONTRACT_REVISION);
         run.setCandidateRevision(DiscoveryContracts.CANDIDATE_CONTRACT_REVISION);
-        run.setSettingsFingerprint(settings);
+        run.setSettingsFingerprint(policy.settingsFingerprint());
+        run.setDiscoveryMaxConcurrency(policy.maxConcurrency());
+        run.setDiscoverySourceTimeoutMillis(policy.sourceTimeout().toMillis());
+        run.setDiscoveryRequestTimeoutMillis(policy.requestTimeout().toMillis());
         run.setSnapshotFingerprint(snapshot);
         run.setRetryOfRunId(retryOfRunId);
         run.setTotalSources(sources.size());
@@ -250,17 +268,23 @@ public class SchemaDraftAnalysisService {
         }
     }
 
-    private void process(String runId, SchemaDiscoveryRequest request, ChatModel capturedModel) {
-        if (!Long.valueOf(1).equals(runRepository.claim(runId, workerId, Instant.now()))) {
+    private void process(
+        String runId, SchemaDiscoveryRequest request, ChatModel capturedModel, DiscoveryExecutionPolicy policy
+    ) {
+        Instant claimedAt = Instant.now();
+        if (!Long.valueOf(1).equals(runRepository.claim(runId, workerId, claimedAt))) {
             return;
         }
+        long requestStartNanos = System.nanoTime();
         SchemaDraftAnalysisRunNode run = runRepository.findById(runId).orElseThrow();
         Map<String, String> attributes = Map.of("ai.draft.id", run.getDraftId(), "ai.draft.run_id", runId,
             "ai.draft.source_count", Integer.toString(run.getTotalSources()));
         try (AiObservationScope workflow = observationService.startWorkflow(
             new AiWorkflowContext(AiObservationService.WORKFLOW_SCHEMA_DISCOVERY, null, attributes))) {
             try {
-                List<DiscoverySourceAnalyzer.SourceAnalysis> successes = analyzeSources(run, request, capturedModel);
+                warnProviderEnvelope(run, policy);
+                List<DiscoverySourceAnalyzer.SourceAnalysis> successes = analyzeSources(
+                    run, request, capturedModel, policy, requestStartNanos);
                 finish(run, request, successes);
                 workflow.success();
             } catch (RuntimeException exception) {
@@ -273,56 +297,328 @@ public class SchemaDraftAnalysisService {
     }
 
     private List<DiscoverySourceAnalyzer.SourceAnalysis> analyzeSources(
-        SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request, ChatModel capturedModel
+        SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request, ChatModel capturedModel,
+        DiscoveryExecutionPolicy policy, long requestStartNanos
     ) {
         List<SourceSnapshot> snapshots = readSnapshots(run.getSourceSnapshotJson());
-        List<DiscoverySourceAnalyzer.SourceAnalysis> successes = new ArrayList<>();
-        for (SourceSnapshot snapshot : snapshots) {
-            SchemaDraftSourceNode source = sourceRepository.findByIdAndDraftId(snapshot.id(), run.getDraftId()).orElse(null);
-            if (source == null || source.getRevision() != snapshot.revision() || !source.getSha256().equals(snapshot.sha256())) {
-                SourceStateException exception = new SourceStateException(SourceFailureCode.SOURCE_STALE);
-                persistFailure(run, snapshot, failureClassifier.classify(exception), 0, exception);
+        int sourceThreads = Math.min(policy.maxConcurrency(), snapshots.size());
+        ExecutorService sourceExecutor = Executors.newFixedThreadPool(sourceThreads,
+            Thread.ofPlatform().daemon(true).name("schema-draft-source-" + run.getId() + "-", 0).factory());
+        CompletionService<SourceTaskResult> completion = new ExecutorCompletionService<>(sourceExecutor);
+        Map<Future<SourceTaskResult>, SourceTaskControl> controlsByFuture = new HashMap<>();
+        List<SourceTaskControl> controls = new ArrayList<>();
+        long requestDeadlineNanos = deadlineAfter(requestStartNanos, policy.requestTimeout());
+        Map<String, DiscoverySourceAnalyzer.SourceAnalysis> successesBySource = new HashMap<>();
+        SchedulingDiagnostics diagnostics = new SchedulingDiagnostics();
+        try {
+            for (SourceSnapshot snapshot : snapshots) {
+                SourceTaskControl control = new SourceTaskControl(new SourceTaskInput(snapshot));
+                Future<SourceTaskResult> future = completion.submit(
+                    () -> executeSourceTask(
+                        control, run, request, capturedModel, policy, requestDeadlineNanos, diagnostics));
+                control.future(future);
+                controls.add(control);
+                controlsByFuture.put(future, control);
+                diagnostics.queued.incrementAndGet();
+            }
+            coordinateSourceTasks(run, completion, controlsByFuture, controls, successesBySource,
+                policy, requestDeadlineNanos, diagnostics);
+        } finally {
+            sourceExecutor.shutdownNow();
+        }
+        log.info("Schema draft source scheduling completed: draftId={}, runId={}, sourceCount={}, sourceConcurrency={}, globalRunConcurrency={}, providerConcurrencyBound={}, queued={}, started={}, accepted={}, sourceTimedOut={}, requestTimedOut={}, cancellationRequested={}, lateResults={}, elapsedMs={}",
+            run.getDraftId(), run.getId(), snapshots.size(), policy.maxConcurrency(), executor.getMaxPoolSize(),
+            policy.maxConcurrency() * executor.getMaxPoolSize(), diagnostics.queued.get(), diagnostics.started.get(),
+            diagnostics.accepted.get(), diagnostics.sourceTimedOut.get(), diagnostics.requestTimedOut.get(),
+            diagnostics.cancellationRequested.get(), diagnostics.lateResults.get(),
+            TimeUnit.NANOSECONDS.toMillis(Math.max(0, System.nanoTime() - requestStartNanos)));
+        return snapshots.stream().map(SourceSnapshot::id).map(successesBySource::get)
+            .filter(java.util.Objects::nonNull).toList();
+    }
+
+    private SourceTaskResult executeSourceTask(
+        SourceTaskControl control, SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request,
+        ChatModel capturedModel, DiscoveryExecutionPolicy policy, long requestDeadlineNanos,
+        SchedulingDiagnostics diagnostics
+    ) {
+        long startedNanos = System.nanoTime();
+        if (!control.start(startedNanos, deadlineAfter(startedNanos, policy.sourceTimeout()))) {
+            throw new CancellationException("Source task was closed before start");
+        }
+        diagnostics.started.incrementAndGet();
+        SourceSnapshot snapshot = control.input().snapshot();
+        SchemaDraftSourceNode source = sourceRepository.findByIdAndDraftId(snapshot.id(), run.getDraftId()).orElse(null);
+        if (source == null || source.getRevision() != snapshot.revision()
+            || !java.util.Objects.equals(source.getSha256(), snapshot.sha256())) {
+            SourceStateException exception = new SourceStateException(SourceFailureCode.SOURCE_STALE);
+            return SourceTaskResult.failure(snapshot, source, failureClassifier.classify(exception), 0,
+                exception, System.nanoTime());
+        }
+        String reuseKey = reuseKey(run, snapshot);
+        java.util.Optional<SchemaDraftSourceResultNode> reusable = resultRepository
+            .findFirstByDraftIdAndReuseKeyAndStatusOrderByCompletedAtDesc(
+                run.getDraftId(), reuseKey, SchemaDraftSourceResultStatus.SUCCEEDED);
+        PreparedDiscoverySource prepared = null;
+        try {
+            requireTaskBudget(control, requestDeadlineNanos);
+            prepared = sourceFactory.prepare(source);
+            requireTaskBudget(control, requestDeadlineNanos);
+            if (reusable.isPresent()) {
+                StoredAnalysis stored = jsonSupport.read(reusable.get().getCandidatesJson(), StoredAnalysis.class);
+                DiscoverySourceAnalyzer.SourceAnalysis analysis = new DiscoverySourceAnalyzer.SourceAnalysis(
+                    prepared, stored.candidates(), stored.aliases());
+                return SourceTaskResult.success(snapshot, source, reuseKey, analysis, true, System.nanoTime());
+            }
+            PreparedDiscoverySource preparedForAnalysis = prepared;
+            CandidateExtractionAttemptContext attemptContext = new CandidateExtractionAttemptContext(
+                run.getDraftId(), run.getId(), snapshot.id(), snapshot.revision(), null,
+                run.getAiProfileId(), run.getAiProfileRevision(), null,
+                run.getConfiguredTimeoutSeconds(), run.getConfiguredSdkMaxRetries(),
+                control.sourceDeadlineNanos(), requestDeadlineNanos);
+            DiscoverySourceAnalyzer.SourceAnalysis analysis = AiProfileContext.withCapturedChatModel(
+                run.getAiProfileId(), capturedModel,
+                () -> sourceAnalyzer.analyze(preparedForAnalysis, request, attemptContext));
+            return SourceTaskResult.success(snapshot, source, reuseKey, analysis, false, System.nanoTime());
+        } catch (RuntimeException exception) {
+            int chunks = prepared == null ? 0 : prepared.chunks().size();
+            return SourceTaskResult.failure(snapshot, source, failureClassifier.classify(exception), chunks,
+                exception, System.nanoTime());
+        }
+    }
+
+    private void coordinateSourceTasks(
+        SchemaDraftAnalysisRunNode run, CompletionService<SourceTaskResult> completion,
+        Map<Future<SourceTaskResult>, SourceTaskControl> controlsByFuture, List<SourceTaskControl> controls,
+        Map<String, DiscoverySourceAnalyzer.SourceAnalysis> successesBySource, DiscoveryExecutionPolicy policy,
+        long requestDeadlineNanos, SchedulingDiagnostics diagnostics
+    ) {
+        while (terminalCount(controls) < controls.size()) {
+            Future<SourceTaskResult> ready = completion.poll();
+            if (ready != null) {
+                if (!handleCompletedFuture(run, ready, controlsByFuture, controls, successesBySource,
+                    requestDeadlineNanos, diagnostics)) {
+                    break;
+                }
                 continue;
             }
-            String reuseKey = reuseKey(run, snapshot);
-            java.util.Optional<SchemaDraftSourceResultNode> reusable = resultRepository
-                .findFirstByDraftIdAndReuseKeyAndStatusOrderByCompletedAtDesc(
-                    run.getDraftId(), reuseKey, SchemaDraftSourceResultStatus.SUCCEEDED);
-            PreparedDiscoverySource prepared = null;
+            long now = System.nanoTime();
+            if (now >= requestDeadlineNanos) {
+                closeForRequestDeadline(run, controls, diagnostics);
+            } else {
+                closeExpiredSources(run, controls, now, diagnostics);
+            }
+            if (terminalCount(controls) >= controls.size()) {
+                break;
+            }
             try {
-                prepared = sourceFactory.prepare(source);
-                PreparedDiscoverySource preparedForAnalysis = prepared;
-                if (reusable.isPresent()) {
-                    StoredAnalysis stored = jsonSupport.read(reusable.get().getCandidatesJson(), StoredAnalysis.class);
-                    DiscoverySourceAnalyzer.SourceAnalysis analysis = new DiscoverySourceAnalyzer.SourceAnalysis(
-                        preparedForAnalysis, stored.candidates(), stored.aliases());
-                    persistSuccess(run, source, reuseKey, analysis, true);
-                    successes.add(analysis);
-                } else {
-                    DiscoverySourceAnalyzer.SourceAnalysis analysis = AiProfileContext.withCapturedChatModel(
-                        run.getAiProfileId(), capturedModel, () -> sourceAnalyzer.analyze(preparedForAnalysis, request,
-                            new CandidateExtractionAttemptContext(
-                                run.getDraftId(), run.getId(), snapshot.id(), snapshot.revision(), null,
-                                run.getAiProfileId(), run.getAiProfileRevision(), null,
-                                run.getConfiguredTimeoutSeconds(), run.getConfiguredSdkMaxRetries())));
-                    persistSuccess(run, source, reuseKey, analysis, false);
-                    successes.add(analysis);
+                Future<SourceTaskResult> completed = completion.poll(
+                    waitNanos(controls, requestDeadlineNanos), TimeUnit.NANOSECONDS);
+                if (completed == null) {
+                    continue;
                 }
-            } catch (RuntimeException exception) {
-                SourceFailureDecision decision = failureClassifier.classify(exception);
-                String message = exception.getMessage() == null ? "" : exception.getMessage().toLowerCase(Locale.ROOT);
-                if (message.contains("stale")) {
-                    source.setStatus(SchemaDraftSourceStatus.STALE);
-                    sourceRepository.save(source);
-                } else if (message.contains("unavailable")) {
-                    source.setStatus(SchemaDraftSourceStatus.UNAVAILABLE);
-                    sourceRepository.save(source);
+                if (!handleCompletedFuture(run, completed, controlsByFuture, controls, successesBySource,
+                    requestDeadlineNanos, diagnostics)) {
+                    break;
                 }
-                int preparedChunkCount = prepared == null ? 0 : prepared.chunks().size();
-                persistFailure(run, snapshot, decision, preparedChunkCount, exception);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                closeForRequestDeadline(run, controls, diagnostics);
+                break;
             }
         }
-        return successes;
+    }
+
+    private boolean handleCompletedFuture(
+        SchemaDraftAnalysisRunNode run, Future<SourceTaskResult> completed,
+        Map<Future<SourceTaskResult>, SourceTaskControl> controlsByFuture, List<SourceTaskControl> controls,
+        Map<String, DiscoverySourceAnalyzer.SourceAnalysis> successesBySource, long requestDeadlineNanos,
+        SchedulingDiagnostics diagnostics
+    ) {
+        SourceTaskControl control = controlsByFuture.get(completed);
+        try {
+            SourceTaskResult result = completed.get();
+            acceptSourceResult(run, control, result, successesBySource, requestDeadlineNanos, diagnostics);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            closeForRequestDeadline(run, controls, diagnostics);
+            return false;
+        } catch (CancellationException exception) {
+            if (control != null && control.state().terminal()) {
+                diagnostics.lateResults.incrementAndGet();
+            }
+        } catch (ExecutionException exception) {
+            if (control != null && control.accept()) {
+                RuntimeException failure = exception.getCause() instanceof RuntimeException runtimeException
+                    ? runtimeException : new IllegalStateException("Source task failed", exception.getCause());
+                SourceTaskResult result = SourceTaskResult.failure(control.input().snapshot(), null,
+                    failureClassifier.classify(failure), 0, failure, System.nanoTime());
+                persistAcceptedResult(run, result, successesBySource);
+                diagnostics.accepted.incrementAndGet();
+            }
+        }
+        return true;
+    }
+
+    private void acceptSourceResult(
+        SchemaDraftAnalysisRunNode run, SourceTaskControl control, SourceTaskResult result,
+        Map<String, DiscoverySourceAnalyzer.SourceAnalysis> successesBySource, long requestDeadlineNanos,
+        SchedulingDiagnostics diagnostics
+    ) {
+        if (control == null || control.state().terminal()) {
+            diagnostics.lateResults.incrementAndGet();
+            return;
+        }
+        if (result.completedNanos() >= requestDeadlineNanos) {
+            closeTimedOut(run, control, SourceTaskState.REQUEST_TIMED_OUT,
+                SourceFailureCode.REQUEST_DEADLINE_EXCEEDED, diagnostics);
+            diagnostics.lateResults.incrementAndGet();
+            return;
+        }
+        if (result.completedNanos() >= control.sourceDeadlineNanos()) {
+            closeTimedOut(run, control, SourceTaskState.SOURCE_TIMED_OUT,
+                SourceFailureCode.SOURCE_DEADLINE_EXCEEDED, diagnostics);
+            diagnostics.lateResults.incrementAndGet();
+            return;
+        }
+        if (control.accept()) {
+            persistAcceptedResult(run, result, successesBySource);
+            diagnostics.accepted.incrementAndGet();
+        } else {
+            diagnostics.lateResults.incrementAndGet();
+        }
+    }
+
+    private void persistAcceptedResult(
+        SchemaDraftAnalysisRunNode run, SourceTaskResult result,
+        Map<String, DiscoverySourceAnalyzer.SourceAnalysis> successesBySource
+    ) {
+        if (result.analysis() != null && result.source() != null) {
+            persistSuccess(run, result.source(), result.reuseKey(), result.analysis(), result.reused());
+            successesBySource.put(result.snapshot().id(), result.analysis());
+            return;
+        }
+        updateSourceState(result.source(), result.failure());
+        persistFailure(run, result.snapshot(), result.decision(), result.chunkCount(), result.failure());
+    }
+
+    private void closeExpiredSources(
+        SchemaDraftAnalysisRunNode run, List<SourceTaskControl> controls, long now,
+        SchedulingDiagnostics diagnostics
+    ) {
+        for (SourceTaskControl control : controls) {
+            if (control.state() == SourceTaskState.RUNNING && now >= control.sourceDeadlineNanos()) {
+                closeTimedOut(run, control, SourceTaskState.SOURCE_TIMED_OUT,
+                    SourceFailureCode.SOURCE_DEADLINE_EXCEEDED, diagnostics);
+            }
+        }
+    }
+
+    private void closeForRequestDeadline(
+        SchemaDraftAnalysisRunNode run, List<SourceTaskControl> controls, SchedulingDiagnostics diagnostics
+    ) {
+        for (SourceTaskControl control : controls) {
+            if (control.state() == SourceTaskState.QUEUED || control.state() == SourceTaskState.RUNNING) {
+                closeTimedOut(run, control, SourceTaskState.REQUEST_TIMED_OUT,
+                    SourceFailureCode.REQUEST_DEADLINE_EXCEEDED, diagnostics);
+            }
+        }
+    }
+
+    private void closeTimedOut(
+        SchemaDraftAnalysisRunNode run, SourceTaskControl control, SourceTaskState timeoutState,
+        SourceFailureCode failureCode, SchedulingDiagnostics diagnostics
+    ) {
+        if (!control.timeout(timeoutState)) {
+            return;
+        }
+        DiscoveryDeadlineExceededException failure = new DiscoveryDeadlineExceededException(failureCode);
+        persistFailure(run, control.input().snapshot(), failureClassifier.classify(failure), 0, failure);
+        if (timeoutState == SourceTaskState.SOURCE_TIMED_OUT) {
+            diagnostics.sourceTimedOut.incrementAndGet();
+        } else {
+            diagnostics.requestTimedOut.incrementAndGet();
+        }
+        Future<SourceTaskResult> future = control.future();
+        if (future != null) {
+            future.cancel(true);
+            diagnostics.cancellationRequested.incrementAndGet();
+        }
+        log.warn("Schema draft source deadline closed: draftId={}, runId={}, sourceId={}, sourceRevision={}, taskState={}, sourceTimeoutMs={}, requestTimeoutMs={}, cancellationRequested=true, elapsedMs={}",
+            run.getDraftId(), run.getId(), control.input().snapshot().id(), control.input().snapshot().revision(),
+            timeoutState, run.getDiscoverySourceTimeoutMillis(), run.getDiscoveryRequestTimeoutMillis(),
+            control.startedNanos() == 0 ? 0
+                : TimeUnit.NANOSECONDS.toMillis(Math.max(0, System.nanoTime() - control.startedNanos())));
+    }
+
+    private void requireTaskBudget(SourceTaskControl control, long requestDeadlineNanos) {
+        long now = System.nanoTime();
+        if (now >= requestDeadlineNanos) {
+            throw new DiscoveryDeadlineExceededException(SourceFailureCode.REQUEST_DEADLINE_EXCEEDED);
+        }
+        if (now >= control.sourceDeadlineNanos()) {
+            throw new DiscoveryDeadlineExceededException(SourceFailureCode.SOURCE_DEADLINE_EXCEEDED);
+        }
+    }
+
+    private void updateSourceState(SchemaDraftSourceNode source, RuntimeException exception) {
+        if (source == null || exception == null) {
+            return;
+        }
+        String message = exception.getMessage() == null ? "" : exception.getMessage().toLowerCase(Locale.ROOT);
+        if (message.contains("stale")) {
+            source.setStatus(SchemaDraftSourceStatus.STALE);
+            sourceRepository.save(source);
+        } else if (message.contains("unavailable")) {
+            source.setStatus(SchemaDraftSourceStatus.UNAVAILABLE);
+            sourceRepository.save(source);
+        }
+    }
+
+    private int terminalCount(List<SourceTaskControl> controls) {
+        return (int) controls.stream().filter(control -> control.state().terminal()).count();
+    }
+
+    private long waitNanos(List<SourceTaskControl> controls, long requestDeadlineNanos) {
+        long now = System.nanoTime();
+        long nearest = requestDeadlineNanos;
+        for (SourceTaskControl control : controls) {
+            if (control.state() == SourceTaskState.RUNNING) {
+                nearest = Math.min(nearest, control.sourceDeadlineNanos());
+            }
+        }
+        long remaining = Math.max(1, nearest - now);
+        return Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(100));
+    }
+
+    private long deadlineAfter(long startNanos, java.time.Duration timeout) {
+        long durationNanos;
+        try {
+            durationNanos = timeout.toNanos();
+        } catch (ArithmeticException exception) {
+            return Long.MAX_VALUE;
+        }
+        if (durationNanos > Long.MAX_VALUE - startNanos) {
+            return Long.MAX_VALUE;
+        }
+        return startNanos + durationNanos;
+    }
+
+    private void warnProviderEnvelope(SchemaDraftAnalysisRunNode run, DiscoveryExecutionPolicy policy) {
+        long attempts = Math.max(1L, (long) run.getConfiguredSdkMaxRetries() + 1L);
+        long envelopeSeconds;
+        try {
+            envelopeSeconds = Math.multiplyExact((long) run.getConfiguredTimeoutSeconds(), attempts);
+        } catch (ArithmeticException exception) {
+            envelopeSeconds = Long.MAX_VALUE;
+        }
+        long sourceSeconds = policy.sourceTimeout().toSeconds();
+        long requestSeconds = policy.requestTimeout().toSeconds();
+        if (envelopeSeconds > sourceSeconds || envelopeSeconds > requestSeconds) {
+            log.warn("AI provider retry envelope exceeds schema draft workflow budget: draftId={}, runId={}, profileId={}, profileRevision={}, configuredTimeoutSeconds={}, configuredSdkMaxRetries={}, providerEnvelopeSeconds={}, sourceTimeoutMs={}, requestTimeoutMs={}",
+                run.getDraftId(), run.getId(), run.getAiProfileId(), run.getAiProfileRevision(),
+                run.getConfiguredTimeoutSeconds(), run.getConfiguredSdkMaxRetries(), envelopeSeconds,
+                policy.sourceTimeout().toMillis(), policy.requestTimeout().toMillis());
+        }
     }
 
     private void finish(
@@ -475,8 +771,7 @@ public class SchemaDraftAnalysisService {
         return jsonSupport.fingerprint(value);
     }
 
-    private String settingsFingerprint() {
-        RuntimeSettingsService.DiscoverySettings settings = runtimeSettingsService.discovery();
+    private String settingsFingerprint(RuntimeSettingsService.DiscoverySettings settings) {
         String value = String.join("|",
             Integer.toString(settings.maxSources()),
             Integer.toString(settings.maxSourceBytes()),
@@ -542,6 +837,8 @@ public class SchemaDraftAnalysisService {
             value.getCompletedAt())).toList();
         return new AnalysisRunResponse(run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(),
             run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(), run.getCandidateRevision(),
+            run.getDiscoveryMaxConcurrency(), run.getDiscoverySourceTimeoutMillis(),
+            run.getDiscoveryRequestTimeoutMillis(),
             run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(),
             workflowNavigationService.isAnalysisCurrent(
                 draftRepository.findById(run.getDraftId()).orElse(null), run),
@@ -553,6 +850,134 @@ public class SchemaDraftAnalysisService {
         private static SourceSnapshot from(SchemaDraftSourceNode source) {
             return new SourceSnapshot(source.getId(), source.getRevision(), source.getSha256());
         }
+    }
+
+    private record SourceTaskInput(SourceSnapshot snapshot) {
+    }
+
+    private record SourceTaskResult(
+        SourceSnapshot snapshot,
+        SchemaDraftSourceNode source,
+        String reuseKey,
+        DiscoverySourceAnalyzer.SourceAnalysis analysis,
+        boolean reused,
+        SourceFailureDecision decision,
+        int chunkCount,
+        RuntimeException failure,
+        long completedNanos
+    ) {
+        private static SourceTaskResult success(
+            SourceSnapshot snapshot, SchemaDraftSourceNode source, String reuseKey,
+            DiscoverySourceAnalyzer.SourceAnalysis analysis, boolean reused, long completedNanos
+        ) {
+            return new SourceTaskResult(
+                snapshot, source, reuseKey, analysis, reused, null, analysis.source().chunks().size(),
+                null, completedNanos);
+        }
+
+        private static SourceTaskResult failure(
+            SourceSnapshot snapshot, SchemaDraftSourceNode source, SourceFailureDecision decision,
+            int chunkCount, RuntimeException failure, long completedNanos
+        ) {
+            return new SourceTaskResult(
+                snapshot, source, null, null, false, decision, chunkCount, failure, completedNanos);
+        }
+
+        @Override
+        public String toString() {
+            return "SourceTaskResult[sourceId=" + snapshot.id()
+                + ", sourceRevision=" + snapshot.revision()
+                + ", reused=" + reused
+                + ", succeeded=" + (analysis != null)
+                + ", failureCode=" + (decision == null ? null : decision.code())
+                + ", chunkCount=" + chunkCount
+                + ", completedNanos=" + completedNanos + "]";
+        }
+    }
+
+    private enum SourceTaskState {
+        QUEUED(false),
+        RUNNING(false),
+        ACCEPTED(true),
+        SOURCE_TIMED_OUT(true),
+        REQUEST_TIMED_OUT(true);
+
+        private final boolean terminal;
+
+        SourceTaskState(boolean terminal) {
+            this.terminal = terminal;
+        }
+
+        private boolean terminal() {
+            return terminal;
+        }
+    }
+
+    private static final class SourceTaskControl {
+        private final SourceTaskInput input;
+        private final AtomicReference<SourceTaskState> state = new AtomicReference<>(SourceTaskState.QUEUED);
+        private final AtomicLong startedNanos = new AtomicLong();
+        private final AtomicLong sourceDeadlineNanos = new AtomicLong(Long.MAX_VALUE);
+        private volatile Future<SourceTaskResult> future;
+
+        private SourceTaskControl(SourceTaskInput input) {
+            this.input = input;
+        }
+
+        private boolean start(long started, long deadline) {
+            startedNanos.set(started);
+            sourceDeadlineNanos.set(deadline);
+            return state.compareAndSet(SourceTaskState.QUEUED, SourceTaskState.RUNNING);
+        }
+
+        private boolean accept() {
+            return state.compareAndSet(SourceTaskState.RUNNING, SourceTaskState.ACCEPTED);
+        }
+
+        private boolean timeout(SourceTaskState timeoutState) {
+            SourceTaskState current = state.get();
+            while (current == SourceTaskState.QUEUED || current == SourceTaskState.RUNNING) {
+                if (state.compareAndSet(current, timeoutState)) {
+                    return true;
+                }
+                current = state.get();
+            }
+            return false;
+        }
+
+        private SourceTaskInput input() {
+            return input;
+        }
+
+        private SourceTaskState state() {
+            return state.get();
+        }
+
+        private long startedNanos() {
+            return startedNanos.get();
+        }
+
+        private long sourceDeadlineNanos() {
+            return sourceDeadlineNanos.get();
+        }
+
+        private Future<SourceTaskResult> future() {
+            return future;
+        }
+
+        private void future(Future<SourceTaskResult> future) {
+            this.future = future;
+        }
+    }
+
+    private static final class SchedulingDiagnostics {
+        private final AtomicLong queued = new AtomicLong();
+        private final AtomicLong started = new AtomicLong();
+        private final AtomicLong accepted = new AtomicLong();
+        private final AtomicLong sourceTimedOut = new AtomicLong();
+        private final AtomicLong requestTimedOut = new AtomicLong();
+        private final AtomicLong cancellationRequested = new AtomicLong();
+        private final AtomicLong lateResults = new AtomicLong();
     }
 
     private record StoredAnalysis(List<Candidate> candidates, List<AliasSuggestion> aliases) {

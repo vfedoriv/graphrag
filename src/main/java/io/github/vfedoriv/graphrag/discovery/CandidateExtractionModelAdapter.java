@@ -54,6 +54,7 @@ public class CandidateExtractionModelAdapter {
         BeanOutputConverter<CandidateExtractionResult> converter = new BeanOutputConverter<>(CandidateExtractionResult.class);
         Prompt prompt = portablePrompt(model, portablePrompt);
         for (int attempt = 1; attempt <= 2; attempt++) {
+            context.requireRemainingBudget();
             CandidateExtractionAttemptContext attemptContext = context.forOutputAttempt(attempt);
             long startNanos = System.nanoTime();
             try {

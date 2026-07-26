@@ -28,6 +28,9 @@ public class SchemaDraftAnalysisRunNode {
     private String promptRevision;
     private String candidateRevision;
     private String settingsFingerprint;
+    private Integer discoveryMaxConcurrency;
+    private Long discoverySourceTimeoutMillis;
+    private Long discoveryRequestTimeoutMillis;
     private String snapshotFingerprint;
     private String retryOfRunId;
     private String claimedBy;

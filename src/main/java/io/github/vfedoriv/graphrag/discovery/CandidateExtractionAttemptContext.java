@@ -14,21 +14,41 @@ public record CandidateExtractionAttemptContext(
     Long profileRevision,
     Integer outputAttempt,
     Integer configuredTimeoutSeconds,
-    Integer configuredSdkMaxRetries
+    Integer configuredSdkMaxRetries,
+    Long sourceDeadlineNanos,
+    Long requestDeadlineNanos
 ) {
     public static CandidateExtractionAttemptContext forSource(String sourceId) {
         return new CandidateExtractionAttemptContext(
-            null, null, sourceId, null, null, AiProfileContext.activeProfileId(), null, null, null, null);
+            null, null, sourceId, null, null, AiProfileContext.activeProfileId(), null, null, null, null, null, null);
     }
 
     public CandidateExtractionAttemptContext forChunk(String nextChunkId) {
         return new CandidateExtractionAttemptContext(draftId, runId, sourceId, sourceRevision, nextChunkId,
-            profileId, profileRevision, outputAttempt, configuredTimeoutSeconds, configuredSdkMaxRetries);
+            profileId, profileRevision, outputAttempt, configuredTimeoutSeconds, configuredSdkMaxRetries,
+            sourceDeadlineNanos, requestDeadlineNanos);
     }
 
     public CandidateExtractionAttemptContext forOutputAttempt(int nextOutputAttempt) {
         return new CandidateExtractionAttemptContext(draftId, runId, sourceId, sourceRevision, chunkId,
-            profileId, profileRevision, nextOutputAttempt, configuredTimeoutSeconds, configuredSdkMaxRetries);
+            profileId, profileRevision, nextOutputAttempt, configuredTimeoutSeconds, configuredSdkMaxRetries,
+            sourceDeadlineNanos, requestDeadlineNanos);
+    }
+
+    public CandidateExtractionAttemptContext withDeadlines(long sourceDeadline, long requestDeadline) {
+        return new CandidateExtractionAttemptContext(draftId, runId, sourceId, sourceRevision, chunkId,
+            profileId, profileRevision, outputAttempt, configuredTimeoutSeconds, configuredSdkMaxRetries,
+            sourceDeadline, requestDeadline);
+    }
+
+    public void requireRemainingBudget() {
+        long now = System.nanoTime();
+        if (requestDeadlineNanos != null && now >= requestDeadlineNanos) {
+            throw new DiscoveryDeadlineExceededException(SourceFailureCode.REQUEST_DEADLINE_EXCEEDED);
+        }
+        if (sourceDeadlineNanos != null && now >= sourceDeadlineNanos) {
+            throw new DiscoveryDeadlineExceededException(SourceFailureCode.SOURCE_DEADLINE_EXCEEDED);
+        }
     }
 
     public Map<String, String> observationAttributes() {

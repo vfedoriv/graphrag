@@ -95,9 +95,20 @@ class SchemaDraftOpenApiContractTest {
         assertThat(discoverySchemas.get("SourceOutcome").getProperties())
             .containsKeys("failureCategory", "failureCode", "retryable");
         assertThat(((Schema) durableSchemas.get("SourceOutcomeResponse").getProperties().get("failureCode")).getEnum())
-            .contains("TRANSPORT_TIMEOUT", "RATE_LIMIT", "EMPTY_MODEL_RESPONSE",
+            .contains("SOURCE_DEADLINE_EXCEEDED", "REQUEST_DEADLINE_EXCEEDED",
+                "TRANSPORT_TIMEOUT", "RATE_LIMIT", "EMPTY_MODEL_RESPONSE",
                 "MALFORMED_MODEL_RESPONSE", "INVALID_MODEL_CANDIDATE", "SOURCE_STALE",
                 "SOURCE_UNAVAILABLE", "CONFIGURATION_ERROR");
+        Map<String, Schema> analysisSchemas = ModelConverters.getInstance()
+            .readAll(SchemaDraftDtos.AnalysisRunResponse.class);
+        assertThat(analysisSchemas.get("AnalysisRunResponse").getProperties())
+            .containsKeys("effectiveSourceConcurrency", "effectiveSourceTimeoutMillis",
+                "effectiveRequestTimeoutMillis");
+        Map<String, Schema> summarySchemas = ModelConverters.getInstance()
+            .readAll(SchemaDraftDtos.AnalysisRunSummaryResponse.class);
+        assertThat(summarySchemas.get("AnalysisRunSummaryResponse").getProperties())
+            .containsKeys("effectiveSourceConcurrency", "effectiveSourceTimeoutMillis",
+                "effectiveRequestTimeoutMillis");
     }
 
     @Test

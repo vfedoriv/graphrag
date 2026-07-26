@@ -41,6 +41,7 @@ import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -96,11 +97,16 @@ class SchemaDraftLifecycleIntegrationTest {
     private static final String KNOWLEDGE_BASE_ID = "kb-draft";
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final AtomicBoolean BLOCK_MODEL = new AtomicBoolean();
+    private static final AtomicBoolean BLOCK_ONLY_MARKED_MODEL = new AtomicBoolean();
+    private static final AtomicBoolean IGNORE_MODEL_INTERRUPTION = new AtomicBoolean();
     private static final AtomicBoolean FAIL_REPROCESSING = new AtomicBoolean();
     private static final AtomicBoolean FAIL_RETRYABLE_MODEL = new AtomicBoolean();
     private static final AtomicInteger MODEL_CALL_COUNT = new AtomicInteger();
+    private static final AtomicInteger ACTIVE_MODEL_CALLS = new AtomicInteger();
+    private static final AtomicInteger MAX_ACTIVE_MODEL_CALLS = new AtomicInteger();
     private static volatile CountDownLatch MODEL_ENTERED = new CountDownLatch(1);
     private static volatile CountDownLatch RELEASE_MODEL = new CountDownLatch(1);
+    private static volatile String MODEL_BLOCK_MARKER = "BLOCK_MODEL_SOURCE";
 
     @Autowired private MockMvc mockMvc;
     @Autowired private Neo4jClient neo4jClient;
@@ -117,6 +123,7 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftConflictRepository conflictRepository;
     @Autowired private SchemaDraftJsonSupport jsonSupport;
     @Autowired private Neo4jPersistenceVersionBackfillService versionBackfillService;
+    @Autowired private RuntimeSettingsService runtimeSettingsService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -124,6 +131,8 @@ class SchemaDraftLifecycleIntegrationTest {
         FAIL_REPROCESSING.set(false);
         FAIL_RETRYABLE_MODEL.set(false);
         MODEL_CALL_COUNT.set(0);
+        ACTIVE_MODEL_CALLS.set(0);
+        MAX_ACTIVE_MODEL_CALLS.set(0);
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         TestDocumentStorage.clean();
         mockMvc.perform(post("/api/v1/knowledge-bases")
@@ -136,6 +145,9 @@ class SchemaDraftLifecycleIntegrationTest {
     void cleanStorage() throws Exception {
         RELEASE_MODEL.countDown();
         BLOCK_MODEL.set(false);
+        BLOCK_ONLY_MARKED_MODEL.set(false);
+        IGNORE_MODEL_INTERRUPTION.set(false);
+        MODEL_BLOCK_MARKER = "BLOCK_MODEL_SOURCE";
         FAIL_REPROCESSING.set(false);
         FAIL_RETRYABLE_MODEL.set(false);
         TestDocumentStorage.clean();
@@ -295,8 +307,11 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(sourceRepository.findByDraftIdOrderByCreatedAtAsc(draftId)).isEmpty();
         assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(draftId)).isEmpty();
         assertThat(aggregateRepository.findByDraftIdOrderByRevisionDesc(draftId)).isEmpty();
-        assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value",
-            "node-property:Person:displayName", "displayName", "node:Person");
+        assertThat(output.getAll())
+            .contains("providerEnvelopeSeconds=180", "sourceTimeoutMs=60000", "requestTimeoutMs=180000",
+                "providerConcurrencyBound=4", "accepted=1")
+            .doesNotContain("private-draft-source", "private-guidance-value",
+                "node-property:Person:displayName", "displayName", "node:Person");
     }
 
     @Test
@@ -356,6 +371,291 @@ class SchemaDraftLifecycleIntegrationTest {
             .findFirst().orElseThrow();
         assertThat(reusedOutcome.path("reused").asBoolean()).isTrue();
         assertThat(MODEL_CALL_COUNT.get()).isEqualTo(3);
+    }
+
+    @Test
+    void capturesLiveDiscoveryBudgetsPerRunAndReadsLegacyNullPolicy() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 1);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 10);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 20);
+        String draftId = createDraftWithText("captured-policy");
+        BLOCK_MODEL.set(true);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        String firstRunId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        JsonNode active = analysisStatus(draftId, firstRunId);
+        assertThat(active.path("effectiveSourceConcurrency").asInt()).isEqualTo(1);
+        assertThat(active.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(10_000);
+        assertThat(active.path("effectiveRequestTimeoutMillis").asLong()).isEqualTo(20_000);
+
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 2);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 3);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 4);
+        JsonNode stillActive = analysisStatus(draftId, firstRunId);
+        assertThat(stillActive.path("effectiveSourceConcurrency").asInt()).isEqualTo(1);
+        assertThat(stillActive.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(10_000);
+        assertThat(stillActive.path("effectiveRequestTimeoutMillis").asLong()).isEqualTo(20_000);
+
+        RELEASE_MODEL.countDown();
+        BLOCK_MODEL.set(false);
+        awaitTerminal(draftId, firstRunId);
+        JsonNode retryAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId, firstRunId));
+        String secondRunId = retryAccepted.path("runId").asText();
+        JsonNode second = awaitTerminal(draftId, secondRunId);
+        assertThat(second.path("effectiveSourceConcurrency").asInt()).isEqualTo(2);
+        assertThat(second.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(3_000);
+        assertThat(second.path("effectiveRequestTimeoutMillis").asLong()).isEqualTo(4_000);
+
+        runtimeSettingsService.clear("app.schema-discovery.max-concurrency");
+        runtimeSettingsService.clear("app.schema-discovery.source-timeout-seconds");
+        runtimeSettingsService.clear("app.schema-discovery.request-timeout-seconds");
+        JsonNode defaultAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId, secondRunId));
+        JsonNode defaults = awaitTerminal(draftId, defaultAccepted.path("runId").asText());
+        assertThat(defaults.path("effectiveSourceConcurrency").asInt()).isEqualTo(4);
+        assertThat(defaults.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(60_000);
+        assertThat(defaults.path("effectiveRequestTimeoutMillis").asLong()).isEqualTo(180_000);
+
+        neo4jClient.query("""
+            MATCH (run:SchemaDraftAnalysisRun {id: $runId})
+            REMOVE run.discoveryMaxConcurrency, run.discoverySourceTimeoutMillis, run.discoveryRequestTimeoutMillis
+            """).bind(firstRunId).to("runId").run();
+        JsonNode legacy = analysisStatus(draftId, firstRunId);
+        assertThat(legacy.path("effectiveSourceConcurrency").isNull()).isTrue();
+        assertThat(legacy.path("effectiveSourceTimeoutMillis").isNull()).isTrue();
+        assertThat(legacy.path("effectiveRequestTimeoutMillis").isNull()).isTrue();
+
+        JsonNode history = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+                KNOWLEDGE_BASE_ID, draftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(history.path("content").get(0).path("effectiveSourceConcurrency").asInt()).isEqualTo(4);
+    }
+
+    @Test
+    void boundsConcurrentSourceTasksAndKeepsQueuedSourcesNonTerminal() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 2);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 10);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 20);
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"bounded-sources\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        for (int index = 0; index < 4; index++) {
+            postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+                "{\"revision\":" + index + ",\"name\":\"source-" + index
+                    + "\",\"text\":\"Person BLOCK_MODEL_SOURCE " + index + "\"}",
+                KNOWLEDGE_BASE_ID, draftId);
+        }
+        BLOCK_MODEL.set(true);
+        MODEL_ENTERED = new CountDownLatch(2);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":4}", KNOWLEDGE_BASE_ID, draftId));
+        String runId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        Thread.sleep(100);
+        JsonNode active = analysisStatus(draftId, runId);
+        assertThat(active.path("status").asText()).isEqualTo("RUNNING");
+        assertThat(active.path("sourceOutcomes").path("totalElements").asLong()).isZero();
+        assertThat(MAX_ACTIVE_MODEL_CALLS.get()).isEqualTo(2);
+
+        RELEASE_MODEL.countDown();
+        JsonNode terminal = awaitTerminal(draftId, runId);
+        assertThat(terminal.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(terminal.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(4);
+        assertThat(MAX_ACTIVE_MODEL_CALLS.get()).isEqualTo(2);
+    }
+
+    @Test
+    void pollingExposesOnlyAcceptedSourceOutcomesDuringActiveRun() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 2);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 10);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 20);
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"incremental-progress\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"fast\",\"text\":\"Person FAST_SOURCE\"}", KNOWLEDGE_BASE_ID, draftId);
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"blocked\",\"text\":\"Person BLOCK_MODEL_SOURCE\"}", KNOWLEDGE_BASE_ID, draftId);
+        BLOCK_MODEL.set(true);
+        BLOCK_ONLY_MARKED_MODEL.set(true);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        String runId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        JsonNode active = awaitOutcomeCount(draftId, runId, 1);
+        assertThat(active.path("status").asText()).isEqualTo("RUNNING");
+        assertThat(active.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(1);
+        assertThat(active.path("sourceOutcomes").path("content").get(0).path("status").asText())
+            .isEqualTo("SUCCEEDED");
+
+        RELEASE_MODEL.countDown();
+        assertThat(awaitTerminal(draftId, runId).path("sourceOutcomes").path("totalElements").asLong())
+            .isEqualTo(2);
+    }
+
+    @Test
+    void sourceDeadlineRejectsInterruptionResistantLateSuccess() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 1);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 1);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 5);
+        String draftId = createDraftWithText("source-deadline");
+        BLOCK_MODEL.set(true);
+        IGNORE_MODEL_INTERRUPTION.set(true);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        String runId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        JsonNode failed = awaitTerminal(draftId, runId);
+        assertThat(failed.path("status").asText()).isEqualTo("FAILED");
+        assertThat(failed.path("failedSources").asInt()).isEqualTo(1);
+        assertThat(failed.path("sourceOutcomes").path("content").get(0).path("failureCode").asText())
+            .isEqualTo("SOURCE_DEADLINE_EXCEEDED");
+        assertThat(failed.path("sourceOutcomes").path("content").get(0).path("retryable").asBoolean()).isTrue();
+
+        RELEASE_MODEL.countDown();
+        Thread.sleep(200);
+        assertThat(sourceResultRepository.findByRunIdOrderByCreatedAtAsc(runId)).hasSize(1)
+            .allSatisfy(result -> {
+                assertThat(result.getFailureCode()).isEqualTo("SOURCE_DEADLINE_EXCEEDED");
+                assertThat(result.getStatus().name()).isEqualTo("FAILED");
+            });
+    }
+
+    @Test
+    void requestDeadlineClosesQueuedAndRunningSourcesExactlyOnce() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 1);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 10);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 1);
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"request-deadline\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"running\",\"text\":\"Person RUNNING\"}", KNOWLEDGE_BASE_ID, draftId);
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"queued\",\"text\":\"Person QUEUED\"}", KNOWLEDGE_BASE_ID, draftId);
+        BLOCK_MODEL.set(true);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        String runId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        JsonNode failed = awaitTerminal(draftId, runId);
+
+        assertThat(failed.path("status").asText()).isEqualTo("FAILED");
+        assertThat(failed.path("failedSources").asInt()).isEqualTo(2);
+        assertThat(failed.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(2);
+        assertThat(failed.path("sourceOutcomes").path("content"))
+            .allSatisfy(outcome -> assertThat(outcome.path("failureCode").asText())
+                .isEqualTo("REQUEST_DEADLINE_EXCEEDED"));
+        assertThat(sourceResultRepository.findByRunIdOrderByCreatedAtAsc(runId)).hasSize(2);
+    }
+
+    @Test
+    void retryReusesTimedRunSuccessAndExecutesTimedOutSourceUnderNewPolicy() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 2);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 1);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 5);
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"timed-retry\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        JsonNode fastSource = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"fast\",\"text\":\"Person FAST_RETRY_SOURCE\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        JsonNode timedSource = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"timed\",\"text\":\"Person TIMED_RETRY_SOURCE\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        BLOCK_MODEL.set(true);
+        BLOCK_ONLY_MARKED_MODEL.set(true);
+        MODEL_BLOCK_MARKER = "TIMED_RETRY_SOURCE";
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        String firstRunId = accepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        JsonNode partial = awaitTerminal(draftId, firstRunId);
+        assertThat(partial.path("status").asText()).isEqualTo("PARTIAL");
+        assertThat(partial.path("succeededSources").asInt()).isEqualTo(1);
+        assertThat(partial.path("failedSources").asInt()).isEqualTo(1);
+
+        RELEASE_MODEL.countDown();
+        BLOCK_MODEL.set(false);
+        JsonNode retryAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId, firstRunId));
+        JsonNode completed = awaitTerminal(draftId, retryAccepted.path("runId").asText());
+
+        assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(completed.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(1_000);
+        Map<String, JsonNode> outcomesBySource = new java.util.HashMap<>();
+        completed.path("sourceOutcomes").path("content").forEach(
+            outcome -> outcomesBySource.put(outcome.path("sourceId").asText(), outcome));
+        assertThat(outcomesBySource.get(fastSource.path("id").asText()).path("reused").asBoolean()).isTrue();
+        assertThat(outcomesBySource.get(timedSource.path("id").asText()).path("reused").asBoolean()).isFalse();
+    }
+
+    @Test
+    void aggregateIsDeterministicAcrossOppositeCompletionOrders() throws Exception {
+        runtimeSettingsService.update("app.schema-discovery.max-concurrency", 2);
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 10);
+        runtimeSettingsService.update("app.schema-discovery.request-timeout-seconds", 20);
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"completion-order\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"a\",\"text\":\"Person ORDER_A\"}", KNOWLEDGE_BASE_ID, draftId);
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"b\",\"text\":\"Person ORDER_B\"}", KNOWLEDGE_BASE_ID, draftId);
+        BLOCK_MODEL.set(true);
+        BLOCK_ONLY_MARKED_MODEL.set(true);
+        MODEL_BLOCK_MARKER = "ORDER_A";
+
+        JsonNode firstAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        String firstRunId = firstAccepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        awaitOutcomeCount(draftId, firstRunId, 1);
+        RELEASE_MODEL.countDown();
+        JsonNode firstRun = awaitTerminal(draftId, firstRunId);
+        SchemaDraftAggregateRevisionNode firstAggregate = aggregateRepository
+            .findById(firstRun.path("aggregateRevisionId").asText()).orElseThrow();
+
+        runtimeSettingsService.update("app.schema-discovery.source-timeout-seconds", 11);
+        MODEL_ENTERED = new CountDownLatch(1);
+        RELEASE_MODEL = new CountDownLatch(1);
+        MODEL_BLOCK_MARKER = "ORDER_B";
+        JsonNode secondAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId, firstRunId));
+        String secondRunId = secondAccepted.path("runId").asText();
+        assertThat(MODEL_ENTERED.await(5, TimeUnit.SECONDS)).isTrue();
+        awaitOutcomeCount(draftId, secondRunId, 1);
+        RELEASE_MODEL.countDown();
+        JsonNode secondRun = awaitTerminal(draftId, secondRunId);
+        SchemaDraftAggregateRevisionNode secondAggregate = aggregateRepository
+            .findById(secondRun.path("aggregateRevisionId").asText()).orElseThrow();
+
+        assertThat(secondAggregate.getCandidatesJson()).isEqualTo(firstAggregate.getCandidatesJson());
+        assertThat(secondAggregate.getConflictsJson()).isEqualTo(firstAggregate.getConflictsJson());
+        assertThat(secondAggregate.getWarningsJson()).isEqualTo(firstAggregate.getWarningsJson());
+        assertThat(secondAggregate.getSchemaJson()).isEqualTo(firstAggregate.getSchemaJson());
     }
 
     @Test
@@ -1262,6 +1562,26 @@ class SchemaDraftLifecycleIntegrationTest {
         throw new AssertionError("Analysis did not complete: " + response);
     }
 
+    private JsonNode analysisStatus(String draftId, String runId) throws Exception {
+        return json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}",
+                KNOWLEDGE_BASE_ID, draftId, runId))
+            .andExpect(status().isOk()).andReturn());
+    }
+
+    private JsonNode awaitOutcomeCount(String draftId, String runId, long expected) throws Exception {
+        Instant deadline = Instant.now().plus(Duration.ofSeconds(5));
+        JsonNode response;
+        do {
+            response = analysisStatus(draftId, runId);
+            if (response.path("sourceOutcomes").path("totalElements").asLong() >= expected) {
+                return response;
+            }
+            Thread.sleep(25);
+        } while (Instant.now().isBefore(deadline));
+        throw new AssertionError("Analysis outcomes did not become visible: " + response);
+    }
+
     private JsonNode awaitEvaluationTerminal(String draftId, String runId) throws Exception {
         return awaitAsyncStatus(
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs/{runId}",
@@ -1302,6 +1622,9 @@ class SchemaDraftLifecycleIntegrationTest {
 
     private void resetModelGate() {
         BLOCK_MODEL.set(false);
+        BLOCK_ONLY_MARKED_MODEL.set(false);
+        IGNORE_MODEL_INTERRUPTION.set(false);
+        MODEL_BLOCK_MARKER = "BLOCK_MODEL_SOURCE";
         MODEL_ENTERED = new CountDownLatch(1);
         RELEASE_MODEL = new CountDownLatch(1);
     }
@@ -1353,33 +1676,46 @@ class SchemaDraftLifecycleIntegrationTest {
                 @Override
                 public CandidateExtractionResult extract(String portablePrompt) {
                     MODEL_CALL_COUNT.incrementAndGet();
-                    if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
-                        throw new io.github.vfedoriv.graphrag.discovery.MalformedModelResponseException(
-                            io.github.vfedoriv.graphrag.discovery.ModelResponseDiagnostics.none());
-                    }
-                    if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
-                        throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");
-                    }
-                    if (BLOCK_MODEL.get()) {
-                        MODEL_ENTERED.countDown();
-                        try {
-                            if (!RELEASE_MODEL.await(10, TimeUnit.SECONDS)) {
-                                throw new IllegalStateException("Timed out waiting for model test gate");
-                            }
-                        } catch (InterruptedException exception) {
-                            Thread.currentThread().interrupt();
-                            throw new IllegalStateException("Model test gate interrupted", exception);
+                    int active = ACTIVE_MODEL_CALLS.incrementAndGet();
+                    MAX_ACTIVE_MODEL_CALLS.accumulateAndGet(active, Math::max);
+                    try {
+                        if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
+                            throw new io.github.vfedoriv.graphrag.discovery.MalformedModelResponseException(
+                                io.github.vfedoriv.graphrag.discovery.ModelResponseDiagnostics.none());
                         }
+                        if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
+                            throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");
+                        }
+                        if (BLOCK_MODEL.get()
+                            && (!BLOCK_ONLY_MARKED_MODEL.get() || portablePrompt.contains(MODEL_BLOCK_MARKER))) {
+                            MODEL_ENTERED.countDown();
+                            boolean released = false;
+                            while (!released) {
+                                try {
+                                    released = RELEASE_MODEL.await(10, TimeUnit.SECONDS);
+                                    if (!released) {
+                                        throw new IllegalStateException("Timed out waiting for model test gate");
+                                    }
+                                } catch (InterruptedException exception) {
+                                    if (!IGNORE_MODEL_INTERRUPTION.get()) {
+                                        Thread.currentThread().interrupt();
+                                        throw new IllegalStateException("Model test gate interrupted", exception);
+                                    }
+                                }
+                            }
+                        }
+                        return new CandidateExtractionResult(
+                            List.of(new CandidateExtractionResult.NodeCandidate("Person", null, 0.95, "OBSERVED")),
+                            List.of(
+                                new CandidateExtractionResult.NodePropertyCandidate("Person", "personId", "STRING", true, 0.95, "OBSERVED"),
+                                new CandidateExtractionResult.NodePropertyCandidate("Person", "displayName", "STRING", false, 0.9, "OBSERVED")
+                            ),
+                            List.of(new CandidateExtractionResult.NodeKeyCandidate("Person", List.of("personId"), 0.95, "OBSERVED")),
+                            List.of(), List.of(), List.of()
+                        );
+                    } finally {
+                        ACTIVE_MODEL_CALLS.decrementAndGet();
                     }
-                    return new CandidateExtractionResult(
-                        List.of(new CandidateExtractionResult.NodeCandidate("Person", null, 0.95, "OBSERVED")),
-                        List.of(
-                            new CandidateExtractionResult.NodePropertyCandidate("Person", "personId", "STRING", true, 0.95, "OBSERVED"),
-                            new CandidateExtractionResult.NodePropertyCandidate("Person", "displayName", "STRING", false, 0.9, "OBSERVED")
-                        ),
-                        List.of(new CandidateExtractionResult.NodeKeyCandidate("Person", List.of("personId"), 0.95, "OBSERVED")),
-                        List.of(), List.of(), List.of()
-                    );
                 }
             };
         }

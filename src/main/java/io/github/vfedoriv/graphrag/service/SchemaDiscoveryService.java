@@ -128,7 +128,7 @@ public class SchemaDiscoveryService {
         for (PreparedDiscoverySource source : sources) {
             CandidateExtractionAttemptContext context = new CandidateExtractionAttemptContext(
                 null, null, source.sourceId(), null, null, profile.getId(), profile.getRevision(), null,
-                profile.getTimeoutSeconds(), profile.getMaxRetries());
+                profile.getTimeoutSeconds(), profile.getMaxRetries(), null, null);
             futures.add(executor.submit(() -> AiProfileContext.withProfile(profile.getId(),
                 () -> sourceAnalyzer.analyze(source, request, context))));
         }

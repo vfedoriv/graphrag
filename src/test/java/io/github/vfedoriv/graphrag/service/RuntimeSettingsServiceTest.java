@@ -394,6 +394,30 @@ class RuntimeSettingsServiceTest {
         assertThat(store).doesNotContainKey("app.query.max-rows");
     }
 
+    @Test
+    void discoveryExecutionBudgetOverridesAreLiveAndClearToDefaults() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        service.update("app.schema-discovery.max-concurrency", 2);
+        service.update("app.schema-discovery.source-timeout-seconds", 7);
+        service.update("app.schema-discovery.request-timeout-seconds", 19);
+        RuntimeSettingsService.DiscoverySettings overridden = service.discovery();
+
+        assertThat(overridden.maxConcurrency()).isEqualTo(2);
+        assertThat(overridden.sourceTimeout()).isEqualTo(java.time.Duration.ofSeconds(7));
+        assertThat(overridden.requestTimeout()).isEqualTo(java.time.Duration.ofSeconds(19));
+
+        service.clear("app.schema-discovery.max-concurrency");
+        service.clear("app.schema-discovery.source-timeout-seconds");
+        service.clear("app.schema-discovery.request-timeout-seconds");
+        RuntimeSettingsService.DiscoverySettings defaults = service.discovery();
+
+        assertThat(defaults.maxConcurrency()).isEqualTo(4);
+        assertThat(defaults.sourceTimeout()).isEqualTo(java.time.Duration.ofSeconds(60));
+        assertThat(defaults.requestTimeout()).isEqualTo(java.time.Duration.ofSeconds(180));
+    }
+
     private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store) {
         return service(store, appProperties());
     }

@@ -16,6 +16,7 @@ import com.openai.errors.UnauthorizedException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -143,6 +144,28 @@ class CandidateExtractionModelAdapterTest {
             resolver, TestAiObservationService.noop());
 
         assertThatThrownBy(() -> adapter.extract("portable")).isSameAs(failure);
+        verify(model).call(any(Prompt.class));
+    }
+
+    @Test
+    void doesNotStartOutputRetryAfterSourceDeadline() {
+        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
+        ChatModel model = mock(ChatModel.class);
+        when(resolver.chatModel()).thenReturn(model);
+        when(model.call(any(Prompt.class))).thenAnswer(invocation -> {
+            Thread.sleep(100);
+            return response("not-json");
+        });
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(
+            resolver, TestAiObservationService.noop());
+        long now = System.nanoTime();
+        CandidateExtractionAttemptContext context = CandidateExtractionAttemptContext.forSource("source")
+            .withDeadlines(now + TimeUnit.MILLISECONDS.toNanos(50), now + TimeUnit.SECONDS.toNanos(1));
+
+        assertThatThrownBy(() -> adapter.extractValidated("portable", context, java.util.function.Function.identity()))
+            .isInstanceOf(DiscoveryDeadlineExceededException.class)
+            .extracting("failureCode")
+            .isEqualTo(SourceFailureCode.SOURCE_DEADLINE_EXCEEDED);
         verify(model).call(any(Prompt.class));
     }
 

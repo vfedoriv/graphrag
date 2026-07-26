@@ -297,6 +297,9 @@ public final class SchemaDraftDtos {
         long aiProfileRevision,
         String promptRevision,
         String candidateRevision,
+        Integer effectiveSourceConcurrency,
+        Long effectiveSourceTimeoutMillis,
+        Long effectiveRequestTimeoutMillis,
         int totalSources,
         int succeededSources,
         int failedSources,
@@ -313,6 +316,7 @@ public final class SchemaDraftDtos {
 
     public record AnalysisRunSummaryResponse(
         String id, SchemaDraftAnalysisStatus status, long draftRevision, long guidanceRevision,
+        Integer effectiveSourceConcurrency, Long effectiveSourceTimeoutMillis, Long effectiveRequestTimeoutMillis,
         int totalSources, int succeededSources, int failedSources, boolean current,
         String aggregateRevisionId, String failureCategory, boolean retryable, String retryOfRunId,
         Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation

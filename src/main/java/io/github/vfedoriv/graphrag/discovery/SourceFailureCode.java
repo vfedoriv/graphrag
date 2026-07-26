@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.discovery;
 
 public enum SourceFailureCode {
+    SOURCE_DEADLINE_EXCEEDED,
+    REQUEST_DEADLINE_EXCEEDED,
     TRANSPORT_TIMEOUT,
     TRANSPORT_IO,
     RATE_LIMIT,

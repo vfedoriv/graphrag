@@ -225,7 +225,7 @@ class AiObservabilityClientPathTest {
 
         adapter.extractValidated("PRIVATE_PROMPT_d2df64",
             new CandidateExtractionAttemptContext("draft-1", "run-1", "source-1", 2L, "chunk-1",
-                "profile-1", 3L, null, 30, 2),
+                "profile-1", 3L, null, 30, 2, null, null),
             java.util.function.Function.identity());
 
         CapturedObservation observation = handler.singleObservationNamed("graphrag.ai.model");
