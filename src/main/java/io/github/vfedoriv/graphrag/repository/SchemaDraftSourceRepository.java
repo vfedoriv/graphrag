@@ -11,6 +11,7 @@ import org.springframework.data.neo4j.repository.query.Query;
 public interface SchemaDraftSourceRepository extends Neo4jRepository<SchemaDraftSourceNode, String> {
     List<SchemaDraftSourceNode> findByDraftIdOrderByCreatedAtAsc(String draftId);
     List<SchemaDraftSourceNode> findByDraftIdAndStatusOrderByCreatedAtAsc(String draftId, SchemaDraftSourceStatus status);
+    boolean existsByDraftIdAndStatus(String draftId, SchemaDraftSourceStatus status);
     Optional<SchemaDraftSourceNode> findByIdAndDraftId(String id, String draftId);
     Optional<SchemaDraftSourceNode> findFirstByDraftIdAndTypeAndSha256AndStatus(
         String draftId, SchemaDraftSourceType type, String sha256, SchemaDraftSourceStatus status

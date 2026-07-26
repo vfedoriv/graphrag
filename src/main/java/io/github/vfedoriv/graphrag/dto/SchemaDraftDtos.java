@@ -306,7 +306,11 @@ public final class SchemaDraftDtos {
         boolean currentResult,
         String aggregateRevisionId,
         String failureCategory,
+        @Schema(description = "Persisted classification indicating whether the run contains a retryable failure.")
         boolean retryable,
+        @Schema(description = "Current deterministic resource-state eligibility for requesting a child retry run. "
+            + "The retry command revalidates current state and may still reject a race or capacity failure.")
+        boolean canRetry,
         String retryOfRunId,
         Instant createdAt,
         Instant startedAt,
@@ -318,7 +322,14 @@ public final class SchemaDraftDtos {
         String id, SchemaDraftAnalysisStatus status, long draftRevision, long guidanceRevision,
         Integer effectiveSourceConcurrency, Long effectiveSourceTimeoutMillis, Long effectiveRequestTimeoutMillis,
         int totalSources, int succeededSources, int failedSources, boolean current,
-        String aggregateRevisionId, String failureCategory, boolean retryable, String retryOfRunId,
+        String aggregateRevisionId, String failureCategory,
+        @Schema(description = "Persisted classification indicating whether the run contains a retryable failure. "
+            + "History consumers that previously used this field for retry actions must migrate to canRetry.")
+        boolean retryable,
+        @Schema(description = "Current deterministic resource-state eligibility for requesting a child retry run. "
+            + "The retry command revalidates current state and may still reject a race or capacity failure.")
+        boolean canRetry,
+        String retryOfRunId,
         Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation
     ) { }
 

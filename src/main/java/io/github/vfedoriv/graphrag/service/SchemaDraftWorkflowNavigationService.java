@@ -44,6 +44,7 @@ public class SchemaDraftWorkflowNavigationService {
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final SchemaDefinitionRepository schemaRepository;
     private final SchemaDraftJsonSupport jsonSupport;
+    private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService;
 
     public SchemaDraftWorkflowNavigationService(
         SchemaDraftAnalysisRunRepository analysisRepository,
@@ -52,7 +53,8 @@ public class SchemaDraftWorkflowNavigationService {
         SchemaDraftSourceRepository sourceRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
         SchemaDefinitionRepository schemaRepository,
-        SchemaDraftJsonSupport jsonSupport
+        SchemaDraftJsonSupport jsonSupport,
+        SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService
     ) {
         this.analysisRepository = analysisRepository;
         this.evaluationRepository = evaluationRepository;
@@ -61,6 +63,7 @@ public class SchemaDraftWorkflowNavigationService {
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.schemaRepository = schemaRepository;
         this.jsonSupport = jsonSupport;
+        this.analysisRetryEligibilityService = analysisRetryEligibilityService;
     }
 
     @Transactional(readOnly = true)
@@ -69,11 +72,10 @@ public class SchemaDraftWorkflowNavigationService {
         int boundedSize = Math.max(1, Math.min(100, size));
         Page<SchemaDraftAnalysisRunNode> runs = analysisRepository.findPageByDraftId(
             draft.getId(), PageRequest.of(boundedPage, boundedSize));
-        boolean hasRunning = runs.getContent().stream().anyMatch(run -> run.getStatus() == SchemaDraftAnalysisStatus.RUNNING)
-            || analysisRepository.findFirstByDraftIdAndStatusOrderByCreatedAtDesc(
-                draft.getId(), SchemaDraftAnalysisStatus.RUNNING).isPresent();
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityInputs retryInputs =
+            analysisRetryEligibilityService.inputs(draft);
         List<AnalysisRunSummaryResponse> content = runs.getContent().stream()
-            .map(run -> analysisSummary(draft, run, hasRunning)).toList();
+            .map(run -> analysisSummary(draft, run, retryInputs)).toList();
         return new AnalysisRunPageResponse(boundedPage, boundedSize, runs.getTotalElements(), content);
     }
 
@@ -163,15 +165,17 @@ public class SchemaDraftWorkflowNavigationService {
     }
 
     private AnalysisRunSummaryResponse analysisSummary(
-        SchemaDraftNode draft, SchemaDraftAnalysisRunNode run, boolean hasRunning
+        SchemaDraftNode draft, SchemaDraftAnalysisRunNode run,
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityInputs retryInputs
     ) {
-        boolean terminal = run.getStatus() != SchemaDraftAnalysisStatus.RUNNING;
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityDecision retryDecision =
+            analysisRetryEligibilityService.decide(run, retryInputs);
         return new AnalysisRunSummaryResponse(
             run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(),
             run.getDiscoveryMaxConcurrency(), run.getDiscoverySourceTimeoutMillis(),
             run.getDiscoveryRequestTimeoutMillis(), run.getTotalSources(),
             run.getSucceededSources(), run.getFailedSources(), isAnalysisCurrent(draft, run), run.getAggregateRevisionId(),
-            run.getFailureCategory(), terminal && !hasRunning && draft.getStatus() == SchemaDraftStatus.OPEN,
+            run.getFailureCategory(), run.isRetryable(), retryDecision.canRetry(),
             run.getRetryOfRunId(), run.getCreatedAt(),
             run.getStartedAt(), run.getCompletedAt(), analysisLocation(run));
     }

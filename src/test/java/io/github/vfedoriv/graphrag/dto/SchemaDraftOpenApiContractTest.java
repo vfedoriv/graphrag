@@ -103,12 +103,18 @@ class SchemaDraftOpenApiContractTest {
             .readAll(SchemaDraftDtos.AnalysisRunResponse.class);
         assertThat(analysisSchemas.get("AnalysisRunResponse").getProperties())
             .containsKeys("effectiveSourceConcurrency", "effectiveSourceTimeoutMillis",
-                "effectiveRequestTimeoutMillis");
+                "effectiveRequestTimeoutMillis", "retryable", "canRetry");
         Map<String, Schema> summarySchemas = ModelConverters.getInstance()
             .readAll(SchemaDraftDtos.AnalysisRunSummaryResponse.class);
         assertThat(summarySchemas.get("AnalysisRunSummaryResponse").getProperties())
             .containsKeys("effectiveSourceConcurrency", "effectiveSourceTimeoutMillis",
-                "effectiveRequestTimeoutMillis");
+                "effectiveRequestTimeoutMillis", "retryable", "canRetry");
+        assertThat(((Schema) analysisSchemas.get("AnalysisRunResponse").getProperties().get("retryable"))
+            .getDescription()).contains("Persisted classification");
+        assertThat(((Schema) analysisSchemas.get("AnalysisRunResponse").getProperties().get("canRetry"))
+            .getDescription()).contains("Current deterministic resource-state eligibility", "revalidates");
+        assertThat(((Schema) summarySchemas.get("AnalysisRunSummaryResponse").getProperties().get("retryable"))
+            .getDescription()).contains("migrate to canRetry");
     }
 
     @Test

@@ -95,6 +95,7 @@ public class SchemaDraftAnalysisService {
     private final SchemaDraftReviewService reviewService;
     private final ThreadPoolTaskExecutor executor;
     private final SchemaDraftWorkflowNavigationService workflowNavigationService;
+    private final SchemaDraftAnalysisRetryEligibilityService retryEligibilityService;
     private final SourceFailureClassifier failureClassifier;
     private final String workerId = UUID.randomUUID().toString();
 
@@ -119,6 +120,7 @@ public class SchemaDraftAnalysisService {
         AiObservationService observationService,
         SchemaDraftReviewService reviewService,
         SchemaDraftWorkflowNavigationService workflowNavigationService,
+        SchemaDraftAnalysisRetryEligibilityService retryEligibilityService,
         SourceFailureClassifier failureClassifier,
         @Qualifier("schemaDraftAnalysisExecutor") ThreadPoolTaskExecutor executor
     ) {
@@ -142,6 +144,7 @@ public class SchemaDraftAnalysisService {
         this.observationService = observationService;
         this.reviewService = reviewService;
         this.workflowNavigationService = workflowNavigationService;
+        this.retryEligibilityService = retryEligibilityService;
         this.failureClassifier = failureClassifier;
         this.executor = executor;
     }
@@ -201,11 +204,9 @@ public class SchemaDraftAnalysisService {
     }
 
     public StartAnalysisResponse retry(String knowledgeBaseId, String draftId, String runId, long revision) {
-        lifecycleService.requireMutable(knowledgeBaseId, draftId, revision);
+        SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, revision);
         SchemaDraftAnalysisRunNode prior = requireRun(draftId, runId);
-        if (prior.getStatus() == SchemaDraftAnalysisStatus.RUNNING) {
-            throw new ConflictException("Running analysis cannot be retried");
-        }
+        validateRetryEligibility(prior, retryEligibilityService.inputs(draft));
         return start(knowledgeBaseId, draftId, revision, prior.getId());
     }
 
@@ -217,12 +218,15 @@ public class SchemaDraftAnalysisService {
     public AnalysisRunResponse get(
         String knowledgeBaseId, String draftId, String runId, int page, int size
     ) {
-        lifecycleService.requireOwned(knowledgeBaseId, draftId);
+        SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftAnalysisRunNode run = requireRun(draftId, runId);
         int boundedSize = Math.max(1, Math.min(size, 100));
         Page<SchemaDraftSourceResultNode> outcomes = resultRepository.findPageByRunId(
             runId, PageRequest.of(Math.max(0, page), boundedSize));
-        return toResponse(run, Math.max(0, page), boundedSize, outcomes.getContent(), outcomes.getTotalElements());
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityDecision retryDecision =
+            retryEligibilityService.decide(run, retryEligibilityService.inputs(draft));
+        return toResponse(run, retryDecision.canRetry(), Math.max(0, page), boundedSize,
+            outcomes.getContent(), outcomes.getTotalElements());
     }
 
     private SchemaDraftAnalysisRunNode createRun(
@@ -827,7 +831,7 @@ public class SchemaDraftAnalysisService {
     }
 
     private AnalysisRunResponse toResponse(
-        SchemaDraftAnalysisRunNode run, int page, int size,
+        SchemaDraftAnalysisRunNode run, boolean canRetry, int page, int size,
         List<SchemaDraftSourceResultNode> outcomes, long total
     ) {
         List<SourceOutcomeResponse> responses = outcomes.stream().map(value -> new SourceOutcomeResponse(
@@ -842,8 +846,26 @@ public class SchemaDraftAnalysisService {
             run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(),
             workflowNavigationService.isAnalysisCurrent(
                 draftRepository.findById(run.getDraftId()).orElse(null), run),
-            run.getAggregateRevisionId(), run.getFailureCategory(), run.isRetryable(), run.getRetryOfRunId(), run.getCreatedAt(),
+            run.getAggregateRevisionId(), run.getFailureCategory(), run.isRetryable(), canRetry,
+            run.getRetryOfRunId(), run.getCreatedAt(),
             run.getStartedAt(), run.getCompletedAt(), new SourceOutcomePageResponse(page, size, total, responses));
+    }
+
+    private void validateRetryEligibility(
+        SchemaDraftAnalysisRunNode run,
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityInputs inputs
+    ) {
+        SchemaDraftAnalysisRetryEligibilityService.EligibilityDecision decision =
+            retryEligibilityService.decide(run, inputs);
+        if (decision.canRetry()) {
+            return;
+        }
+        switch (decision.reason()) {
+            case RUN_NOT_TERMINAL -> throw new ConflictException("Running analysis cannot be retried");
+            case DRAFT_NOT_OPEN -> throw new ConflictException("Schema draft is not open");
+            case NO_ACTIVE_SOURCES -> throw new IllegalArgumentException("At least one active draft source is required");
+            case ANALYSIS_RUNNING -> throw new ConflictException("Schema draft already has a running analysis");
+        }
     }
 
     private record SourceSnapshot(String id, long revision, String sha256) {

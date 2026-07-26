@@ -185,6 +185,8 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode completed = awaitTerminal(draftId, firstRunId);
         assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
         assertThat(completed.path("currentResult").asBoolean()).isTrue();
+        assertThat(completed.path("retryable").asBoolean()).isFalse();
+        assertThat(completed.path("canRetry").asBoolean()).isTrue();
         assertThat(completed.path("sourceOutcomes").path("content").get(0).path("reused").asBoolean()).isFalse();
         assertThat(completed.path("sourceOutcomes").path("page").asInt()).isZero();
         assertThat(completed.path("sourceOutcomes").path("totalElements").asLong()).isEqualTo(1);
@@ -211,6 +213,8 @@ class SchemaDraftLifecycleIntegrationTest {
             .isEqualTo(retryAccepted.path("runId").asText());
         assertThat(analysisHistory.path("content").get(0).path("retryOfRunId").asText()).isEqualTo(firstRunId);
         assertThat(analysisHistory.path("content").get(0).path("current").asBoolean()).isTrue();
+        assertThat(analysisHistory.path("content").get(0).path("retryable").asBoolean()).isFalse();
+        assertThat(analysisHistory.path("content").get(0).path("canRetry").asBoolean()).isTrue();
         JsonNode draftWithAnalysis = json(mockMvc.perform(get(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}", KNOWLEDGE_BASE_ID, draftId))
             .andExpect(status().isOk()).andReturn());
@@ -337,6 +341,7 @@ class SchemaDraftLifecycleIntegrationTest {
 
         assertThat(partial.path("status").asText()).isEqualTo("PARTIAL");
         assertThat(partial.path("retryable").asBoolean()).isTrue();
+        assertThat(partial.path("canRetry").asBoolean()).isTrue();
         JsonNode failedOutcome = java.util.stream.StreamSupport.stream(
                 partial.path("sourceOutcomes").path("content").spliterator(), false)
             .filter(value -> retryableSource.path("id").asText().equals(value.path("sourceId").asText()))
@@ -371,6 +376,98 @@ class SchemaDraftLifecycleIntegrationTest {
             .findFirst().orElseThrow();
         assertThat(reusedOutcome.path("reused").asBoolean()).isTrue();
         assertThat(MODEL_CALL_COUNT.get()).isEqualTo(3);
+    }
+
+    @Test
+    void retryEligibilityAcceptsPermanentFailuresAndRejectsInvalidResourceStateWithoutCreatingRuns()
+        throws Exception {
+        JsonNode permanentDraft = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"permanent-retry\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String permanentDraftId = permanentDraft.path("id").asText();
+        postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"source\",\"text\":\"Person PERMANENT-1\"}",
+            KNOWLEDGE_BASE_ID, permanentDraftId);
+        JsonNode permanentStart = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, permanentDraftId));
+        String permanentRunId = permanentStart.path("runId").asText();
+        awaitTerminal(permanentDraftId, permanentRunId);
+        neo4jClient.query("""
+            MATCH (run:SchemaDraftAnalysisRun {id: $runId})
+            SET run.status = 'FAILED', run.retryable = false, run.failureCategory = 'PERMANENT_TEST_FAILURE'
+            """).bind(permanentRunId).to("runId").run();
+
+        JsonNode permanentDetail = analysisStatus(permanentDraftId, permanentRunId);
+        assertThat(permanentDetail.path("retryable").asBoolean()).isFalse();
+        assertThat(permanentDetail.path("canRetry").asBoolean()).isTrue();
+        JsonNode permanentHistory = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+                KNOWLEDGE_BASE_ID, permanentDraftId))
+            .andExpect(status().isOk()).andReturn());
+        assertThat(permanentHistory.path("content").get(0).path("retryable").asBoolean()).isFalse();
+        assertThat(permanentHistory.path("content").get(0).path("canRetry").asBoolean()).isTrue();
+
+        JsonNode permanentRetry = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, permanentDraftId, permanentRunId));
+        JsonNode permanentCompleted = awaitTerminal(
+            permanentDraftId, permanentRetry.path("runId").asText());
+        assertThat(permanentCompleted.path("retryOfRunId").asText()).isEqualTo(permanentRunId);
+        assertThat(permanentCompleted.path("status").asText()).isEqualTo("COMPLETED");
+
+        int beforeStaleRetry = runRepository.findByDraftIdOrderByCreatedAtDesc(permanentDraftId).size();
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+                KNOWLEDGE_BASE_ID, permanentDraftId, permanentRunId)
+                .contentType("application/json").content("{\"revision\":0}"))
+            .andExpect(status().isConflict());
+        assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(permanentDraftId))
+            .hasSize(beforeStaleRetry);
+
+        JsonNode sourceDraft = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"missing-source-retry\",\"targetVersion\":1,\"guidance\":{}}",
+            KNOWLEDGE_BASE_ID));
+        String sourceDraftId = sourceDraft.path("id").asText();
+        JsonNode source = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"source\",\"text\":\"Person SOURCE-1\"}",
+            KNOWLEDGE_BASE_ID, sourceDraftId));
+        JsonNode sourceStart = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, sourceDraftId));
+        String sourceRunId = sourceStart.path("runId").asText();
+        awaitTerminal(sourceDraftId, sourceRunId);
+        mockMvc.perform(delete(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/{sourceId}",
+                KNOWLEDGE_BASE_ID, sourceDraftId, source.path("id").asText()).param("revision", "1"))
+            .andExpect(status().isNoContent());
+
+        assertThat(analysisStatus(sourceDraftId, sourceRunId).path("canRetry").asBoolean()).isFalse();
+        int beforeMissingSourceRetry = runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId).size();
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+                KNOWLEDGE_BASE_ID, sourceDraftId, sourceRunId)
+                .contentType("application/json").content("{\"revision\":2}"))
+            .andExpect(status().isBadRequest());
+        assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId))
+            .hasSize(beforeMissingSourceRetry);
+
+        neo4jClient.query("""
+            MATCH (draft:SchemaDraft {id: $draftId})
+            SET draft.status = 'PUBLISHED'
+            """).bind(sourceDraftId).to("draftId").run();
+        assertThat(analysisStatus(sourceDraftId, sourceRunId).path("canRetry").asBoolean()).isFalse();
+        int beforeClosedDraftRetry = runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId).size();
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+                KNOWLEDGE_BASE_ID, sourceDraftId, sourceRunId)
+                .contentType("application/json").content("{\"revision\":2}"))
+            .andExpect(status().isConflict());
+        assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId))
+            .hasSize(beforeClosedDraftRetry);
     }
 
     @Test
@@ -1315,6 +1412,16 @@ class SchemaDraftLifecycleIntegrationTest {
             .andExpect(status().isOk()).andReturn());
         assertThat(runningHistory.path("content").get(0).path("current").asBoolean()).isTrue();
         assertThat(runningHistory.path("content").get(0).path("retryable").asBoolean()).isFalse();
+        assertThat(runningHistory.path("content").get(0).path("canRetry").asBoolean()).isFalse();
+        int runCountBeforeRejectedRetry = runRepository
+            .findByDraftIdOrderByCreatedAtDesc(draftIds.get(0)).size();
+        mockMvc.perform(post(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+                KNOWLEDGE_BASE_ID, draftIds.get(0), first.path("runId").asText())
+                .contentType("application/json").content("{\"revision\":1}"))
+            .andExpect(status().isConflict());
+        assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(draftIds.get(0)))
+            .hasSize(runCountBeforeRejectedRetry);
 
         JsonNode second = json(postJson(
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",

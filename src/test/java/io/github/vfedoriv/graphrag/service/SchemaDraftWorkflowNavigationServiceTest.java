@@ -41,9 +41,11 @@ class SchemaDraftWorkflowNavigationServiceTest {
     private final KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
     private final SchemaDefinitionRepository schemaRepository = mock(SchemaDefinitionRepository.class);
     private final SchemaDraftJsonSupport jsonSupport = new SchemaDraftJsonSupport(new ObjectMapper());
+    private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService =
+        new SchemaDraftAnalysisRetryEligibilityService(analysisRepository, sourceRepository);
     private final SchemaDraftWorkflowNavigationService service = new SchemaDraftWorkflowNavigationService(
         analysisRepository, evaluationRepository, reprocessingRepository, sourceRepository,
-        knowledgeBaseRepository, schemaRepository, jsonSupport);
+        knowledgeBaseRepository, schemaRepository, jsonSupport, analysisRetryEligibilityService);
 
     @Test
     void derivesRunningAggregateAndStaleCurrentnessFromAuthoritativeDraftState() {
@@ -77,7 +79,7 @@ class SchemaDraftWorkflowNavigationServiceTest {
     }
 
     @Test
-    void mapsDeterministicAnalysisPageWithLineageAndCommandRetryability() {
+    void mapsPersistedRetryabilityAndCurrentRetryEligibilityWithSharedPageInputs() {
         SchemaDraftNode draft = draft();
         SchemaDraftAnalysisRunNode run = analysis("retry", SchemaDraftAnalysisStatus.COMPLETED);
         run.setAggregateRevisionId("aggregate");
@@ -85,8 +87,10 @@ class SchemaDraftWorkflowNavigationServiceTest {
         run.setTotalSources(2);
         run.setSucceededSources(1);
         run.setFailedSources(1);
+        run.setRetryable(false);
         when(analysisRepository.findPageByDraftId("draft", PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(List.of(run), PageRequest.of(0, 20), 1));
+        when(sourceRepository.existsByDraftIdAndStatus("draft", SchemaDraftSourceStatus.ACTIVE)).thenReturn(true);
         when(analysisRepository.findFirstByDraftIdAndStatusOrderByCreatedAtDesc(
             "draft", SchemaDraftAnalysisStatus.RUNNING)).thenReturn(Optional.empty());
 
@@ -95,8 +99,12 @@ class SchemaDraftWorkflowNavigationServiceTest {
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().getFirst().retryOfRunId()).isEqualTo("root");
         assertThat(page.getContent().getFirst().current()).isTrue();
-        assertThat(page.getContent().getFirst().retryable()).isTrue();
+        assertThat(page.getContent().getFirst().retryable()).isFalse();
+        assertThat(page.getContent().getFirst().canRetry()).isTrue();
         assertThat(page.getContent().getFirst().statusLocation()).endsWith("/analysis-runs/retry");
+        verify(sourceRepository).existsByDraftIdAndStatus("draft", SchemaDraftSourceStatus.ACTIVE);
+        verify(analysisRepository).findFirstByDraftIdAndStatusOrderByCreatedAtDesc(
+            "draft", SchemaDraftAnalysisStatus.RUNNING);
     }
 
     @Test

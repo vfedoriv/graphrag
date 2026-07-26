@@ -46,6 +46,13 @@ revisions, and settings fingerprint all match. Retry creates a new durable run, 
 and schedules unresolved sources. Startup recovery closes leftover `RUNNING` runs as retryable failures while
 preserving completed source results.
 
+Analysis detail and history expose two distinct retryability concepts. `retryable` is persisted failure
+classification: it is true when the run contains a retryable failure. `canRetry` is a current-state action
+hint requiring a terminal run, an open draft, at least one active source, and no running analysis. Retry
+revalidates these conditions and may still reject a stale revision, race, or queue-capacity failure. Existing
+history consumers that used `retryable` to show a retry action must migrate to `canRetry`; completed and
+permanently failed runs can have `retryable=false` and `canRetry=true`.
+
 An aggregate becomes current only if the draft revision and active source membership still match the captured
 snapshot. Results from a stale run remain auditable but cannot replace the current aggregate.
 
