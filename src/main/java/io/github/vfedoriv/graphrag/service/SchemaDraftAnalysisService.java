@@ -4,12 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult.AliasSuggestion;
+import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryAggregator;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Candidate;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureCode;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureDecision;
+import io.github.vfedoriv.graphrag.discovery.SourceStateException;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
@@ -79,6 +84,7 @@ public class SchemaDraftAnalysisService {
     private final SchemaDraftReviewService reviewService;
     private final ThreadPoolTaskExecutor executor;
     private final SchemaDraftWorkflowNavigationService workflowNavigationService;
+    private final SourceFailureClassifier failureClassifier;
     private final String workerId = UUID.randomUUID().toString();
 
     public SchemaDraftAnalysisService(
@@ -102,6 +108,7 @@ public class SchemaDraftAnalysisService {
         AiObservationService observationService,
         SchemaDraftReviewService reviewService,
         SchemaDraftWorkflowNavigationService workflowNavigationService,
+        SourceFailureClassifier failureClassifier,
         @Qualifier("schemaDraftAnalysisExecutor") ThreadPoolTaskExecutor executor
     ) {
         this.lifecycleService = lifecycleService;
@@ -124,6 +131,7 @@ public class SchemaDraftAnalysisService {
         this.observationService = observationService;
         this.reviewService = reviewService;
         this.workflowNavigationService = workflowNavigationService;
+        this.failureClassifier = failureClassifier;
         this.executor = executor;
     }
 
@@ -219,6 +227,8 @@ public class SchemaDraftAnalysisService {
         run.setSourceMembershipFingerprint(membership);
         run.setAiProfileId(profile.getId());
         run.setAiProfileRevision(profile.getRevision());
+        run.setConfiguredTimeoutSeconds(profile.getTimeoutSeconds());
+        run.setConfiguredSdkMaxRetries(profile.getMaxRetries());
         run.setPromptRevision(DiscoveryContracts.PROMPT_CONTRACT_REVISION);
         run.setCandidateRevision(DiscoveryContracts.CANDIDATE_CONTRACT_REVISION);
         run.setSettingsFingerprint(settings);
@@ -270,8 +280,8 @@ public class SchemaDraftAnalysisService {
         for (SourceSnapshot snapshot : snapshots) {
             SchemaDraftSourceNode source = sourceRepository.findByIdAndDraftId(snapshot.id(), run.getDraftId()).orElse(null);
             if (source == null || source.getRevision() != snapshot.revision() || !source.getSha256().equals(snapshot.sha256())) {
-                IllegalStateException exception = new IllegalStateException("Schema draft source snapshot is stale");
-                persistFailure(run, snapshot, FailureCategory.VALIDATION_ERROR, false, 0, exception);
+                SourceStateException exception = new SourceStateException(SourceFailureCode.SOURCE_STALE);
+                persistFailure(run, snapshot, failureClassifier.classify(exception), 0, exception);
                 continue;
             }
             String reuseKey = reuseKey(run, snapshot);
@@ -290,12 +300,16 @@ public class SchemaDraftAnalysisService {
                     successes.add(analysis);
                 } else {
                     DiscoverySourceAnalyzer.SourceAnalysis analysis = AiProfileContext.withCapturedChatModel(
-                        run.getAiProfileId(), capturedModel, () -> sourceAnalyzer.analyze(preparedForAnalysis, request));
+                        run.getAiProfileId(), capturedModel, () -> sourceAnalyzer.analyze(preparedForAnalysis, request,
+                            new CandidateExtractionAttemptContext(
+                                run.getDraftId(), run.getId(), snapshot.id(), snapshot.revision(), null,
+                                run.getAiProfileId(), run.getAiProfileRevision(), null,
+                                run.getConfiguredTimeoutSeconds(), run.getConfiguredSdkMaxRetries())));
                     persistSuccess(run, source, reuseKey, analysis, false);
                     successes.add(analysis);
                 }
             } catch (RuntimeException exception) {
-                FailureCategory category = classify(exception);
+                SourceFailureDecision decision = failureClassifier.classify(exception);
                 String message = exception.getMessage() == null ? "" : exception.getMessage().toLowerCase(Locale.ROOT);
                 if (message.contains("stale")) {
                     source.setStatus(SchemaDraftSourceStatus.STALE);
@@ -305,7 +319,7 @@ public class SchemaDraftAnalysisService {
                     sourceRepository.save(source);
                 }
                 int preparedChunkCount = prepared == null ? 0 : prepared.chunks().size();
-                persistFailure(run, snapshot, category, category.retryable(), preparedChunkCount, exception);
+                persistFailure(run, snapshot, decision, preparedChunkCount, exception);
             }
         }
         return successes;
@@ -334,6 +348,9 @@ public class SchemaDraftAnalysisService {
         reviewService.reconcileAfterAnalysis(run.getDraftId(), revision.getId());
         run.setAggregateRevisionId(revision.getId());
         run.setStatus(failed == 0 ? SchemaDraftAnalysisStatus.COMPLETED : SchemaDraftAnalysisStatus.PARTIAL);
+        run.setRetryable(failed > 0 && outcomes.stream()
+            .filter(value -> value.getStatus() == SchemaDraftSourceResultStatus.FAILED)
+            .anyMatch(SchemaDraftSourceResultNode::isRetryable));
         boolean current = promoteIfCurrent(run, revision);
         run.setCurrentResult(current);
         runRepository.save(run);
@@ -401,21 +418,23 @@ public class SchemaDraftAnalysisService {
     }
 
     private void persistFailure(
-        SchemaDraftAnalysisRunNode run, SourceSnapshot source, FailureCategory category, boolean retryable, int chunks,
+        SchemaDraftAnalysisRunNode run, SourceSnapshot source, SourceFailureDecision decision, int chunks,
         RuntimeException exception
     ) {
         SchemaDraftSourceResultNode result = baseResult(run, source);
         result.setReuseKey(reuseKey(run, source));
         result.setStatus(SchemaDraftSourceResultStatus.FAILED);
-        result.setFailureCategory(category.name());
-        result.setRetryable(retryable);
+        result.setFailureCategory(decision.category().name());
+        result.setFailureCode(decision.code().name());
+        result.setRetryable(decision.retryable());
         result.setChunkCount(chunks);
         result.setCompletedAt(Instant.now());
         SchemaDraftSourceResultNode saved = resultRepository.save(result);
         graphService.attach(run.getDraftId(), "SchemaDraftSourceResult", saved.getId());
-        log.warn("Schema draft source analysis failed: draftId={}, runId={}, sourceId={}, sourceRevision={}, failureCategory={}, retryable={}, preparedChunkCount={}, exceptionType={}, messageFingerprint={}",
-            run.getDraftId(), run.getId(), source.id(), source.revision(), category, retryable, chunks,
-            LogMetadata.exceptionType(exception), LogMetadata.exceptionMessageFingerprint(exception));
+        log.warn("Schema draft source analysis failed: draftId={}, runId={}, sourceId={}, sourceRevision={}, failureCategory={}, failureCode={}, retryable={}, providerStatus={}, preparedChunkCount={}, exceptionTypes={}, rootExceptionType={}, messageFingerprint={}",
+            run.getDraftId(), run.getId(), source.id(), source.revision(), decision.category(), decision.code(),
+            decision.retryable(), decision.providerStatus(), chunks, decision.exceptionTypes(),
+            decision.rootExceptionType(), decision.messageFingerprint());
     }
 
     private SchemaDraftSourceResultNode baseResult(SchemaDraftAnalysisRunNode run, SourceSnapshot source) {
@@ -488,15 +507,6 @@ public class SchemaDraftAnalysisService {
         }
     }
 
-    private FailureCategory classify(RuntimeException exception) {
-        String value = (exception.getClass().getName() + " " + exception.getMessage()).toLowerCase(Locale.ROOT);
-        if (value.contains("timeout")) return FailureCategory.TIMEOUT;
-        if (value.contains("reject") || value.contains("overload") || value.contains("rate limit")) return FailureCategory.OVERLOADED;
-        if (value.contains("json") || value.contains("convert") || value.contains("parse")) return FailureCategory.CONVERSION_ERROR;
-        if (value.contains("stale") || value.contains("unavailable") || value.contains("validation")) return FailureCategory.VALIDATION_ERROR;
-        return FailureCategory.PROVIDER_ERROR;
-    }
-
     private SchemaDraftConflictType conflictType(String category) {
         return switch (category) {
             case "PROPERTY_TYPE" -> SchemaDraftConflictType.TYPE;
@@ -527,7 +537,9 @@ public class SchemaDraftAnalysisService {
     ) {
         List<SourceOutcomeResponse> responses = outcomes.stream().map(value -> new SourceOutcomeResponse(
             value.getId(), value.getSourceId(), value.getSourceRevision(), value.getStatus(), value.isReused(),
-            value.getFailureCategory(), value.isRetryable(), value.getChunkCount(), value.getCompletedAt())).toList();
+            value.getFailureCategory(), value.getFailureCode() == null ? null
+                : SourceFailureCode.valueOf(value.getFailureCode()), value.isRetryable(), value.getChunkCount(),
+            value.getCompletedAt())).toList();
         return new AnalysisRunResponse(run.getId(), run.getStatus(), run.getDraftRevision(), run.getGuidanceRevision(),
             run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(), run.getCandidateRevision(),
             run.getTotalSources(), run.getSucceededSources(), run.getFailedSources(),

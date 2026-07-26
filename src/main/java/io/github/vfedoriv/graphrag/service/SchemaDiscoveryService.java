@@ -1,13 +1,15 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.discovery.DiscoveryAggregator;
+import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ResponseStatus;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceStatus;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourcePreparer;
 import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureDecision;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
@@ -42,6 +44,7 @@ public class SchemaDiscoveryService {
     private final RuntimeSettingsService runtimeSettingsService;
     private final KnowledgeBaseService knowledgeBaseService;
     private final AiObservationService observationService;
+    private final SourceFailureClassifier failureClassifier;
 
     public SchemaDiscoveryService(
         DiscoverySourcePreparer sourcePreparer,
@@ -49,7 +52,8 @@ public class SchemaDiscoveryService {
         DiscoveryAggregator aggregator,
         RuntimeSettingsService runtimeSettingsService,
         KnowledgeBaseService knowledgeBaseService,
-        AiObservationService observationService
+        AiObservationService observationService,
+        SourceFailureClassifier failureClassifier
     ) {
         this.sourcePreparer = sourcePreparer;
         this.sourceAnalyzer = sourceAnalyzer;
@@ -57,6 +61,7 @@ public class SchemaDiscoveryService {
         this.runtimeSettingsService = runtimeSettingsService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.observationService = observationService;
+        this.failureClassifier = failureClassifier;
     }
 
     public SchemaDiscoveryResponse discover(
@@ -79,7 +84,7 @@ public class SchemaDiscoveryService {
             AiObservationService.WORKFLOW_SCHEMA_DISCOVERY, null, workflowAttributes
         ))) {
             try {
-                AnalysisBatch batch = analyze(sources, request, profile.getId(), limits);
+                AnalysisBatch batch = analyze(sources, request, profile, limits);
                 if (batch.successes().isEmpty()) {
                     SchemaDiscoveryFailedException exception = new SchemaDiscoveryFailedException(
                         "Schema discovery failed for all " + sources.size() + " sources"
@@ -114,14 +119,18 @@ public class SchemaDiscoveryService {
     private AnalysisBatch analyze(
         List<PreparedDiscoverySource> sources,
         SchemaDiscoveryRequest request,
-        String profileId,
+        AiProfileNode profile,
         RuntimeSettingsService.DiscoverySettings limits
     ) {
         ExecutorService executor = Executors.newFixedThreadPool(Math.min(limits.maxConcurrency(), sources.size()),
             Thread.ofPlatform().name("schema-discovery-", 0).factory());
         List<Future<DiscoverySourceAnalyzer.SourceAnalysis>> futures = new ArrayList<>();
         for (PreparedDiscoverySource source : sources) {
-            futures.add(executor.submit(() -> AiProfileContext.withProfile(profileId, () -> sourceAnalyzer.analyze(source, request))));
+            CandidateExtractionAttemptContext context = new CandidateExtractionAttemptContext(
+                null, null, source.sourceId(), null, null, profile.getId(), profile.getRevision(), null,
+                profile.getTimeoutSeconds(), profile.getMaxRetries());
+            futures.add(executor.submit(() -> AiProfileContext.withProfile(profile.getId(),
+                () -> sourceAnalyzer.analyze(source, request, context))));
         }
         executor.shutdown();
         long requestDeadline = System.nanoTime() + limits.requestTimeout().toNanos();
@@ -141,19 +150,20 @@ public class SchemaDiscoveryService {
                 outcomes.add(success(source));
             } catch (TimeoutException exception) {
                 future.cancel(true);
-                outcomes.add(failure(source, FailureCategory.TIMEOUT));
-                log.warn("Schema discovery source failed: sourceId={}, sourceType={}, fingerprint={}, failureCategory={}, retryable=true",
-                    source.sourceId(), source.type(), source.fingerprint(), FailureCategory.TIMEOUT);
+                SourceFailureDecision decision = failureClassifier.classify(exception);
+                outcomes.add(failure(source, decision));
+                logFailure(source, decision);
             } catch (InterruptedException exception) {
                 Thread.currentThread().interrupt();
                 future.cancel(true);
-                outcomes.add(failure(source, FailureCategory.TIMEOUT));
+                SourceFailureDecision decision = failureClassifier.classify(
+                    new TimeoutException("Discovery source wait was interrupted"));
+                outcomes.add(failure(source, decision));
+                logFailure(source, decision);
             } catch (ExecutionException exception) {
-                FailureCategory category = classify(exception.getCause());
-                outcomes.add(failure(source, category));
-                log.warn("Schema discovery source failed: sourceId={}, sourceType={}, fingerprint={}, failureCategory={}, retryable={}, exceptionType={}",
-                    source.sourceId(), source.type(), source.fingerprint(), category, category.retryable(),
-                    LogMetadata.exceptionType(exception.getCause()));
+                SourceFailureDecision decision = failureClassifier.classify(exception.getCause());
+                outcomes.add(failure(source, decision));
+                logFailure(source, decision);
             }
         }
         executor.shutdownNow();
@@ -162,33 +172,19 @@ public class SchemaDiscoveryService {
 
     private SourceOutcome success(PreparedDiscoverySource source) {
         return new SourceOutcome(source.sourceId(), source.type(), source.fingerprint(), SourceStatus.SUCCEEDED,
-            null, false, source.chunks().size());
+            null, null, false, source.chunks().size());
     }
 
-    private SourceOutcome failure(PreparedDiscoverySource source, FailureCategory category) {
+    private SourceOutcome failure(PreparedDiscoverySource source, SourceFailureDecision decision) {
         return new SourceOutcome(source.sourceId(), source.type(), source.fingerprint(), SourceStatus.FAILED,
-            category, category.retryable(), source.chunks().size());
+            decision.category(), decision.code(), decision.retryable(), source.chunks().size());
     }
 
-    private FailureCategory classify(Throwable throwable) {
-        if (throwable == null) {
-            return FailureCategory.PROVIDER_ERROR;
-        }
-        String type = throwable.getClass().getName().toLowerCase(Locale.ROOT);
-        String message = throwable.getMessage() == null ? "" : throwable.getMessage().toLowerCase(Locale.ROOT);
-        if (type.contains("timeout") || message.contains("timeout")) {
-            return FailureCategory.TIMEOUT;
-        }
-        if (type.contains("rejected") || message.contains("rate limit") || message.contains("overload")) {
-            return FailureCategory.OVERLOADED;
-        }
-        if (type.contains("json") || message.contains("convert") || message.contains("parse")) {
-            return FailureCategory.CONVERSION_ERROR;
-        }
-        if (type.contains("illegalargument") || message.contains("candidate") || message.contains("validation")) {
-            return FailureCategory.VALIDATION_ERROR;
-        }
-        return FailureCategory.PROVIDER_ERROR;
+    private void logFailure(PreparedDiscoverySource source, SourceFailureDecision decision) {
+        log.warn("Schema discovery source failed: sourceId={}, sourceType={}, fingerprint={}, failureCategory={}, failureCode={}, retryable={}, providerStatus={}, exceptionTypes={}, rootExceptionType={}, messageFingerprint={}",
+            source.sourceId(), source.type(), source.fingerprint(), decision.category(), decision.code(),
+            decision.retryable(), decision.providerStatus(), decision.exceptionTypes(),
+            decision.rootExceptionType(), decision.messageFingerprint());
     }
 
     private record AnalysisBatch(

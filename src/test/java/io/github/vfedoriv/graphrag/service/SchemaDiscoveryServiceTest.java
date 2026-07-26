@@ -16,6 +16,7 @@ import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.discovery.DiscoverySourcePreparer;
 import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
@@ -51,7 +52,8 @@ class SchemaDiscoveryServiceTest {
         profile.setId("profile-1");
         profile.setRevision(7);
         when(knowledgeBases.activeAiProfile("kb")).thenReturn(profile);
-        service = new SchemaDiscoveryService(preparer, analyzer, aggregator, settings, knowledgeBases, observations);
+        service = new SchemaDiscoveryService(
+            preparer, analyzer, aggregator, settings, knowledgeBases, observations, new SourceFailureClassifier());
     }
 
     @Test
@@ -60,7 +62,7 @@ class SchemaDiscoveryServiceTest {
         PreparedDiscoverySource second = source("source-2");
         SchemaDiscoveryRequest request = request();
         when(preparer.prepare("kb", request, List.of())).thenReturn(List.of(first, second));
-        when(analyzer.analyze(any(), eq(request))).thenAnswer(invocation -> {
+        when(analyzer.analyze(any(), eq(request), any())).thenAnswer(invocation -> {
             PreparedDiscoverySource source = invocation.getArgument(0);
             assertThat(AiProfileContext.activeProfileId()).isEqualTo("profile-1");
             if (source.sourceId().equals("source-2")) {
@@ -88,7 +90,7 @@ class SchemaDiscoveryServiceTest {
         PreparedDiscoverySource source = source("source-1");
         SchemaDiscoveryRequest request = request();
         when(preparer.prepare("kb", request, List.of())).thenReturn(List.of(source));
-        when(analyzer.analyze(source, request)).thenThrow(new IllegalArgumentException("invalid candidates"));
+        when(analyzer.analyze(eq(source), eq(request), any())).thenThrow(new IllegalArgumentException("invalid candidates"));
 
         assertThatThrownBy(() -> service.discover("kb", request, List.of()))
             .isInstanceOf(SchemaDiscoveryFailedException.class)
@@ -104,7 +106,7 @@ class SchemaDiscoveryServiceTest {
         when(settings.discovery()).thenReturn(new RuntimeSettingsService.DiscoverySettings(
             4, 1000, 4000, 1000, 4000, 1000, 2, 3, Duration.ofMillis(20), Duration.ofSeconds(1)));
         when(preparer.prepare("kb", request, List.of())).thenReturn(List.of(success, timeout, overloaded));
-        when(analyzer.analyze(any(), eq(request))).thenAnswer(invocation -> {
+        when(analyzer.analyze(any(), eq(request), any())).thenAnswer(invocation -> {
             PreparedDiscoverySource source = invocation.getArgument(0);
             if (source.sourceId().equals("source-timeout")) {
                 Thread.sleep(200);
@@ -132,7 +134,7 @@ class SchemaDiscoveryServiceTest {
         when(preparer.prepare("kb", request, List.of())).thenReturn(sources);
         AtomicInteger active = new AtomicInteger();
         AtomicInteger maximum = new AtomicInteger();
-        when(analyzer.analyze(any(), eq(request))).thenAnswer(invocation -> {
+        when(analyzer.analyze(any(), eq(request), any())).thenAnswer(invocation -> {
             int current = active.incrementAndGet();
             maximum.accumulateAndGet(current, Math::max);
             try {
@@ -163,7 +165,8 @@ class SchemaDiscoveryServiceTest {
             SchemaDiscoveryRequest.DiscoveryGuidance.empty());
         PreparedDiscoverySource source = source("source-private");
         when(preparer.prepare("kb", request, List.of())).thenReturn(List.of(source));
-        when(analyzer.analyze(source, request)).thenReturn(new DiscoverySourceAnalyzer.SourceAnalysis(source, List.of(), List.of()));
+        when(analyzer.analyze(eq(source), eq(request), any()))
+            .thenReturn(new DiscoverySourceAnalyzer.SourceAnalysis(source, List.of(), List.of()));
         com.fasterxml.jackson.databind.node.ObjectNode schema = objectMapper.createObjectNode();
         schema.put("description", schemaContent);
         when(aggregator.aggregate(any(), eq(request))).thenReturn(new DiscoveryAggregator.AggregateResult(

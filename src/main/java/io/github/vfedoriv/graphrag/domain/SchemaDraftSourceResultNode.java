@@ -24,6 +24,7 @@ public class SchemaDraftSourceResultNode {
     private String candidatesJson;
     private String aliasesJson;
     private String failureCategory;
+    private String failureCode;
     private boolean retryable;
     private int chunkCount;
     private Instant createdAt;

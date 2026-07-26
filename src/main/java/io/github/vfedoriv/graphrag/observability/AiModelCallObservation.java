@@ -54,12 +54,16 @@ public final class AiModelCallObservation extends AiObservationScope {
 
     @Override
     public void error(Throwable throwable) {
+        error(throwable, AiObservationService.failureCategory(throwable));
+    }
+
+    public void error(Throwable throwable, String failureCategory) {
         if (!recorded) {
             recorded = true;
             service.recordModelCall(
                 context,
                 AiObservationAttributes.STATUS_FAILURE,
-                AiObservationService.failureCategory(throwable),
+                failureCategory,
                 System.nanoTime() - startNanos,
                 AiTokenUsage.none()
             );

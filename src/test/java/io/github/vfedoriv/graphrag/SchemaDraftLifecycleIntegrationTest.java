@@ -52,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,6 +97,8 @@ class SchemaDraftLifecycleIntegrationTest {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final AtomicBoolean BLOCK_MODEL = new AtomicBoolean();
     private static final AtomicBoolean FAIL_REPROCESSING = new AtomicBoolean();
+    private static final AtomicBoolean FAIL_RETRYABLE_MODEL = new AtomicBoolean();
+    private static final AtomicInteger MODEL_CALL_COUNT = new AtomicInteger();
     private static volatile CountDownLatch MODEL_ENTERED = new CountDownLatch(1);
     private static volatile CountDownLatch RELEASE_MODEL = new CountDownLatch(1);
 
@@ -119,6 +122,8 @@ class SchemaDraftLifecycleIntegrationTest {
     void setUp() throws Exception {
         resetModelGate();
         FAIL_REPROCESSING.set(false);
+        FAIL_RETRYABLE_MODEL.set(false);
+        MODEL_CALL_COUNT.set(0);
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         TestDocumentStorage.clean();
         mockMvc.perform(post("/api/v1/knowledge-bases")
@@ -132,6 +137,7 @@ class SchemaDraftLifecycleIntegrationTest {
         RELEASE_MODEL.countDown();
         BLOCK_MODEL.set(false);
         FAIL_REPROCESSING.set(false);
+        FAIL_RETRYABLE_MODEL.set(false);
         TestDocumentStorage.clean();
     }
 
@@ -291,6 +297,65 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(aggregateRepository.findByDraftIdOrderByRevisionDesc(draftId)).isEmpty();
         assertThat(output.getAll()).doesNotContain("private-draft-source", "private-guidance-value",
             "node-property:Person:displayName", "displayName", "node:Person");
+    }
+
+    @Test
+    void partialRetryabilityReusesSuccessfulSourcesAndReadsLegacyNullFailureCodes() throws Exception {
+        JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
+            "{\"targetName\":\"retryable-partial\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
+        String draftId = draft.path("id").asText();
+        JsonNode successfulSource = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":0,\"name\":\"successful\",\"text\":\"Person personId\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        JsonNode retryableSource = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
+            "{\"revision\":1,\"name\":\"retryable\",\"text\":\"RETRYABLE_MODEL_FAILURE\"}",
+            KNOWLEDGE_BASE_ID, draftId));
+        FAIL_RETRYABLE_MODEL.set(true);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId));
+        String firstRunId = accepted.path("runId").asText();
+        JsonNode partial = awaitTerminal(draftId, firstRunId);
+
+        assertThat(partial.path("status").asText()).isEqualTo("PARTIAL");
+        assertThat(partial.path("retryable").asBoolean()).isTrue();
+        JsonNode failedOutcome = java.util.stream.StreamSupport.stream(
+                partial.path("sourceOutcomes").path("content").spliterator(), false)
+            .filter(value -> retryableSource.path("id").asText().equals(value.path("sourceId").asText()))
+            .findFirst().orElseThrow();
+        assertThat(failedOutcome.path("failureCode").asText()).isEqualTo("MALFORMED_MODEL_RESPONSE");
+        assertThat(failedOutcome.path("retryable").asBoolean()).isTrue();
+        assertThat(MODEL_CALL_COUNT.get()).isEqualTo(2);
+
+        neo4jClient.query("MATCH (result:SchemaDraftSourceResult {runId: $runId}) REMOVE result.failureCode")
+            .bind(firstRunId).to("runId").run();
+        JsonNode legacy = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}",
+                KNOWLEDGE_BASE_ID, draftId, firstRunId))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode legacyFailure = java.util.stream.StreamSupport.stream(
+                legacy.path("sourceOutcomes").path("content").spliterator(), false)
+            .filter(value -> retryableSource.path("id").asText().equals(value.path("sourceId").asText()))
+            .findFirst().orElseThrow();
+        assertThat(legacyFailure.path("failureCode").isNull()).isTrue();
+
+        FAIL_RETRYABLE_MODEL.set(false);
+        JsonNode retryAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}/retry",
+            "{\"revision\":2}", KNOWLEDGE_BASE_ID, draftId, firstRunId));
+        JsonNode completed = awaitTerminal(draftId, retryAccepted.path("runId").asText());
+
+        assertThat(completed.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(completed.path("retryable").asBoolean()).isFalse();
+        JsonNode reusedOutcome = java.util.stream.StreamSupport.stream(
+                completed.path("sourceOutcomes").path("content").spliterator(), false)
+            .filter(value -> successfulSource.path("id").asText().equals(value.path("sourceId").asText()))
+            .findFirst().orElseThrow();
+        assertThat(reusedOutcome.path("reused").asBoolean()).isTrue();
+        assertThat(MODEL_CALL_COUNT.get()).isEqualTo(3);
     }
 
     @Test
@@ -1086,7 +1151,7 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(preparedOutcome.path("chunkCount").asInt()).isEqualTo(1);
         assertThat(preparationOutcome.path("chunkCount").asInt()).isZero();
         assertThat(output.getAll()).contains(
-            "preparedChunkCount=1", "preparedChunkCount=0", "exceptionType=IllegalArgumentException",
+            "preparedChunkCount=1", "preparedChunkCount=0", "exceptionTypes=[IllegalArgumentException]",
             "messageFingerprint=sha256:");
         assertThat(output.getAll()).doesNotContain(
             "FAIL_CANDIDATE_PRIVATE_SOURCE", "PRIVATE_PREPARATION_SOURCE",
@@ -1277,7 +1342,21 @@ class SchemaDraftLifecycleIntegrationTest {
         CandidateExtractionModelAdapter deterministicDraftCandidateExtractionModelAdapter() {
             return new CandidateExtractionModelAdapter(null, null) {
                 @Override
+                public <T> T extractValidated(
+                    String portablePrompt,
+                    io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext context,
+                    java.util.function.Function<CandidateExtractionResult, T> validator
+                ) {
+                    return validator.apply(extract(portablePrompt));
+                }
+
+                @Override
                 public CandidateExtractionResult extract(String portablePrompt) {
+                    MODEL_CALL_COUNT.incrementAndGet();
+                    if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
+                        throw new io.github.vfedoriv.graphrag.discovery.MalformedModelResponseException(
+                            io.github.vfedoriv.graphrag.discovery.ModelResponseDiagnostics.none());
+                    }
                     if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
                         throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");
                     }

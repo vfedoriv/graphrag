@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationOutcomePageResp
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.MetricApplicability;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.QuestionCoverage;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomeResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
@@ -81,6 +82,22 @@ class SchemaDraftOpenApiContractTest {
         assertThat(candidateSchemas).containsKey("CandidateResponse");
         assertThat(candidateSchemas.get("CandidateResponse").getProperties()).containsKeys(
             "recommendationState", "effectiveReviewState", "latestDecisionId", "evidence");
+    }
+
+    @Test
+    void exposesAdditiveDetailedSourceFailureCodes() {
+        Map<String, Schema> durableSchemas = ModelConverters.getInstance().readAll(SourceOutcomeResponse.class);
+        Map<String, Schema> discoverySchemas = ModelConverters.getInstance()
+            .readAll(SchemaDiscoveryResponse.SourceOutcome.class);
+
+        assertThat(durableSchemas.get("SourceOutcomeResponse").getProperties())
+            .containsKeys("failureCategory", "failureCode", "retryable");
+        assertThat(discoverySchemas.get("SourceOutcome").getProperties())
+            .containsKeys("failureCategory", "failureCode", "retryable");
+        assertThat(((Schema) durableSchemas.get("SourceOutcomeResponse").getProperties().get("failureCode")).getEnum())
+            .contains("TRANSPORT_TIMEOUT", "RATE_LIMIT", "EMPTY_MODEL_RESPONSE",
+                "MALFORMED_MODEL_RESPONSE", "INVALID_MODEL_CANDIDATE", "SOURCE_STALE",
+                "SOURCE_UNAVAILABLE", "CONFIGURATION_ERROR");
     }
 
     @Test

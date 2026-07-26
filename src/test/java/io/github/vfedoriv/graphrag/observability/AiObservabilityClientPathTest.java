@@ -9,6 +9,9 @@ import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
+import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.embedding.SpringAiEmbeddingClient;
 import io.github.vfedoriv.graphrag.graph.SpringAiGraphExtractionClient;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
@@ -30,6 +33,10 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
+import org.springframework.ai.chat.metadata.DefaultUsage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
@@ -190,6 +197,55 @@ class AiObservabilityClientPathTest {
             .build());
 
         assertModelObservationHasInputOutput(handler);
+    }
+
+    @Test
+    void schemaDiscoveryModelObservationIncludesSafeAttemptAndResponseDiagnostics() {
+        CapturingObservationHandler handler = new CapturingObservationHandler();
+        AiObservationService service = service(handler);
+        ProfileScopedAiClientResolver resolver = org.mockito.Mockito.mock(ProfileScopedAiClientResolver.class);
+        AssistantMessage message = AssistantMessage.builder()
+            .content("""
+                {"nodes":[],"nodeProperties":[],"nodeKeys":[],"relationships":[],
+                 "relationshipProperties":[],"aliasSuggestions":[]}
+                """)
+            .properties(Map.of("reasoning_content", "PRIVATE_REASONING_71cfa2"))
+            .build();
+        ChatResponse response = new ChatResponse(
+            List.of(new Generation(message, ChatGenerationMetadata.builder().finishReason("stop").build())),
+            ChatResponseMetadata.builder()
+                .id("response-123")
+                .model("model-xyz")
+                .usage(new DefaultUsage(11, 7, 18))
+                .build()
+        );
+        org.springframework.ai.chat.model.ChatModel model = prompt -> response;
+        org.mockito.Mockito.when(resolver.chatModel()).thenReturn(model);
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(resolver, service);
+
+        adapter.extractValidated("PRIVATE_PROMPT_d2df64",
+            new CandidateExtractionAttemptContext("draft-1", "run-1", "source-1", 2L, "chunk-1",
+                "profile-1", 3L, null, 30, 2),
+            java.util.function.Function.identity());
+
+        CapturedObservation observation = handler.singleObservationNamed("graphrag.ai.model");
+        assertThat(observation.highCardinalityAttributes())
+            .containsEntry("ai.output_attempt", "1")
+            .containsEntry("ai.response.id", "response-123")
+            .containsEntry("ai.response.model", "model-xyz")
+            .containsEntry("ai.response.finish_reason", "stop")
+            .containsEntry("ai.response.tokens.input", "11")
+            .containsEntry("ai.response.tokens.output", "7")
+            .containsEntry("ai.response.tokens.total", "18")
+            .containsEntry("ai.response.reasoning.present", "true")
+            .containsEntry("ai.response.reasoning.length", "24")
+            .containsKeys("ai.response.normal_content.length", "ai.response.normal_content.sha256");
+        assertThat(observation.highCardinalityAttributes().entrySet())
+            .filteredOn(entry -> entry.getKey().startsWith("ai.response.")
+                || entry.getKey().startsWith("ai.failure."))
+            .extracting(Map.Entry::getValue)
+            .noneMatch(value -> value.contains("PRIVATE_REASONING_71cfa2")
+                || value.contains("PRIVATE_PROMPT_d2df64"));
     }
 
     private CapturedObservation assertModelObservationHasInputOutput(CapturingObservationHandler handler) {

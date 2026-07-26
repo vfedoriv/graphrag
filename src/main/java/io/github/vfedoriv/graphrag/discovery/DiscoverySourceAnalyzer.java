@@ -28,16 +28,36 @@ public class DiscoverySourceAnalyzer {
     }
 
     public SourceAnalysis analyze(PreparedDiscoverySource source, SchemaDiscoveryRequest request) {
+        return analyze(source, request, CandidateExtractionAttemptContext.forSource(source.sourceId()));
+    }
+
+    public SourceAnalysis analyze(
+        PreparedDiscoverySource source,
+        SchemaDiscoveryRequest request,
+        CandidateExtractionAttemptContext attemptContext
+    ) {
         BeanOutputConverter<CandidateExtractionResult> converter = new BeanOutputConverter<>(CandidateExtractionResult.class);
         List<Candidate> candidates = new ArrayList<>();
         List<AliasSuggestion> aliases = new ArrayList<>();
         for (PreparedDiscoverySource.AnalysisChunk chunk : source.chunks()) {
             String portablePrompt = promptFactory.prompt(source, chunk, request, converter.getFormat());
-            CandidateExtractionResult result = modelAdapter.extract(portablePrompt);
-            candidates.addAll(toCandidates(source, chunk, result));
-            aliases.addAll(result.aliasSuggestions());
+            ValidatedChunk validated = modelAdapter.extractValidated(
+                portablePrompt,
+                attemptContext.forChunk(chunk.id()),
+                result -> validateChunk(source, chunk, result)
+            );
+            candidates.addAll(validated.candidates());
+            aliases.addAll(validated.aliases());
         }
         return new SourceAnalysis(source, List.copyOf(candidates), List.copyOf(aliases));
+    }
+
+    private ValidatedChunk validateChunk(
+        PreparedDiscoverySource source,
+        PreparedDiscoverySource.AnalysisChunk chunk,
+        CandidateExtractionResult result
+    ) {
+        return new ValidatedChunk(toCandidates(source, chunk, result), List.copyOf(result.aliasSuggestions()));
     }
 
     private List<Candidate> toCandidates(
@@ -96,5 +116,8 @@ public class DiscoverySourceAnalyzer {
     public record SourceAnalysis(
         PreparedDiscoverySource source, List<Candidate> candidates, List<AliasSuggestion> aliasSuggestions
     ) {
+    }
+
+    private record ValidatedChunk(List<Candidate> candidates, List<AliasSuggestion> aliases) {
     }
 }

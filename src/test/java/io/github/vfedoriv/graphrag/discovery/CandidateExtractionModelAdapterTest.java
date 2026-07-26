@@ -4,15 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import com.openai.core.http.Headers;
+import com.openai.errors.UnauthorizedException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -22,7 +27,10 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
+@ExtendWith(OutputCaptureExtension.class)
 class CandidateExtractionModelAdapterTest {
 
     @Test
@@ -62,8 +70,9 @@ class CandidateExtractionModelAdapterTest {
         CandidateExtractionModelAdapter adapter = adapterReturning(new ChatResponse(List.of()));
 
         assertThatThrownBy(() -> adapter.extract("portable"))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Candidate model response is missing a result");
+            .isInstanceOf(EmptyModelResponseException.class)
+            .extracting("failureCode")
+            .isEqualTo(SourceFailureCode.EMPTY_MODEL_RESPONSE);
     }
 
     @Test
@@ -71,8 +80,7 @@ class CandidateExtractionModelAdapterTest {
         CandidateExtractionModelAdapter adapter = adapterReturning(new ChatResponse(List.of(new Generation(null))));
 
         assertThatThrownBy(() -> adapter.extract("portable"))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Candidate model response is missing an assistant message");
+            .isInstanceOf(EmptyModelResponseException.class);
     }
 
     @Test
@@ -82,8 +90,7 @@ class CandidateExtractionModelAdapterTest {
         CandidateExtractionModelAdapter adapter = adapterReturning(new ChatResponse(List.of(new Generation(message))));
 
         assertThatThrownBy(() -> adapter.extract("portable"))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Candidate model response has blank normal assistant content");
+            .isInstanceOf(EmptyModelResponseException.class);
     }
 
     @Test
@@ -92,7 +99,69 @@ class CandidateExtractionModelAdapterTest {
             "reasoning_content", validResponseJson())).build();
         CandidateExtractionModelAdapter adapter = adapterReturning(new ChatResponse(List.of(new Generation(message))));
 
-        assertThatThrownBy(() -> adapter.extract("portable")).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> adapter.extract("portable")).isInstanceOf(MalformedModelResponseException.class);
+    }
+
+    @Test
+    void retriesInvalidOutputOnceAndReturnsOnlyValidatedAttempt() {
+        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
+        ChatModel model = mock(ChatModel.class);
+        when(resolver.chatModel()).thenReturn(model);
+        when(model.call(any(Prompt.class))).thenReturn(response("not-json"), response(validResponseJson()));
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(
+            resolver, TestAiObservationService.noop());
+
+        CandidateExtractionResult result = adapter.extract("portable");
+
+        assertThat(result.nodes()).isEmpty();
+        verify(model, times(2)).call(any(Prompt.class));
+    }
+
+    @Test
+    void doesNotAddApplicationRetryForTransportFailure() {
+        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
+        ChatModel model = mock(ChatModel.class);
+        when(resolver.chatModel()).thenReturn(model);
+        when(model.call(any(Prompt.class))).thenThrow(new com.openai.errors.OpenAIIoException("safe transport failure"));
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(
+            resolver, TestAiObservationService.noop());
+
+        assertThatThrownBy(() -> adapter.extract("portable"))
+            .isInstanceOf(com.openai.errors.OpenAIIoException.class);
+        verify(model).call(any(Prompt.class));
+    }
+
+    @Test
+    void doesNotAddApplicationRetryForPermanentProviderFailure() {
+        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
+        ChatModel model = mock(ChatModel.class);
+        when(resolver.chatModel()).thenReturn(model);
+        UnauthorizedException failure = UnauthorizedException.builder()
+            .headers(Headers.builder().build()).error(Optional.empty()).build();
+        when(model.call(any(Prompt.class))).thenThrow(failure);
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(
+            resolver, TestAiObservationService.noop());
+
+        assertThatThrownBy(() -> adapter.extract("portable")).isSameAs(failure);
+        verify(model).call(any(Prompt.class));
+    }
+
+    @Test
+    void warningsExcludePromptOutputReasoningAndRawProviderMessages(CapturedOutput output) {
+        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
+        ChatModel model = mock(ChatModel.class);
+        when(resolver.chatModel()).thenReturn(model);
+        when(model.call(any(Prompt.class))).thenThrow(
+            new com.openai.errors.OpenAIIoException("PRIVATE_PROVIDER_BODY_0ab81f api-key-secret"));
+        CandidateExtractionModelAdapter adapter = new CandidateExtractionModelAdapter(
+            resolver, TestAiObservationService.noop());
+
+        assertThatThrownBy(() -> adapter.extract("PRIVATE_PROMPT_37c61d"))
+            .isInstanceOf(com.openai.errors.OpenAIIoException.class);
+
+        assertThat(output.getAll())
+            .contains("failureCode=TRANSPORT_IO", "messageFingerprint=sha256:")
+            .doesNotContain("PRIVATE_PROVIDER_BODY_0ab81f", "api-key-secret", "PRIVATE_PROMPT_37c61d");
     }
 
     private void assertPortablePrompt(ChatModel model) {

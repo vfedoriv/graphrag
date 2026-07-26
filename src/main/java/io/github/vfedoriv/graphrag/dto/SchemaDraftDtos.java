@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.CandidateKind;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Evidence;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ReviewState;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureCode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftCompatibility;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
@@ -274,6 +275,7 @@ public final class SchemaDraftDtos {
         SchemaDraftSourceResultStatus status,
         boolean reused,
         String failureCategory,
+        SourceFailureCode failureCode,
         boolean retryable,
         int chunkCount,
         Instant completedAt

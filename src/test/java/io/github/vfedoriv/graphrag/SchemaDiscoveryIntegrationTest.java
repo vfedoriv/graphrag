@@ -154,6 +154,15 @@ class SchemaDiscoveryIntegrationTest {
         CandidateExtractionModelAdapter deterministicCandidateExtractionModelAdapter() {
             return new CandidateExtractionModelAdapter(null, null) {
                 @Override
+                public <T> T extractValidated(
+                    String portablePrompt,
+                    io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext context,
+                    java.util.function.Function<CandidateExtractionResult, T> validator
+                ) {
+                    return validator.apply(extract(portablePrompt));
+                }
+
+                @Override
                 public CandidateExtractionResult extract(String portablePrompt) {
                     String type = portablePrompt.contains("date variant") ? "DATE" : "STRING";
                     return new CandidateExtractionResult(

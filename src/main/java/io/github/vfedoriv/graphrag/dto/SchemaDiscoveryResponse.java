@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ResponseStatus;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceStatus;
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
+import io.github.vfedoriv.graphrag.discovery.SourceFailureCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public record SchemaDiscoveryResponse(
         String fingerprint,
         SourceStatus status,
         FailureCategory failureCategory,
+        SourceFailureCode failureCode,
         boolean retryable,
         int chunkCount
     ) {

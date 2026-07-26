@@ -23,6 +23,8 @@ public class SchemaDraftAnalysisRunNode {
     private String sourceMembershipFingerprint;
     private String aiProfileId;
     private long aiProfileRevision;
+    private int configuredTimeoutSeconds;
+    private int configuredSdkMaxRetries;
     private String promptRevision;
     private String candidateRevision;
     private String settingsFingerprint;
