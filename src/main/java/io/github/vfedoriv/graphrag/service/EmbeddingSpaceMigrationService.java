@@ -66,7 +66,7 @@ public class EmbeddingSpaceMigrationService implements ApplicationRunner {
 
     private long backfillUnambiguousChunks(String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
         Map<String, Object> row = neo4jClient.query("""
-            MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk)
+            MATCH (chunk:DocumentChunk {knowledgeBaseId: $knowledgeBaseId})
             WHERE chunk.embedding IS NOT NULL
               AND chunk.embeddingSpaceId IS NULL
               AND chunk.embeddingModel = $embeddingModel
@@ -87,7 +87,8 @@ public class EmbeddingSpaceMigrationService implements ApplicationRunner {
 
     private void assignLabel(String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
         neo4jClient.query("""
-            MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk {
+            MATCH (chunk:DocumentChunk {
+              knowledgeBaseId: $knowledgeBaseId,
               embeddingSpaceId: $embeddingSpaceId
             })
             SET chunk:%s

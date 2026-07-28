@@ -46,10 +46,16 @@ public class EmbeddingSpaceIndexService {
     public void assignChunk(String chunkId, String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
         String labelName = labelName(knowledgeBaseId, embeddingSpace.id());
         neo4jClient.query("""
-            MATCH (chunk:DocumentChunk {id: $chunkId})
+            MATCH (chunk:DocumentChunk {
+              id: $chunkId,
+              knowledgeBaseId: $knowledgeBaseId,
+              embeddingSpaceId: $embeddingSpaceId
+            })
             SET chunk:%s
             """.formatted(labelName))
             .bind(chunkId).to("chunkId")
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(embeddingSpace.id()).to("embeddingSpaceId")
             .run();
     }
 

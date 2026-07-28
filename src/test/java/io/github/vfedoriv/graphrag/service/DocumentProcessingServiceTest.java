@@ -329,7 +329,6 @@ class DocumentProcessingServiceTest {
         );
         DocumentChunkPersistenceAdapter persistenceAdapter = new DocumentChunkPersistenceAdapter(
             documentChunkRepository,
-            neo4jClient,
             new EmbeddingSpaceIndexService(neo4jClient)
         );
         return new DocumentProcessingService(

@@ -10,6 +10,7 @@ public interface DocumentUploadRepository {
     Optional<DocumentUploadNode> findByKnowledgeBaseIdAndSha256(String knowledgeBaseId, String sha256);
     List<DocumentUploadNode> findByKnowledgeBaseIdOrderByUploadedAtDesc(String knowledgeBaseId);
     Optional<DocumentUploadNode> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
+    List<DocumentUploadNode> findAllByIdInAndKnowledgeBaseId(List<String> ids, String knowledgeBaseId);
     long countByKnowledgeBaseId(String knowledgeBaseId);
     Page<DocumentUploadNode> findPageByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
     List<DocumentUploadNode> findAll();

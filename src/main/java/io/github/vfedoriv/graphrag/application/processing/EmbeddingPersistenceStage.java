@@ -74,6 +74,7 @@ public final class EmbeddingPersistenceStage {
     ) {
         DocumentChunkNode chunk = new DocumentChunkNode();
         chunk.setId(UUID.randomUUID().toString());
+        chunk.setKnowledgeBaseId(document.getKnowledgeBaseId());
         chunk.setDocumentId(document.getId());
         chunk.setChunkIndex(index);
         chunk.setText(preparedChunk.text());

@@ -30,11 +30,10 @@ public class KnowledgeBaseLifecycleMigrationService implements ApplicationRunner
     @Override
     public void run(ApplicationArguments args) {
         aiProfileService.seedDefaultProfile();
-        ensureIndexes();
         Collection<String> discoveredKnowledgeBaseIds = neo4jClient.query("""
-            MATCH (document:DocumentUpload)
-            WHERE document.knowledgeBaseId IS NOT NULL
-            RETURN DISTINCT document.knowledgeBaseId AS knowledgeBaseId
+            MATCH (chunk:DocumentChunk)
+            WHERE chunk.knowledgeBaseId IS NOT NULL
+            RETURN DISTINCT chunk.knowledgeBaseId AS knowledgeBaseId
             """)
             .fetchAs(String.class)
             .all();
@@ -47,10 +46,4 @@ public class KnowledgeBaseLifecycleMigrationService implements ApplicationRunner
         );
     }
 
-    private void ensureIndexes() {
-        neo4jClient.query("CREATE INDEX document_upload_knowledge_base IF NOT EXISTS FOR (d:DocumentUpload) ON (d.knowledgeBaseId)").run();
-        neo4jClient.query("CREATE INDEX document_storage_mutation_state IF NOT EXISTS FOR (m:DocumentStorageMutation) ON (m.state)").run();
-        neo4jClient.query("CREATE INDEX document_storage_mutation_document IF NOT EXISTS FOR (m:DocumentStorageMutation) ON (m.documentId)").run();
-        neo4jClient.query("CREATE INDEX document_storage_mutation_completed IF NOT EXISTS FOR (m:DocumentStorageMutation) ON (m.completedAt)").run();
-    }
 }

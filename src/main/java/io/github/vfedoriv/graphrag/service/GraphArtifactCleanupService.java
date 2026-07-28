@@ -41,6 +41,39 @@ public class GraphArtifactCleanupService {
         );
     }
 
+    public DocumentArtifactCleanupResult cleanupKnowledgeBaseArtifacts(String knowledgeBaseId) {
+        List<String> canonicalFactIds = List.copyOf(neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {knowledgeBaseId: $knowledgeBaseId})
+            RETURN DISTINCT e.canonicalFactId AS canonicalFactId
+            """)
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .fetchAs(String.class)
+            .all());
+        Map<String, Object> cleanupRow = neo4jClient.query("""
+            OPTIONAL MATCH (evidence:GraphExtractionEvidence {knowledgeBaseId: $knowledgeBaseId})
+            WITH [entry IN collect(DISTINCT evidence) WHERE entry IS NOT NULL] AS evidence
+            FOREACH (entry IN evidence | DETACH DELETE entry)
+            WITH size(evidence) AS deletedEvidence
+            OPTIONAL MATCH (chunk:DocumentChunk {knowledgeBaseId: $knowledgeBaseId})
+            WITH deletedEvidence, [entry IN collect(DISTINCT chunk) WHERE entry IS NOT NULL] AS chunks
+            FOREACH (entry IN chunks | DETACH DELETE entry)
+            RETURN size(chunks) AS deletedChunks, deletedEvidence
+            """)
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .fetch()
+            .one()
+            .orElse(Map.of());
+        long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(canonicalFactIds);
+        return new DocumentArtifactCleanupResult(
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedChunks")),
+            0L,
+            0L,
+            GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedEvidence")),
+            deletedUnsupportedFacts,
+            deletedUnsupportedFacts
+        );
+    }
+
     public ExtractionRunCleanupResult cleanupRunsAfterSuccessfulExtraction(String documentId, String runId, boolean allowOverwrite) {
         List<String> runIds = staleExtractionRunIds(documentId, runId, allowOverwrite);
         return cleanupExtractionRuns(documentId, runIds);
@@ -52,10 +85,9 @@ public class GraphArtifactCleanupService {
         }
         EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, false);
         long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
-        long deletedRuns = deleteRuns(runIds);
         long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(evidenceResult.canonicalFactIds());
         return new ExtractionRunCleanupResult(
-            deletedRuns,
+            0L,
             evidenceResult.deletedEvidence(),
             deletedLegacyFacts + deletedUnsupportedFacts,
             deletedUnsupportedFacts
@@ -184,19 +216,10 @@ public class GraphArtifactCleanupService {
 
     private CleanupCounts deleteDocumentInfrastructure(String documentId) {
         Map<String, Object> cleanupRow = neo4jClient.query("""
-            MATCH (document:DocumentUpload {id: $documentId})
-            OPTIONAL MATCH (document)-[:HAS_CHUNK]->(chunk:DocumentChunk)
-            WITH document, [entry IN collect(DISTINCT chunk) WHERE entry IS NOT NULL] AS chunks
+            OPTIONAL MATCH (chunk:DocumentChunk {documentId: $documentId})
+            WITH [entry IN collect(DISTINCT chunk) WHERE entry IS NOT NULL] AS chunks
             FOREACH (chunk IN chunks | DETACH DELETE chunk)
-            WITH document, size(chunks) AS deletedChunks
-            OPTIONAL MATCH (document)-[:HAS_PROCESSING_RUN]->(processingRun:DocumentProcessingRun)
-            WITH document, deletedChunks, [entry IN collect(DISTINCT processingRun) WHERE entry IS NOT NULL] AS processingRuns
-            FOREACH (processingRun IN processingRuns | DETACH DELETE processingRun)
-            WITH document, deletedChunks, size(processingRuns) AS deletedProcessingRuns
-            OPTIONAL MATCH (document)-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
-            WITH deletedChunks, deletedProcessingRuns, [entry IN collect(DISTINCT run) WHERE entry IS NOT NULL] AS runs
-            FOREACH (run IN runs | DETACH DELETE run)
-            RETURN deletedChunks AS deletedChunks, deletedProcessingRuns AS deletedProcessingRuns, size(runs) AS deletedRuns
+            RETURN size(chunks) AS deletedChunks, 0 AS deletedProcessingRuns, 0 AS deletedRuns
             """)
             .bind(documentId).to("documentId")
             .fetch()
@@ -207,18 +230,6 @@ public class GraphArtifactCleanupService {
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedProcessingRuns")),
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedRuns"))
         );
-    }
-
-    private long deleteRuns(List<String> runIds) {
-        if (runIds.isEmpty()) {
-            return 0L;
-        }
-        return executeCount("""
-            MATCH (run:ExtractionRun)
-            WHERE run.id IN $runIds
-            DETACH DELETE run
-            RETURN count(run) AS count
-            """, null, runIds, "runIds");
     }
 
     private long deleteUnsupportedCanonicalFacts(List<String> canonicalFactIds) {

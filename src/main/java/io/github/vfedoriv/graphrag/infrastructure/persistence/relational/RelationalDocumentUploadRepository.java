@@ -39,6 +39,16 @@ public class RelationalDocumentUploadRepository implements DocumentUploadReposit
     }
 
     @Override
+    public List<DocumentUploadNode> findAllByIdInAndKnowledgeBaseId(List<String> ids, String knowledgeBaseId) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return repository.findAllByIdInAndKnowledgeBaseId(ids, knowledgeBaseId).stream()
+            .map(DocumentWorkflowRelationalMapper::toDomain)
+            .toList();
+    }
+
+    @Override
     public long countByKnowledgeBaseId(String knowledgeBaseId) {
         return repository.countByKnowledgeBaseId(knowledgeBaseId);
     }

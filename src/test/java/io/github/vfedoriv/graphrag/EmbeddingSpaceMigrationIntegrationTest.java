@@ -53,13 +53,14 @@ class EmbeddingSpaceMigrationIntegrationTest {
         aiProfileService.seedDefaultProfile();
         knowledgeBaseLifecycleService.provision("kb-1", "KB 1");
         neo4jClient.query("""
-            CREATE (document:DocumentUpload {id: 'doc-1', knowledgeBaseId: 'kb-1'})
-            CREATE (document)-[:HAS_CHUNK]->(:DocumentChunk {
-              id: 'legacy-compatible', documentId: 'doc-1', embedding: [1.0, 0.0, 0.0],
+            CREATE (:DocumentChunk {
+              id: 'legacy-compatible', knowledgeBaseId: 'kb-1', documentId: 'doc-1',
+              embedding: [1.0, 0.0, 0.0],
               embeddingModel: 'text-embedding-3-small', embeddingDimensions: 1536
             })
-            CREATE (document)-[:HAS_CHUNK]->(:DocumentChunk {
-              id: 'legacy-ambiguous', documentId: 'doc-1', embedding: [0.0, 1.0, 0.0],
+            CREATE (:DocumentChunk {
+              id: 'legacy-ambiguous', knowledgeBaseId: 'kb-1', documentId: 'doc-1',
+              embedding: [0.0, 1.0, 0.0],
               embeddingModel: 'other-model', embeddingDimensions: 1536
             })
             """).run();

@@ -28,6 +28,7 @@ public class KnowledgeBaseService {
     private final DocumentUploadRepository documentUploadRepository;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
+    private final GraphArtifactCleanupService graphArtifactCleanupService;
 
     @Autowired
     public KnowledgeBaseService(
@@ -36,7 +37,8 @@ public class KnowledgeBaseService {
         DocumentChunkRepository documentChunkRepository,
         DocumentUploadRepository documentUploadRepository,
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
-        EmbeddingSpacePolicy embeddingSpacePolicy
+        EmbeddingSpacePolicy embeddingSpacePolicy,
+        GraphArtifactCleanupService graphArtifactCleanupService
     ) {
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.aiProfileService = aiProfileService;
@@ -44,6 +46,7 @@ public class KnowledgeBaseService {
         this.documentUploadRepository = documentUploadRepository;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
         this.embeddingSpacePolicy = embeddingSpacePolicy;
+        this.graphArtifactCleanupService = graphArtifactCleanupService;
     }
 
     public KnowledgeBaseService(
@@ -58,7 +61,8 @@ public class KnowledgeBaseService {
             documentChunkRepository,
             null,
             null,
-            new EmbeddingSpacePolicy(documentChunkRepository)
+            new EmbeddingSpacePolicy(documentChunkRepository),
+            null
         );
     }
 
@@ -77,7 +81,8 @@ public class KnowledgeBaseService {
             documentChunkRepository,
             documentUploadRepository,
             knowledgeBaseLifecycleService,
-            embeddingSpacePolicy
+            embeddingSpacePolicy,
+            null
         );
     }
 
@@ -175,6 +180,9 @@ public class KnowledgeBaseService {
         long documentCount = documentUploadRepository == null ? 0 : documentUploadRepository.countByKnowledgeBaseId(id);
         if (documentCount > 0) {
             throw new KnowledgeBaseNotEmptyException(id, documentCount);
+        }
+        if (graphArtifactCleanupService != null) {
+            graphArtifactCleanupService.cleanupKnowledgeBaseArtifacts(id);
         }
         knowledgeBaseRepository.deleteById(id);
         log.info("Knowledge base deleted: knowledgeBaseId={}", id);

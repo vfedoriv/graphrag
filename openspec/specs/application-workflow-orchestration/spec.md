@@ -48,3 +48,15 @@ The system SHALL commit relational intent or run state before filesystem or Neo4
 - **WHEN** idempotent external work succeeds but the relational completion checkpoint fails
 - **THEN** recovery can recognize or safely repeat the external work
 - **AND** eventually commit a consistent terminal state
+
+### Requirement: Relational run state coordinates idempotent graph work
+The system SHALL use PostgreSQL run state to authorize, recover, and complete graph writes while keeping graph mutations in graph-specific transactions.
+
+#### Scenario: Extraction graph work succeeds
+- **WHEN** a relational extraction run is `RUNNING` and graph persistence completes
+- **THEN** relational completion is committed in a later checkpoint
+
+#### Scenario: Extraction graph work is retried
+- **WHEN** a prior attempt left run-scoped evidence
+- **THEN** recovery removes or safely reuses artifacts by stable run identity
+- **AND** retry does not depend on a Neo4j operational run node

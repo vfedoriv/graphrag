@@ -11,6 +11,7 @@ public interface JpaDocumentUploadRepository extends JpaRepository<DocumentUploa
     Optional<DocumentUploadEntity> findByKnowledgeBaseIdAndSha256(String knowledgeBaseId, String sha256);
     List<DocumentUploadEntity> findByKnowledgeBaseIdOrderByUploadedAtDescIdDesc(String knowledgeBaseId);
     Optional<DocumentUploadEntity> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
+    List<DocumentUploadEntity> findAllByIdInAndKnowledgeBaseId(List<String> ids, String knowledgeBaseId);
     long countByKnowledgeBaseId(String knowledgeBaseId);
     Page<DocumentUploadEntity> findByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
 }

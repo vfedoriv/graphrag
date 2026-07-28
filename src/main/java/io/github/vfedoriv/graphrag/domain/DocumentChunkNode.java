@@ -12,6 +12,7 @@ public class DocumentChunkNode {
     private String id;
     @Version
     private Long version;
+    private String knowledgeBaseId;
     private String documentId;
     private int chunkIndex;
     private String text;
@@ -36,6 +37,14 @@ public class DocumentChunkNode {
 
     public String getDocumentId() {
         return documentId;
+    }
+
+    public String getKnowledgeBaseId() {
+        return knowledgeBaseId;
+    }
+
+    public void setKnowledgeBaseId(String knowledgeBaseId) {
+        this.knowledgeBaseId = knowledgeBaseId;
     }
 
     public void setDocumentId(String documentId) {

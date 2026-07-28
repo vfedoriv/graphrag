@@ -12,7 +12,7 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
     Long deleteByDocumentId(String documentId);
 
     @Query("""
-        MATCH (:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk:DocumentChunk)
+        MATCH (chunk:DocumentChunk {knowledgeBaseId: $knowledgeBaseId})
         WHERE chunk.embedding IS NOT NULL
         RETURN chunk
         """)

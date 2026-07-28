@@ -8,9 +8,11 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ public class HybridSearchService {
     private final KnowledgeBaseService knowledgeBaseService;
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
     private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private final DocumentUploadRepository documentUploadRepository;
 
     @Autowired
     public HybridSearchService(
@@ -39,7 +42,8 @@ public class HybridSearchService {
         Neo4jClient neo4jClient,
         KnowledgeBaseService knowledgeBaseService,
         EmbeddingSpacePolicy embeddingSpacePolicy,
-        EmbeddingSpaceIndexService embeddingSpaceIndexService
+        EmbeddingSpaceIndexService embeddingSpaceIndexService,
+        DocumentUploadRepository documentUploadRepository
     ) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.aiClientResolver = aiClientResolver;
@@ -47,6 +51,7 @@ public class HybridSearchService {
         this.knowledgeBaseService = knowledgeBaseService;
         this.embeddingSpacePolicy = embeddingSpacePolicy;
         this.embeddingSpaceIndexService = embeddingSpaceIndexService;
+        this.documentUploadRepository = documentUploadRepository;
     }
 
     public HybridSearchService(
@@ -66,7 +71,8 @@ public class HybridSearchService {
             neo4jClient,
             knowledgeBaseService,
             new EmbeddingSpacePolicy(documentChunkRepository),
-            new EmbeddingSpaceIndexService(neo4jClient)
+            new EmbeddingSpaceIndexService(neo4jClient),
+            null
         );
     }
 
@@ -109,12 +115,11 @@ public class HybridSearchService {
             .bind(candidateCount).to("candidateCount")
             .bind(vectors.getFirst()).to("queryVector")
             .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(embeddingSpace.id()).to("embeddingSpaceId")
             .bind(topK).to("topK")
             .fetch()
             .all());
-        List<HybridSearchHit> hits = rows.stream()
-            .map(row -> toHit(row, includeChunkText))
-            .toList();
+        List<HybridSearchHit> hits = enrichHits(knowledgeBaseId, rows, includeChunkText);
         HybridSearchResponse response = new HybridSearchResponse(
             request.query(),
             topK,
@@ -179,7 +184,37 @@ public class HybridSearchService {
         return (int) Math.min(multiplied, settings.hybridSearchMaxCandidates());
     }
 
-    private HybridSearchHit toHit(Map<String, Object> row, boolean includeChunkText) {
+    List<HybridSearchHit> enrichHits(
+        String knowledgeBaseId,
+        List<Map<String, Object>> rows,
+        boolean includeChunkText
+    ) {
+        if (rows.isEmpty()) {
+            return List.of();
+        }
+        List<String> documentIds = rows.stream()
+            .map(row -> stringValue(row.get("documentId")))
+            .filter(id -> id != null && !id.isBlank())
+            .distinct()
+            .toList();
+        List<DocumentUploadNode> documents = documentUploadRepository == null
+            ? List.of()
+            : documentUploadRepository.findAllByIdInAndKnowledgeBaseId(documentIds, knowledgeBaseId);
+        Map<String, DocumentUploadNode> byId = new LinkedHashMap<>();
+        for (DocumentUploadNode document : documents) {
+            byId.put(document.getId(), document);
+        }
+        return rows.stream()
+            .filter(row -> byId.containsKey(stringValue(row.get("documentId"))))
+            .map(row -> toHit(row, byId.get(stringValue(row.get("documentId"))), includeChunkText))
+            .toList();
+    }
+
+    private HybridSearchHit toHit(
+        Map<String, Object> row,
+        DocumentUploadNode document,
+        boolean includeChunkText
+    ) {
         String chunkId = stringValue(row.get("chunkId"));
         String documentId = stringValue(row.get("documentId"));
         int chunkIndex = intValue(row.get("chunkIndex"));
@@ -187,9 +222,9 @@ public class HybridSearchService {
         String text = includeChunkText ? stringValue(row.get("text")) : null;
         HybridSearchSource source = new HybridSearchSource(
             documentId,
-            stringValue(row.get("originalFilename")),
-            stringValue(row.get("contentType")),
-            longValue(row.get("sizeBytes")),
+            document.getOriginalFilename(),
+            document.getContentType(),
+            document.getSizeBytes(),
             stringValue(row.get("chunkMetadata"))
         );
         return new HybridSearchHit(
@@ -294,14 +329,15 @@ public class HybridSearchService {
     private String hybridSearchCypher(int graphDepth) {
         return """
             CALL db.index.vector.queryNodes($indexName, $candidateCount, $queryVector) YIELD node AS chunk, score
-            MATCH (document:DocumentUpload {knowledgeBaseId: $knowledgeBaseId})-[:HAS_CHUNK]->(chunk)
-            WITH document, chunk, score
+            WHERE chunk.knowledgeBaseId = $knowledgeBaseId
+              AND chunk.embeddingSpaceId = $embeddingSpaceId
+            WITH chunk, score
             ORDER BY score DESC
             LIMIT $topK
             OPTIONAL MATCH (chunk)-[:MENTIONS]->(mentioned)
             OPTIONAL MATCH path = (mentioned)-[*0..%d]-(neighbor)
-            WITH document, chunk, score, collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes, collect(DISTINCT relationships(path)) AS relationshipGroups
-            WITH document, chunk, score,
+            WITH chunk, score, collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes, collect(DISTINCT relationships(path)) AS relationshipGroups
+            WITH chunk, score,
                  [entity IN entityNodes WHERE entity IS NOT NULL | {
                      elementId: elementId(entity),
                      labels: labels(entity),
@@ -314,9 +350,6 @@ public class HybridSearchService {
                 chunk.chunkIndex AS chunkIndex,
                 chunk.text AS text,
                 chunk.metadata AS chunkMetadata,
-                document.originalFilename AS originalFilename,
-                document.contentType AS contentType,
-                document.sizeBytes AS sizeBytes,
                 score AS score,
                 entities AS entities,
                 [rel IN flatRelationships WHERE rel IS NOT NULL | {

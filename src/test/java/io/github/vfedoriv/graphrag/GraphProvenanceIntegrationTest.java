@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
@@ -110,10 +111,44 @@ class GraphProvenanceIntegrationTest {
     }
 
     @Test
+    void graphWritesRequireConsistentScopeAndCreateNoOperationalAnchors() {
+        clearGraph();
+        createDocumentRunChunk("doc-a", "run-a", "chunk-a", "COMPLETED");
+
+        assertThatThrownBy(() -> graphWriteService.write(
+            "other-kb",
+            "run-a",
+            SCHEMA_ID,
+            "doc-a",
+            "chunk-a",
+            SCHEMA,
+            new GraphExtractionResult(List.of(), List.of())
+        ))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Chunk scope");
+
+        writeSharedFact("doc-a", "run-a", "chunk-a", "supplier");
+
+        assertThat(count("""
+            MATCH (e:GraphExtractionEvidence {
+              knowledgeBaseId: 'kb-provenance',
+              sourceDocumentId: 'doc-a',
+              extractionRunId: 'run-a'
+            })
+            RETURN count(e) AS count
+            """)).isEqualTo(3L);
+        assertThat(count("""
+            MATCH (n)
+            WHERE n:KnowledgeBase OR n:DocumentUpload OR n:ExtractionRun OR n:DocumentProcessingRun
+            RETURN count(n) AS count
+            """)).isZero();
+    }
+
+    @Test
     void migrationIsIdempotentAndRetainsLegacyProvenanceForRollbackCompatibility() {
         clearGraph();
         neo4jClient.query("""
-            CREATE (document:DocumentUpload {id: 'legacy-document'})
+            CREATE (document:DocumentUpload {id: 'legacy-document', knowledgeBaseId: 'kb-legacy'})
             CREATE (run:ExtractionRun {id: 'legacy-run', status: 'COMPLETED'})
             CREATE (chunk:DocumentChunk {id: 'legacy-chunk'})
             CREATE (contract:Contract {id: 'node:legacy-contract', contractId: 'C-LEGACY', schemaId: 'legacy-schema', sourceDocumentId: 'legacy-document', sourceChunkIds: ['legacy-chunk'], extractionRunId: 'legacy-run'})
@@ -134,21 +169,20 @@ class GraphProvenanceIntegrationTest {
 
     private void createDocumentRunChunk(String documentId, String runId, String chunkId, String status) {
         neo4jClient.query("""
-            CREATE (document:DocumentUpload {id: $documentId})
-            CREATE (run:ExtractionRun {id: $runId, status: $status})
-            CREATE (chunk:DocumentChunk {id: $chunkId})
-            CREATE (document)-[:HAS_EXTRACTION_RUN]->(run)
-            CREATE (document)-[:HAS_CHUNK]->(chunk)
+            CREATE (:DocumentChunk {
+              id: $chunkId,
+              knowledgeBaseId: 'kb-provenance',
+              documentId: $documentId
+            })
             """)
             .bind(documentId).to("documentId")
-            .bind(runId).to("runId")
             .bind(chunkId).to("chunkId")
-            .bind(status).to("status")
             .run();
     }
 
     private void writeSharedFact(String documentId, String runId, String chunkId, String role) {
         graphWriteService.write(
+            "kb-provenance",
             runId,
             SCHEMA_ID,
             documentId,

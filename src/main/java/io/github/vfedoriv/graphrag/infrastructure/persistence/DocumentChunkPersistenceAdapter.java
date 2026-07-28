@@ -5,32 +5,28 @@ import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import java.util.List;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DocumentChunkPersistenceAdapter {
 
     private final DocumentChunkRepository repository;
-    private final Neo4jClient neo4jClient;
     private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
 
     public DocumentChunkPersistenceAdapter(
         DocumentChunkRepository repository,
-        Neo4jClient neo4jClient,
         EmbeddingSpaceIndexService embeddingSpaceIndexService
     ) {
         this.repository = repository;
-        this.neo4jClient = neo4jClient;
         this.embeddingSpaceIndexService = embeddingSpaceIndexService;
     }
 
     public void replace(String documentId, String knowledgeBaseId, EmbeddingSpace embeddingSpace, List<DocumentChunkNode> chunks) {
+        requireScope(documentId, knowledgeBaseId, chunks);
         embeddingSpaceIndexService.ensureIndex(knowledgeBaseId, embeddingSpace);
         repository.deleteByDocumentId(documentId);
         for (DocumentChunkNode chunk : chunks) {
             repository.save(chunk);
-            attachToDocument(documentId, knowledgeBaseId, chunk.getId());
             embeddingSpaceIndexService.assignChunk(chunk.getId(), knowledgeBaseId, embeddingSpace);
         }
     }
@@ -39,17 +35,19 @@ public class DocumentChunkPersistenceAdapter {
         return repository.findByDocumentIdOrderByChunkIndexAsc(documentId);
     }
 
-    private void attachToDocument(String documentId, String knowledgeBaseId, String chunkId) {
-        neo4jClient.query("""
-            MERGE (d:DocumentUpload {id: $documentId})
-            SET d.knowledgeBaseId = $knowledgeBaseId
-            WITH d
-            MATCH (c:DocumentChunk {id: $chunkId})
-            MERGE (d)-[:HAS_CHUNK]->(c)
-            """)
-            .bind(documentId).to("documentId")
-            .bind(knowledgeBaseId).to("knowledgeBaseId")
-            .bind(chunkId).to("chunkId")
-            .run();
+    private void requireScope(String documentId, String knowledgeBaseId, List<DocumentChunkNode> chunks) {
+        requireNonBlank(documentId, "documentId");
+        requireNonBlank(knowledgeBaseId, "knowledgeBaseId");
+        for (DocumentChunkNode chunk : chunks) {
+            if (!knowledgeBaseId.equals(chunk.getKnowledgeBaseId()) || !documentId.equals(chunk.getDocumentId())) {
+                throw new IllegalArgumentException("Chunk scope must match the persistence boundary");
+            }
+        }
+    }
+
+    private void requireNonBlank(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
     }
 }

@@ -105,7 +105,7 @@ class DocumentUploadIntegrationTest {
         assertThat(Files.readString(Path.of(documentUploadService.localPath(replaced)))).isEqualTo("replacement");
         assertThat(Path.of(previousPath)).doesNotExist();
         assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L, 0L);
-        assertDocumentArtifacts(other.getId(), 1L, 1L, 1L, 2L, 1L);
+        assertDocumentArtifacts(other.getId(), 1L, 0L, 0L, 2L, 1L);
     }
 
     @Test
@@ -151,23 +151,20 @@ class DocumentUploadIntegrationTest {
         assertThat(Path.of(targetPath)).doesNotExist();
         assertThat(Path.of(otherPath)).exists();
         assertDocumentArtifacts(target.getId(), 0L, 0L, 0L, 0L, 0L);
-        assertDocumentArtifacts(other.getId(), 1L, 1L, 1L, 2L, 1L);
+        assertDocumentArtifacts(other.getId(), 1L, 0L, 0L, 2L, 1L);
     }
 
     private void createDerivedArtifacts(String documentId, String runId, String contractId, String partyId) {
         neo4jClient.query("""
-            MERGE (document:DocumentUpload {id: $documentId})
-            SET document.knowledgeBaseId = 'kb-1'
-            CREATE (chunk:DocumentChunk {id: $documentId + '-chunk', documentId: $documentId, chunkIndex: 0, text: 'chunk'})
-            CREATE (processingRun:DocumentProcessingRun {id: $runId + '-processing', documentId: $documentId, status: 'COMPLETED', activeCompleted: true})
-            CREATE (run:ExtractionRun {id: $runId, documentId: $documentId, status: 'COMPLETED'})
+            CREATE (chunk:DocumentChunk {
+                id: $documentId + '-chunk',
+                knowledgeBaseId: 'kb-1',
+                documentId: $documentId,
+                chunkIndex: 0,
+                text: 'chunk'
+            })
             CREATE (contract:Contract {id: $contractId, contractId: $contractId, sourceDocumentId: $documentId, extractionRunId: $runId})
             CREATE (party:Party {id: $partyId, partyId: $partyId, sourceDocumentId: $documentId, extractionRunId: $runId})
-            CREATE (document)-[:HAS_CHUNK]->(chunk)
-            CREATE (document)-[:HAS_PROCESSING_RUN]->(processingRun)
-            CREATE (document)-[:HAS_EXTRACTION_RUN]->(run)
-            CREATE (run)-[:CREATED_NODE]->(contract)
-            CREATE (run)-[:CREATED_NODE]->(party)
             CREATE (chunk)-[:MENTIONS]->(contract)
             CREATE (contract)-[:HAS_PARTY {sourceDocumentId: $documentId, extractionRunId: $runId}]->(party)
             """)

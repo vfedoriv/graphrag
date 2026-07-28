@@ -22,6 +22,7 @@ public class GraphWriteService {
     }
 
     public void write(
+        String knowledgeBaseId,
         String extractionRunId,
         String schemaId,
         String documentId,
@@ -29,6 +30,8 @@ public class GraphWriteService {
         SchemaDocument schema,
         GraphExtractionResult result
     ) {
+        requireScope(knowledgeBaseId, extractionRunId, schemaId, documentId, chunkId);
+        requireConsistentChunkScope(knowledgeBaseId, documentId, chunkId);
         int nodeCount = result.nodes() == null ? 0 : result.nodes().size();
         int relationshipCount = result.relationships() == null ? 0 : result.relationships().size();
         log.info(
@@ -45,12 +48,12 @@ public class GraphWriteService {
         }
         if (result.nodes() != null) {
             for (GraphExtractionResult.ExtractedNode node : result.nodes()) {
-                upsertNode(extractionRunId, schemaId, documentId, chunkId, nodeDefs.get(node.label()), node);
+                upsertNode(knowledgeBaseId, extractionRunId, schemaId, documentId, chunkId, nodeDefs.get(node.label()), node);
             }
         }
         if (result.relationships() != null) {
             for (GraphExtractionResult.ExtractedRelationship rel : result.relationships()) {
-                upsertRelationship(extractionRunId, schemaId, documentId, chunkId, schema, nodeDefs, rel);
+                upsertRelationship(knowledgeBaseId, extractionRunId, schemaId, documentId, chunkId, schema, nodeDefs, rel);
             }
         }
         log.info(
@@ -64,6 +67,7 @@ public class GraphWriteService {
     }
 
     private void upsertNode(
+        String knowledgeBaseId,
         String extractionRunId,
         String schemaId,
         String documentId,
@@ -93,6 +97,7 @@ public class GraphWriteService {
             evidenceId,
             "NODE",
             entityId,
+            knowledgeBaseId,
             extractionRunId,
             schemaId,
             documentId,
@@ -102,7 +107,7 @@ public class GraphWriteService {
         );
         neo4jClient.query("""
             MATCH (n:%s {id: $id})
-            MATCH (c:DocumentChunk {id: $chunkId})
+            MATCH (c:DocumentChunk {id: $chunkId, knowledgeBaseId: $knowledgeBaseId, documentId: $documentId})
             MERGE (e:GraphExtractionEvidence:NodeExtractionEvidence {id: $evidenceId})
             ON CREATE SET e += $evidenceProps
             MERGE (e)-[:ASSERTS_NODE]->(n)
@@ -110,12 +115,15 @@ public class GraphWriteService {
             """.formatted(label))
             .bind(entityId).to("id")
             .bind(chunkId).to("chunkId")
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(documentId).to("documentId")
             .bind(evidenceId).to("evidenceId")
             .bind(evidenceProps).to("evidenceProps")
             .run();
     }
 
     private void upsertRelationship(
+        String knowledgeBaseId,
         String extractionRunId,
         String schemaId,
         String documentId,
@@ -156,6 +164,7 @@ public class GraphWriteService {
             evidenceId,
             "RELATIONSHIP",
             relId,
+            knowledgeBaseId,
             extractionRunId,
             schemaId,
             documentId,
@@ -164,12 +173,20 @@ public class GraphWriteService {
             rel.properties()
         );
         neo4jClient.query("""
-            MATCH (c:DocumentChunk {id: $chunkId})
+            MATCH (c:DocumentChunk {id: $chunkId, knowledgeBaseId: $knowledgeBaseId, documentId: $documentId})
+            MATCH (from:%s {id: $fromId})
+            MATCH (to:%s {id: $toId})
             MERGE (e:GraphExtractionEvidence:RelationshipExtractionEvidence {id: $evidenceId})
             ON CREATE SET e += $evidenceProps
             MERGE (c)-[:HAS_GRAPH_EVIDENCE]->(e)
-            """)
+            MERGE (e)-[:ASSERTS_FROM]->(from)
+            MERGE (e)-[:ASSERTS_TO]->(to)
+            """.formatted(fromLabel, toLabel))
             .bind(chunkId).to("chunkId")
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(documentId).to("documentId")
+            .bind(fromId).to("fromId")
+            .bind(toId).to("toId")
             .bind(evidenceId).to("evidenceId")
             .bind(evidenceProps).to("evidenceProps")
             .run();
@@ -179,6 +196,7 @@ public class GraphWriteService {
         String evidenceId,
         String factKind,
         String canonicalFactId,
+        String knowledgeBaseId,
         String extractionRunId,
         String schemaId,
         String documentId,
@@ -193,6 +211,7 @@ public class GraphWriteService {
         evidenceProps.put("id", evidenceId);
         evidenceProps.put("factKind", factKind);
         evidenceProps.put("canonicalFactId", canonicalFactId);
+        evidenceProps.put("knowledgeBaseId", knowledgeBaseId);
         evidenceProps.put("sourceDocumentId", documentId);
         evidenceProps.put("sourceChunkId", chunkId);
         evidenceProps.put("sourceChunkIds", List.of(chunkId));
@@ -201,6 +220,43 @@ public class GraphWriteService {
         evidenceProps.put("confidence", confidence);
         evidenceProps.put("createdAt", Instant.now().toString());
         return evidenceProps;
+    }
+
+    private void requireScope(
+        String knowledgeBaseId,
+        String extractionRunId,
+        String schemaId,
+        String documentId,
+        String chunkId
+    ) {
+        requireNonBlank(knowledgeBaseId, "knowledgeBaseId");
+        requireNonBlank(extractionRunId, "extractionRunId");
+        requireNonBlank(schemaId, "schemaId");
+        requireNonBlank(documentId, "documentId");
+        requireNonBlank(chunkId, "chunkId");
+    }
+
+    private void requireConsistentChunkScope(String knowledgeBaseId, String documentId, String chunkId) {
+        boolean consistent = neo4jClient.query("""
+            MATCH (chunk:DocumentChunk {id: $chunkId})
+            RETURN chunk.knowledgeBaseId = $knowledgeBaseId
+                AND chunk.documentId = $documentId AS consistent
+            """)
+            .bind(chunkId).to("chunkId")
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
+            .bind(documentId).to("documentId")
+            .fetchAs(Boolean.class)
+            .one()
+            .orElse(false);
+        if (!consistent) {
+            throw new IllegalArgumentException("Chunk scope does not match the graph write boundary");
+        }
+    }
+
+    private void requireNonBlank(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
     }
 
     private String stableNodeId(String schemaId, String label, List<String> keyNames, Map<String, Object> keyProperties) {

@@ -145,4 +145,19 @@ class GraphWriteServiceTest {
         Set<String> allowed = (Set<String>) allowedRelationshipProperties.invoke(service, schema, "HAS_PARTY", "Contract", "Party");
         assertThat(allowed).containsExactly("role");
     }
+
+    @Test
+    void writeRejectsMissingAuthoritativeScopeBeforeCreatingFacts() {
+        assertThatThrownBy(() -> service.write(
+            " ",
+            "run-1",
+            "schema-1",
+            "doc-1",
+            "chunk-1",
+            new SchemaDocument("test", 1, "", List.of(), List.of(), List.of(), List.of()),
+            new GraphExtractionResult(List.of(), List.of())
+        ))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("knowledgeBaseId must not be blank");
+    }
 }

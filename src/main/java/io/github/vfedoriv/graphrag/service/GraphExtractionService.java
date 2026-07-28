@@ -51,6 +51,7 @@ public class GraphExtractionService {
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks, boolean allowOverwrite) {
         long startNanos = System.nanoTime();
+        requireConsistentScope(document, chunks);
         log.info(
             "Graph extraction starting: documentId={}, knowledgeBaseId={}, chunks={}",
             document.getId(),
@@ -106,7 +107,15 @@ public class GraphExtractionService {
                     GraphExtractionResult validatedResult = validationService.validate(result, schema);
                     workflow.highCardinalityAttribute("ai.graph.validated_nodes", String.valueOf(validatedResult.nodes().size()));
                     workflow.highCardinalityAttribute("ai.graph.validated_relationships", String.valueOf(validatedResult.relationships().size()));
-                    graphWriteService.write(run.getId(), schemaContext.schemaDefinitionId(), document.getId(), chunk.getId(), schema, validatedResult);
+                    graphWriteService.write(
+                        document.getKnowledgeBaseId(),
+                        run.getId(),
+                        schemaContext.schemaDefinitionId(),
+                        document.getId(),
+                        chunk.getId(),
+                        schema,
+                        validatedResult
+                    );
                 }
                 run = extractionRunLifecycle.complete(run);
                 GraphArtifactCleanupService.ExtractionRunCleanupResult cleanupResult =
@@ -168,6 +177,18 @@ public class GraphExtractionService {
             .filter(client -> !client.getClass().getName().contains("SpringAi"))
             .findFirst()
             .orElse(clients.getFirst());
+    }
+
+    private void requireConsistentScope(DocumentUploadNode document, List<DocumentChunkNode> chunks) {
+        if (document.getKnowledgeBaseId() == null || document.getKnowledgeBaseId().isBlank()) {
+            throw new IllegalArgumentException("knowledgeBaseId must not be blank");
+        }
+        for (DocumentChunkNode chunk : chunks) {
+            if (!document.getKnowledgeBaseId().equals(chunk.getKnowledgeBaseId())
+                || !document.getId().equals(chunk.getDocumentId())) {
+                throw new IllegalArgumentException("Chunk scope does not match the source document");
+            }
+        }
     }
 
 }

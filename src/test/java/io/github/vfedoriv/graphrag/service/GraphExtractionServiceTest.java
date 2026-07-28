@@ -93,7 +93,7 @@ class GraphExtractionServiceTest {
         } catch (Exception ignored) {
         }
 
-        verify(graphWriteService).write(any(), eq("schema-1"), eq("doc-1"), eq("chunk-1"), any(), any());
+        verify(graphWriteService).write(eq("kb-1"), any(), eq("schema-1"), eq("doc-1"), eq("chunk-1"), any(), any());
         verify(extractionRunLifecycle).fail(any(), argThat(error ->
             "completion commit failed".equals(error.getMessage())
         ));
@@ -117,6 +117,7 @@ class GraphExtractionServiceTest {
         service.extract(document(), List.of(chunk()), false);
 
         verify(graphWriteService).write(
+            org.mockito.Mockito.eq("kb-1"),
             any(),
             org.mockito.Mockito.eq("schema-1"),
             org.mockito.Mockito.eq("doc-1"),
@@ -178,6 +179,8 @@ class GraphExtractionServiceTest {
     private DocumentChunkNode chunk() {
         DocumentChunkNode chunk = new DocumentChunkNode();
         chunk.setId("chunk-1");
+        chunk.setKnowledgeBaseId("kb-1");
+        chunk.setDocumentId("doc-1");
         chunk.setText("hello");
         return chunk;
     }
