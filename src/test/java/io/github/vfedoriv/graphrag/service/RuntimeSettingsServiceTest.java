@@ -203,6 +203,9 @@ class RuntimeSettingsServiceTest {
             "spring.ai.model.chat",
             "spring.autoconfigure.exclude",
             "spring.neo4j.uri",
+            "spring.datasource.url",
+            "spring.datasource.hikari.maximum-pool-size",
+            "spring.flyway.default-schema",
             "app.storage.documents-root",
             "spring.servlet.multipart.max-file-size",
             "management.tracing.enabled",
@@ -217,6 +220,10 @@ class RuntimeSettingsServiceTest {
         assertThat(settings.get("spring.neo4j.uri").updateMode()).isEqualTo("restart-required");
         assertThat(settings.get("spring.neo4j.uri").mutable()).isFalse();
         assertThat(settings.get("spring.neo4j.authentication.password").mutable()).isFalse();
+        assertThat(settings.get("spring.datasource.url").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.datasource.url").mutable()).isFalse();
+        assertThat(settings.get("spring.datasource.hikari.maximum-pool-size").updateMode()).isEqualTo("restart-required");
+        assertThat(settings.get("spring.datasource.hikari.maximum-pool-size").mutable()).isTrue();
         assertThat(settings.get("app.model.base-url").updateMode()).isEqualTo("profile-managed");
         assertThat(settings.get("app.model.base-url").mutable()).isFalse();
         assertThat(settings.get("spring.application.name").mutable()).isFalse();
@@ -303,11 +310,14 @@ class RuntimeSettingsServiceTest {
         assertMasked(settings.get("app.model.api-key"));
         assertMasked(settings.get("spring.ai.openai.api-key"));
         assertMasked(settings.get("spring.neo4j.authentication.password"));
+        assertMasked(settings.get("spring.datasource.password"));
         assertMasked(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization"));
         assertThat(settings.get("app.model.api-key").currentValue().toString()).doesNotContain("secret");
         assertThat(settings.get("app.model.api-key").defaultValue().toString()).doesNotContain("secret");
         assertThat(settings.get("spring.neo4j.authentication.password").currentValue().toString()).doesNotContain("neo4j-secret");
         assertThat(settings.get("spring.neo4j.authentication.password").defaultValue().toString()).doesNotContain("neo4j-secret");
+        assertThat(settings.get("spring.datasource.password").currentValue().toString()).doesNotContain("postgres-secret");
+        assertThat(settings.get("spring.datasource.password").defaultValue().toString()).doesNotContain("postgres-secret");
         assertThat(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization").currentValue().toString()).doesNotContain("Basic raw-secret");
         assertThat(settings.get("management.opentelemetry.tracing.export.otlp.headers.Authorization").defaultValue().toString()).doesNotContain("Basic raw-secret");
     }
@@ -470,6 +480,15 @@ class RuntimeSettingsServiceTest {
             .withProperty("spring.neo4j.uri", "bolt://localhost:7687")
             .withProperty("spring.neo4j.authentication.username", "neo4j")
             .withProperty("spring.neo4j.authentication.password", "neo4j-secret")
+            .withProperty("spring.datasource.url", "jdbc:postgresql://localhost:5433/graphrag")
+            .withProperty("spring.datasource.username", "graphrag")
+            .withProperty("spring.datasource.password", "postgres-secret")
+            .withProperty("spring.datasource.hikari.maximum-pool-size", "10")
+            .withProperty("spring.datasource.hikari.minimum-idle", "2")
+            .withProperty("spring.jpa.hibernate.ddl-auto", "validate")
+            .withProperty("spring.jpa.open-in-view", "false")
+            .withProperty("spring.flyway.default-schema", "app")
+            .withProperty("spring.flyway.baseline-on-migrate", "false")
             .withProperty("spring.servlet.multipart.max-file-size", "100MB")
             .withProperty("spring.servlet.multipart.max-request-size", "100MB")
             .withProperty("management.endpoints.web.exposure.include", "health,metrics")

@@ -46,7 +46,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
@@ -101,7 +101,7 @@ public class SchemaReprocessingPlanService {
         this.executor = executor;
     }
 
-    @Transactional
+    @GraphTransactional
     public StartPlanResponse create(String knowledgeBaseId, CreatePlanRequest request) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         SchemaDraftPublicationNode publication = publicationRepository.findByDraftId(request.draftId())
@@ -133,7 +133,7 @@ public class SchemaReprocessingPlanService {
         return new StartPlanResponse(saved.getId(), saved.getStatus(), statusLocation(saved));
     }
 
-    @Transactional
+    @GraphTransactional
     public StartPlanResponse retry(String knowledgeBaseId, String planId, boolean resnapshot) {
         if (!resnapshot) throw new IllegalArgumentException("Retry requires explicit unresolved-document resnapshot");
         SchemaReprocessingPlanNode prior = requirePlan(knowledgeBaseId, planId);
@@ -172,7 +172,7 @@ public class SchemaReprocessingPlanService {
         return new StartPlanResponse(saved.getId(), saved.getStatus(), statusLocation(saved));
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public PlanResponse get(String knowledgeBaseId, String planId, int page, int size) {
         SchemaReprocessingPlanNode plan = requirePlan(knowledgeBaseId, planId);
         int boundedPage = Math.max(0, page);
@@ -182,7 +182,7 @@ public class SchemaReprocessingPlanService {
         return toResponse(plan, boundedPage, boundedSize, items.getContent(), items.getTotalElements());
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public PlanPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         if (draftId != null && !draftId.isBlank()) {

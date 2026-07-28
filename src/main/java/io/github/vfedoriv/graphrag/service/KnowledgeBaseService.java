@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
@@ -66,7 +66,7 @@ public class KnowledgeBaseService {
         );
     }
 
-    @Transactional
+    @GraphTransactional
     public KnowledgeBaseNode create(String id, String name) {
         log.info("Creating knowledge base: knowledgeBaseId={}", id);
         if (knowledgeBaseRepository.existsById(id)) {
@@ -79,7 +79,7 @@ public class KnowledgeBaseService {
         return saved;
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public List<KnowledgeBaseNode> list() {
         log.info("Listing knowledge bases");
         List<KnowledgeBaseNode> nodes = knowledgeBaseRepository.findAllByOrderByCreatedAtDesc();
@@ -87,7 +87,7 @@ public class KnowledgeBaseService {
         return nodes;
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public KnowledgeBaseNode get(String id) {
         log.info("Loading knowledge base: knowledgeBaseId={}", id);
         KnowledgeBaseNode node = knowledgeBaseRepository.findById(id)
@@ -96,7 +96,7 @@ public class KnowledgeBaseService {
         return node;
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileNode activeAiProfile(String knowledgeBaseId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         String profileId = knowledgeBase.getActiveAiProfileId();
@@ -106,17 +106,17 @@ public class KnowledgeBaseService {
         return aiProfileService.getNode(profileId);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public AiProfileNode aiProfile(String profileId) {
         return aiProfileService.getNode(profileId);
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileResponse getActiveAiProfile(String knowledgeBaseId) {
         return aiProfileService.toResponse(activeAiProfile(knowledgeBaseId));
     }
 
-    @Transactional
+    @GraphTransactional
     public KnowledgeBaseNode updateActiveAiProfile(String knowledgeBaseId, String profileId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         AiProfileNode profile = aiProfileService.getNode(profileId);
@@ -125,7 +125,7 @@ public class KnowledgeBaseService {
         return knowledgeBaseRepository.save(knowledgeBase);
     }
 
-    @Transactional
+    @GraphTransactional
     public KnowledgeBaseNode update(String id, String name) {
         log.info("Updating knowledge base: knowledgeBaseId={}", id);
         KnowledgeBaseNode kb = get(id);
@@ -144,7 +144,7 @@ public class KnowledgeBaseService {
         return knowledgeBaseRepository.save(node);
     }
 
-    @Transactional
+    @GraphTransactional
     public void delete(String id) {
         log.info("Deleting knowledge base: knowledgeBaseId={}", id);
         if (!knowledgeBaseRepository.existsById(id)) {

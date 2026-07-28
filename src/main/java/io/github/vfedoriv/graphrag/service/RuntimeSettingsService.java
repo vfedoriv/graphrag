@@ -30,7 +30,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class RuntimeSettingsService {
@@ -55,7 +55,7 @@ public class RuntimeSettingsService {
         this.lifecycle = new RuntimeSettingLifecycle(overrideStore, definitions);
     }
 
-    @Transactional
+    @GraphTransactional
     public List<RuntimeSettingResponse> list() {
         ensureRestartRequiredOverridesLoaded();
         return definitions.values().stream()
@@ -63,7 +63,7 @@ public class RuntimeSettingsService {
             .toList();
     }
 
-    @Transactional
+    @GraphTransactional
     public RuntimeSettingResponse update(String key, Object value) {
         RuntimeSettingDefinition definition = requireDefinition(key);
         overrideStore.requireConfigured();
@@ -81,7 +81,7 @@ public class RuntimeSettingsService {
         return toResponse(definition);
     }
 
-    @Transactional
+    @GraphTransactional
     public List<RuntimeSettingResponse> update(List<RuntimeSettingUpdateRequest> updates) {
         overrideStore.requireConfigured();
         ensureRestartRequiredOverridesLoaded();
@@ -128,7 +128,7 @@ public class RuntimeSettingsService {
             .toList();
     }
 
-    @Transactional
+    @GraphTransactional
     public RuntimeSettingResponse clear(String key) {
         RuntimeSettingDefinition definition = requireDefinition(key);
         overrideStore.requireConfigured();
@@ -141,14 +141,14 @@ public class RuntimeSettingsService {
         return toResponse(definition);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public Path documentStorageRoot() {
         RuntimeSettingDefinition definition = requireDefinition("app.storage.documents-root");
         ensureRestartRequiredOverridesLoaded();
         return Path.of(String.valueOf(lifecycle.activeParsedValue(definition)));
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public QuerySettings query() {
         return new QuerySettings(
             integer("app.query.max-rows"),
@@ -165,7 +165,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public QueryPolicy queryPolicy() {
         QuerySettings settings = query();
         return new QueryPolicy(
@@ -176,7 +176,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public ChunkingSettings chunking() {
         return new ChunkingSettings(
             integer("app.chunking.max-tokens"),
@@ -185,7 +185,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public ExtractionSettings extraction() {
         return new ExtractionSettings(
             integer("app.extraction.max-entities-per-chunk"),
@@ -194,7 +194,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public DiscoverySettings discovery() {
         return new DiscoverySettings(
             integer("app.schema-discovery.max-sources"),
@@ -210,7 +210,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public AiObservationSettings aiObservation() {
         return new AiObservationSettings(
             bool("app.ai.observability.enabled"),

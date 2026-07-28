@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class SchemaDraftStorageMutationService {
@@ -23,7 +23,7 @@ public class SchemaDraftStorageMutationService {
         this.graphService = graphService;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public SchemaDraftStorageMutationNode begin(
         SchemaDraftStorageMutationType type, String draftId, String sourceId, String contentUri
     ) {
@@ -42,7 +42,7 @@ public class SchemaDraftStorageMutationService {
         return saved;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public void recordContent(String id, String contentUri) {
         SchemaDraftStorageMutationNode mutation = repository.findById(id).orElseThrow();
         mutation.setContentUri(contentUri);
@@ -50,13 +50,13 @@ public class SchemaDraftStorageMutationService {
         repository.save(mutation);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public void complete(String id) { transition(id, SchemaDraftStorageMutationState.COMPLETED, null); }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public void compensate(String id) { transition(id, SchemaDraftStorageMutationState.COMPENSATED, null); }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public void failure(String id, Exception exception) {
         SchemaDraftStorageMutationNode mutation = repository.findById(id).orElseThrow();
         mutation.setRetryCount(mutation.getRetryCount() + 1);

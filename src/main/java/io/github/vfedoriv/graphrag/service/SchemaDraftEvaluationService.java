@@ -59,7 +59,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
@@ -141,7 +141,7 @@ public class SchemaDraftEvaluationService {
         this.executor = executor;
     }
 
-    @Transactional
+    @GraphTransactional
     public StartEvaluationResponse start(
         String knowledgeBaseId, String draftId, StartEvaluationRequest request
     ) {
@@ -167,7 +167,7 @@ public class SchemaDraftEvaluationService {
         return createRun(current, snapshots, request.advisoryEnabled(), null);
     }
 
-    @Transactional
+    @GraphTransactional
     public StartEvaluationResponse retry(String knowledgeBaseId, String draftId, String runId, long revision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, revision);
         SchemaDraftEvaluationRunNode prior = requireRun(draftId, runId);
@@ -182,7 +182,7 @@ public class SchemaDraftEvaluationService {
         return createRun(draft, snapshots, advisory, prior.getId());
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public EvaluationRunResponse get(
         String knowledgeBaseId, String draftId, String runId, int page, int size
     ) {
@@ -195,7 +195,7 @@ public class SchemaDraftEvaluationService {
         return toResponse(run, boundedPage, boundedSize, outcomes.getContent(), outcomes.getTotalElements());
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public EvaluationRunPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return workflowNavigationService.evaluationPage(draft, page, size);

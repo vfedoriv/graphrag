@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -66,7 +66,7 @@ public class SchemaDraftSourceService {
         this.runtimeSettingsService = runtimeSettingsService;
     }
 
-    @Transactional
+    @GraphTransactional
     public SourceResponse addDocument(String knowledgeBaseId, String draftId, long draftRevision, String documentId) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         DocumentUploadNode document = requireDocument(knowledgeBaseId, documentId);
@@ -101,7 +101,7 @@ public class SchemaDraftSourceService {
         }
     }
 
-    @Transactional
+    @GraphTransactional
     public List<SourceResponse> list(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         List<SchemaDraftSourceNode> sources = sourceRepository.findByDraftIdOrderByCreatedAtAsc(draftId);
@@ -109,7 +109,7 @@ public class SchemaDraftSourceService {
         return sources.stream().map(this::toResponse).toList();
     }
 
-    @Transactional
+    @GraphTransactional
     public SourceResponse refreshDocument(
         String knowledgeBaseId, String draftId, String sourceId, long draftRevision
     ) {
@@ -132,7 +132,7 @@ public class SchemaDraftSourceService {
         return toResponse(source);
     }
 
-    @Transactional
+    @GraphTransactional
     public void remove(String knowledgeBaseId, String draftId, String sourceId, long draftRevision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         SchemaDraftSourceNode source = requireSource(draftId, sourceId);
@@ -151,7 +151,7 @@ public class SchemaDraftSourceService {
         draftRepository.save(draft);
     }
 
-    @Transactional
+    @GraphTransactional
     public SourceResponse restore(String knowledgeBaseId, String draftId, String sourceId, long draftRevision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         SchemaDraftSourceNode source = requireSource(draftId, sourceId);
@@ -199,7 +199,7 @@ public class SchemaDraftSourceService {
         }
     }
 
-    @Transactional
+    @GraphTransactional
     protected SourceResponse create(
         SchemaDraftNode draft, String requestedSourceId, SchemaDraftSourceType type, String name, String contentType, long sizeBytes,
         String fingerprint, String documentId, String contentUri

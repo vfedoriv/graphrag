@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.infrastructure.persistence;
 
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class SchemaDraftGraphService {
@@ -12,7 +12,7 @@ public class SchemaDraftGraphService {
         this.neo4jClient = neo4jClient;
     }
 
-    @Transactional
+    @GraphTransactional
     public void attach(String draftId, String childLabel, String childId) {
         if (!allowedLabel(childLabel)) {
             throw new IllegalArgumentException("Unsupported draft child label");

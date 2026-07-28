@@ -85,16 +85,20 @@ services:
 
   langfuse-postgres:
     image: 'postgres:17'
-    profiles: ['langfuse']
     restart: unless-stopped
     environment:
       POSTGRES_USER: 'langfuse'
       POSTGRES_PASSWORD: '${LANGFUSE_POSTGRES_PASSWORD:-langfuse-local-postgres}'
       POSTGRES_DB: 'langfuse'
+      GRAPHRAG_POSTGRES_DATABASE: '${GRAPHRAG_POSTGRES_DATABASE:-graphrag}'
+      GRAPHRAG_POSTGRES_USER: '${GRAPHRAG_POSTGRES_USER:-graphrag}'
+      GRAPHRAG_POSTGRES_PASSWORD: '${GRAPHRAG_POSTGRES_PASSWORD:-graphrag-local-postgres}'
+      GRAPHRAG_POSTGRES_SCHEMA: '${GRAPHRAG_POSTGRES_SCHEMA:-app}'
     ports:
       - '127.0.0.1:5433:5432'
     volumes:
       - 'langfuse_postgres_data:/var/lib/postgresql/data'
+      - './docker/postgres/init-graphrag.sh:/docker-entrypoint-initdb.d/20-init-graphrag.sh:ro'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U langfuse -d langfuse']
       interval: 3s

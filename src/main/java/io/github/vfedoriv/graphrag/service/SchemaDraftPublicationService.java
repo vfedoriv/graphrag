@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
@@ -96,7 +96,7 @@ public class SchemaDraftPublicationService {
         this.observationService = observationService;
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public PublicationReadinessResponse readiness(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         ProjectionResponse projection = reviewService.projection(knowledgeBaseId, draftId);
@@ -147,7 +147,7 @@ public class SchemaDraftPublicationService {
             contentHash, draft.getTargetName(), draft.getTargetVersion(), List.copyOf(reasons));
     }
 
-    @Transactional
+    @GraphTransactional
     public PublicationResponse publish(String knowledgeBaseId, String draftId, PublishDraftRequest request) {
         try (AiObservationScope workflow = observationService.startWorkflow(new AiWorkflowContext(
             AiObservationService.WORKFLOW_SCHEMA_DRAFT_PUBLICATION, null,
@@ -211,7 +211,7 @@ public class SchemaDraftPublicationService {
         return toResponse(saved);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public PublicationResponse get(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return toResponse(publicationRepository.findByDraftId(draftId)

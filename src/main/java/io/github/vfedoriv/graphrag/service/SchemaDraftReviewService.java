@@ -51,7 +51,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class SchemaDraftReviewService {
@@ -93,7 +93,7 @@ public class SchemaDraftReviewService {
         this.objectMapper = objectMapper;
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public CandidatePageResponse candidates(String knowledgeBaseId, String draftId, int page, int size) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         List<Candidate> candidates = effectiveCandidates(draft);
@@ -114,7 +114,7 @@ public class SchemaDraftReviewService {
         return new CandidatePageResponse(boundedPage, boundedSize, responses.size(), responses.subList(from, to));
     }
 
-    @Transactional
+    @GraphTransactional
     public DecisionResponse decide(
         String knowledgeBaseId, String draftId, DecisionRequest request
     ) {
@@ -149,13 +149,13 @@ public class SchemaDraftReviewService {
         return toResponse(saved);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public List<DecisionResponse> decisions(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return decisionRepository.findByDraftIdOrderBySequenceAsc(draftId).stream().map(this::toResponse).toList();
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public List<ConflictResponse> conflicts(
         String knowledgeBaseId, String draftId, ConflictListScope scope
     ) {
@@ -170,7 +170,7 @@ public class SchemaDraftReviewService {
         return conflicts.stream().map(value -> toResponse(value, currentAggregateId)).toList();
     }
 
-    @Transactional
+    @GraphTransactional
     public ConflictResponse resolve(
         String knowledgeBaseId, String draftId, String conflictId, ResolveConflictRequest request
     ) {
@@ -187,7 +187,7 @@ public class SchemaDraftReviewService {
         return toResponse(saved, draft.getCurrentAggregateId());
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public ProjectionResponse projection(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
@@ -203,7 +203,7 @@ public class SchemaDraftReviewService {
             !unresolvedConflict && !unresolvedGuidance);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public DiffResponse diff(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
@@ -230,7 +230,7 @@ public class SchemaDraftReviewService {
             new DiffBaseline(baseline.type(), baseline.id(), baseline.contentHash()), List.copyOf(changes));
     }
 
-    @Transactional
+    @GraphTransactional
     public boolean promoteIfRevisionCurrent(String draftId, String aggregateId, long expectedDraftRevision) {
         SchemaDraftNode draft = draftRepository.findById(draftId).orElse(null);
         if (draft == null || draft.getRevision() != expectedDraftRevision) {
@@ -251,7 +251,7 @@ public class SchemaDraftReviewService {
         return true;
     }
 
-    @Transactional
+    @GraphTransactional
     public void reconcileAfterAnalysis(String draftId, String aggregateId) {
         SchemaDraftAggregateRevisionNode aggregate = aggregateRepository.findById(aggregateId).orElseThrow();
         Map<String, Candidate> candidates = readCandidates(aggregate.getCandidatesJson()).stream()

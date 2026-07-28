@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Component
 public class ProcessingRunLifecycle {
@@ -22,7 +22,7 @@ public class ProcessingRunLifecycle {
         this.jsonCodec = new ProcessingJsonCodec(objectMapper);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode start(DocumentUploadNode document, DocumentProcessingOptionSet options) {
         DocumentProcessingRunNode run = new DocumentProcessingRunNode();
         run.setId(UUID.randomUUID().toString());
@@ -43,13 +43,13 @@ public class ProcessingRunLifecycle {
         return saved;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode checkpoint(DocumentProcessingRunNode run, String stage) {
         run.setStage(stage);
         return repository.save(run);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode complete(DocumentProcessingRunNode run) {
         run.setStatus(DocumentProcessingRunStatus.COMPLETED);
         run.setStage("COMPLETED");
@@ -61,7 +61,7 @@ public class ProcessingRunLifecycle {
         return saved;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode fail(DocumentProcessingRunNode run, Exception error) {
         run.setStatus(DocumentProcessingRunStatus.FAILED);
         run.setStage("FAILED");

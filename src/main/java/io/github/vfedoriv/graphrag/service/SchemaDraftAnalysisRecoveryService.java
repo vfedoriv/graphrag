@@ -11,7 +11,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
@@ -27,7 +27,7 @@ public class SchemaDraftAnalysisRecoveryService implements ApplicationRunner {
     }
 
     @Override
-    @Transactional
+    @GraphTransactional
     public void run(ApplicationArguments args) {
         List<SchemaDraftAnalysisRunNode> interrupted = runRepository.findByStatus(SchemaDraftAnalysisStatus.RUNNING);
         for (SchemaDraftAnalysisRunNode run : interrupted) {

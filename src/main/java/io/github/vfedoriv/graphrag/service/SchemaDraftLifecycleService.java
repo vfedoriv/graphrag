@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
@@ -66,7 +66,7 @@ public class SchemaDraftLifecycleService {
         this.workflowNavigationService = workflowNavigationService;
     }
 
-    @Transactional
+    @GraphTransactional
     public DraftResponse create(String knowledgeBaseId, CreateDraftRequest request) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         String targetName = request.targetName().strip();
@@ -96,7 +96,7 @@ public class SchemaDraftLifecycleService {
         return toResponse(saved);
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public List<DraftResponse> list(String knowledgeBaseId) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         List<SchemaDraftNode> drafts = draftRepository.findByKnowledgeBaseIdOrderByUpdatedAtDesc(knowledgeBaseId);
@@ -105,12 +105,12 @@ public class SchemaDraftLifecycleService {
         return drafts.stream().map(draft -> toResponse(draft, references.get(draft.getId()))).toList();
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public DraftResponse get(String knowledgeBaseId, String draftId) {
         return toResponse(requireOwned(knowledgeBaseId, draftId));
     }
 
-    @Transactional
+    @GraphTransactional
     public DraftResponse update(String knowledgeBaseId, String draftId, UpdateDraftRequest request) {
         SchemaDraftNode draft = requireMutable(knowledgeBaseId, draftId, request.revision());
         validateBase(knowledgeBaseId, draft.getBaseSchemaId(), request.targetName().strip(), request.targetVersion());
@@ -120,7 +120,7 @@ public class SchemaDraftLifecycleService {
         return toResponse(draftRepository.save(draft));
     }
 
-    @Transactional
+    @GraphTransactional
     public DraftResponse updateGuidance(String knowledgeBaseId, String draftId, UpdateGuidanceRequest request) {
         SchemaDraftNode draft = requireMutable(knowledgeBaseId, draftId, request.revision());
         String canonical = guidanceMapper.canonical(request.guidance());
@@ -134,7 +134,7 @@ public class SchemaDraftLifecycleService {
         return toResponse(draftRepository.save(draft));
     }
 
-    @Transactional
+    @GraphTransactional
     public void delete(String knowledgeBaseId, String draftId, long revision) {
         SchemaDraftNode draft = requireMutable(knowledgeBaseId, draftId, revision);
         if (runRepository.findFirstByDraftIdAndStatusOrderByCreatedAtDesc(draftId, SchemaDraftAnalysisStatus.RUNNING).isPresent()) {
@@ -148,14 +148,14 @@ public class SchemaDraftLifecycleService {
         log.info("Schema draft deleted: knowledgeBaseId={}, draftId={}, sourceCount={}", knowledgeBaseId, draftId, sources.size());
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public SchemaDraftNode requireOwned(String knowledgeBaseId, String draftId) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         return draftRepository.findByIdAndKnowledgeBaseId(draftId, knowledgeBaseId)
             .orElseThrow(() -> new NotFoundException("Schema draft not found in knowledge base: " + draftId));
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public SchemaDraftNode requireMutable(String knowledgeBaseId, String draftId, long revision) {
         SchemaDraftNode draft = requireOwned(knowledgeBaseId, draftId);
         if (draft.getStatus() != SchemaDraftStatus.OPEN) {

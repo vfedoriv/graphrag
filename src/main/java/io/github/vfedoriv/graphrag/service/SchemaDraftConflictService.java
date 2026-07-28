@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class SchemaDraftConflictService {
@@ -34,7 +34,7 @@ public class SchemaDraftConflictService {
         this.objectMapper = objectMapper;
     }
 
-    @Transactional
+    @GraphTransactional
     public SchemaDraftConflictNode create(
         String draftId, String aggregateRevisionId, SchemaDraftConflictType type,
         String coordinate, Object alternatives, Object evidence

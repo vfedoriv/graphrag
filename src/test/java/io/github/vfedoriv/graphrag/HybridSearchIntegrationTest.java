@@ -31,10 +31,7 @@ import org.springframework.test.context.TestPropertySource;
         + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
         + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
         + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration,"
-        + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
-        + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
-        + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration",
     "app.model.embedding-dimensions=3",
     "app.query.hybrid-search-default-top-k=2",
     "app.query.hybrid-search-max-top-k=5",

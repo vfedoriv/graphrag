@@ -81,6 +81,15 @@ public final class RuntimeSettingsCatalog {
         addReadOnlyString(map, "spring.neo4j.authentication.username", "neo4j", env("spring.neo4j.authentication.username"), UpdateMode.RESTART_REQUIRED, false, "Neo4j authentication is managed by startup-created infrastructure.");
         addReadOnlyString(map, "spring.neo4j.authentication.password", "neo4j", env("spring.neo4j.authentication.password"), UpdateMode.SENSITIVE_READ_ONLY, true, "Neo4j credentials are sensitive and startup-bound.");
         addReadOnlyString(map, "app.neo4j.database", "neo4j", appProperties.neo4j().database(), UpdateMode.RESTART_REQUIRED, false, "Neo4j database selection is bound to repository infrastructure.");
+        addReadOnlyString(map, "spring.datasource.url", "postgresql", env("spring.datasource.url"), UpdateMode.RESTART_REQUIRED, false, "PostgreSQL connectivity is managed by startup-created infrastructure.");
+        addReadOnlyString(map, "spring.datasource.username", "postgresql", env("spring.datasource.username"), UpdateMode.RESTART_REQUIRED, false, "PostgreSQL authentication is managed by startup-created infrastructure.");
+        addReadOnlyString(map, "spring.datasource.password", "postgresql", env("spring.datasource.password"), UpdateMode.SENSITIVE_READ_ONLY, true, "PostgreSQL credentials are sensitive and startup-bound.");
+        addRestartRequiredString(map, "spring.datasource.hikari.maximum-pool-size", "postgresql", env("spring.datasource.hikari.maximum-pool-size"), "PostgreSQL pool sizing is applied when the datasource starts.");
+        addRestartRequiredString(map, "spring.datasource.hikari.minimum-idle", "postgresql", env("spring.datasource.hikari.minimum-idle"), "PostgreSQL pool sizing is applied when the datasource starts.");
+        addReadOnlyString(map, "spring.jpa.hibernate.ddl-auto", "postgresql", env("spring.jpa.hibernate.ddl-auto"), UpdateMode.RESTART_REQUIRED, false, "Hibernate schema validation is fixed at startup.");
+        addReadOnlyString(map, "spring.jpa.open-in-view", "postgresql", env("spring.jpa.open-in-view"), UpdateMode.RESTART_REQUIRED, false, "Open-session-in-view is fixed at startup.");
+        addReadOnlyString(map, "spring.flyway.default-schema", "postgresql", env("spring.flyway.default-schema"), UpdateMode.RESTART_REQUIRED, false, "Flyway schema ownership is fixed at startup.");
+        addReadOnlyString(map, "spring.flyway.baseline-on-migrate", "postgresql", env("spring.flyway.baseline-on-migrate"), UpdateMode.RESTART_REQUIRED, false, "Flyway baselining remains disabled to reject unmanaged schemas.");
         addRestartRequiredString(map, "app.storage.documents-root", "storage", documentsRoot, "Document storage root changes are persisted for the next backend restart.");
         addRestartRequiredString(map, "spring.servlet.multipart.max-file-size", "multipart", env("spring.servlet.multipart.max-file-size"), "Multipart limits are applied by web infrastructure.");
         addRestartRequiredString(map, "spring.servlet.multipart.max-request-size", "multipart", env("spring.servlet.multipart.max-request-size"), "Multipart limits are applied by web infrastructure.");

@@ -16,7 +16,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 public class AiProfileService implements ApplicationRunner {
@@ -52,12 +52,12 @@ public class AiProfileService implements ApplicationRunner {
     }
 
     @Override
-    @Transactional
+    @GraphTransactional
     public void run(ApplicationArguments args) {
         seedDefaultProfile();
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileNode seedDefaultProfile() {
         return aiProfileRepository.findFirstByDefaultProfileTrue()
             .orElseGet(() -> {
@@ -80,25 +80,25 @@ public class AiProfileService implements ApplicationRunner {
             });
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public List<AiProfileResponse> list() {
         return aiProfileRepository.findAllByOrderByCreatedAtDesc().stream()
             .map(this::toResponse)
             .toList();
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public AiProfileNode getNode(String id) {
         return aiProfileRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("AI profile not found: " + id));
     }
 
-    @Transactional(readOnly = true)
+    @GraphTransactional(readOnly = true)
     public AiProfileResponse get(String id) {
         return toResponse(getNode(id));
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileResponse create(CreateAiProfileRequest request) {
         if (aiProfileRepository.existsById(request.id())) {
             throw new ConflictException("AI profile already exists: " + request.id());
@@ -132,7 +132,7 @@ public class AiProfileService implements ApplicationRunner {
         return toResponse(saved);
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileResponse update(String id, UpdateAiProfileRequest request) {
         AiProfileNode profile = getNode(id);
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
@@ -164,7 +164,7 @@ public class AiProfileService implements ApplicationRunner {
         return toResponse(saved);
     }
 
-    @Transactional
+    @GraphTransactional
     public void delete(String id) {
         AiProfileNode profile = getNode(id);
         if (profile.isDefaultProfile()) {
@@ -176,7 +176,7 @@ public class AiProfileService implements ApplicationRunner {
         aiProfileRepository.deleteById(id);
     }
 
-    @Transactional
+    @GraphTransactional
     public AiProfileNode defaultProfile() {
         return aiProfileRepository.findFirstByDefaultProfileTrue()
             .orElseGet(this::seedDefaultProfile);

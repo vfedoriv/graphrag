@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +51,7 @@ public class DocumentUploadService {
         this.storageMutationService = storageMutationService;
     }
 
-    @Transactional
+    @GraphTransactional
     public DocumentUploadNode upload(String knowledgeBaseId, MultipartFile file) {
         log.info(
             "Uploading document: knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
@@ -148,7 +148,7 @@ public class DocumentUploadService {
         return path.toString();
     }
 
-    @Transactional
+    @GraphTransactional
     public DocumentUploadNode replace(String knowledgeBaseId, String documentId, MultipartFile file) {
         log.info(
             "Replacing document: knowledgeBaseId={}, documentId={}, filename={}, contentType={}, sizeBytes={}",
@@ -215,7 +215,7 @@ public class DocumentUploadService {
         return saved;
     }
 
-    @Transactional
+    @GraphTransactional
     public void delete(String knowledgeBaseId, String documentId) {
         log.info("Deleting document: knowledgeBaseId={}, documentId={}", knowledgeBaseId, documentId);
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
