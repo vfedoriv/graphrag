@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -12,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
+import io.github.vfedoriv.graphrag.application.processing.ExtractionRunLifecycle;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
@@ -21,18 +21,14 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
-import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 @ExtendWith(MockitoExtension.class)
 class GraphExtractionServiceTest {
@@ -40,15 +36,13 @@ class GraphExtractionServiceTest {
     @Mock
     private ActiveSchemaResolver activeSchemaResolver;
     @Mock
-    private ExtractionRunRepository extractionRunRepository;
+    private ExtractionRunLifecycle extractionRunLifecycle;
     @Mock
     private GraphExtractionValidationService validationService;
     @Mock
     private GraphWriteService graphWriteService;
     @Mock
     private ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private Neo4jClient neo4jClient;
     @Mock
     private GraphArtifactCleanupService graphArtifactCleanupService;
 
@@ -64,12 +58,8 @@ class GraphExtractionServiceTest {
 
         service.extract(document(), List.of(chunk()), false);
 
-        ArgumentCaptor<ExtractionRunNode> runCaptor = ArgumentCaptor.forClass(ExtractionRunNode.class);
-        verify(extractionRunRepository, org.mockito.Mockito.atLeast(2)).save(runCaptor.capture());
-        List<ExtractionRunNode> savedRuns = runCaptor.getAllValues();
-        ExtractionRunNode finalSave = savedRuns.getLast();
-        assertThat(finalSave.getStatus()).isEqualTo(ExtractionRunStatus.COMPLETED);
-        verify(extractionRunRepository, never()).save(argThat(run -> run.getStatus() == ExtractionRunStatus.FAILED));
+        verify(extractionRunLifecycle).complete(any());
+        verify(extractionRunLifecycle, never()).fail(any(), any());
     }
 
     @Test
@@ -85,10 +75,27 @@ class GraphExtractionServiceTest {
         } catch (Exception ignored) {
         }
 
-        verify(extractionRunRepository, org.mockito.Mockito.atLeastOnce()).save(argThat(run ->
-            run.getStatus() == ExtractionRunStatus.FAILED
-                && run.getErrorMessage() != null
-                && !run.getErrorMessage().isBlank()
+        verify(extractionRunLifecycle).fail(any(), argThat(error -> error instanceof IllegalStateException));
+    }
+
+    @Test
+    void recordsFailureWhenCompletionCheckpointFailsAfterGraphWrite() {
+        GraphExtractionClient extractionClient = (schema, chunkText) -> new GraphExtractionResult(List.of(), List.of());
+        GraphExtractionService service = serviceWithClient(extractionClient);
+        mockActiveSchema();
+        when(validationService.validate(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+        doThrow(new IllegalStateException("completion commit failed"))
+            .when(extractionRunLifecycle)
+            .complete(any());
+
+        try {
+            service.extract(document(), List.of(chunk()), false);
+        } catch (Exception ignored) {
+        }
+
+        verify(graphWriteService).write(any(), eq("schema-1"), eq("doc-1"), eq("chunk-1"), any(), any());
+        verify(extractionRunLifecycle).fail(any(), argThat(error ->
+            "completion commit failed".equals(error.getMessage())
         ));
     }
 
@@ -124,13 +131,23 @@ class GraphExtractionServiceTest {
         lenient()
             .when(graphArtifactCleanupService.cleanupRunsAfterSuccessfulExtraction(anyString(), anyString(), org.mockito.Mockito.anyBoolean()))
             .thenReturn(GraphArtifactCleanupService.ExtractionRunCleanupResult.zero());
+        ExtractionRunNode run = new ExtractionRunNode();
+        run.setId("run-1");
+        run.setDocumentId("doc-1");
+        run.setSchemaId("schema-1");
+        run.setModel("chat:contracts");
+        run.setStatus(ExtractionRunStatus.RUNNING);
+        lenient().when(extractionRunLifecycle.start("doc-1", "schema-1", "chat:contracts")).thenReturn(run);
+        lenient().when(extractionRunLifecycle.complete(run)).thenAnswer(invocation -> {
+            run.setStatus(ExtractionRunStatus.COMPLETED);
+            return run;
+        });
         return new GraphExtractionService(
             activeSchemaResolver,
-            extractionRunRepository,
+            extractionRunLifecycle,
             validationService,
             graphWriteService,
             graphExtractionClientProvider,
-            neo4jClient,
             graphArtifactCleanupService,
             TestAiObservationService.noop()
         );

@@ -86,7 +86,7 @@ class GraphProvenanceIntegrationTest {
     }
 
     @Test
-    void failedAndOverwrittenRunsRemoveOnlyTheirEvidenceWhenAnotherDocumentSupportsTheFact() {
+    void runScopedCleanupRemovesOnlyItsEvidenceWhenAnotherDocumentSupportsTheFact() {
         clearGraph();
         createDocumentRunChunk("doc-a", "run-failed", "chunk-failed", "FAILED");
         createDocumentRunChunk("doc-a", "run-current", "chunk-current", "COMPLETED");
@@ -97,12 +97,12 @@ class GraphProvenanceIntegrationTest {
         writeSharedFact("doc-a", "run-stale", "chunk-stale", "stale");
         writeSharedFact("doc-b", "run-b", "chunk-b", "retained");
 
-        graphArtifactCleanupService.cleanupRunsAfterSuccessfulExtraction("doc-a", "run-current", false);
+        graphArtifactCleanupService.cleanupExtractionRuns("doc-a", List.of("run-failed"));
 
         assertThat(count("MATCH (:GraphExtractionEvidence {extractionRunId: 'run-failed'}) RETURN count(*) AS count")).isZero();
         assertThat(count("MATCH (:Contract)-[r:HAS_PARTY]->(:Party) RETURN count(r) AS count")).isEqualTo(1L);
 
-        graphArtifactCleanupService.cleanupRunsAfterSuccessfulExtraction("doc-a", "run-overwrite", true);
+        graphArtifactCleanupService.cleanupExtractionRuns("doc-a", List.of("run-current", "run-stale"));
 
         assertThat(count("MATCH (:GraphExtractionEvidence {extractionRunId: 'run-stale'}) RETURN count(*) AS count")).isZero();
         assertThat(count("MATCH (:GraphExtractionEvidence {sourceDocumentId: 'doc-b'}) RETURN count(*) AS count")).isEqualTo(3L);

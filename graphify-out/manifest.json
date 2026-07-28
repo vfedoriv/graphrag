@@ -80,14 +80,14 @@
     "semantic_hash": "73a70dd62dc584fc89061a25f4938fc6"
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentUploadNode.java": {
-    "mtime": 1782823518.7596369,
-    "ast_hash": "b9f5627949e8e5383a84f66b45d5f4ac",
-    "semantic_hash": "b9f5627949e8e5383a84f66b45d5f4ac"
+    "mtime": 1785268912.9907901,
+    "ast_hash": "6509306cd56d496c954c6b18a89b70d9",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunNode.java": {
-    "mtime": 1782850851.4305384,
-    "ast_hash": "1a2333bac510e6b404b450cc98111894",
-    "semantic_hash": "1a2333bac510e6b404b450cc98111894"
+    "mtime": 1785268952.9755743,
+    "ast_hash": "3df69ce48c4c3fde421a0c45bfeff914",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/ExtractionRunStatus.java": {
     "mtime": 1779175434.578555,
@@ -320,9 +320,9 @@
     "semantic_hash": "71271e8fa6bcff24ddb668e73bb6b008"
   },
   "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteService.java": {
-    "mtime": 1783669966.7569578,
-    "ast_hash": "ebabc519769a17df46f9dbeb40eb74cd",
-    "semantic_hash": "ebabc519769a17df46f9dbeb40eb74cd"
+    "mtime": 1785269218.1144052,
+    "ast_hash": "2340a42c7a07dfa7f7ccb0d34d759d74",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/graph/GraphWriteSupport.java": {
     "mtime": 1783669966.7569578,
@@ -425,14 +425,14 @@
     "semantic_hash": "bc883619f38259da932f2c588ec7c732"
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentUploadRepository.java": {
-    "mtime": 1784104445.024314,
-    "ast_hash": "7c5bbc2cd8b2a2763ca264ae7c5d4837",
+    "mtime": 1785269133.8132164,
+    "ast_hash": "07f647aaeb549b011a3682a17f0c1986",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/ExtractionRunRepository.java": {
-    "mtime": 1782850603.4962113,
-    "ast_hash": "074d0ea79ef580f72eeada3edf69224f",
-    "semantic_hash": "074d0ea79ef580f72eeada3edf69224f"
+    "mtime": 1785270440.9351938,
+    "ast_hash": "72eedc6f096699d5035230b0f335cfa6",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/KnowledgeBaseRepository.java": {
     "mtime": 1785266664.71723,
@@ -505,24 +505,24 @@
     "semantic_hash": "4f4a24807e39a6561634aa8c4e49fb8e"
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingService.java": {
-    "mtime": 1784097625.0208716,
-    "ast_hash": "ef49871cc319753daf19af5f02bc3d67",
+    "mtime": 1785269281.281003,
+    "ast_hash": "ccc80ff33b663d842a0964a8d019272d",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentUploadService.java": {
-    "mtime": 1785262749.7771149,
-    "ast_hash": "a50ead694bf621043b4c5b56a5e8af7c",
+    "mtime": 1785270441.6562092,
+    "ast_hash": "084ae58a545c2e9e4c618da031584f39",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupport.java": {
-    "mtime": 1779283645.029306,
-    "ast_hash": "3b79753b1c16190ee69d484fa25672dd",
-    "semantic_hash": "3b79753b1c16190ee69d484fa25672dd"
+    "mtime": 1785269217.9104,
+    "ast_hash": "4f3e0c518d691a8d4253bcaaa0068058",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphExtractionService.java": {
-    "mtime": 1783773604.167276,
-    "ast_hash": "3edf5834049cfa967d4208c199995d81",
-    "semantic_hash": "3edf5834049cfa967d4208c199995d81"
+    "mtime": 1785269233.912808,
+    "ast_hash": "94e37a603ad3160ac392746f749c7160",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseService.java": {
     "mtime": 1785266756.1920676,
@@ -600,13 +600,13 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java": {
-    "mtime": 1785267306.7585793,
-    "ast_hash": "5383dafc987c1d77fec4fef518673ed7",
+    "mtime": 1785270467.4187603,
+    "ast_hash": "e6ad71713c9704eb70f6046681896c2e",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java": {
-    "mtime": 1785267768.4314356,
-    "ast_hash": "90774f90a9e75ea1877535059753d5b8",
+    "mtime": 1785269926.513027,
+    "ast_hash": "86d0ac51da3019b3ccf5575be2ca67c2",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowIntegrationTest.java": {
@@ -615,13 +615,13 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java": {
-    "mtime": 1785267307.0215843,
-    "ast_hash": "5b93fb540675121c5070b8caa19f1c8e",
+    "mtime": 1785269926.5990288,
+    "ast_hash": "9229def9e51519a1655e3f0522ab4ace",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/GraphExtractionCleanupIntegrationTest.java": {
-    "mtime": 1785267307.482593,
-    "ast_hash": "0a3633ef7040fa60f4ea7b6db02784b2",
+    "mtime": 1785269724.1414957,
+    "ast_hash": "ff92a63c90a5d8d35a4d79834c11e589",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/GraphragApplicationTests.java": {
@@ -810,9 +810,9 @@
     "semantic_hash": "3585329cd8cb3a0b9028ba14a90e5daf"
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/DocumentUploadServiceTest.java": {
-    "mtime": 1783708506.27965,
-    "ast_hash": "570a4b0434f417c1e9153c9fbd1e15a3",
-    "semantic_hash": "570a4b0434f417c1e9153c9fbd1e15a3"
+    "mtime": 1785270441.7582114,
+    "ast_hash": "dcffd489c9887c9d5c1e2d0370004a0e",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionCleanupSupportTest.java": {
     "mtime": 1779285838.7615938,
@@ -820,9 +820,9 @@
     "semantic_hash": "3a5febe112301056d2324d5d4331476c"
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/GraphExtractionServiceTest.java": {
-    "mtime": 1781107504.6917503,
-    "ast_hash": "ca98a4feb2c081ad5dfd3f882d3e2806",
-    "semantic_hash": "ca98a4feb2c081ad5dfd3f882d3e2806"
+    "mtime": 1785269763.053376,
+    "ast_hash": "52bda9a0f19e0cb341f7e466d904d4e0",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/LangChain4jSchemaGenerationServiceTest.java": {
     "mtime": 1781783297.7504325,
@@ -1820,13 +1820,13 @@
     "semantic_hash": ""
   },
   "openspec/specs/schema-list-by-knowledge-base/spec.md": {
-    "mtime": 1781637572.9089408,
-    "ast_hash": "926af984234cb3899b4593907ed8dea8",
+    "mtime": 1785268431.465355,
+    "ast_hash": "83a3fbb03e8b44f4d4b5610896597898",
     "semantic_hash": ""
   },
   "openspec/specs/schema-mutation/spec.md": {
-    "mtime": 1780855347.7045095,
-    "ast_hash": "09e10f6967b3ed039e748ba097bfec1e",
+    "mtime": 1785268431.5763571,
+    "ast_hash": "389ec74d3674c05510c26c63468c15eb",
     "semantic_hash": ""
   },
   "openspec/specs/schema-retrieval-with-content/spec.md": {
@@ -1840,8 +1840,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/single-active-schema-per-knowledge-base/spec.md": {
-    "mtime": 1783709316.0766091,
-    "ast_hash": "76f26ce95f67f654cce8d7ff06da76cd",
+    "mtime": 1785268431.72236,
+    "ast_hash": "ef7c7e683e3e2b56ca3d65800bfe4774",
     "semantic_hash": ""
   },
   "openspec/specs/test-coverage-governance/spec.md": {
@@ -1850,9 +1850,9 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupService.java": {
-    "mtime": 1783669966.757958,
-    "ast_hash": "fe6bcd0f18ab9acc0eaeca9d0aeb5e64",
-    "semantic_hash": "fe6bcd0f18ab9acc0eaeca9d0aeb5e64"
+    "mtime": 1785270188.421758,
+    "ast_hash": "eeff274c1b730a521c294a1f81badbca",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupServiceTest.java": {
     "mtime": 1782823823.9169626,
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/active-schema-resolution/spec.md": {
-    "mtime": 1781107064.7296748,
-    "ast_hash": "9340be84be17300e534e1107def79dd7",
+    "mtime": 1785268431.0973477,
+    "ast_hash": "636ae8dce2e1a43e0086f301ad76c7d1",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/QueryAskService.java": {
@@ -2265,8 +2265,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/ai-profile-management/spec.md": {
-    "mtime": 1785265861.9667532,
-    "ast_hash": "689c87b2e211727f40b3d2d263ad7c14",
+    "mtime": 1785268431.20535,
+    "ast_hash": "1a03a94cc97ad1055c7a03b41c4de84c",
     "semantic_hash": ""
   },
   "openspec/specs/runtime-application-settings/spec.md": {
@@ -2400,9 +2400,9 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentProcessingRunNode.java": {
-    "mtime": 1782850482.1375806,
-    "ast_hash": "3432a2107465d4053be827b626fd3155",
-    "semantic_hash": "3432a2107465d4053be827b626fd3155"
+    "mtime": 1785268952.7825706,
+    "ast_hash": "e5cd9368d27242804ef52112df6a5f63",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentProcessingRunStatus.java": {
     "mtime": 1782823505.0813532,
@@ -2440,9 +2440,9 @@
     "semantic_hash": "6645904e7a0993757bcd9859892c64a3"
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentProcessingRunRepository.java": {
-    "mtime": 1782850628.652549,
-    "ast_hash": "d762b7e628e457398cc9e5c808c2f873",
-    "semantic_hash": "d762b7e628e457398cc9e5c808c2f873"
+    "mtime": 1785270440.8551922,
+    "ast_hash": "b7b12cb1e182a3532b589cbe8c4adcfd",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentFormatDetection.java": {
     "mtime": 1782823506.7713883,
@@ -2640,8 +2640,8 @@
     "semantic_hash": "002e9f1ad80dfdf7ec10d621bf5832f8"
   },
   "src/test/java/io/github/vfedoriv/graphrag/GraphProvenanceIntegrationTest.java": {
-    "mtime": 1785267307.263589,
-    "ast_hash": "21c7ca182344cbb6aaf3c6b36c0a0a35",
+    "mtime": 1785270316.8205304,
+    "ast_hash": "6c2f272b923ae55db0403e0c4e00976d",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-01-backfill-neo4j-persistence-version-metadata/.openspec.yaml": {
@@ -2670,9 +2670,9 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStorageMutationNode.java": {
-    "mtime": 1783707929.598324,
-    "ast_hash": "b0f94fa6acafb81edfbb0d0316681243",
-    "semantic_hash": "b0f94fa6acafb81edfbb0d0316681243"
+    "mtime": 1785268952.5785666,
+    "ast_hash": "d21d1d1d8423b0121732526387ddc128",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/DocumentStorageMutationState.java": {
     "mtime": 1783707929.4113204,
@@ -2690,19 +2690,19 @@
     "semantic_hash": "3cde1e88e9432b0273056b72b0a05547"
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/DocumentStorageMutationRepository.java": {
-    "mtime": 1783708107.8067997,
-    "ast_hash": "b0af36e5ff2c5e46ae2243d7f5f83dc4",
-    "semantic_hash": "b0af36e5ff2c5e46ae2243d7f5f83dc4"
+    "mtime": 1785268935.626234,
+    "ast_hash": "c5e859c45d62736aae8323c2c2de8f6d",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentStorageMutationService.java": {
-    "mtime": 1785262749.7771149,
-    "ast_hash": "91a3d51c5c82d07df0de39d9e66bc66c",
+    "mtime": 1785269281.1850004,
+    "ast_hash": "83de5673cd8360864b2b8b3534f4b238",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DocumentStorageReconciliationService.java": {
-    "mtime": 1783708668.3908632,
-    "ast_hash": "0e7070ffa9dce20f022a4e2b2886810d",
-    "semantic_hash": "0e7070ffa9dce20f022a4e2b2886810d"
+    "mtime": 1785269193.0747623,
+    "ast_hash": "e0df037ddda1b6e184c36d70a2490ff7",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseLifecycleMigrationService.java": {
     "mtime": 1785267114.976975,
@@ -2715,9 +2715,9 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/DocumentStorageReconciliationServiceTest.java": {
-    "mtime": 1783708957.2956054,
-    "ast_hash": "2fb9d5ff64752b3306543d99620655c3",
-    "semantic_hash": "2fb9d5ff64752b3306543d99620655c3"
+    "mtime": 1785269362.1850035,
+    "ast_hash": "1c5f735358060ae67b3f88f8fab73548",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/KnowledgeBaseLifecycleServiceTest.java": {
     "mtime": 1783708464.887831,
@@ -2860,8 +2860,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/knowledge-base-lifecycle/spec.md": {
-    "mtime": 1783709316.2656138,
-    "ast_hash": "addedee8cdd84ecc2041ce6836462969",
+    "mtime": 1785268431.3433526,
+    "ast_hash": "108f201ec034dafdb7974c9d2c274ebb",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/QueryPolicyResponse.java": {
@@ -3005,8 +3005,8 @@
     "semantic_hash": "3edb1b5d0da6e14c3fb5b6611b6edd23"
   },
   "src/main/java/io/github/vfedoriv/graphrag/application/processing/ProcessingRunLifecycle.java": {
-    "mtime": 1785262749.7781148,
-    "ast_hash": "5d4ca00d640ee51fc699ade2f4d82369",
+    "mtime": 1785270051.4277754,
+    "ast_hash": "0090cb7fd783fe2048ee5192955f9e7a",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/application/processing/SourceParsingStage.java": {
@@ -3040,9 +3040,9 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/DocumentChunkPersistenceAdapter.java": {
-    "mtime": 1783772243.1924615,
-    "ast_hash": "fd0aaa0e3cef2a1cbc5769bb8b9ebfc0",
-    "semantic_hash": "fd0aaa0e3cef2a1cbc5769bb8b9ebfc0"
+    "mtime": 1785269627.1442783,
+    "ast_hash": "64d77b5f9881b1e7d1737ecdd5d358c8",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/application/processing/EmbeddingPersistenceStageTest.java": {
     "mtime": 1783771188.8626654,
@@ -4500,58 +4500,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/migrate-document-workflows-to-postgresql/tasks.md": {
-    "mtime": 1785262003.3808336,
-    "ast_hash": "85f15ae9e415234629aa67f51d0724d1",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/.openspec.yaml": {
-    "mtime": 1785261439.6449616,
-    "ast_hash": "04ddb19fc5ce2983d692f2401153450f",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/design.md": {
-    "mtime": 1785261710.6538208,
-    "ast_hash": "0fe086434ac0fc98f8b1d07acd9b640d",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/proposal.md": {
-    "mtime": 1785261551.0479925,
-    "ast_hash": "6264543f909a1e0b195320ff65e7a004",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/active-schema-resolution/spec.md": {
-    "mtime": 1785261806.1854775,
-    "ast_hash": "58d7ceac4e77249d594092657a71869d",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/ai-profile-management/spec.md": {
-    "mtime": 1785261806.8474889,
-    "ast_hash": "c94e2477d86318042e9696015df10f18",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/knowledge-base-lifecycle/spec.md": {
-    "mtime": 1785261805.0304577,
-    "ast_hash": "4e565dfa941179a2003b485bd78eff0c",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/schema-list-by-knowledge-base/spec.md": {
-    "mtime": 1785261806.4884827,
-    "ast_hash": "12f06fed0721e5d57e4be173b7a65672",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/schema-mutation/spec.md": {
-    "mtime": 1785261805.4164643,
-    "ast_hash": "e6c3e4979ad61b1c4da6d171782dbee1",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/specs/single-active-schema-per-knowledge-base/spec.md": {
-    "mtime": 1785261805.804471,
-    "ast_hash": "c7121ec3dbf74b09a99466c5e9333be3",
-    "semantic_hash": ""
-  },
-  "openspec/changes/migrate-knowledge-bases-and-schemas-to-postgresql/tasks.md": {
-    "mtime": 1785268153.0959153,
-    "ast_hash": "426b89b7ae7d1c508911d768d6d2a27e",
+    "mtime": 1785270935.9477146,
+    "ast_hash": "344b21e28502e36d78b2a8869bd9e97a",
     "semantic_hash": ""
   },
   "openspec/changes/migrate-schema-draft-analysis-to-postgresql/.openspec.yaml": {
@@ -4800,8 +4750,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/RelationalMetadataTestCleaner.java": {
-    "mtime": 1785267305.1765494,
-    "ast_hash": "9f618a1ea69009ec8503ca9bfb1c710e",
+    "mtime": 1785269377.7523832,
+    "ast_hash": "c2fdd19095de5e8b05129ff794da56fe",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-28-migrate-settings-and-ai-profiles-to-postgresql/.openspec.yaml": {
@@ -4832,6 +4782,156 @@
   "openspec/changes/archive/2026-07-28-migrate-settings-and-ai-profiles-to-postgresql/tasks.md": {
     "mtime": 1785265690.7300758,
     "ast_hash": "3fb436989db4139dba4e4b32be9c6f54",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/application/processing/DocumentRunHistoryLifecycle.java": {
+    "mtime": 1785270441.4762053,
+    "ast_hash": "230d9dec334cee8b58b89256041e0f97",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/application/processing/ExtractionRunLifecycle.java": {
+    "mtime": 1785270051.5997791,
+    "ast_hash": "9c97b90a3a8576cb1bd021f49a71f7ca",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/DocumentWorkflowRelationalMapper.java": {
+    "mtime": 1785269082.5738502,
+    "ast_hash": "5e76d72518e23f11e55ad1e2f7adf86e",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalDocumentProcessingRunRepository.java": {
+    "mtime": 1785270441.2462006,
+    "ast_hash": "34aeba748cab316bcc570fa7f1b531c4",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalDocumentStorageMutationRepository.java": {
+    "mtime": 1785269082.978861,
+    "ast_hash": "af31cf5e08a1fafd691514f462fed8ec",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalDocumentUploadRepository.java": {
+    "mtime": 1785270104.724939,
+    "ast_hash": "65942c938f854d7c2fbfc6fad69d2d76",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalExtractionRunRepository.java": {
+    "mtime": 1785270441.3372025,
+    "ast_hash": "71c177705b1861ac8ee4c549867a3ffd",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/entity/DocumentProcessingRunEntity.java": {
+    "mtime": 1785268990.9163275,
+    "ast_hash": "afad56bc4928e30788ee627bbdf6f733",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/entity/DocumentStorageMutationEntity.java": {
+    "mtime": 1785268990.7313223,
+    "ast_hash": "aee161d044d6e5bf74fa219adebc7ec1",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/entity/DocumentUploadEntity.java": {
+    "mtime": 1785268990.5273166,
+    "ast_hash": "21eefd5c6379ee42aa1c581590b23e44",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/entity/ExtractionRunEntity.java": {
+    "mtime": 1785268991.0903323,
+    "ast_hash": "8bc4e89f2016aef47f8e87bf3d676efb",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/repository/JpaDocumentProcessingRunRepository.java": {
+    "mtime": 1785270441.035196,
+    "ast_hash": "402cdc0bca58b9df8d63a5cc752616d9",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/repository/JpaDocumentStorageMutationRepository.java": {
+    "mtime": 1785269553.4345682,
+    "ast_hash": "02abf7fc5b10a209364e719c0d49d6e1",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/repository/JpaDocumentUploadRepository.java": {
+    "mtime": 1785269021.205173,
+    "ast_hash": "f85b3ccaf82c8263bc267bf568ffda92",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/repository/JpaExtractionRunRepository.java": {
+    "mtime": 1785270453.2034564,
+    "ast_hash": "cd0f73c0e40f422ac73b64b472562070",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/DocumentProcessingRecoveryService.java": {
+    "mtime": 1785269514.6726592,
+    "ast_hash": "98f0f7b850377b255fed19cf4bd2e054",
+    "semantic_hash": ""
+  },
+  "src/main/resources/db/migration/V4__migrate_document_workflows.sql": {
+    "mtime": 1785270160.0531425,
+    "ast_hash": "7cc2ed72704964bbb306095ddb447432",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/DocumentWorkflowRelationalRepositoryIntegrationTest.java": {
+    "mtime": 1785270268.389487,
+    "ast_hash": "5bb211bf074e542d47beb4685bcb5616",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/application/processing/DocumentRunLifecycleTest.java": {
+    "mtime": 1785270124.3983676,
+    "ast_hash": "48228637b4a9d1eb8c01b767d7630249",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/service/DocumentProcessingRecoveryServiceTest.java": {
+    "mtime": 1785270051.7837832,
+    "ast_hash": "9cc952ba9b92f2809c4f610360a3b324",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/.openspec.yaml": {
+    "mtime": 1785261439.6449616,
+    "ast_hash": "04ddb19fc5ce2983d692f2401153450f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/design.md": {
+    "mtime": 1785261710.6538208,
+    "ast_hash": "0fe086434ac0fc98f8b1d07acd9b640d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/proposal.md": {
+    "mtime": 1785261551.0479925,
+    "ast_hash": "6264543f909a1e0b195320ff65e7a004",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/active-schema-resolution/spec.md": {
+    "mtime": 1785261806.1854775,
+    "ast_hash": "58d7ceac4e77249d594092657a71869d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/ai-profile-management/spec.md": {
+    "mtime": 1785261806.8474889,
+    "ast_hash": "c94e2477d86318042e9696015df10f18",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/knowledge-base-lifecycle/spec.md": {
+    "mtime": 1785261805.0304577,
+    "ast_hash": "4e565dfa941179a2003b485bd78eff0c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/schema-list-by-knowledge-base/spec.md": {
+    "mtime": 1785261806.4884827,
+    "ast_hash": "12f06fed0721e5d57e4be173b7a65672",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/schema-mutation/spec.md": {
+    "mtime": 1785261805.4164643,
+    "ast_hash": "e6c3e4979ad61b1c4da6d171782dbee1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/specs/single-active-schema-per-knowledge-base/spec.md": {
+    "mtime": 1785261805.804471,
+    "ast_hash": "c7121ec3dbf74b09a99466c5e9333be3",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-28-migrate-knowledge-bases-and-schemas-to-postgresql/tasks.md": {
+    "mtime": 1785268153.0959153,
+    "ast_hash": "426b89b7ae7d1c508911d768d6d2a27e",
     "semantic_hash": ""
   }
 }

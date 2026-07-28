@@ -101,16 +101,13 @@ public class GraphWriteService {
             node.properties()
         );
         neo4jClient.query("""
-            MATCH (r:ExtractionRun {id: $runId})
             MATCH (n:%s {id: $id})
             MATCH (c:DocumentChunk {id: $chunkId})
             MERGE (e:GraphExtractionEvidence:NodeExtractionEvidence {id: $evidenceId})
             ON CREATE SET e += $evidenceProps
             MERGE (e)-[:ASSERTS_NODE]->(n)
-            MERGE (r)-[:HAS_GRAPH_EVIDENCE]->(e)
             MERGE (c)-[:HAS_GRAPH_EVIDENCE]->(e)
             """.formatted(label))
-            .bind(extractionRunId).to("runId")
             .bind(entityId).to("id")
             .bind(chunkId).to("chunkId")
             .bind(evidenceId).to("evidenceId")
@@ -167,14 +164,11 @@ public class GraphWriteService {
             rel.properties()
         );
         neo4jClient.query("""
-            MATCH (r:ExtractionRun {id: $runId})
             MATCH (c:DocumentChunk {id: $chunkId})
             MERGE (e:GraphExtractionEvidence:RelationshipExtractionEvidence {id: $evidenceId})
             ON CREATE SET e += $evidenceProps
-            MERGE (r)-[:HAS_GRAPH_EVIDENCE]->(e)
             MERGE (c)-[:HAS_GRAPH_EVIDENCE]->(e)
             """)
-            .bind(extractionRunId).to("runId")
             .bind(chunkId).to("chunkId")
             .bind(evidenceId).to("evidenceId")
             .bind(evidenceProps).to("evidenceProps")

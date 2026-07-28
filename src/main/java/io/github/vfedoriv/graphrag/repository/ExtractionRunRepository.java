@@ -1,18 +1,18 @@
 package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
+import java.time.Instant;
 import java.util.List;
-import org.springframework.data.neo4j.repository.query.Query;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
+import java.util.Optional;
 
-public interface ExtractionRunRepository extends Neo4jRepository<ExtractionRunNode, String> {
-
+public interface ExtractionRunRepository {
     List<ExtractionRunNode> findByDocumentIdOrderByStartedAtAsc(String documentId);
-
-    @Query("""
-        MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun {status: 'COMPLETED'})
-        RETURN count(run) > 0
-        """)
     Boolean hasCompletedRun(String documentId);
-
+    Optional<ExtractionRunNode> findById(String id);
+    ExtractionRunNode save(ExtractionRunNode run);
+    List<String> findIdsByDocumentId(String documentId);
+    List<String> findIdsByDocumentIdAndStatus(String documentId, ExtractionRunStatus status);
+    List<ExtractionRunNode> findStaleRunningBefore(Instant before, int limit);
+    long deleteByDocumentId(String documentId);
 }

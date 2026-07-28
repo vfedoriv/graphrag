@@ -30,7 +30,7 @@ public class DocumentChunkPersistenceAdapter {
         repository.deleteByDocumentId(documentId);
         for (DocumentChunkNode chunk : chunks) {
             repository.save(chunk);
-            attachToDocument(documentId, chunk.getId());
+            attachToDocument(documentId, knowledgeBaseId, chunk.getId());
             embeddingSpaceIndexService.assignChunk(chunk.getId(), knowledgeBaseId, embeddingSpace);
         }
     }
@@ -39,13 +39,16 @@ public class DocumentChunkPersistenceAdapter {
         return repository.findByDocumentIdOrderByChunkIndexAsc(documentId);
     }
 
-    private void attachToDocument(String documentId, String chunkId) {
+    private void attachToDocument(String documentId, String knowledgeBaseId, String chunkId) {
         neo4jClient.query("""
-            MATCH (d:DocumentUpload {id: $documentId})
+            MERGE (d:DocumentUpload {id: $documentId})
+            SET d.knowledgeBaseId = $knowledgeBaseId
+            WITH d
             MATCH (c:DocumentChunk {id: $chunkId})
             MERGE (d)-[:HAS_CHUNK]->(c)
             """)
             .bind(documentId).to("documentId")
+            .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(chunkId).to("chunkId")
             .run();
     }

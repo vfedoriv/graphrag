@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,7 +36,7 @@ class DocumentStorageReconciliationServiceTest {
         mutation.setDocumentId("doc-1");
         Path orphan = Files.createTempFile("storage-mutation", ".bin");
         mutation.setContentUri(orphan.toUri().toString());
-        when(mutationRepository.findByStateOrderByCreatedAtAsc(DocumentStorageMutationState.PENDING)).thenReturn(List.of(mutation));
+        when(mutationRepository.claimPending(anyString(), any(), any(), anyInt())).thenReturn(List.of(mutation));
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.empty());
         when(binaryStorageService.resolvePath(orphan.toUri())).thenReturn(orphan);
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
@@ -59,7 +61,7 @@ class DocumentStorageReconciliationServiceTest {
         DocumentUploadNode document = new DocumentUploadNode();
         document.setId("doc-1");
         GraphArtifactCleanupService cleanupService = mock(GraphArtifactCleanupService.class);
-        when(mutationRepository.findByStateOrderByCreatedAtAsc(DocumentStorageMutationState.PENDING)).thenReturn(List.of(mutation));
+        when(mutationRepository.claimPending(anyString(), any(), any(), anyInt())).thenReturn(List.of(mutation));
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document));
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
         DocumentStorageReconciliationService service = new DocumentStorageReconciliationService(
@@ -84,7 +86,7 @@ class DocumentStorageReconciliationServiceTest {
         DocumentStorageMutationNode mutation = pending(
             "mutation-replace", DocumentStorageMutationType.DELETE_REPLACED_CONTENT, "doc-1", replacedContent.toUri().toString()
         );
-        when(mutationRepository.findByStateOrderByCreatedAtAsc(DocumentStorageMutationState.PENDING)).thenReturn(List.of(mutation));
+        when(mutationRepository.claimPending(anyString(), any(), any(), anyInt())).thenReturn(List.of(mutation));
         when(binaryStorageService.resolvePath(replacedContent.toUri())).thenReturn(replacedContent);
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
         DocumentStorageReconciliationService service = new DocumentStorageReconciliationService(

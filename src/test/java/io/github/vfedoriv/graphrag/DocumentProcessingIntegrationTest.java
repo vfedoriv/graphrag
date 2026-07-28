@@ -12,6 +12,8 @@ import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
@@ -51,6 +53,10 @@ class DocumentProcessingIntegrationTest {
     private DocumentProcessingService documentProcessingService;
     @Autowired
     private DocumentChunkRepository documentChunkRepository;
+    @Autowired
+    private ExtractionRunRepository extractionRunRepository;
+    @Autowired
+    private DocumentProcessingRunRepository processingRunRepository;
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
@@ -159,15 +165,33 @@ class DocumentProcessingIntegrationTest {
             """)
             .bind(uploaded.getId()).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
-        Long extractionRuns = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun)
-            RETURN count(r) AS c
+        int extractionRuns = extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId()).size();
+        int processingRuns = processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId()).size();
+        Long graphRunNodes = neo4jClient.query("""
+            MATCH (run)
+            WHERE run:ExtractionRun OR run:DocumentProcessingRun
+            RETURN count(run) AS c
             """)
-            .bind(uploaded.getId()).to("documentId")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(nodeEvidence).isEqualTo(1L);
         assertThat(relationshipEvidence).isEqualTo(1L);
-        assertThat(extractionRuns).isEqualTo(1L);
+        assertThat(extractionRuns).isEqualTo(2);
+        assertThat(processingRuns).isEqualTo(2);
+        assertThat(graphRunNodes).isZero();
+
+        documentUploadService.replace(
+            "kb-1",
+            uploaded.getId(),
+            new MockMultipartFile(
+                "file",
+                "replacement.txt",
+                "text/plain",
+                "replacement contract content".getBytes()
+            )
+        );
+        assertThat(extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
+        assertThat(processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
+        assertThat(documentProcessingService.process(uploaded.getId()).getStatus().name()).isEqualTo("COMPLETED");
     }
 
     @TestConfiguration

@@ -8,6 +8,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
@@ -51,6 +53,8 @@ class GraphExtractionCleanupIntegrationTest {
     private SchemaRegistryService schemaRegistryService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private ExtractionRunRepository extractionRunRepository;
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
@@ -102,24 +106,15 @@ class GraphExtractionCleanupIntegrationTest {
         DocumentUploadNode completed = documentProcessingService.process(uploaded.getId());
         assertThat(completed.getStatus().name()).isEqualTo("COMPLETED");
 
-        Long runCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun)
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long failedRunCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'FAILED'})
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long completedRunCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
+        int runCount = extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId()).size();
+        int failedRunCount = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.FAILED
+        ).size();
+        int completedRunCount = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.COMPLETED
+        ).size();
 
         Long sharedNodeCount = neo4jClient.query("""
             MATCH (c:Contract {contractId: 'C-SHARED'})
@@ -146,9 +141,9 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(r) AS c
             """)
             .fetchAs(Long.class).one().orElse(0L);
-        assertThat(runCount).isEqualTo(1L);
-        assertThat(failedRunCount).isEqualTo(0L);
-        assertThat(completedRunCount).isEqualTo(1L);
+        assertThat(runCount).isEqualTo(2);
+        assertThat(failedRunCount).isEqualTo(1);
+        assertThat(completedRunCount).isEqualTo(1);
         assertThat(sharedNodeCount).isEqualTo(1L);
         assertThat(failedOnlyNodeCount).isEqualTo(0L);
         assertThat(failedOnlyRelatedNodeCount).isEqualTo(0L);
@@ -179,28 +174,19 @@ class GraphExtractionCleanupIntegrationTest {
         assertThat(secondAttempt.getStatus().name()).isEqualTo("FAILED");
         assertThat(thirdAttempt.getStatus().name()).isEqualTo("COMPLETED");
 
-        Long runCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun)
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long failedRunCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'FAILED'})
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
-        Long completedRunCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
+        int runCount = extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId()).size();
+        int failedRunCount = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.FAILED
+        ).size();
+        int completedRunCount = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.COMPLETED
+        ).size();
 
-        assertThat(runCount).isEqualTo(1L);
-        assertThat(failedRunCount).isEqualTo(0L);
-        assertThat(completedRunCount).isEqualTo(1L);
+        assertThat(runCount).isEqualTo(3);
+        assertThat(failedRunCount).isEqualTo(2);
+        assertThat(completedRunCount).isEqualTo(1);
     }
 
     @Test
@@ -221,19 +207,17 @@ class GraphExtractionCleanupIntegrationTest {
         DocumentUploadNode initial = documentProcessingService.process(uploaded.getId());
         assertThat(initial.getStatus().name()).isEqualTo("COMPLETED");
 
-        String staleRunId = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
-            RETURN r.id AS runId
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(String.class).one().orElseThrow();
+        String staleRunId = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.COMPLETED
+        ).getFirst();
 
         DocumentUploadNode overwritten = documentProcessingService.process(uploaded.getId(), true);
         assertThat(overwritten.getStatus().name()).isEqualTo("COMPLETED");
 
-        Long staleRunCount = neo4jClient.query("""
-            MATCH (r:ExtractionRun {id: $runId})
-            RETURN count(r) AS c
+        Long staleEvidenceCount = neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {extractionRunId: $runId})
+            RETURN count(e) AS c
             """)
             .bind(staleRunId).to("runId")
             .fetchAs(Long.class).one().orElse(0L);
@@ -247,17 +231,15 @@ class GraphExtractionCleanupIntegrationTest {
             RETURN count(r) AS c
             """)
             .fetchAs(Long.class).one().orElse(0L);
-        Long completedRunCount = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(r:ExtractionRun {status: 'COMPLETED'})
-            RETURN count(r) AS c
-            """)
-            .bind(uploaded.getId()).to("documentId")
-            .fetchAs(Long.class).one().orElse(0L);
+        int completedRunCount = extractionRunRepository.findIdsByDocumentIdAndStatus(
+            uploaded.getId(),
+            ExtractionRunStatus.COMPLETED
+        ).size();
 
-        assertThat(staleRunCount).isEqualTo(0L);
+        assertThat(staleEvidenceCount).isEqualTo(0L);
         assertThat(freshNodeCount).isEqualTo(1L);
         assertThat(freshEdgeCount).isEqualTo(1L);
-        assertThat(completedRunCount).isEqualTo(1L);
+        assertThat(completedRunCount).isEqualTo(2);
     }
 
     private String schemaJson() {

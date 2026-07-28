@@ -1,16 +1,9 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
-
-@Node("DocumentStorageMutation")
 public class DocumentStorageMutationNode {
 
-    @Id
     private String id;
-    @Version
     private Long version;
     private DocumentStorageMutationType type;
     private DocumentStorageMutationState state;
@@ -23,10 +16,13 @@ public class DocumentStorageMutationNode {
     private Instant createdAt;
     private Instant completedAt;
     private Instant updatedAt;
+    private String claimedBy;
+    private Instant claimUntil;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
     public DocumentStorageMutationType getType() { return type; }
     public void setType(DocumentStorageMutationType type) { this.type = type; }
     public DocumentStorageMutationState getState() { return state; }
@@ -49,4 +45,8 @@ public class DocumentStorageMutationNode {
     public void setCompletedAt(Instant completedAt) { this.completedAt = completedAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public String getClaimedBy() { return claimedBy; }
+    public void setClaimedBy(String claimedBy) { this.claimedBy = claimedBy; }
+    public Instant getClaimUntil() { return claimUntil; }
+    public void setClaimUntil(Instant claimUntil) { this.claimUntil = claimUntil; }
 }

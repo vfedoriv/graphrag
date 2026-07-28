@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
-final class GraphExtractionCleanupSupport {
+public final class GraphExtractionCleanupSupport {
 
     private GraphExtractionCleanupSupport() {
     }
@@ -12,7 +12,7 @@ final class GraphExtractionCleanupSupport {
         return 0L;
     }
 
-    static String toNonBlankErrorMessage(Exception ex) {
+    public static String toNonBlankErrorMessage(Exception ex) {
         if (ex.getMessage() == null || ex.getMessage().isBlank()) {
             return ex.getClass().getSimpleName();
         }

@@ -1,9 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.application.processing.ExtractionRunLifecycle;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
-import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
@@ -12,15 +12,11 @@ import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
-import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,30 +24,27 @@ import org.springframework.stereotype.Service;
 public class GraphExtractionService {
 
     private final ActiveSchemaResolver activeSchemaResolver;
-    private final ExtractionRunRepository extractionRunRepository;
+    private final ExtractionRunLifecycle extractionRunLifecycle;
     private final GraphExtractionValidationService validationService;
     private final GraphWriteService graphWriteService;
     private final ObjectProvider<GraphExtractionClient> graphExtractionClientProvider;
-    private final Neo4jClient neo4jClient;
     private final GraphArtifactCleanupService graphArtifactCleanupService;
     private final AiObservationService aiObservationService;
 
     public GraphExtractionService(
         ActiveSchemaResolver activeSchemaResolver,
-        ExtractionRunRepository extractionRunRepository,
+        ExtractionRunLifecycle extractionRunLifecycle,
         GraphExtractionValidationService validationService,
         GraphWriteService graphWriteService,
         ObjectProvider<GraphExtractionClient> graphExtractionClientProvider,
-        Neo4jClient neo4jClient,
         GraphArtifactCleanupService graphArtifactCleanupService,
         AiObservationService aiObservationService
     ) {
         this.activeSchemaResolver = activeSchemaResolver;
-        this.extractionRunRepository = extractionRunRepository;
+        this.extractionRunLifecycle = extractionRunLifecycle;
         this.validationService = validationService;
         this.graphWriteService = graphWriteService;
         this.graphExtractionClientProvider = graphExtractionClientProvider;
-        this.neo4jClient = neo4jClient;
         this.graphArtifactCleanupService = graphArtifactCleanupService;
         this.aiObservationService = aiObservationService;
     }
@@ -74,16 +67,12 @@ public class GraphExtractionService {
         }
         log.info("Graph extraction client resolved: class={}", client.getClass().getName());
 
-        ExtractionRunNode run = new ExtractionRunNode();
-        run.setId(UUID.randomUUID().toString());
-        run.setDocumentId(document.getId());
-        run.setSchemaId(schemaContext.schemaDefinitionId());
-        run.setModel("chat:" + schemaContext.schemaDefinition().getName());
-        run.setStatus(ExtractionRunStatus.RUNNING);
-        run.setStartedAt(Instant.now());
-        extractionRunRepository.save(run);
+        ExtractionRunNode run = extractionRunLifecycle.start(
+            document.getId(),
+            schemaContext.schemaDefinitionId(),
+            "chat:" + schemaContext.schemaDefinition().getName()
+        );
         log.info("Extraction run created: runId={}, schemaId={}, model={}", run.getId(), run.getSchemaId(), run.getModel());
-        linkRunToDocument(run.getId(), document.getId());
         try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(
             AiObservationService.WORKFLOW_GRAPH_EXTRACTION,
             schema.name(),
@@ -119,9 +108,7 @@ public class GraphExtractionService {
                     workflow.highCardinalityAttribute("ai.graph.validated_relationships", String.valueOf(validatedResult.relationships().size()));
                     graphWriteService.write(run.getId(), schemaContext.schemaDefinitionId(), document.getId(), chunk.getId(), schema, validatedResult);
                 }
-                run.setStatus(ExtractionRunStatus.COMPLETED);
-                run.setCompletedAt(Instant.now());
-                extractionRunRepository.save(run);
+                run = extractionRunLifecycle.complete(run);
                 GraphArtifactCleanupService.ExtractionRunCleanupResult cleanupResult =
                     GraphArtifactCleanupService.ExtractionRunCleanupResult.zero();
                 try {
@@ -155,10 +142,7 @@ public class GraphExtractionService {
                 workflow.success();
             } catch (Exception ex) {
                 workflow.error(ex);
-                run.setStatus(ExtractionRunStatus.FAILED);
-                run.setErrorMessage(GraphExtractionCleanupSupport.toNonBlankErrorMessage(ex));
-                run.setCompletedAt(Instant.now());
-                extractionRunRepository.save(run);
+                extractionRunLifecycle.fail(run, ex);
                 log.error(
                     "Graph extraction failed: runId={}, documentId={}, elapsedMs={}, exceptionType={}",
                     run.getId(),
@@ -170,19 +154,6 @@ public class GraphExtractionService {
                 throw ex;
             }
         }
-    }
-
-    private void linkRunToDocument(String runId, String documentId) {
-        log.info("Linking extraction run to document: runId={}, documentId={}", runId, documentId);
-        neo4jClient.query("""
-            MATCH (d:DocumentUpload {id: $documentId})
-            MATCH (r:ExtractionRun {id: $runId})
-            MERGE (d)-[:HAS_EXTRACTION_RUN]->(r)
-            """)
-            .bind(documentId).to("documentId")
-            .bind(runId).to("runId")
-            .run();
-        log.info("Extraction run linked to document: runId={}, documentId={}", runId, documentId);
     }
 
     private GraphExtractionClient resolveGraphExtractionClient() {

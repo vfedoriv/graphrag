@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class DocumentStorageMutationService {
@@ -18,7 +18,7 @@ public class DocumentStorageMutationService {
         this.mutationRepository = mutationRepository;
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentStorageMutationNode begin(DocumentStorageMutationType type, String knowledgeBaseId, String documentId, String contentUri, String previousContentUri) {
         Instant now = Instant.now();
         DocumentStorageMutationNode mutation = new DocumentStorageMutationNode();
@@ -34,7 +34,7 @@ public class DocumentStorageMutationService {
         return mutationRepository.save(mutation);
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void recordStoredContent(String mutationId, String contentUri) {
         DocumentStorageMutationNode mutation = mutationRepository.findById(mutationId).orElseThrow();
         mutation.setContentUri(contentUri);
@@ -42,19 +42,21 @@ public class DocumentStorageMutationService {
         mutationRepository.save(mutation);
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void complete(String mutationId) { transition(mutationId, DocumentStorageMutationState.COMPLETED, null); }
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void compensate(String mutationId) { transition(mutationId, DocumentStorageMutationState.COMPENSATED, null); }
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void recordFailure(String mutationId, Exception exception) {
         DocumentStorageMutationNode mutation = mutationRepository.findById(mutationId).orElseThrow();
         mutation.setRetryCount(mutation.getRetryCount() + 1);
         mutation.setLastError(safeMessage(exception));
         mutation.setUpdatedAt(Instant.now());
+        mutation.setClaimedBy(null);
+        mutation.setClaimUntil(null);
         mutationRepository.save(mutation);
     }
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void markPermanentlyFailed(String mutationId, Exception exception) { transition(mutationId, DocumentStorageMutationState.FAILED, safeMessage(exception)); }
 
     private void transition(String mutationId, DocumentStorageMutationState state, String error) {
@@ -64,6 +66,8 @@ public class DocumentStorageMutationService {
         mutation.setLastError(error);
         mutation.setUpdatedAt(now);
         mutation.setCompletedAt(now);
+        mutation.setClaimedBy(null);
+        mutation.setClaimUntil(null);
         mutationRepository.save(mutation);
     }
 

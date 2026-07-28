@@ -1,16 +1,9 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
-
-@Node("DocumentUpload")
 public class DocumentUploadNode {
 
-    @Id
     private String id;
-    @Version
     private Long version;
     private String knowledgeBaseId;
     private String originalFilename;
@@ -35,6 +28,10 @@ public class DocumentUploadNode {
 
     public Long getVersion() {
         return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getKnowledgeBaseId() {

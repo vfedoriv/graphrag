@@ -27,7 +27,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DocumentStorageReconciliationService implements ApplicationRunner {
     private static final int MAX_RETRIES = 10;
+    private static final int CLAIM_LIMIT = 100;
+    private static final Duration CLAIM_LEASE = Duration.ofMinutes(5);
     private static final Duration COMPLETED_RETENTION = Duration.ofDays(7);
+    private static final String WORKER_ID = "document-storage-reconciler";
     private final DocumentStorageMutationRepository mutationRepository;
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentStorageMutationService mutationService;
@@ -51,10 +54,16 @@ public class DocumentStorageReconciliationService implements ApplicationRunner {
 
     @Scheduled(fixedDelay = 300_000L)
     public void reconcilePendingMutations() {
-        List<DocumentStorageMutationNode> pending = mutationRepository.findByStateOrderByCreatedAtAsc(DocumentStorageMutationState.PENDING);
+        Instant now = Instant.now();
+        List<DocumentStorageMutationNode> pending = mutationRepository.claimPending(
+            WORKER_ID,
+            now,
+            now.plus(CLAIM_LEASE),
+            CLAIM_LIMIT
+        );
         meterRegistry.counter("document.storage.mutations.pending").increment(pending.size());
         for (DocumentStorageMutationNode mutation : pending) { reconcile(mutation); }
-        mutationRepository.deleteCompletedBefore(Instant.now().minus(COMPLETED_RETENTION));
+        mutationRepository.deleteCompletedBefore(now.minus(COMPLETED_RETENTION));
     }
 
     private void reconcile(DocumentStorageMutationNode mutation) {

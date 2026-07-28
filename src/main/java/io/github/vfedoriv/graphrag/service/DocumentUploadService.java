@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.application.processing.DocumentRunHistoryLifecycle;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
@@ -22,9 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -36,22 +34,24 @@ public class DocumentUploadService {
     private final GraphArtifactCleanupService graphArtifactCleanupService;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     private final DocumentStorageMutationService storageMutationService;
+    private final DocumentRunHistoryLifecycle runHistoryLifecycle;
 
     public DocumentUploadService(
         BinaryStorageService binaryStorageService,
         DocumentUploadRepository documentUploadRepository,
         GraphArtifactCleanupService graphArtifactCleanupService,
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
-        DocumentStorageMutationService storageMutationService
+        DocumentStorageMutationService storageMutationService,
+        DocumentRunHistoryLifecycle runHistoryLifecycle
     ) {
         this.binaryStorageService = binaryStorageService;
         this.documentUploadRepository = documentUploadRepository;
         this.graphArtifactCleanupService = graphArtifactCleanupService;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
         this.storageMutationService = storageMutationService;
+        this.runHistoryLifecycle = runHistoryLifecycle;
     }
 
-    @GraphTransactional
     public DocumentUploadNode upload(String knowledgeBaseId, MultipartFile file) {
         log.info(
             "Uploading document: knowledgeBaseId={}, filename={}, contentType={}, sizeBytes={}",
@@ -94,7 +94,7 @@ public class DocumentUploadService {
             storageMutationService.recordStoredContent(mutation.getId(), contentUri.toString());
             node.setContentUri(contentUri.toString());
             DocumentUploadNode saved = documentUploadRepository.save(node);
-            completeAfterCommit(mutation.getId());
+            storageMutationService.complete(mutation.getId());
             log.info("Document uploaded: knowledgeBaseId={}, documentId={}, bytes={}", knowledgeBaseId, saved.getId(), bytes.length);
             return saved;
         } catch (IOException ex) {
@@ -148,7 +148,6 @@ public class DocumentUploadService {
         return path.toString();
     }
 
-    @GraphTransactional
     public DocumentUploadNode replace(String knowledgeBaseId, String documentId, MultipartFile file) {
         log.info(
             "Replacing document: knowledgeBaseId={}, documentId={}, filename={}, contentType={}, sizeBytes={}",
@@ -191,6 +190,8 @@ public class DocumentUploadService {
 
         GraphArtifactCleanupService.DocumentArtifactCleanupResult cleanupResult =
             graphArtifactCleanupService.cleanupDocumentArtifacts(documentId);
+        DocumentRunHistoryLifecycle.DeletedRunHistory deletedRunHistory =
+            runHistoryLifecycle.deleteForReplacement(documentId);
         document.setOriginalFilename(file.getOriginalFilename());
         document.setContentType(file.getContentType());
         document.setSizeBytes(bytes.length);
@@ -200,22 +201,21 @@ public class DocumentUploadService {
         document.setProcessedAt(null);
         document.setErrorMessage(null);
         DocumentUploadNode saved = documentUploadRepository.save(document);
-        completeAfterCommit(storeMutation.getId());
+        storageMutationService.complete(storeMutation.getId());
         schedulePreviousContentDeletion(knowledgeBaseId, documentId, previousContentUri, replacementContentUri.toString());
         log.info(
             "Document replaced: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
             documentId,
             cleanupResult.deletedChunks(),
-            cleanupResult.deletedProcessingRuns(),
-            cleanupResult.deletedRuns(),
+            cleanupResult.deletedProcessingRuns() + deletedRunHistory.processingRuns(),
+            cleanupResult.deletedRuns() + deletedRunHistory.extractionRuns(),
             cleanupResult.deletedRelationships(),
             cleanupResult.deletedObsoleteExtractedNodes()
         );
         return saved;
     }
 
-    @GraphTransactional
     public void delete(String knowledgeBaseId, String documentId) {
         log.info("Deleting document: knowledgeBaseId={}, documentId={}", knowledgeBaseId, documentId);
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
@@ -232,7 +232,7 @@ public class DocumentUploadService {
         GraphArtifactCleanupService.DocumentArtifactCleanupResult cleanupResult =
             graphArtifactCleanupService.cleanupDocumentArtifacts(documentId);
         documentUploadRepository.delete(document);
-        completeAfterCommit(mutation.getId());
+        storageMutationService.complete(mutation.getId());
         log.info(
             "Document deleted: knowledgeBaseId={}, documentId={}, deletedChunks={}, deletedProcessingRuns={}, deletedRuns={}, deletedRelationships={}, deletedObsoleteExtractedNodes={}",
             knowledgeBaseId,
@@ -301,7 +301,7 @@ public class DocumentUploadService {
         );
         try {
             binaryStorageService.delete(URI.create(previousContentUri));
-            completeAfterCommit(mutation.getId());
+            storageMutationService.complete(mutation.getId());
         } catch (IOException ex) {
             storageMutationService.recordFailure(mutation.getId(), ex);
             log.warn(
@@ -312,19 +312,6 @@ public class DocumentUploadService {
                 ex
             );
         }
-    }
-
-    private void completeAfterCommit(String mutationId) {
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            storageMutationService.complete(mutationId);
-            return;
-        }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                storageMutationService.complete(mutationId);
-            }
-        });
     }
 
 }

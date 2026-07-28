@@ -1,16 +1,9 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
-
-@Node("DocumentProcessingRun")
 public class DocumentProcessingRunNode {
 
-    @Id
     private String id;
-    @Version
     private Long version;
     private String documentId;
     private String knowledgeBaseId;
@@ -26,6 +19,10 @@ public class DocumentProcessingRunNode {
     private Instant completedAt;
     private String errorMessage;
     private boolean activeCompleted;
+    private int retryCount;
+    private String retryOfRunId;
+    private String claimedBy;
+    private Instant claimUntil;
 
     public String getId() {
         return id;
@@ -37,6 +34,10 @@ public class DocumentProcessingRunNode {
 
     public Long getVersion() {
         return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getDocumentId() {
@@ -150,4 +151,13 @@ public class DocumentProcessingRunNode {
     public void setActiveCompleted(boolean activeCompleted) {
         this.activeCompleted = activeCompleted;
     }
+
+    public int getRetryCount() { return retryCount; }
+    public void setRetryCount(int retryCount) { this.retryCount = retryCount; }
+    public String getRetryOfRunId() { return retryOfRunId; }
+    public void setRetryOfRunId(String retryOfRunId) { this.retryOfRunId = retryOfRunId; }
+    public String getClaimedBy() { return claimedBy; }
+    public void setClaimedBy(String claimedBy) { this.claimedBy = claimedBy; }
+    public Instant getClaimUntil() { return claimUntil; }
+    public void setClaimUntil(Instant claimUntil) { this.claimUntil = claimUntil; }
 }

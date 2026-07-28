@@ -209,6 +209,8 @@ public class DocumentProcessingService {
 
     public List<DocumentChunkNode> getDocumentChunks(String documentId) {
         log.info("Loading document chunks: documentId={}", documentId);
+        documentUploadRepository.findById(documentId)
+            .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
         List<DocumentChunkNode> chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(documentId);
         log.info("Document chunks loaded: documentId={}, count={}", documentId, chunks.size());
         return chunks;

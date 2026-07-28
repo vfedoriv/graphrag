@@ -114,14 +114,11 @@ class EndToEndMvpFlowMvcIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("COMPLETED"))
             .andExpect(jsonPath("$.localPath").isNotEmpty());
-        String effectiveOptionsJson = neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_PROCESSING_RUN]->(run:DocumentProcessingRun {activeCompleted: true})
-            RETURN run.effectiveOptionsJson AS json
-            """)
-            .bind(documentId).to("documentId")
-            .fetchAs(String.class)
-            .one()
-            .orElseThrow();
+        String effectiveOptionsJson = jdbcTemplate.queryForObject("""
+            SELECT effective_options_json
+            FROM app.document_processing_run
+            WHERE document_id = ? AND active_completed = true
+            """, String.class, documentId);
         assertThat(effectiveOptionsJson).contains("\"preserveLineBreaks\":false");
         mockMvc.perform(post("/api/v1/documents/{documentId}/process", documentId))
             .andExpect(status().isConflict());

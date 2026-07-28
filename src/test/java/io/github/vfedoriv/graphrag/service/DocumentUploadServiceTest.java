@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.application.processing.DocumentRunHistoryLifecycle;
 import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
@@ -38,6 +39,8 @@ class DocumentUploadServiceTest {
     private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     @Mock
     private DocumentStorageMutationService storageMutationService;
+    @Mock
+    private DocumentRunHistoryLifecycle runHistoryLifecycle;
     @InjectMocks
     private DocumentUploadService documentUploadService;
 

@@ -156,7 +156,8 @@ class DocumentUploadIntegrationTest {
 
     private void createDerivedArtifacts(String documentId, String runId, String contractId, String partyId) {
         neo4jClient.query("""
-            MATCH (document:DocumentUpload {id: $documentId})
+            MERGE (document:DocumentUpload {id: $documentId})
+            SET document.knowledgeBaseId = 'kb-1'
             CREATE (chunk:DocumentChunk {id: $documentId + '-chunk', documentId: $documentId, chunkIndex: 0, text: 'chunk'})
             CREATE (processingRun:DocumentProcessingRun {id: $runId + '-processing', documentId: $documentId, status: 'COMPLETED', activeCompleted: true})
             CREATE (run:ExtractionRun {id: $runId, documentId: $documentId, status: 'COMPLETED'})

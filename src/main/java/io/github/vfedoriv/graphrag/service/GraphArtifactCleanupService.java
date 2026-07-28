@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
+import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +15,14 @@ import org.springframework.stereotype.Service;
 public class GraphArtifactCleanupService {
 
     private final Neo4jClient neo4jClient;
+    private final ExtractionRunRepository extractionRunRepository;
 
-    public GraphArtifactCleanupService(Neo4jClient neo4jClient) {
+    public GraphArtifactCleanupService(
+        Neo4jClient neo4jClient,
+        ExtractionRunRepository extractionRunRepository
+    ) {
         this.neo4jClient = neo4jClient;
+        this.extractionRunRepository = extractionRunRepository;
     }
 
     public DocumentArtifactCleanupResult cleanupDocumentArtifacts(String documentId) {
@@ -35,6 +43,13 @@ public class GraphArtifactCleanupService {
 
     public ExtractionRunCleanupResult cleanupRunsAfterSuccessfulExtraction(String documentId, String runId, boolean allowOverwrite) {
         List<String> runIds = staleExtractionRunIds(documentId, runId, allowOverwrite);
+        return cleanupExtractionRuns(documentId, runIds);
+    }
+
+    public ExtractionRunCleanupResult cleanupExtractionRuns(String documentId, List<String> runIds) {
+        if (runIds.isEmpty()) {
+            return ExtractionRunCleanupResult.zero();
+        }
         EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, false);
         long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
         long deletedRuns = deleteRuns(runIds);
@@ -48,31 +63,26 @@ public class GraphArtifactCleanupService {
     }
 
     private List<String> extractionRunIds(String documentId) {
-        return stringValues(neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(run:ExtractionRun)
-            RETURN collect(run.id) AS runIds
-            """)
-            .bind(documentId).to("documentId")
-            .fetch()
-            .one()
-            .orElse(Map.of()));
+        return extractionRunRepository.findIdsByDocumentId(documentId);
     }
 
     private List<String> staleExtractionRunIds(String documentId, String runId, boolean allowOverwrite) {
-        return stringValues(neo4jClient.query("""
-            MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(current:ExtractionRun {id: $runId, status: 'COMPLETED'})
-            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(failed:ExtractionRun {status: 'FAILED'})
-            WHERE failed.id <> current.id
-            OPTIONAL MATCH (:DocumentUpload {id: $documentId})-[:HAS_EXTRACTION_RUN]->(completed:ExtractionRun {status: 'COMPLETED'})
-            WHERE $allowOverwrite = true AND completed.id <> current.id
-            RETURN collect(DISTINCT failed.id) + collect(DISTINCT completed.id) AS runIds
-            """)
-            .bind(documentId).to("documentId")
-            .bind(runId).to("runId")
-            .bind(allowOverwrite).to("allowOverwrite")
-            .fetch()
-            .one()
-            .orElse(Map.of()));
+        ExtractionRunNode current = extractionRunRepository.findById(runId).orElse(null);
+        if (current == null
+            || !documentId.equals(current.getDocumentId())
+            || current.getStatus() != ExtractionRunStatus.COMPLETED) {
+            return List.of();
+        }
+        List<String> runIds = new ArrayList<>(
+            extractionRunRepository.findIdsByDocumentIdAndStatus(documentId, ExtractionRunStatus.FAILED)
+        );
+        if (allowOverwrite) {
+            runIds.addAll(
+                extractionRunRepository.findIdsByDocumentIdAndStatus(documentId, ExtractionRunStatus.COMPLETED)
+            );
+        }
+        runIds.removeIf(runId::equals);
+        return runIds.stream().distinct().toList();
     }
 
     private EvidenceCleanupResult cleanupEvidence(String documentId, List<String> runIds, boolean entireDocument) {
@@ -103,8 +113,8 @@ public class GraphArtifactCleanupService {
             return List.of();
         }
         return List.copyOf(neo4jClient.query("""
-            MATCH (run:ExtractionRun)-[:HAS_GRAPH_EVIDENCE]->(e:GraphExtractionEvidence)
-            WHERE run.id IN $runIds
+            MATCH (e:GraphExtractionEvidence)
+            WHERE e.extractionRunId IN $runIds
             RETURN DISTINCT e.canonicalFactId AS canonicalFactId
             """)
             .bind(runIds).to("runIds")
@@ -130,8 +140,8 @@ public class GraphArtifactCleanupService {
             return Map.of("deletedEvidence", 0L);
         }
         return neo4jClient.query("""
-            MATCH (run:ExtractionRun)-[:HAS_GRAPH_EVIDENCE]->(e:GraphExtractionEvidence)
-            WHERE run.id IN $runIds
+            MATCH (e:GraphExtractionEvidence)
+            WHERE e.extractionRunId IN $runIds
             WITH collect(DISTINCT e) AS evidence
             FOREACH (e IN evidence | DETACH DELETE e)
             RETURN size(evidence) AS deletedEvidence
@@ -253,24 +263,6 @@ public class GraphArtifactCleanupService {
             .one()
             .orElse(Map.of());
         return GraphExtractionCleanupSupport.toLong(row.get("count"));
-    }
-
-    private List<String> stringValues(Map<String, Object> row) {
-        return stringValues(row, "runIds");
-    }
-
-    private List<String> stringValues(Map<String, Object> row, String key) {
-        Object value = row.get(key);
-        if (!(value instanceof List<?> values)) {
-            return List.of();
-        }
-        List<String> result = new ArrayList<>();
-        for (Object entry : values) {
-            if (entry instanceof String string && !string.isBlank()) {
-                result.add(string);
-            }
-        }
-        return result;
     }
 
     static DocumentArtifactCleanupResult documentCleanupResult(Map<String, Object> cleanupRow) {

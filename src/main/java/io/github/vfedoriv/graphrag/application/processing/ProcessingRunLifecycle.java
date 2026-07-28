@@ -6,10 +6,11 @@ import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingOptionSet;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Component
 public class ProcessingRunLifecycle {
@@ -22,7 +23,7 @@ public class ProcessingRunLifecycle {
         this.jsonCodec = new ProcessingJsonCodec(objectMapper);
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode start(DocumentUploadNode document, DocumentProcessingOptionSet options) {
         DocumentProcessingRunNode run = new DocumentProcessingRunNode();
         run.setId(UUID.randomUUID().toString());
@@ -38,30 +39,30 @@ public class ProcessingRunLifecycle {
         run.setStage("STARTED");
         run.setStartedAt(Instant.now());
         run.setActiveCompleted(false);
+        applyRetryMetadata(run);
         DocumentProcessingRunNode saved = repository.save(run);
         repository.attachToDocument(document.getId(), saved.getId());
         return saved;
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode checkpoint(DocumentProcessingRunNode run, String stage) {
         run.setStage(stage);
         return repository.save(run);
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode complete(DocumentProcessingRunNode run) {
         run.setStatus(DocumentProcessingRunStatus.COMPLETED);
         run.setStage("COMPLETED");
         run.setCompletedAt(Instant.now());
         run.setErrorMessage(null);
         run.setActiveCompleted(true);
-        DocumentProcessingRunNode saved = repository.save(run);
-        repository.deactivateOtherCompletedRuns(saved.getDocumentId(), saved.getId());
-        return saved;
+        repository.deactivateOtherCompletedRuns(run.getDocumentId(), run.getId());
+        return repository.save(run);
     }
 
-    @GraphTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode fail(DocumentProcessingRunNode run, Exception error) {
         run.setStatus(DocumentProcessingRunStatus.FAILED);
         run.setStage("FAILED");
@@ -69,5 +70,18 @@ public class ProcessingRunLifecycle {
         run.setErrorMessage(error.getMessage());
         run.setActiveCompleted(false);
         return repository.save(run);
+    }
+
+    private void applyRetryMetadata(DocumentProcessingRunNode run) {
+        List<DocumentProcessingRunNode> history =
+            repository.findByDocumentIdOrderByStartedAtAsc(run.getDocumentId());
+        if (history.isEmpty()) {
+            return;
+        }
+        DocumentProcessingRunNode prior = history.getLast();
+        if (prior.getStatus() == DocumentProcessingRunStatus.FAILED) {
+            run.setRetryOfRunId(prior.getId());
+            run.setRetryCount(prior.getRetryCount() + 1);
+        }
     }
 }
