@@ -10,7 +10,9 @@ import io.github.vfedoriv.graphrag.domain.SchemaStatus;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.service.SchemaBootstrapService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Order;
@@ -43,6 +45,8 @@ class SchemaRegistryIntegrationTest {
     private KnowledgeBaseRepository knowledgeBaseRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private SchemaBootstrapService schemaBootstrapService;
 
     @Test
     void persistsAndActivatesSchema() {
@@ -94,7 +98,9 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     @Order(1)
-    void bootstrapsPredefinedSchemasFromResources() {
+    void bootstrapsPredefinedSchemasFromResources() throws IOException {
+        resetRelationalMetadata();
+        schemaBootstrapService.bootstrap();
         List<SchemaDefinitionNode> schemas = schemaRegistryService.listSchemas();
         assertThat(schemas).extracting("name").contains("legal-contracts", "cmms");
     }

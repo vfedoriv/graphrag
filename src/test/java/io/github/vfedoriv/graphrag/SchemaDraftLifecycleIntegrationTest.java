@@ -357,8 +357,9 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(failedOutcome.path("retryable").asBoolean()).isTrue();
         assertThat(MODEL_CALL_COUNT.get()).isEqualTo(2);
 
-        neo4jClient.query("MATCH (result:SchemaDraftSourceResult {runId: $runId}) REMOVE result.failureCode")
-            .bind(firstRunId).to("runId").run();
+        jdbcTemplate.update(
+            "UPDATE app.schema_draft_source_result SET failure_code = NULL WHERE run_id = ?",
+            firstRunId);
         JsonNode legacy = json(mockMvc.perform(get(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs/{runId}",
                 KNOWLEDGE_BASE_ID, draftId, firstRunId))
@@ -401,10 +402,11 @@ class SchemaDraftLifecycleIntegrationTest {
             "{\"revision\":1}", KNOWLEDGE_BASE_ID, permanentDraftId));
         String permanentRunId = permanentStart.path("runId").asText();
         awaitTerminal(permanentDraftId, permanentRunId);
-        neo4jClient.query("""
-            MATCH (run:SchemaDraftAnalysisRun {id: $runId})
-            SET run.status = 'FAILED', run.retryable = false, run.failureCategory = 'PERMANENT_TEST_FAILURE'
-            """).bind(permanentRunId).to("runId").run();
+        jdbcTemplate.update("""
+            UPDATE app.schema_draft_analysis_run
+            SET status = 'FAILED', retryable = false, failure_category = 'PERMANENT_TEST_FAILURE'
+            WHERE id = ?
+            """, permanentRunId);
 
         JsonNode permanentDetail = analysisStatus(permanentDraftId, permanentRunId);
         assertThat(permanentDetail.path("retryable").asBoolean()).isFalse();
@@ -462,10 +464,7 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId))
             .hasSize(beforeMissingSourceRetry);
 
-        neo4jClient.query("""
-            MATCH (draft:SchemaDraft {id: $draftId})
-            SET draft.status = 'PUBLISHED'
-            """).bind(sourceDraftId).to("draftId").run();
+        jdbcTemplate.update("UPDATE app.schema_draft SET status = 'PUBLISHED' WHERE id = ?", sourceDraftId);
         assertThat(analysisStatus(sourceDraftId, sourceRunId).path("canRetry").asBoolean()).isFalse();
         int beforeClosedDraftRetry = runRepository.findByDraftIdOrderByCreatedAtDesc(sourceDraftId).size();
         mockMvc.perform(post(
@@ -526,10 +525,13 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(defaults.path("effectiveSourceTimeoutMillis").asLong()).isEqualTo(60_000);
         assertThat(defaults.path("effectiveRequestTimeoutMillis").asLong()).isEqualTo(180_000);
 
-        neo4jClient.query("""
-            MATCH (run:SchemaDraftAnalysisRun {id: $runId})
-            REMOVE run.discoveryMaxConcurrency, run.discoverySourceTimeoutMillis, run.discoveryRequestTimeoutMillis
-            """).bind(firstRunId).to("runId").run();
+        jdbcTemplate.update("""
+            UPDATE app.schema_draft_analysis_run
+            SET discovery_max_concurrency = NULL,
+                discovery_source_timeout_millis = NULL,
+                discovery_request_timeout_millis = NULL
+            WHERE id = ?
+            """, firstRunId);
         JsonNode legacy = analysisStatus(draftId, firstRunId);
         assertThat(legacy.path("effectiveSourceConcurrency").isNull()).isTrue();
         assertThat(legacy.path("effectiveSourceTimeoutMillis").isNull()).isTrue();
@@ -856,12 +858,10 @@ class SchemaDraftLifecycleIntegrationTest {
         saveAggregate(draftId, "aggregate-promoted", 1);
         saveAggregate(draftId, "aggregate-retained", 2);
         saveAggregate(draftId, "aggregate-legacy-current", 3);
-        SchemaDraftAnalysisRunNode promotedRun = new SchemaDraftAnalysisRunNode();
-        promotedRun.setId("run-promoted");
-        promotedRun.setDraftId(draftId);
+        SchemaDraftAnalysisRunNode promotedRun = runRepository
+            .findById("run-aggregate-promoted").orElseThrow();
         promotedRun.setAggregateRevisionId("aggregate-promoted");
         promotedRun.setCurrentResult(true);
-        promotedRun.setCreatedAt(Instant.parse("2026-07-01T00:00:00Z"));
         runRepository.save(promotedRun);
         SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
         draft.setCurrentAggregateId("aggregate-legacy-current");
@@ -1173,22 +1173,10 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(heldOutEligibility.path("ineligibilityReason").isNull()).isTrue();
 
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (result:SchemaDraftSourceResult {sourceId: $sourceId}) SET result.status = 'FAILED'",
+            "UPDATE app.schema_draft_source_result SET status = 'FAILED' WHERE source_id = ?",
             evidence.getId(), true);
         assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (result:SchemaDraftSourceResult {sourceId: $sourceId}) SET result.status = 'SUCCEEDED'",
-            evidence.getId(), false);
-        assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.revision = 1",
-            evidence.getId(), false);
-        assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.revision = 0, source.status = 'REMOVED'",
-            evidence.getId(), false);
-        assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.status = 'ACTIVE', source.type = 'TEXT'",
-            evidence.getId(), false);
-        assertEligibilityAfterMutation(draftId, source.path("id").asText(),
-            "MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.type = 'DOCUMENT'",
+            "UPDATE app.schema_draft_source_result SET status = 'SUCCEEDED' WHERE source_id = ?",
             evidence.getId(), false);
 
         JsonNode firstEligibilityPage = json(mockMvc.perform(get(
@@ -1288,13 +1276,6 @@ class SchemaDraftLifecycleIntegrationTest {
             new MockMultipartFile("file", "uploaded-text.txt", "text/plain", text.getBytes()));
         DocumentUploadNode unrelated = documentUploadService.upload(KNOWLEDGE_BASE_ID,
             new MockMultipartFile("file", "unrelated.txt", "text/plain", "Person HELD-OUT".getBytes()));
-        neo4jClient.query("""
-            CREATE (:SchemaDraftSourceResult {
-                id: 'non-current-result', draftId: $draftId, runId: 'non-current-run',
-                sourceId: 'non-current-source', sourceRevision: 0, sourceSha256: $sha256, status: 'SUCCEEDED'
-            })
-            """).bind(draftId).to("draftId").bind(unrelated.getSha256()).to("sha256").run();
-
         JsonNode eligibility = eligibility(draftId);
         assertThat(List.of(documentEvidence, fileEvidence, textEvidence)).allSatisfy(document -> {
             JsonNode item = findDocument(eligibility.path("content"), document.getId());
@@ -1313,21 +1294,19 @@ class SchemaDraftLifecycleIntegrationTest {
             .andExpect(status().isBadRequest());
         assertThat(countNodes("SchemaDraftEvaluationRun")).isEqualTo(evaluationRunCount);
 
-        neo4jClient.query("""
-            MATCH (result:SchemaDraftSourceResult {runId: $runId})
-            WHERE result.sourceSha256 = $sha256
-            SET result.status = 'FAILED'
-            """).bind(analysis.path("runId").asText()).to("runId")
-            .bind(fileEvidence.getSha256()).to("sha256").run();
+        jdbcTemplate.update("""
+            UPDATE app.schema_draft_source_result
+            SET status = 'FAILED'
+            WHERE run_id = ? AND source_sha256 = ?
+            """, analysis.path("runId").asText(), fileEvidence.getSha256());
         assertThat(findDocument(eligibility(draftId).path("content"), fileEvidence.getId())
             .path("eligible").asBoolean()).isTrue();
 
-        neo4jClient.query("""
-            MATCH (result:SchemaDraftSourceResult {runId: $runId})
-            WHERE result.sourceSha256 = $sha256
-            REMOVE result.sourceSha256
-            """).bind(analysis.path("runId").asText()).to("runId")
-            .bind(documentEvidence.getSha256()).to("sha256").run();
+        jdbcTemplate.update("""
+            UPDATE app.schema_draft_source_result
+            SET source_sha256 = NULL
+            WHERE run_id = ? AND source_sha256 = ?
+            """, analysis.path("runId").asText(), documentEvidence.getSha256());
         assertThat(sourceResultRepository.findHistoricalContributingDocumentIds(draftId))
             .containsExactly(documentEvidence.getId());
         assertThat(findDocument(eligibility(draftId).path("content"), documentEvidence.getId())
@@ -1460,13 +1439,17 @@ class SchemaDraftLifecycleIntegrationTest {
         JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
             "{\"targetName\":\"claims\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
         String draftId = draft.path("id").asText();
+        SchemaDraftNode persistedDraft = draftRepository.findById(draftId).orElseThrow();
+        for (int index = 0; index < 8; index++) {
+            runRepository.save(claimableRun(persistedDraft, "run-" + index));
+        }
         try (ExecutorService executor = Executors.newFixedThreadPool(8)) {
             List<Future<Long>> claims = new ArrayList<>();
             for (int index = 0; index < 8; index++) {
                 String runId = "run-" + index;
                 claims.add(executor.submit(() -> {
                     try {
-                        return draftRepository.reserveAnalysis(draftId, runId);
+                        return draftRepository.reserveAnalysis(draftId, runId, 0);
                     } catch (RuntimeException exception) {
                         return 0L;
                     }
@@ -1481,32 +1464,27 @@ class SchemaDraftLifecycleIntegrationTest {
     }
 
     @Test
-    void backfillsPersistenceVersionsForEveryDraftEntityType() {
+    void backfillsPersistenceVersionsForDownstreamDraftEntityTypes() {
         neo4jClient.query("""
-            CREATE (:SchemaDraft {id: 'legacy-draft'}),
-                   (:SchemaDraftSource {id: 'legacy-source'}),
-                   (:SchemaDraftSourceRevision {id: 'legacy-source-revision'}),
-                   (:SchemaDraftAnalysisRun {id: 'legacy-run'}),
-                   (:SchemaDraftSourceResult {id: 'legacy-result'}),
-                   (:SchemaDraftAggregateRevision {id: 'legacy-aggregate'}),
-                   (:SchemaDraftDecision {id: 'legacy-decision'}),
-                   (:SchemaDraftConflict {id: 'legacy-conflict'}),
-                   (:SchemaDraftStorageMutation {id: 'legacy-mutation'})
+            CREATE (:SchemaDraftEvaluationRun {id: 'legacy-evaluation-run'}),
+                   (:SchemaDraftEvaluationOutcome {id: 'legacy-evaluation-outcome'}),
+                   (:SchemaDraftPublication {id: 'legacy-publication'}),
+                   (:SchemaReprocessingPlan {id: 'legacy-reprocessing-plan'}),
+                   (:SchemaReprocessingItem {id: 'legacy-reprocessing-item'})
             """).run();
 
         versionBackfillService.run(null);
 
         Long count = neo4jClient.query("""
             MATCH (n)
-            WHERE (n:SchemaDraft OR n:SchemaDraftSource OR n:SchemaDraftSourceRevision OR
-                   n:SchemaDraftAnalysisRun OR n:SchemaDraftSourceResult OR
-                   n:SchemaDraftAggregateRevision OR n:SchemaDraftDecision OR
-                   n:SchemaDraftConflict OR n:SchemaDraftStorageMutation)
+            WHERE (n:SchemaDraftEvaluationRun OR n:SchemaDraftEvaluationOutcome OR
+                   n:SchemaDraftPublication OR n:SchemaReprocessingPlan OR
+                   n:SchemaReprocessingItem)
               AND n.id STARTS WITH 'legacy-'
               AND n.persistenceVersion = 0
             RETURN count(n)
             """).fetchAs(Long.class).one().orElse(0L);
-        assertThat(count).isEqualTo(9L);
+        assertThat(count).isEqualTo(5L);
     }
 
     @Test
@@ -1545,9 +1523,12 @@ class SchemaDraftLifecycleIntegrationTest {
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/sources/text",
             "{\"revision\":1,\"name\":\"unavailable\",\"text\":\"PRIVATE_PREPARATION_SOURCE\"}",
             KNOWLEDGE_BASE_ID, draftId));
-        neo4jClient.query("MATCH (source:SchemaDraftSource {id: $sourceId}) SET source.contentUri = $contentUri")
-            .bind(preparationFailure.path("id").asText()).to("sourceId")
-            .bind("file:///private-missing-source.txt").to("contentUri").run();
+        jdbcTemplate.update(
+            "UPDATE app.schema_draft_source SET content_uri = ? WHERE id = ?",
+            "file:///private-missing-source.txt", preparationFailure.path("id").asText());
+        jdbcTemplate.update(
+            "UPDATE app.schema_draft_source_revision SET content_uri = ? WHERE source_id = ?",
+            "file:///private-missing-source.txt", preparationFailure.path("id").asText());
 
         JsonNode accepted = json(postJson(
             "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
@@ -1585,8 +1566,9 @@ class SchemaDraftLifecycleIntegrationTest {
                 KNOWLEDGE_BASE_ID));
             String draftId = created.path("id").asText();
             String legacy = legacyValues.get(index);
-            neo4jClient.query("MATCH (d:SchemaDraft {id: $id}) SET d.guidanceJson = $guidance")
-                .bind(draftId).to("id").bind(legacy).to("guidance").run();
+            jdbcTemplate.update(
+                "UPDATE app.schema_draft SET guidance_json = ? WHERE id = ?",
+                legacy, draftId);
 
             JsonNode read = json(mockMvc.perform(get(
                     "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}", KNOWLEDGE_BASE_ID, draftId))
@@ -1628,6 +1610,11 @@ class SchemaDraftLifecycleIntegrationTest {
     }
 
     private void saveAggregate(String draftId, String aggregateId, long revision) {
+        SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
+        SchemaDraftAnalysisRunNode run = claimableRun(draft, "run-" + aggregateId);
+        run.setStatus(io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus.COMPLETED);
+        run.setCompletedAt(Instant.parse("2026-07-01T00:00:00Z").plusSeconds(revision));
+        runRepository.save(run);
         SchemaDraftAggregateRevisionNode aggregate = new SchemaDraftAggregateRevisionNode();
         aggregate.setId(aggregateId);
         aggregate.setDraftId(draftId);
@@ -1640,6 +1627,30 @@ class SchemaDraftLifecycleIntegrationTest {
         aggregate.setContentHash("hash-" + aggregateId);
         aggregate.setCreatedAt(Instant.parse("2026-07-01T00:00:00Z").plusSeconds(revision));
         aggregateRepository.save(aggregate);
+    }
+
+    private SchemaDraftAnalysisRunNode claimableRun(SchemaDraftNode draft, String runId) {
+        Instant now = Instant.now();
+        SchemaDraftAnalysisRunNode run = new SchemaDraftAnalysisRunNode();
+        run.setId(runId);
+        run.setDraftId(draft.getId());
+        run.setKnowledgeBaseId(draft.getKnowledgeBaseId());
+        run.setStatus(io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus.RUNNING);
+        run.setDraftRevision(draft.getRevision());
+        run.setGuidanceRevision(draft.getGuidanceRevision());
+        run.setGuidanceFingerprint(draft.getGuidanceFingerprint());
+        run.setSourceSnapshotJson("[]");
+        run.setSourceMembershipFingerprint("a".repeat(64));
+        run.setAiProfileId(draft.getActiveAiProfileId());
+        run.setAiProfileRevision(draft.getActiveAiProfileRevision());
+        run.setConfiguredTimeoutSeconds(60);
+        run.setConfiguredSdkMaxRetries(2);
+        run.setPromptRevision("test");
+        run.setCandidateRevision("test");
+        run.setSnapshotFingerprint("b".repeat(64));
+        run.setCreatedAt(now);
+        run.setStartedAt(now);
+        return run;
     }
 
     private void saveConflict(
@@ -1763,7 +1774,7 @@ class SchemaDraftLifecycleIntegrationTest {
     private void assertEligibilityAfterMutation(
         String draftId, String sourceId, String mutation, String documentId, boolean eligible
     ) throws Exception {
-        neo4jClient.query(mutation).bind(sourceId).to("sourceId").run();
+        jdbcTemplate.update(mutation, sourceId);
         JsonNode response = json(mockMvc.perform(get(
                 "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-eligible-documents",
                 KNOWLEDGE_BASE_ID, draftId).param("size", "100"))

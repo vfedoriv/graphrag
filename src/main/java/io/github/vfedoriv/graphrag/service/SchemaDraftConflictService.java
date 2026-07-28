@@ -6,35 +6,31 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class SchemaDraftConflictService {
     private final SchemaDraftConflictRepository conflictRepository;
     private final SchemaDraftJsonSupport jsonSupport;
-    private final SchemaDraftGraphService graphService;
     private final ObjectMapper objectMapper;
 
     public SchemaDraftConflictService(
         SchemaDraftConflictRepository conflictRepository,
         SchemaDraftJsonSupport jsonSupport,
-        SchemaDraftGraphService graphService,
         ObjectMapper objectMapper
     ) {
         this.conflictRepository = conflictRepository;
         this.jsonSupport = jsonSupport;
-        this.graphService = graphService;
         this.objectMapper = objectMapper;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SchemaDraftConflictNode create(
         String draftId, String aggregateRevisionId, SchemaDraftConflictType type,
         String coordinate, Object alternatives, Object evidence
@@ -51,7 +47,6 @@ public class SchemaDraftConflictService {
         conflict.setCreatedAt(Instant.now());
         carryLatestResolution(conflict);
         SchemaDraftConflictNode saved = conflictRepository.save(conflict);
-        graphService.attach(draftId, "SchemaDraftConflict", saved.getId());
         return saved;
     }
 

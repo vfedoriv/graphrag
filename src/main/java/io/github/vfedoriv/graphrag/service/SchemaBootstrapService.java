@@ -12,8 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SchemaBootstrapService {
+    private final SchemaRegistryService schemaRegistryService;
 
     public SchemaBootstrapService(SchemaRegistryService schemaRegistryService) throws IOException {
+        this.schemaRegistryService = schemaRegistryService;
+        bootstrap();
+    }
+
+    public void bootstrap() throws IOException {
         Resource[] resources = new PathMatchingResourcePatternResolver()
             .getResources("classpath:/schemas/*.json");
         log.info("Bootstrapping schemas: resourceCount={}", resources.length);

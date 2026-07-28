@@ -11,7 +11,6 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftStorageMutationType;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
@@ -28,7 +27,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -41,8 +41,8 @@ public class SchemaDraftSourceService {
     private final DocumentUploadRepository documentRepository;
     private final BinaryStorageService storageService;
     private final SchemaDraftStorageMutationService mutationService;
-    private final SchemaDraftGraphService graphService;
     private final RuntimeSettingsService runtimeSettingsService;
+    private final TransactionTemplate transactionTemplate;
 
     public SchemaDraftSourceService(
         SchemaDraftLifecycleService lifecycleService,
@@ -52,8 +52,8 @@ public class SchemaDraftSourceService {
         DocumentUploadRepository documentRepository,
         BinaryStorageService storageService,
         SchemaDraftStorageMutationService mutationService,
-        SchemaDraftGraphService graphService,
-        RuntimeSettingsService runtimeSettingsService
+        RuntimeSettingsService runtimeSettingsService,
+        TransactionTemplate transactionTemplate
     ) {
         this.lifecycleService = lifecycleService;
         this.draftRepository = draftRepository;
@@ -62,11 +62,11 @@ public class SchemaDraftSourceService {
         this.documentRepository = documentRepository;
         this.storageService = storageService;
         this.mutationService = mutationService;
-        this.graphService = graphService;
         this.runtimeSettingsService = runtimeSettingsService;
+        this.transactionTemplate = transactionTemplate;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SourceResponse addDocument(String knowledgeBaseId, String draftId, long draftRevision, String documentId) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         DocumentUploadNode document = requireDocument(knowledgeBaseId, documentId);
@@ -101,7 +101,7 @@ public class SchemaDraftSourceService {
         }
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public List<SourceResponse> list(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         List<SchemaDraftSourceNode> sources = sourceRepository.findByDraftIdOrderByCreatedAtAsc(draftId);
@@ -109,7 +109,7 @@ public class SchemaDraftSourceService {
         return sources.stream().map(this::toResponse).toList();
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SourceResponse refreshDocument(
         String knowledgeBaseId, String draftId, String sourceId, long draftRevision
     ) {
@@ -132,26 +132,21 @@ public class SchemaDraftSourceService {
         return toResponse(source);
     }
 
-    @GraphTransactional
     public void remove(String knowledgeBaseId, String draftId, String sourceId, long draftRevision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         SchemaDraftSourceNode source = requireSource(draftId, sourceId);
         if (source.isAnalyzed()) {
-            source.setStatus(SchemaDraftSourceStatus.INACTIVE);
-            source.setRevision(source.getRevision() + 1);
-            source.setUpdatedAt(Instant.now());
-            sourceRepository.save(source);
-            snapshot(source);
+            transactionTemplate.executeWithoutResult(status ->
+                removeMetadata(knowledgeBaseId, draftId, sourceId, draftRevision, false));
         } else {
-            deleteOwnedContent(source);
-            sourceRepository.delete(source);
+            SchemaDraftStorageMutationNode mutation = beginOwnedContentDeletion(source);
+            transactionTemplate.executeWithoutResult(status ->
+                removeMetadata(knowledgeBaseId, draftId, sourceId, draftRevision, true));
+            finishOwnedContentDeletion(mutation);
         }
-        lifecycleService.advance(draft);
-        draft.setCurrentAggregateId(null);
-        draftRepository.save(draft);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SourceResponse restore(String knowledgeBaseId, String draftId, String sourceId, long draftRevision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
         SchemaDraftSourceNode source = requireSource(draftId, sourceId);
@@ -190,7 +185,11 @@ public class SchemaDraftSourceService {
         try {
             URI uri = storageService.storeDraftSource(knowledgeBaseId, draftId, sourceId, name, bytes);
             mutationService.recordContent(mutation.getId(), uri.toString());
-            SourceResponse response = create(draft, sourceId, type, name, contentType, bytes.length, fingerprint, null, uri.toString());
+            SourceResponse response = transactionTemplate.execute(status ->
+                create(draft, sourceId, type, name, contentType, bytes.length, fingerprint, null, uri.toString()));
+            if (response == null) {
+                throw new IllegalStateException("Draft source relational checkpoint returned no result");
+            }
             mutationService.complete(mutation.getId());
             return response;
         } catch (Exception exception) {
@@ -199,7 +198,6 @@ public class SchemaDraftSourceService {
         }
     }
 
-    @GraphTransactional
     protected SourceResponse create(
         SchemaDraftNode draft, String requestedSourceId, SchemaDraftSourceType type, String name, String contentType, long sizeBytes,
         String fingerprint, String documentId, String contentUri
@@ -221,7 +219,6 @@ public class SchemaDraftSourceService {
         source.setCreatedAt(now);
         source.setUpdatedAt(now);
         SchemaDraftSourceNode saved = sourceRepository.save(source);
-        graphService.attach(draft.getId(), "SchemaDraftSource", saved.getId());
         snapshot(saved);
         lifecycleService.advance(draft);
         draft.setCurrentAggregateId(null);
@@ -250,7 +247,6 @@ public class SchemaDraftSourceService {
         revision.setContentUri(source.getContentUri());
         revision.setCreatedAt(Instant.now());
         revisionRepository.save(revision);
-        graphService.attach(source.getDraftId(), "SchemaDraftSourceRevision", revision.getId());
     }
 
     private void refreshObservedStatus(SchemaDraftSourceNode source) {
@@ -278,19 +274,40 @@ public class SchemaDraftSourceService {
         return document;
     }
 
-    private void deleteOwnedContent(SchemaDraftSourceNode source) {
-        if (source.getContentUri() == null || source.getContentUri().isBlank()) {
-            return;
-        }
-        SchemaDraftStorageMutationNode mutation = mutationService.begin(
+    private SchemaDraftStorageMutationNode beginOwnedContentDeletion(SchemaDraftSourceNode source) {
+        return mutationService.begin(
             SchemaDraftStorageMutationType.DELETE, source.getDraftId(), source.getId(), source.getContentUri());
+    }
+
+    private void finishOwnedContentDeletion(SchemaDraftStorageMutationNode mutation) {
         try {
-            storageService.delete(URI.create(source.getContentUri()));
+            if (mutation.getContentUri() != null && !mutation.getContentUri().isBlank()) {
+                storageService.delete(URI.create(mutation.getContentUri()));
+            }
             mutationService.complete(mutation.getId());
         } catch (Exception exception) {
             mutationService.failure(mutation.getId(), exception);
-            throw new ConflictException("Draft source storage cleanup failed: " + source.getId());
+            throw new ConflictException("Draft source storage cleanup failed: " + mutation.getId());
         }
+    }
+
+    private void removeMetadata(
+        String knowledgeBaseId, String draftId, String sourceId, long draftRevision, boolean delete
+    ) {
+        SchemaDraftNode currentDraft = lifecycleService.requireMutable(knowledgeBaseId, draftId, draftRevision);
+        SchemaDraftSourceNode currentSource = requireSource(draftId, sourceId);
+        if (delete) {
+            sourceRepository.delete(currentSource);
+        } else {
+            currentSource.setStatus(SchemaDraftSourceStatus.INACTIVE);
+            currentSource.setRevision(currentSource.getRevision() + 1);
+            currentSource.setUpdatedAt(Instant.now());
+            sourceRepository.save(currentSource);
+            snapshot(currentSource);
+        }
+        lifecycleService.advance(currentDraft);
+        currentDraft.setCurrentAggregateId(null);
+        draftRepository.save(currentDraft);
     }
 
     private void validateBytes(byte[] bytes, int characters) {

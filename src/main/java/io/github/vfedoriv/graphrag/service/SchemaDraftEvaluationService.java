@@ -31,7 +31,6 @@ import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
@@ -70,7 +69,6 @@ public class SchemaDraftEvaluationService {
     private final SchemaDraftEvaluationRunRepository runRepository;
     private final SchemaDraftEvaluationOutcomeRepository outcomeRepository;
     private final SchemaDraftAggregateRevisionRepository aggregateRepository;
-    private final SchemaDraftGraphService graphService;
     private final KnowledgeBaseService knowledgeBaseService;
     private final DocumentUploadService uploadService;
     private final DocumentParsingService parsingService;
@@ -96,7 +94,6 @@ public class SchemaDraftEvaluationService {
         SchemaDraftEvaluationRunRepository runRepository,
         SchemaDraftEvaluationOutcomeRepository outcomeRepository,
         SchemaDraftAggregateRevisionRepository aggregateRepository,
-        SchemaDraftGraphService graphService,
         KnowledgeBaseService knowledgeBaseService,
         DocumentUploadService uploadService,
         DocumentParsingService parsingService,
@@ -121,7 +118,6 @@ public class SchemaDraftEvaluationService {
         this.runRepository = runRepository;
         this.outcomeRepository = outcomeRepository;
         this.aggregateRepository = aggregateRepository;
-        this.graphService = graphService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.uploadService = uploadService;
         this.parsingService = parsingService;
@@ -242,7 +238,6 @@ public class SchemaDraftEvaluationService {
         run.setRetryable(true);
         run.setCreatedAt(Instant.now());
         SchemaDraftEvaluationRunNode saved = runRepository.save(run);
-        graphService.attach(draft.getId(), "SchemaDraftEvaluationRun", saved.getId());
         for (DocumentSnapshot snapshot : snapshots) {
             SchemaDraftEvaluationOutcomeNode outcome = new SchemaDraftEvaluationOutcomeNode();
             outcome.setId(UUID.randomUUID().toString());
@@ -254,7 +249,6 @@ public class SchemaDraftEvaluationService {
             outcome.setStatus(SchemaDraftEvaluationOutcomeStatus.QUEUED);
             outcome.setRetryable(true);
             SchemaDraftEvaluationOutcomeNode savedOutcome = outcomeRepository.save(outcome);
-            graphService.attach(draft.getId(), "SchemaDraftEvaluationOutcome", savedOutcome.getId());
         }
         try {
             executor.execute(() -> execute(saved.getId()));

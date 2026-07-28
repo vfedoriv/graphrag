@@ -37,15 +37,6 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
         long draftBackfilled = executeCount("""
             MATCH (node)
             WHERE (
-                node:SchemaDraft OR
-                node:SchemaDraftSource OR
-                node:SchemaDraftSourceRevision OR
-                node:SchemaDraftAnalysisRun OR
-                node:SchemaDraftSourceResult OR
-                node:SchemaDraftAggregateRevision OR
-                node:SchemaDraftDecision OR
-                node:SchemaDraftConflict OR
-                node:SchemaDraftStorageMutation OR
                 node:SchemaDraftEvaluationRun OR
                 node:SchemaDraftEvaluationOutcome OR
                 node:SchemaDraftPublication OR

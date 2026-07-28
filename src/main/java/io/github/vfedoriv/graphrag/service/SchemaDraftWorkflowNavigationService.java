@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class SchemaDraftWorkflowNavigationService {
@@ -66,7 +66,7 @@ public class SchemaDraftWorkflowNavigationService {
         this.analysisRetryEligibilityService = analysisRetryEligibilityService;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public AnalysisRunPageResponse analysisPage(SchemaDraftNode draft, int page, int size) {
         int boundedPage = Math.max(0, page);
         int boundedSize = Math.max(1, Math.min(100, size));
@@ -79,7 +79,7 @@ public class SchemaDraftWorkflowNavigationService {
         return new AnalysisRunPageResponse(boundedPage, boundedSize, runs.getTotalElements(), content);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public EvaluationRunPageResponse evaluationPage(SchemaDraftNode draft, int page, int size) {
         int boundedPage = Math.max(0, page);
         int boundedSize = Math.max(1, Math.min(100, size));
@@ -90,7 +90,7 @@ public class SchemaDraftWorkflowNavigationService {
         return new EvaluationRunPageResponse(boundedPage, boundedSize, runs.getTotalElements(), content);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public Map<String, WorkflowReferences> references(List<SchemaDraftNode> drafts) {
         if (drafts.isEmpty()) {
             return Map.of();

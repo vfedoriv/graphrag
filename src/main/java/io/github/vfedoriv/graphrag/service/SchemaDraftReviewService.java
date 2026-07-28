@@ -30,7 +30,6 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ResolveConflictRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
@@ -39,6 +38,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -51,7 +51,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 public class SchemaDraftReviewService {
@@ -64,7 +65,6 @@ public class SchemaDraftReviewService {
     private final SchemaDefinitionRepository schemaRepository;
     private final SchemaParser schemaParser;
     private final SchemaDraftJsonSupport jsonSupport;
-    private final SchemaDraftGraphService graphService;
     private final ObjectMapper objectMapper;
 
     public SchemaDraftReviewService(
@@ -77,7 +77,6 @@ public class SchemaDraftReviewService {
         SchemaDefinitionRepository schemaRepository,
         SchemaParser schemaParser,
         SchemaDraftJsonSupport jsonSupport,
-        SchemaDraftGraphService graphService,
         ObjectMapper objectMapper
     ) {
         this.lifecycleService = lifecycleService;
@@ -89,11 +88,10 @@ public class SchemaDraftReviewService {
         this.schemaRepository = schemaRepository;
         this.schemaParser = schemaParser;
         this.jsonSupport = jsonSupport;
-        this.graphService = graphService;
         this.objectMapper = objectMapper;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public CandidatePageResponse candidates(String knowledgeBaseId, String draftId, int page, int size) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         List<Candidate> candidates = effectiveCandidates(draft);
@@ -114,7 +112,7 @@ public class SchemaDraftReviewService {
         return new CandidatePageResponse(boundedPage, boundedSize, responses.size(), responses.subList(from, to));
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public DecisionResponse decide(
         String knowledgeBaseId, String draftId, DecisionRequest request
     ) {
@@ -141,21 +139,25 @@ public class SchemaDraftReviewService {
         decision.setPriorValueJson(current == null ? null : jsonSupport.canonical(current));
         decision.setResultingValueJson(request.resultingValue() == null ? null : jsonSupport.canonical(request.resultingValue()));
         decision.setRationale(request.rationale());
-        decision.setCreatedAt(Instant.now());
-        SchemaDraftDecisionNode saved = decisionRepository.save(decision);
-        graphService.attach(draftId, "SchemaDraftDecision", saved.getId());
+        decision.setCreatedAt(Instant.now().truncatedTo(ChronoUnit.MICROS));
+        SchemaDraftDecisionNode saved;
+        try {
+            saved = decisionRepository.save(decision);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("Concurrent schema draft decision; retry with current revision");
+        }
         lifecycleService.advance(draft);
         draftRepository.save(draft);
         return toResponse(saved);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<DecisionResponse> decisions(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return decisionRepository.findByDraftIdOrderBySequenceAsc(draftId).stream().map(this::toResponse).toList();
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<ConflictResponse> conflicts(
         String knowledgeBaseId, String draftId, ConflictListScope scope
     ) {
@@ -170,7 +172,7 @@ public class SchemaDraftReviewService {
         return conflicts.stream().map(value -> toResponse(value, currentAggregateId)).toList();
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public ConflictResponse resolve(
         String knowledgeBaseId, String draftId, String conflictId, ResolveConflictRequest request
     ) {
@@ -187,7 +189,7 @@ public class SchemaDraftReviewService {
         return toResponse(saved, draft.getCurrentAggregateId());
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public ProjectionResponse projection(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
@@ -203,7 +205,7 @@ public class SchemaDraftReviewService {
             !unresolvedConflict && !unresolvedGuidance);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public DiffResponse diff(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         SchemaDraftAggregateRevisionNode aggregate = currentAggregate(draft);
@@ -230,7 +232,7 @@ public class SchemaDraftReviewService {
             new DiffBaseline(baseline.type(), baseline.id(), baseline.contentHash()), List.copyOf(changes));
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public boolean promoteIfRevisionCurrent(String draftId, String aggregateId, long expectedDraftRevision) {
         SchemaDraftNode draft = draftRepository.findById(draftId).orElse(null);
         if (draft == null || draft.getRevision() != expectedDraftRevision) {
@@ -251,7 +253,7 @@ public class SchemaDraftReviewService {
         return true;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void reconcileAfterAnalysis(String draftId, String aggregateId) {
         SchemaDraftAggregateRevisionNode aggregate = aggregateRepository.findById(aggregateId).orElseThrow();
         Map<String, Candidate> candidates = readCandidates(aggregate.getCandidatesJson()).stream()

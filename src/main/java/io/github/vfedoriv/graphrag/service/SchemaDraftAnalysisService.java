@@ -33,7 +33,6 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.SourceOutcomePageResponse
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
@@ -81,7 +80,6 @@ public class SchemaDraftAnalysisService {
     private final SchemaDraftSourceResultRepository resultRepository;
     private final SchemaDraftAggregateRevisionRepository aggregateRepository;
     private final SchemaDraftConflictService conflictService;
-    private final SchemaDraftGraphService graphService;
     private final SchemaDraftAnalysisSourceFactory sourceFactory;
     private final DiscoverySourceAnalyzer sourceAnalyzer;
     private final DiscoveryAggregator aggregator;
@@ -107,7 +105,6 @@ public class SchemaDraftAnalysisService {
         SchemaDraftSourceResultRepository resultRepository,
         SchemaDraftAggregateRevisionRepository aggregateRepository,
         SchemaDraftConflictService conflictService,
-        SchemaDraftGraphService graphService,
         SchemaDraftAnalysisSourceFactory sourceFactory,
         DiscoverySourceAnalyzer sourceAnalyzer,
         DiscoveryAggregator aggregator,
@@ -131,7 +128,6 @@ public class SchemaDraftAnalysisService {
         this.resultRepository = resultRepository;
         this.aggregateRepository = aggregateRepository;
         this.conflictService = conflictService;
-        this.graphService = graphService;
         this.sourceFactory = sourceFactory;
         this.sourceAnalyzer = sourceAnalyzer;
         this.aggregator = aggregator;
@@ -185,7 +181,7 @@ public class SchemaDraftAnalysisService {
         }
         SchemaDraftAnalysisRunNode run = createRun(
             draft, sources, profile, membership, policy, snapshot, retryOfRunId);
-        if (!reserveAnalysis(draftId, run.getId())) {
+        if (!reserveAnalysis(draftId, run.getId(), draft.getRevision())) {
             runRepository.deleteById(run.getId());
             throw new ConflictException("Schema draft already has a running analysis");
         }
@@ -260,13 +256,12 @@ public class SchemaDraftAnalysisService {
         run.setCreatedAt(now);
         run.setStartedAt(now);
         SchemaDraftAnalysisRunNode saved = runRepository.save(run);
-        graphService.attach(draft.getId(), "SchemaDraftAnalysisRun", saved.getId());
         return saved;
     }
 
-    private boolean reserveAnalysis(String draftId, String runId) {
+    private boolean reserveAnalysis(String draftId, String runId, long expectedRevision) {
         try {
-            return Long.valueOf(1).equals(draftRepository.reserveAnalysis(draftId, runId));
+            return Long.valueOf(1).equals(draftRepository.reserveAnalysis(draftId, runId, expectedRevision));
         } catch (DataAccessException exception) {
             return false;
         }
@@ -676,7 +671,6 @@ public class SchemaDraftAnalysisService {
         revision.setPartial(partial);
         revision.setCreatedAt(Instant.now());
         SchemaDraftAggregateRevisionNode saved = aggregateRepository.save(revision);
-        graphService.attach(run.getDraftId(), "SchemaDraftAggregateRevision", saved.getId());
         return saved;
     }
 
@@ -692,6 +686,9 @@ public class SchemaDraftAnalysisService {
     private boolean promoteIfCurrent(SchemaDraftAnalysisRunNode run, SchemaDraftAggregateRevisionNode aggregate) {
         SchemaDraftNode draft = draftRepository.findById(run.getDraftId()).orElse(null);
         if (draft == null || draft.getRevision() != run.getDraftRevision()) {
+            return false;
+        }
+        if (!run.getId().equals(draft.getRunningAnalysisRunId())) {
             return false;
         }
         if (!membershipFingerprint(activeSources(run.getDraftId())).equals(run.getSourceMembershipFingerprint())) {
@@ -712,7 +709,6 @@ public class SchemaDraftAnalysisService {
         result.setChunkCount(analysis.source().chunks().size());
         result.setCompletedAt(Instant.now());
         SchemaDraftSourceResultNode saved = resultRepository.save(result);
-        graphService.attach(run.getDraftId(), "SchemaDraftSourceResult", saved.getId());
         source.setAnalyzed(true);
         sourceRepository.save(source);
     }
@@ -730,7 +726,6 @@ public class SchemaDraftAnalysisService {
         result.setChunkCount(chunks);
         result.setCompletedAt(Instant.now());
         SchemaDraftSourceResultNode saved = resultRepository.save(result);
-        graphService.attach(run.getDraftId(), "SchemaDraftSourceResult", saved.getId());
         log.warn("Schema draft source analysis failed: draftId={}, runId={}, sourceId={}, sourceRevision={}, failureCategory={}, failureCode={}, retryable={}, providerStatus={}, preparedChunkCount={}, exceptionTypes={}, rootExceptionType={}, messageFingerprint={}",
             run.getDraftId(), run.getId(), source.id(), source.revision(), decision.category(), decision.code(),
             decision.retryable(), decision.providerStatus(), chunks, decision.exceptionTypes(),

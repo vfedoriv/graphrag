@@ -13,7 +13,7 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class SchemaDraftEvaluationEligibilityService {
@@ -31,7 +31,7 @@ public class SchemaDraftEvaluationEligibilityService {
         this.resultRepository = resultRepository;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public EvaluationEligibleDocumentPageResponse list(
         String knowledgeBaseId, String draftId, int page, int size
     ) {
@@ -47,7 +47,7 @@ public class SchemaDraftEvaluationEligibilityService {
             documents.getContent().stream().map(document -> response(document, eligibility)).toList());
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public EligibilitySnapshot resolve(SchemaDraftNode draft) {
         if (draft.getCurrentAggregateId() == null || draft.getCurrentAggregateId().isBlank()) {
             return new EligibilitySnapshot(

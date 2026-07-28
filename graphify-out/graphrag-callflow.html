@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 10150 nodes, 18288 edges, 842 communities. Commit: 8a78b65</p>
+<p class="subtitle">Generated from graphify knowledge graph: 10533 nodes, 19113 edges, 867 communities. Commit: 3db170e</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -77,7 +77,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#community-269">Community 269</a>
     <a href="#community-285">Community 285</a>
     <a href="#community-286">Community 286</a>
-    <a href="#community-316">Community 316</a>
+    <a href="#community-317">Community 317</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>5453 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>5804 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2881 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2920 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>189 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -100,7 +100,7 @@ flowchart LR
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>145 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>301 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>306 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>30 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
@@ -114,9 +114,9 @@ flowchart LR
     class COMMUNITY_285_962252BC module;
     COMMUNITY_286_F8337588("Community 286<br/><small>15 nodes</small>")
     class COMMUNITY_286_F8337588 module;
-    COMMUNITY_316_55953BFE("Community 316<br/><small>15 nodes</small>")
-    class COMMUNITY_316_55953BFE module;
-    OTHER_D0941E68("Other<br/><small>802 nodes</small>")
+    COMMUNITY_317_EE999369("Community 317<br/><small>15 nodes</small>")
+    class COMMUNITY_317_EE999369 module;
+    OTHER_D0941E68("Other<br/><small>790 nodes</small>")
     class OTHER_D0941E68 module;
     OTHER_D0941E68 -->|contains x2| ANALYSIS_CLUSTERING_C79796DA
     OTHER_D0941E68 -->|contains x2| INGEST_CACHE_UPDATE_FF457338
@@ -136,7 +136,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>5453</td><td><code>304, 2, 3, 57, 28, 60, 108, 31, 43, 5, 64, 111, 18, 76, 56, 124, 34, 84, 14, 15, 25, 40, 46, 22, 36, 439, 68, 13, 10, 30, 27, 33, 16, 19, 42, 12, 29, 301, 305, 45, 6, 104, 154, 0, 153, 37, 9, 17, 364, 54, 1, 155, 248, 52, 53, 8, 130, 21, 32, 7, 75, 771, 20, 23, 24, 362, 127, 427, 49, 651, 90, 106, 107, 268, 287, 395, 389, 4, 246, 464, 50, 72, 80, 97, 103, 425, 44, 47, 78, 865, 113, 134, 41, 48, 539, 95, 117, 156, 261, 376, 448, 540, 67, 71, 763, 26, 275, 295, 375, 393, 412, 413, 428, 61, 62, 656, 690, 695, 741, 762, 765, 781, 86, 161, 284, 296, 297, 298, 35, 379, 380, 382, 386, 63, 66, 694, 70, 703, 139, 151, 378, 384, 398, 405, 424, 445, 701, 74, 758, 770, 83, 373, 387, 401, 402, 709, 769, 87, 100, 11, 122, 164, 396, 729, 73, 776, 790, 92, 94, 96, 98, 388, 408, 411, 454, 462, 734, 747, 105, 110, 118, 330, 400, 407, 773, 793, 85, 851, 109, 152, 403, 415, 418, 749, 753, 754, 778, 782, 818, 112, 120, 247, 756, 757, 759, 77, 777, 123, 141, 449, 726, 767, 784, 822, 824, 131, 133, 397, 410, 488, 489, 505, 772, 785, 829, 135, 137, 138, 142, 143, 51, 631, 644, 648, 649, 723, 760, 788, 817, 832, 146, 148, 585, 601, 725, 849, 868, 157, 158, 159, 420, 559, 629, 630, 632, 671, 682, 163, 717, 718, 719, 795, 796, 797, 798, 799, 800, 801, 802, 803, 838, 839, 840, 841, 842, 855, 857, 860, 863, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2881</td><td><code>39, 38, 69, 89, 160, 537, 91, 149, 101, 162, 121, 129, 255, 252, 279, 128, 258, 253, 256, 538, 58, 79, 260, 306, 265, 266, 372, 267, 293, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 307, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 377, 59, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 368, 369, 370, 125, 126, 417, 426, 429, 431, 433, 435, 437, 443, 444, 65, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 627, 628, 633, 634, 635, 636, 639, 640, 751, 761, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 653, 654, 655, 658, 697, 700, 704, 705, 707, 708, 710, 711, 712, 791, 825, 831, 850, 852, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 716, 853, 625, 693, 737, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>301</td><td><code>102, 119, 99, 250, 262, 263, 271, 276, 318, 352, 434, 495, 504, 547, 626, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>143</td><td><code>259, 270, 264, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 272</td><td>22</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 316</td><td>15</td><td><code>316</code></td></tr><tr><td>Other</td><td>802</td><td><code>315, 438, 313, 317, 324, 365, 570, 329, 392, 440, 340, 342, 344, 345, 347, 349, 406, 363, 414, 416, 419, 421, 442, 451, 456, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 698, 706, 727, 728, 775, 783, 553, 554, 555, 557, 560, 642, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 657, 724, 733, 736, 821, 826, 830, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 731, 720</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>5804</td><td><code>127, 57, 439, 427, 56, 111, 3, 5, 9, 31, 25, 124, 398, 304, 14, 37, 45, 84, 18, 28, 13, 154, 22, 10, 42, 68, 19, 4, 29, 33, 108, 27, 275, 305, 12, 54, 23, 301, 15, 448, 46, 6, 76, 87, 151, 53, 771, 0, 153, 148, 40, 64, 72, 104, 17, 364, 52, 8, 1, 16, 21, 7, 107, 130, 155, 20, 24, 362, 49, 71, 156, 246, 248, 32, 60, 90, 36, 388, 106, 287, 73, 30, 395, 11, 389, 43, 98, 2, 268, 34, 50, 773, 97, 103, 393, 397, 41, 44, 464, 47, 48, 776, 78, 113, 134, 261, 400, 413, 415, 417, 51, 95, 117, 376, 540, 67, 763, 80, 112, 122, 26, 295, 296, 375, 412, 428, 539, 559, 61, 62, 625, 626, 627, 63, 690, 758, 765, 769, 781, 86, 161, 284, 297, 298, 35, 379, 380, 382, 386, 66, 694, 70, 703, 741, 762, 378, 384, 405, 628, 629, 651, 701, 74, 770, 83, 139, 373, 387, 401, 402, 445, 454, 630, 632, 637, 709, 75, 790, 865, 92, 100, 164, 396, 643, 644, 729, 85, 94, 96, 408, 411, 462, 695, 734, 777, 105, 109, 110, 118, 330, 407, 418, 425, 650, 652, 655, 782, 793, 152, 403, 656, 683, 696, 697, 753, 754, 818, 849, 120, 247, 424, 449, 756, 759, 778, 784, 123, 141, 699, 702, 707, 767, 77, 822, 824, 131, 133, 410, 488, 489, 505, 726, 730, 760, 829, 135, 137, 138, 142, 143, 631, 648, 732, 735, 743, 747, 788, 832, 146, 585, 601, 725, 750, 752, 772, 868, 157, 158, 159, 420, 671, 682, 749, 163, 717, 718, 719, 785, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2920</td><td><code>39, 38, 69, 89, 160, 537, 91, 149, 101, 162, 121, 129, 255, 252, 279, 128, 258, 253, 256, 538, 58, 79, 260, 306, 265, 266, 307, 372, 267, 293, 316, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 368, 377, 59, 649, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 426, 429, 431, 433, 435, 437, 443, 444, 65, 700, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 633, 634, 635, 636, 639, 640, 713, 715, 751, 761, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 653, 654, 658, 704, 705, 708, 710, 711, 712, 748, 755, 757, 764, 791, 825, 831, 850, 852, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 716, 853, 693, 737, 787, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>306</td><td><code>102, 119, 99, 263, 250, 262, 271, 276, 318, 352, 434, 495, 504, 547, 723, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>143</td><td><code>259, 270, 264, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 272</td><td>22</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 317</td><td>15</td><td><code>317</code></td></tr><tr><td>Other</td><td>790</td><td><code>315, 438, 313, 324, 365, 570, 329, 392, 440, 340, 342, 344, 345, 347, 349, 406, 363, 414, 416, 419, 421, 442, 451, 456, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 698, 706, 727, 728, 775, 783, 553, 554, 555, 557, 560, 642, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 657, 724, 733, 736, 821, 826, 830, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 731, 720</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -148,24 +148,24 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>10150 nodes · 18288 edges · 842 communities (797 shown, 45 thin omitted)</li>
-      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2944 edges (avg confidence: 0.8)</li>
+      <li>10533 nodes · 19113 edges · 867 communities (816 shown, 51 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2994 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 478 edges</li>
-      <li>2. `of()` - 433 edges</li>
-      <li>3. `toString()` - 78 edges</li>
+      <li>2. `of()` - 440 edges</li>
+      <li>3. `toString()` - 83 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 5453 nodes and 14025 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 5804 nodes and 14819 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (5453 nodes, 14025 edges)
+    %% Section: Extraction Pipeline (5804 nodes, 14819 edges)
     subgraph extract_pipeline_application_processing_ChunkPre_83f3f42a["application/processing/ChunkPreparationStage.java"]
         processing_chunkpreparationstage_chunkpreparatio_378274de("ChunkPreparationStage<br/><small>application/processing/ChunkPreparationStage.java</small>")
         processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a("ChunkPreparationStage()<br/><small>application/processing/ChunkPreparationStage.java</small>")
@@ -203,7 +203,7 @@ flowchart LR
     processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_84cacf9e
     processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_117f50f3
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_be731052
-    %% Omitted for readability: 5435 nodes, 0 edges
+    %% Omitted for readability: 5786 nodes, 0 edges
     class processing_chunkpreparationstage_chunkpreparatio_378274de klass;
     class processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a function;
     class processing_chunkpreparationstage_chunkpreparatio_af134cf5 function;
@@ -245,243 +245,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>.asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>deserialize()</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDraftDtos.java</small><br><code>extractProperties()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br>+1 more</td>
-  <td><code>advisory()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationService.java</small><br><code>aggregateIsDeterministicAcrossOppositeCompletionOrders()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small><br><code>atomicallyReservesOneRunAcrossConcurrentClaimers()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small><br>+50 more</td>
-  <td>.asText() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>AiProfileEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>AiProfileNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>AiProfileRepository</code><br>+4 more</td>
+  <td>RelationalAiProfileRepository.java node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>.status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>advisory()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small><br><code>createSchema()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaController.java</small><br><code>discover()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDiscoveryService.java</small><br>+4 more</td>
-  <td><code>analysisStatus()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small><br><code>assertEligibilityAfterMutation()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small><br><code>attachExistingSchemaIsIdempotentAndDoesNotActivateSchema()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java</small><br>+52 more</td>
-  <td>.status() node in graphrag/service/SchemaDraftEvaluationContractMapper.java.</td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>existsByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>existsById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br>+10 more</td>
+  <td>RelationalAiProfileRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>DocumentControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AfterEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>BeforeEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>Test</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>AiProfileRepository</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>KnowledgeBaseControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java</small><br><code>SchemaDiscoveryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDiscoveryIntegrationTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
+  <td>AiProfileRepository node in project.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>assertStoredFileContains()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>cleanDocumentStorage()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>clearGraph()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br>+7 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>.RelationalAiProfileRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.RelationalAiProfileRepository() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>.clearGraph()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><code>clean()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/TestDocumentStorage.java</small><br><code>createKnowledgeBase()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td>Builds dependency relationships and graph data.</td>
+  <td><code>JpaAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>KnowledgeBaseControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java</small><br><code>SchemaDiscoveryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDiscoveryIntegrationTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
+  <td>JpaAiProfileRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>BeforeEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
+  <td><code>KnowledgeBaseRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>BeforeEach node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>KnowledgeBaseRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>.cleanDocumentStorage()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><code>clean()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/TestDocumentStorage.java</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>.findAllByOrderByCreatedAtDesc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.findAllByOrderByCreatedAtDesc() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>AfterEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>AfterEach node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>List node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>.createKnowledgeBase()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>clearGraph()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
+  <td><code>AiProfileNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.createKnowledgeBase() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>AiProfileNode node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>String</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Override</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>String node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>Override node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>.listsOnlyDocumentsFromRequestedKnowledgeBase()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
+  <td><code>.findFirstByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.listsOnlyDocumentsFromRequestedKnowledgeBase() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>.findFirstByDefaultProfileTrue() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Test</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
+  <td><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>Optional node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.replacesDocumentAndKeepsDocumentId()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
-  <td><code>assertStoredFileContains()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td>.replacesDocumentAndKeepsDocumentId() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td><code>.existsByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.existsByDefaultProfileTrue() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>.rejectsReplacementForMissingMismatchedDuplicateAndInvalidDocuments()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
+  <td><code>Boolean</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.rejectsReplacementForMissingMismatchedDuplicateAndInvalidDocuments() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>Boolean node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.managesDocumentProcessingOptionsDefaultsAndRejectsInvalidInputs()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>put()</code><br><small style="color:var(--muted)">application/settings/RuntimeSettingsCatalog.java</small><br>+1 more</td>
+  <td><code>.findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.managesDocumentProcessingOptionsDefaultsAndRejectsInvalidInputs() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>.findById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.rejectsConflictingAllowOverwriteBeforeProcessingStarts()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.rejectsConflictingAllowOverwriteBeforeProcessingStarts() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td>String node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.deletesDocumentAndRejectsMissingMismatchedAndStorageFailureDeletes()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small><br>+1 more</td>
+  <td><code>.existsById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td>.existsById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.assertStoredFileContains()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DocumentControllerIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small><br><code>replacesDocumentAndKeepsDocumentId()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/DocumentControllerIntegrationTest.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.assertStoredFileContains() node in vfedoriv/graphrag/DocumentControllerIntegrationTest.java.</td>
+  <td><code>.save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>toDomain()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>toEntity()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>.save() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AfterEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>Bean</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>CypherGenerationClient</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br>+4 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>.deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.deleteById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>cleanDocumentStorage()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>completesFlowViaRestEndpoints()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>.unsetDefaultProfileForOthers()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.unsetDefaultProfileForOthers() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.cleanDocumentStorage()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><code>clean()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/TestDocumentStorage.java</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>Long</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Long node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>AfterEach</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>AfterEach node in vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java.</td>
+  <td><code>.existsKnowledgeBaseAssignment()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>existsAiProfileAssignment()</code><br><small style="color:var(--muted)">graphrag/repository/KnowledgeBaseRepository.java</small></td>
+  <td>.existsKnowledgeBaseAssignment() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>.completesFlowViaRestEndpoints()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>EndToEndMvpFlowMvcIntegrationTest</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>status()</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftEvaluationContractMapper.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.completesFlowViaRestEndpoints() node in vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java.</td>
+  <td><code>.findAssignedKnowledgeBaseIds()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>findIdsByActiveAiProfileId()</code><br><small style="color:var(--muted)">graphrag/repository/KnowledgeBaseRepository.java</small></td>
+  <td>.findAssignedKnowledgeBaseIds() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>Test</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
+  <td><code>.toEntity()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>.toEntity() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>DeterministicAiTestConfig</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>cypherGenerationClient()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>embeddingClient()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>graphExtractionClient()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br>+1 more</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td><code>AiProfileEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>AiProfileEntity node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.embeddingClient()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DeterministicAiTestConfig</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><code>vectorOf()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td>.embeddingClient() node in vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java.</td>
+  <td><code>.toDomain()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toDomain() node in persistence/relational/RelationalAiProfileRepository.java.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>EmbeddingClient</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>EmbeddingClient node in vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java.</td>
+  <td><code>RelationalRuntimeSettingOverrideRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>JpaRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>RuntimeSettingOverrideEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br>+2 more</td>
+  <td>RelationalRuntimeSettingOverrideRepository.java node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>Bean</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>Bean node in vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java.</td>
+  <td><code>RelationalRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>RelationalRuntimeSettingOverrideRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br>+3 more</td>
+  <td>RelationalRuntimeSettingOverrideRepository node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>.graphExtractionClient()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DeterministicAiTestConfig</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
+  <td><code>RuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RelationalRuntimeSettingOverrideRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
+  <td><code>LocalFilesystemBinaryStorageServiceTest.java</code><br><small style="color:var(--muted)">graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java</small><br><code>RuntimeSettingsServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/RuntimeSettingsServiceTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
+  <td>RuntimeSettingOverrideRepository node in project.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>GraphExtractionClient</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>EndToEndMvpFlowMvcIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/EndToEndMvpFlowMvcIntegrationTest.java</small></td>
+  <td><code>.RelationalRuntimeSettingOverrideRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
+  <td>.RelationalRuntimeSettingOverrideRepository() node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
 </tr>
 </table>
 
@@ -490,11 +490,11 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>graphrag/service/SchemaDraftAnalysisService.java</code></td><td>117 nodes</td></tr>
-<tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>82 nodes</td></tr>
+      <tr><td><code>graphrag/service/SchemaDraftAnalysisService.java</code></td><td>116 nodes</td></tr>
+<tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>81 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>79 nodes</td></tr>
-<tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
-<tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>66 nodes</td></tr>
+<tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>69 nodes</td></tr>
+<tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>65 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>60 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>50 nodes</td></tr>
@@ -502,19 +502,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x4869, method x2342, imports x1799, calls x1535. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x5270, method x2479, imports x1940, calls x1562. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around schema, openspec, specmd, changes, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 2881 nodes and 2658 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 2920 nodes and 2695 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (2881 nodes, 2658 edges)
+    %% Section: Graph Build (2920 nodes, 2695 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -548,7 +548,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_config_d54d881b -->|contains| understand_anything_config_outputlanguage_5559b7c8
-    %% Omitted for readability: 2863 nodes, 0 edges
+    %% Omitted for readability: 2902 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -847,7 +847,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2658. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2695. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2229,12 +2229,12 @@ flowchart LR
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around openspec, specmd, specs, changes, mostly in specs/document-management/spec.md, specs/ai-profile-management/spec.md, specs/ai-observability-monitoring/spec.md. This section covers 301 nodes and 278 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around openspec, specmd, specs, changes, mostly in specs/document-management/spec.md, specs/ai-profile-management/spec.md, specs/ai-observability-monitoring/spec.md. This section covers 306 nodes and 283 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (301 nodes, 278 edges)
+    %% Section: Serving API (306 nodes, 283 edges)
     subgraph serve_api_specs_ai_profile_management_spec_md_d0c9820c["specs/ai-profile-management/spec.md"]
         ai_profile_management_spec_requirements_f0c29c28("Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
         openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38("ADDED Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
@@ -2268,7 +2268,7 @@ flowchart LR
     ai_profile_management_spec_requirements_f0c29c28 -->|contains| openspec_specs_ai_profile_management_spec_md_ai_8ab78385
     document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_59dbe1b9
     document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_7904642b
-    %% Omitted for readability: 283 nodes, 0 edges
+    %% Omitted for readability: 288 nodes, 0 edges
     class ai_profile_management_spec_requirements_f0c29c28 concept;
     class openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38 concept;
     class openspec_specs_ai_profile_management_spec_md_ai_c4619ebf concept;
@@ -2558,16 +2558,16 @@ flowchart LR
       <tr><td><code>specs/document-management/spec.md</code></td><td>36 nodes</td></tr>
 <tr><td><code>specs/ai-profile-management/spec.md</code></td><td>35 nodes</td></tr>
 <tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>32 nodes</td></tr>
+<tr><td><code>specs/hybrid-search/spec.md</code></td><td>24 nodes</td></tr>
 <tr><td><code>specs/ai-profile-management/spec.md</code></td><td>23 nodes</td></tr>
 <tr><td><code>specs/document-processing-options/spec.md</code></td><td>19 nodes</td></tr>
-<tr><td><code>specs/hybrid-search/spec.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>specs/hybrid-search/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>specs/document-processing-options/spec.md</code></td><td>17 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x278. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x283. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4211,58 +4211,58 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. Community 316 ====== -->
-<h2 id="community-316">15. Community 316</h2>
-<p>Community 316 groups implementation around workflow, specmd, application, orchestration, mostly in specs/application-workflow-orchestration/spec.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. Community 317 ====== -->
+<h2 id="community-317">15. Community 317</h2>
+<p>Community 317 groups implementation around embedding, space, specmd, management, mostly in specs/embedding-space-management/spec.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 316 (15 nodes, 14 edges)
-    application_workflow_orchestration_spec_requirem_6cec2730("Requirements<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    application_workflow_orchestration_spec_applicat_fb3531fc("application-workflow-orchestration Spec...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_9b3eeb50("Requirement: Document cross-store workf...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_a5d0419c("Requirement: Document processing uses e...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_5016e18c("Requirement: Runtime settings compositi...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_93fab318("spec.md")
-    openspec_specs_application_workflow_orchestratio_d1839dd5("Requirement: Schema generation collabor...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    application_workflow_orchestration_spec_purpose_5006eedc("Purpose<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_de74c532("Scenario: Completion commit fails after...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_c1e90ce8("Scenario: External work fails after int...<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_ccc8bae3("Scenario: Feature resolves settings<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_9bae9891("Scenario: Live setting is cleared<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_6a6aec5a("Scenario: Model response is mapped<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_8d20425c("Scenario: Processing stage fails<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_7ece7024("Scenario: Processing succeeds<br/><small>specs/application-workflow-orchestration/spec.md</small>")
-    openspec_specs_application_workflow_orchestratio_93fab318 -->|contains| application_workflow_orchestration_spec_applicat_fb3531fc
-    application_workflow_orchestration_spec_applicat_fb3531fc -->|contains| application_workflow_orchestration_spec_purpose_5006eedc
-    application_workflow_orchestration_spec_applicat_fb3531fc -->|contains| application_workflow_orchestration_spec_requirem_6cec2730
-    application_workflow_orchestration_spec_requirem_6cec2730 -->|contains| openspec_specs_application_workflow_orchestratio_9b3eeb50
-    application_workflow_orchestration_spec_requirem_6cec2730 -->|contains| openspec_specs_application_workflow_orchestratio_a5d0419c
-    application_workflow_orchestration_spec_requirem_6cec2730 -->|contains| openspec_specs_application_workflow_orchestratio_5016e18c
-    application_workflow_orchestration_spec_requirem_6cec2730 -->|contains| openspec_specs_application_workflow_orchestratio_d1839dd5
-    openspec_specs_application_workflow_orchestratio_a5d0419c -->|contains| openspec_specs_application_workflow_orchestratio_8d20425c
-    openspec_specs_application_workflow_orchestratio_a5d0419c -->|contains| openspec_specs_application_workflow_orchestratio_7ece7024
-    openspec_specs_application_workflow_orchestratio_5016e18c -->|contains| openspec_specs_application_workflow_orchestratio_ccc8bae3
-    openspec_specs_application_workflow_orchestratio_5016e18c -->|contains| openspec_specs_application_workflow_orchestratio_9bae9891
-    openspec_specs_application_workflow_orchestratio_d1839dd5 -->|contains| openspec_specs_application_workflow_orchestratio_6a6aec5a
-    openspec_specs_application_workflow_orchestratio_9b3eeb50 -->|contains| openspec_specs_application_workflow_orchestratio_de74c532
-    openspec_specs_application_workflow_orchestratio_9b3eeb50 -->|contains| openspec_specs_application_workflow_orchestratio_c1e90ce8
-    class application_workflow_orchestration_spec_requirem_6cec2730 concept;
-    class application_workflow_orchestration_spec_applicat_fb3531fc concept;
-    class openspec_specs_application_workflow_orchestratio_9b3eeb50 concept;
-    class openspec_specs_application_workflow_orchestratio_a5d0419c concept;
-    class openspec_specs_application_workflow_orchestratio_5016e18c concept;
-    class openspec_specs_application_workflow_orchestratio_93fab318 concept;
-    class openspec_specs_application_workflow_orchestratio_d1839dd5 concept;
-    class application_workflow_orchestration_spec_purpose_5006eedc concept;
-    class openspec_specs_application_workflow_orchestratio_de74c532 concept;
-    class openspec_specs_application_workflow_orchestratio_c1e90ce8 concept;
-    class openspec_specs_application_workflow_orchestratio_ccc8bae3 concept;
-    class openspec_specs_application_workflow_orchestratio_9bae9891 concept;
-    class openspec_specs_application_workflow_orchestratio_6a6aec5a concept;
-    class openspec_specs_application_workflow_orchestratio_8d20425c concept;
-    class openspec_specs_application_workflow_orchestratio_7ece7024 concept;
+    %% Section: Community 317 (15 nodes, 14 edges)
+    embedding_space_management_spec_requirements_af3162f7("Requirements<br/><small>specs/embedding-space-management/spec.md</small>")
+    embedding_space_management_spec_embedding_space_cc6d0e66("embedding-space-management Specification<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_fc88b57d("Requirement: Embedding-space operations...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_42594551("Requirement: Embedding spaces have stab...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_e53e528e("Requirement: Legacy chunks are classifi...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_fa73ba07("spec.md")
+    openspec_specs_embedding_space_management_spec_m_7d9c3301("Requirement: Vector retrieval is isolat...<br/><small>specs/embedding-space-management/spec.md</small>")
+    embedding_space_management_spec_purpose_cdd0b455("Purpose<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_2f321bc6("Scenario: A knowledge base receives its...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_0913cd15("Scenario: API key is rotated<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_7ec129fc("Scenario: Legacy chunk is ambiguous<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_a54701b1("Scenario: Legacy chunk is unambiguous<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_321cbee5("Scenario: Other knowledge bases have mo...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_07bd0f06("Scenario: Profile compatibility is checked<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_59569ded("Scenario: Profiles use different provid...<br/><small>specs/embedding-space-management/spec.md</small>")
+    openspec_specs_embedding_space_management_spec_m_fa73ba07 -->|contains| embedding_space_management_spec_embedding_space_cc6d0e66
+    embedding_space_management_spec_embedding_space_cc6d0e66 -->|contains| embedding_space_management_spec_purpose_cdd0b455
+    embedding_space_management_spec_embedding_space_cc6d0e66 -->|contains| embedding_space_management_spec_requirements_af3162f7
+    embedding_space_management_spec_requirements_af3162f7 -->|contains| openspec_specs_embedding_space_management_spec_m_fc88b57d
+    embedding_space_management_spec_requirements_af3162f7 -->|contains| openspec_specs_embedding_space_management_spec_m_42594551
+    embedding_space_management_spec_requirements_af3162f7 -->|contains| openspec_specs_embedding_space_management_spec_m_e53e528e
+    embedding_space_management_spec_requirements_af3162f7 -->|contains| openspec_specs_embedding_space_management_spec_m_7d9c3301
+    openspec_specs_embedding_space_management_spec_m_42594551 -->|contains| openspec_specs_embedding_space_management_spec_m_0913cd15
+    openspec_specs_embedding_space_management_spec_m_42594551 -->|contains| openspec_specs_embedding_space_management_spec_m_59569ded
+    openspec_specs_embedding_space_management_spec_m_7d9c3301 -->|contains| openspec_specs_embedding_space_management_spec_m_321cbee5
+    openspec_specs_embedding_space_management_spec_m_e53e528e -->|contains| openspec_specs_embedding_space_management_spec_m_7ec129fc
+    openspec_specs_embedding_space_management_spec_m_e53e528e -->|contains| openspec_specs_embedding_space_management_spec_m_a54701b1
+    openspec_specs_embedding_space_management_spec_m_fc88b57d -->|contains| openspec_specs_embedding_space_management_spec_m_2f321bc6
+    openspec_specs_embedding_space_management_spec_m_fc88b57d -->|contains| openspec_specs_embedding_space_management_spec_m_07bd0f06
+    class embedding_space_management_spec_requirements_af3162f7 concept;
+    class embedding_space_management_spec_embedding_space_cc6d0e66 concept;
+    class openspec_specs_embedding_space_management_spec_m_fc88b57d concept;
+    class openspec_specs_embedding_space_management_spec_m_42594551 concept;
+    class openspec_specs_embedding_space_management_spec_m_e53e528e concept;
+    class openspec_specs_embedding_space_management_spec_m_fa73ba07 concept;
+    class openspec_specs_embedding_space_management_spec_m_7d9c3301 concept;
+    class embedding_space_management_spec_purpose_cdd0b455 concept;
+    class openspec_specs_embedding_space_management_spec_m_2f321bc6 concept;
+    class openspec_specs_embedding_space_management_spec_m_0913cd15 concept;
+    class openspec_specs_embedding_space_management_spec_m_7ec129fc concept;
+    class openspec_specs_embedding_space_management_spec_m_a54701b1 concept;
+    class openspec_specs_embedding_space_management_spec_m_321cbee5 concept;
+    class openspec_specs_embedding_space_management_spec_m_07bd0f06 concept;
+    class openspec_specs_embedding_space_management_spec_m_59569ded concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4286,7 +4286,7 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -4294,15 +4294,15 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
-  <td><code>application-workflow-orchestration Specification</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>embedding-space-management Specification</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing application-workflow-orchestration Specification.</td>
+  <td>Documentation node describing embedding-space-management Specification.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -4310,7 +4310,7 @@ flowchart LR
 </tr>
 <tr>
   <td>4</td>
-  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -4318,91 +4318,91 @@ flowchart LR
 </tr>
 <tr>
   <td>5</td>
-  <td><code>Requirement: Document processing uses explicit workflow stages</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Requirement: Embedding spaces have stable non-secret identities</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Document processing uses explicit workflow stages.</td>
+  <td>Documentation node describing Requirement: Embedding spaces have stable non-secret identities.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>Scenario: Processing succeeds</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: Profiles use different providers with equal dimensions</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Processing succeeds.</td>
+  <td>Documentation node describing Scenario: Profiles use different providers with equal dimensions.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>Scenario: Processing stage fails</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: API key is rotated</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Processing stage fails.</td>
+  <td>Documentation node describing Scenario: API key is rotated.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>Requirement: Runtime settings composition is typed and cohesive</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Requirement: Vector retrieval is isolated by knowledge base and embedding space</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Runtime settings composition is typed and cohesive.</td>
+  <td>Documentation node describing Requirement: Vector retrieval is isolated by knowledge base and embedding space.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>Scenario: Feature resolves settings</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: Other knowledge bases have more similar global candidates</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Feature resolves settings.</td>
+  <td>Documentation node describing Scenario: Other knowledge bases have more similar global candidates.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>Scenario: Live setting is cleared</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Requirement: Legacy chunks are classified or quarantined</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Live setting is cleared.</td>
+  <td>Documentation node describing Requirement: Legacy chunks are classified or quarantined.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>Requirement: Schema generation collaborators are independently testable</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: Legacy chunk is unambiguous</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Schema generation collaborators are independently testable.</td>
+  <td>Documentation node describing Scenario: Legacy chunk is unambiguous.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Scenario: Model response is mapped</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: Legacy chunk is ambiguous</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Model response is mapped.</td>
+  <td>Documentation node describing Scenario: Legacy chunk is ambiguous.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>Requirement: Document cross-store workflows use durable checkpoints</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Requirement: Embedding-space operations do not require operational graph nodes</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Document cross-store workflows use durable checkpoints.</td>
+  <td>Documentation node describing Requirement: Embedding-space operations do not require operational graph nodes.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>Scenario: External work fails after intent commit</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: A knowledge base receives its first chunks</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: External work fails after intent commit.</td>
+  <td>Documentation node describing Scenario: A knowledge base receives its first chunks.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>Scenario: Completion commit fails after external success</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
+  <td><code>Scenario: Profile compatibility is checked</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Completion commit fails after external success.</td>
+  <td>Documentation node describing Scenario: Profile compatibility is checked.</td>
 </tr>
 </table>
 
@@ -4411,7 +4411,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>specs/application-workflow-orchestration/spec.md</code></td><td>15 nodes</td></tr>
+      <tr><td><code>specs/embedding-space-management/spec.md</code></td><td>15 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -4423,12 +4423,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around openspec, changes, archive, 2026, mostly in specs/runtime-application-settings/spec.md, AGENTS.md, specs/shared-postgresql-isolation/spec.md. This section covers 802 nodes and 687 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around openspec, changes, archive, 2026, mostly in specs/runtime-application-settings/spec.md, AGENTS.md, specs/shared-postgresql-isolation/spec.md. This section covers 790 nodes and 676 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (802 nodes, 687 edges)
+    %% Section: Other (790 nodes, 676 edges)
     subgraph other_docker_postgres_init_graphrag_sh_34e63333["docker/postgres/init-graphrag.sh"]
         postgres_init_graphrag_33c9150a("init-graphrag.sh")
         home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2("init-graphrag.sh script<br/><small>docker/postgres/init-graphrag.sh</small>")
@@ -4450,7 +4450,7 @@ flowchart LR
     node_2026_07_10_unify_knowledge_base_lifecycle_d_7a662531("design.md")
     runtime_application_settings_spec_requirements_643b3bab("Requirements<br/><small>specs/runtime-application-settings/spec.md</small>")
     postgres_init_graphrag_33c9150a -->|contains| home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2
-    %% Omitted for readability: 784 nodes, 0 edges
+    %% Omitted for readability: 772 nodes, 0 edges
     class postgres_init_graphrag_33c9150a function;
     class home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2 function;
     class agents_agents_md_0409b87c concept;
@@ -4743,13 +4743,13 @@ flowchart LR
 <tr><td><code>specs/document-processing-run-history/spec.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>archive/2026-07-11-decompose-processing-orchestration/design.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>specs/document-storage-reconciliation/spec.md</code></td><td>12 nodes</td></tr>
-<tr><td><code>specs/embedding-space-management/spec.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>specs/persistence-transaction-routing/spec.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>archive/2026-07-12-improve-operational-logging-and-docs/design.md</code></td><td>11 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x687. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x676. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4774,18 +4774,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>10150</td></tr>
-      <tr><td>Edges</td><td>18288</td></tr>
+      <tr><td>Nodes</td><td>10533</td></tr>
+      <tr><td>Edges</td><td>19113</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>842</td></tr>
+      <tr><td>Communities</td><td>867</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>15344</td></tr>
-      <tr><td>INFERRED</td><td>2944</td></tr>
+      <tr><td>EXTRACTED</td><td>16119</td></tr>
+      <tr><td>INFERRED</td><td>2994</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4793,7 +4793,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-28 21:05 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-28 21:50 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

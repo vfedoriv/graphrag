@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import java.time.Instant;
 import java.util.List;
@@ -21,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SchemaDraftConflictServiceTest {
     @Mock private SchemaDraftConflictRepository conflictRepository;
-    @Mock private SchemaDraftGraphService graphService;
     private SchemaDraftJsonSupport jsonSupport;
     private SchemaDraftConflictService service;
 
@@ -29,7 +27,7 @@ class SchemaDraftConflictServiceTest {
     void setUp() {
         ObjectMapper objectMapper = new ObjectMapper();
         jsonSupport = new SchemaDraftJsonSupport(objectMapper);
-        service = new SchemaDraftConflictService(conflictRepository, jsonSupport, graphService, objectMapper);
+        service = new SchemaDraftConflictService(conflictRepository, jsonSupport, objectMapper);
     }
 
     @Test

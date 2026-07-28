@@ -15,7 +15,6 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
@@ -40,7 +39,6 @@ class SchemaDraftEvaluationServiceTest {
     @Mock private SchemaDraftEvaluationRunRepository runRepository;
     @Mock private SchemaDraftEvaluationOutcomeRepository outcomeRepository;
     @Mock private SchemaDraftAggregateRevisionRepository aggregateRepository;
-    @Mock private SchemaDraftGraphService graphService;
     @Mock private KnowledgeBaseService knowledgeBaseService;
     @Mock private DocumentUploadService uploadService;
     @Mock private DocumentParsingService parsingService;

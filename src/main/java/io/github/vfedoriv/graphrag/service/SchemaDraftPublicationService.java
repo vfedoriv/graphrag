@@ -19,7 +19,6 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.PublishDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ReadinessBlockingReason;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.SchemaDraftGraphService;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -59,7 +58,6 @@ public class SchemaDraftPublicationService {
     private final SchemaDraftPublicationRepository publicationRepository;
     private final SchemaDefinitionRepository schemaRepository;
     private final SchemaRegistryService schemaRegistryService;
-    private final SchemaDraftGraphService graphService;
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftEvaluationProperties evaluationProperties;
     private final AiObservationService observationService;
@@ -75,7 +73,6 @@ public class SchemaDraftPublicationService {
         SchemaDraftPublicationRepository publicationRepository,
         SchemaDefinitionRepository schemaRepository,
         SchemaRegistryService schemaRegistryService,
-        SchemaDraftGraphService graphService,
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftEvaluationProperties evaluationProperties,
         AiObservationService observationService
@@ -90,7 +87,6 @@ public class SchemaDraftPublicationService {
         this.publicationRepository = publicationRepository;
         this.schemaRepository = schemaRepository;
         this.schemaRegistryService = schemaRegistryService;
-        this.graphService = graphService;
         this.jsonSupport = jsonSupport;
         this.evaluationProperties = evaluationProperties;
         this.observationService = observationService;
@@ -200,7 +196,6 @@ public class SchemaDraftPublicationService {
         publication.setSchemaId(schema.getId());
         publication.setCreatedAt(Instant.now());
         SchemaDraftPublicationNode saved = publicationRepository.save(publication);
-        graphService.attach(draftId, "SchemaDraftPublication", saved.getId());
         draft.setStatus(SchemaDraftStatus.PUBLISHED);
         draft.setPublicationSchemaId(schema.getId());
         draft.setPublicationContentHash(readiness.projectionContentHash());
