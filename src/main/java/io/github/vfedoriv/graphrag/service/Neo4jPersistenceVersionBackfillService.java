@@ -25,13 +25,11 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
         long versionBackfilled = executeCount("""
             MATCH (node)
             WHERE (
-                node:AiProfile OR
                 node:DocumentChunk OR
                 node:DocumentProcessingRun OR
                 node:DocumentUpload OR
                 node:ExtractionRun OR
-                node:KnowledgeBase OR
-                node:RuntimeSettingOverride
+                node:KnowledgeBase
             )
             AND node.version IS NULL
             SET node.version = 0

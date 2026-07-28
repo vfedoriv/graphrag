@@ -1,21 +1,36 @@
-package io.github.vfedoriv.graphrag.domain;
+package io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
-@Node("RuntimeSettingOverride")
-public class RuntimeSettingOverrideNode {
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+
+@Entity
+@Table(name = "runtime_setting_override")
+public class RuntimeSettingOverrideEntity {
 
     @Id
+    @Column(name = "setting_key", nullable = false, length = 255)
     private String key;
-    @Version
-    private Long version;
+
+    @Column(name = "setting_value", nullable = false, columnDefinition = "text")
     private String value;
+
+    @Column(name = "lifecycle_state", nullable = false, length = 32)
     private String lifecycleState;
+
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
     public String getKey() {
         return key;
@@ -23,14 +38,6 @@ public class RuntimeSettingOverrideNode {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     public String getValue() {
@@ -63,5 +70,13 @@ public class RuntimeSettingOverrideNode {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

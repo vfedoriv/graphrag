@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 9413 nodes, 16601 edges, 819 communities. Commit: d837195</p>
+<p class="subtitle">Generated from graphify knowledge graph: 9592 nodes, 16905 edges, 833 communities. Commit: 08d918d</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -77,7 +77,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#community-272">Community 272</a>
     <a href="#community-285">Community 285</a>
     <a href="#community-286">Community 286</a>
-    <a href="#community-313">Community 313</a>
+    <a href="#community-438">Community 438</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,7 +88,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>4797 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>4946 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2864 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -96,7 +96,7 @@ flowchart LR
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>58 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>60 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>62 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>154 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
@@ -104,7 +104,7 @@ flowchart LR
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>30 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>140 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>143 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_269_0760C396("Community 269<br/><small>18 nodes</small>")
     class COMMUNITY_269_0760C396 module;
@@ -114,9 +114,9 @@ flowchart LR
     class COMMUNITY_285_962252BC module;
     COMMUNITY_286_F8337588("Community 286<br/><small>15 nodes</small>")
     class COMMUNITY_286_F8337588 module;
-    COMMUNITY_313_5126B3C6("Community 313<br/><small>12 nodes</small>")
-    class COMMUNITY_313_5126B3C6 module;
-    OTHER_D0941E68("Other<br/><small>759 nodes</small>")
+    COMMUNITY_438_3AFB4F6C("Community 438<br/><small>13 nodes</small>")
+    class COMMUNITY_438_3AFB4F6C module;
+    OTHER_D0941E68("Other<br/><small>783 nodes</small>")
     class OTHER_D0941E68 module;
     INGEST_CACHE_UPDATE_FF457338 -->|contains x3| OTHER_D0941E68
     INGEST_CACHE_UPDATE_FF457338 -->|contains x2| ANALYSIS_CLUSTERING_C79796DA
@@ -137,7 +137,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>4797</td><td><code>2, 57, 108, 60, 31, 3, 124, 304, 56, 84, 14, 67, 68, 15, 36, 42, 10, 18, 22, 30, 4, 27, 33, 428, 46, 5, 54, 769, 12, 23, 29, 301, 19, 45, 104, 13, 305, 364, 76, 53, 86, 9, 40, 6, 72, 771, 16, 17, 25, 32, 0, 1, 107, 20, 24, 90, 97, 248, 362, 7, 130, 21, 28, 287, 52, 73, 762, 87, 268, 64, 153, 756, 8, 11, 154, 34, 62, 773, 83, 103, 122, 387, 41, 43, 44, 48, 776, 78, 790, 113, 127, 261, 37, 382, 427, 47, 50, 865, 95, 275, 378, 49, 540, 763, 155, 156, 246, 26, 295, 393, 395, 396, 61, 63, 690, 71, 765, 781, 284, 297, 35, 380, 66, 694, 70, 772, 106, 139, 161, 298, 375, 376, 384, 386, 398, 405, 74, 758, 770, 80, 296, 373, 397, 402, 408, 424, 75, 767, 92, 100, 164, 412, 85, 94, 96, 98, 413, 539, 695, 741, 105, 109, 110, 118, 330, 400, 401, 407, 419, 793, 112, 403, 411, 418, 425, 438, 782, 818, 120, 247, 415, 439, 442, 759, 777, 778, 821, 837, 123, 141, 445, 77, 784, 822, 824, 111, 117, 131, 133, 410, 448, 488, 489, 505, 829, 134, 135, 137, 138, 142, 143, 388, 389, 51, 643, 644, 648, 649, 760, 788, 832, 146, 148, 151, 152, 379, 454, 455, 585, 601, 696, 713, 868, 157, 158, 159, 420, 463, 464, 536, 559, 671, 682, 163, 717, 718, 719, 795, 796, 797, 798, 799, 800, 801, 802, 803, 838, 839, 840, 841, 842, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2864</td><td><code>39, 38, 69, 89, 160, 537, 91, 149, 101, 162, 121, 129, 255, 252, 128, 253, 256, 538, 58, 79, 258, 260, 306, 265, 266, 372, 267, 273, 274, 277, 278, 279, 282, 283, 82, 115, 289, 290, 292, 293, 55, 302, 140, 307, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 314, 319, 320, 321, 323, 346, 377, 59, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 368, 369, 370, 125, 126, 417, 421, 426, 429, 431, 433, 435, 437, 443, 444, 65, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 627, 628, 633, 634, 635, 636, 639, 640, 751, 761, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 650, 653, 654, 655, 658, 697, 700, 704, 705, 707, 708, 709, 710, 711, 712, 791, 850, 852, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 715, 716, 625, 693, 737, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>60</td><td><code>249, 281, 337, 687, 740, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>154</td><td><code>93, 147, 291, 336, 359, 440, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>284</td><td><code>99, 102, 119, 250, 262, 263, 271, 276, 318, 352, 434, 495, 504, 547, 626, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>140</td><td><code>259, 264, 270, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 272</td><td>17</td><td><code>272</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 313</td><td>12</td><td><code>313</code></td></tr><tr><td>Other</td><td>759</td><td><code>315, 316, 317, 324, 329, 392, 340, 342, 344, 345, 347, 349, 406, 363, 365, 414, 416, 449, 451, 456, 461, 462, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 570, 629, 630, 631, 632, 637, 638, 641, 553, 554, 555, 557, 560, 642, 457, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 651, 652, 656, 657, 683, 698, 699, 701, 702, 703, 706, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 720</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>4946</td><td><code>57, 428, 31, 9, 43, 84, 3, 60, 304, 27, 56, 14, 64, 67, 25, 42, 46, 18, 22, 10, 108, 68, 86, 36, 29, 33, 19, 54, 12, 301, 5, 13, 15, 23, 305, 45, 6, 53, 104, 124, 771, 364, 76, 0, 17, 40, 111, 1, 16, 248, 758, 107, 20, 24, 32, 90, 97, 127, 130, 2, 287, 52, 7, 21, 73, 156, 268, 28, 153, 154, 362, 4, 756, 8, 98, 11, 110, 246, 34, 375, 387, 424, 760, 80, 103, 378, 389, 396, 41, 44, 47, 78, 113, 37, 382, 427, 48, 50, 51, 865, 95, 261, 275, 376, 408, 540, 763, 155, 26, 295, 393, 395, 412, 413, 61, 62, 63, 690, 741, 762, 765, 781, 284, 297, 298, 380, 49, 66, 694, 70, 71, 772, 106, 139, 161, 35, 384, 386, 398, 405, 74, 770, 83, 122, 296, 373, 397, 402, 415, 75, 767, 769, 87, 100, 164, 72, 790, 92, 94, 96, 448, 462, 656, 695, 696, 773, 105, 109, 118, 330, 400, 401, 407, 419, 539, 776, 793, 85, 112, 151, 152, 403, 411, 418, 425, 698, 723, 724, 782, 818, 120, 247, 30, 442, 725, 777, 778, 821, 123, 141, 445, 726, 77, 784, 822, 824, 117, 131, 133, 410, 488, 489, 505, 729, 730, 731, 829, 134, 135, 137, 138, 142, 143, 388, 439, 643, 644, 648, 649, 732, 788, 832, 146, 148, 379, 454, 455, 585, 601, 713, 734, 735, 868, 157, 158, 159, 420, 463, 464, 536, 559, 671, 682, 163, 717, 718, 719, 795, 796, 797, 798, 799, 800, 801, 802, 803, 838, 839, 840, 841, 842, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2864</td><td><code>39, 38, 69, 89, 160, 537, 91, 149, 101, 162, 121, 129, 255, 252, 128, 253, 256, 538, 58, 79, 258, 260, 306, 265, 266, 372, 267, 273, 274, 277, 278, 279, 282, 283, 82, 115, 289, 290, 292, 293, 55, 302, 140, 307, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 314, 319, 320, 321, 323, 346, 377, 59, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 368, 369, 370, 125, 126, 417, 421, 426, 429, 431, 433, 435, 437, 443, 444, 65, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 627, 628, 633, 634, 635, 636, 639, 640, 751, 761, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 650, 653, 654, 655, 658, 697, 700, 704, 705, 707, 708, 709, 710, 711, 712, 791, 850, 852, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 715, 716, 625, 693, 737, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>154</td><td><code>93, 147, 291, 336, 359, 440, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>284</td><td><code>99, 102, 119, 250, 262, 263, 271, 276, 318, 352, 434, 495, 504, 547, 626, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>143</td><td><code>259, 270, 264, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 272</td><td>17</td><td><code>272</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 438</td><td>13</td><td><code>438</code></td></tr><tr><td>Other</td><td>783</td><td><code>313, 315, 316, 317, 324, 570, 329, 392, 340, 342, 344, 345, 347, 349, 406, 363, 365, 414, 416, 449, 451, 456, 461, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 629, 630, 631, 632, 637, 638, 641, 727, 728, 553, 554, 555, 557, 560, 642, 457, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 651, 652, 657, 683, 699, 701, 702, 703, 706, 733, 736, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 720</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -149,24 +149,24 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>9413 nodes · 16601 edges · 819 communities (779 shown, 40 thin omitted)</li>
-      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2643 edges (avg confidence: 0.8)</li>
+      <li>9592 nodes · 16905 edges · 833 communities (791 shown, 42 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2650 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 478 edges</li>
       <li>2. `of()` - 415 edges</li>
-      <li>3. `toString()` - 72 edges</li>
+      <li>3. `toString()` - 74 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 4797 nodes and 12415 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 4946 nodes and 12693 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (4797 nodes, 12415 edges)
+    %% Section: Extraction Pipeline (4946 nodes, 12693 edges)
     subgraph extract_pipeline_application_processing_Embeddin_09e956e3["application/processing/EmbeddingPersistenceStage.java"]
         processing_embeddingpersistencestage_embeddingpe_649ad490("EmbeddingPersistenceStage<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
         processing_embeddingpersistencestage_embeddingpe_be731052("EmbeddingPersistenceStage()<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
@@ -203,7 +203,7 @@ flowchart LR
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_6709bf2e
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_43394c3b
     processing_embeddingpersistencestage_embeddingpe_6709bf2e -->|calls| processing_embeddingpersistencestage_embeddingpe_43394c3b
-    %% Omitted for readability: 4779 nodes, 0 edges
+    %% Omitted for readability: 4928 nodes, 0 edges
     class processing_embeddingpersistencestage_embeddingpe_649ad490 klass;
     class processing_embeddingpersistencestage_embeddingpe_be731052 function;
     class processing_embeddingpersistencestage_embeddingpe_6709bf2e function;
@@ -245,243 +245,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small><br><code>DocumentUploadNode</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small><br><code>Map</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small><br>+2 more</td>
-  <td>ChunkMetadataFactory.java node in application/processing/ChunkMetadataFactory.java.</td>
+  <td><code>RequestBody</code><br><small style="color:var(--muted)">graphrag/controller/SchemaController.java</small></td>
+  <td><code>AddDocumentSourceRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>AddTextSourceRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>AnalysisRunPageResponse</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br>+39 more</td>
+  <td>SchemaDraftController.java node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>ChunkMetadataFactory</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>create()</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
-  <td>ChunkMetadataFactory node in application/processing/ChunkMetadataFactory.java.</td>
+  <td><code>addDocument()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>addFile()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>addText()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br>+30 more</td>
+  <td>SchemaDraftController node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>.create()</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>.SchemaDraftController()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ChunkMetadataFactory</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
-  <td><code>format()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/ArchitectureBoundaryTest.java</small><br><code>getOriginalFilename()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentUploadNode.java</small><br><code>put()</code><br><small style="color:var(--muted)">application/settings/RuntimeSettingsCatalog.java</small></td>
-  <td>.create() node in application/processing/ChunkMetadataFactory.java.</td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.SchemaDraftController() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>DocumentUploadNode</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftLifecycleService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>DocumentUploadNode node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>SchemaDraftLifecycleService node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftSourceService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>DocumentProcessingRunNode node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>SchemaDraftSourceService node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>ParsedDocument</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftAnalysisService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>ParsedDocument node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>Orchestrates analysis and returns structured documentation data.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>ParsedSection</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftReviewService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>ParsedSection node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>SchemaDraftReviewService node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>Map</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftEvaluationService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>ChunkMetadataFactory.java</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Map node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>SchemaDraftEvaluationService node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>String</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
+  <td><code>SchemaDraftPublicationService</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>String node in application/processing/ChunkMetadataFactory.java.</td>
+  <td>SchemaDraftPublicationService node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>Object</code><br><small style="color:var(--muted)">application/processing/ChunkMetadataFactory.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Object node in application/processing/ChunkMetadataFactory.java.</td>
+  <td><code>.create()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><code>retryAnalysis()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>retryEvaluation()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>startAnalysis()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br>+1 more</td>
+  <td>.create() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>DocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>Element</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>InputStream</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br>+2 more</td>
-  <td>RoutedDocumentParser.java node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>No direct outbound edge</td>
+  <td>String node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>classContains()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>detect()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>includeMetadata()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br>+6 more</td>
-  <td>RoutedDocumentParser node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td><code>CreateDraftRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>CreateDraftRequest node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.RoutedDocumentParser()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
-  <td><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>DraftResponse</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.RoutedDocumentParser() node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>DraftResponse node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>TikaProcessingOptions</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>PostMapping</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>DocumentProcessingOptionsRegistry.java</code><br><small style="color:var(--muted)">graphrag/service/DocumentProcessingOptionsRegistry.java</small></td>
-  <td>TikaProcessingOptions node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>PostMapping node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.parserFor()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>.list()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><code>parse()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>rejectsUnsupportedType()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParserTest.java</small><br><code>routesPdfAndDocxToTikaParser()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParserTest.java</small><br>+1 more</td>
-  <td>.parserFor() node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.list() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>String</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>String node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>List node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>DocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>GetMapping</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>DocumentParser node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>GetMapping node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.parse()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>.get()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>parserFor()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>text()</code><br><small style="color:var(--muted)">graphrag/document/ParsedDocument.java</small></td>
-  <td><code>detect()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>format()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/ArchitectureBoundaryTest.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small><br>+3 more</td>
-  <td>.parse() node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><code>analysisStatus()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>evaluationStatus()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small><br><code>publication()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>.get() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>InputStream</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>.update()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>InputStream node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>.update() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>Map</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>UpdateDraftRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Map node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>UpdateDraftRequest node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>Object</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>PutMapping</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Object node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>PutMapping node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>ParsedDocument</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.updateGuidance()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>ParsedDocument node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>.updateGuidance() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>.parsePageAwarePdf()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>parse()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>text()</code><br><small style="color:var(--muted)">graphrag/document/ParsedDocument.java</small></td>
-  <td><code>format()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/ArchitectureBoundaryTest.java</small><br><code>includeMetadata()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>isBlank()</code><br><small style="color:var(--muted)">graphrag/schema/SchemaValidator.java</small><br>+5 more</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>UpdateGuidanceRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>UpdateGuidanceRequest node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>DocumentFormat</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.delete()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>DocumentFormat node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>.delete() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>.pageSections()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>parse()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>parsePageAwarePdf()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><code>classContains()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>format()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/ArchitectureBoundaryTest.java</small><br><code>maxPages()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br>+1 more</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>ResponseEntity</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>ResponseEntity node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>List</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>List node in graphrag/document/RoutedDocumentParser.java.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>ParsedSection</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>Void</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>ParsedSection node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>Void node in graphrag/controller/SchemaDraftController.java.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>DeleteMapping</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>DeleteMapping node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>.maxPages()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>.addDocument()</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>pageSections()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><code>intValue()</code><br><small style="color:var(--muted)">graphrag/service/HybridSearchService.java</small></td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>SchemaDraftController</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.addDocument() node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>.classContains()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>pageSections()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>RoutedDocumentParser</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>split()</code><br><small style="color:var(--muted)">graphrag/document/ChunkingService.java</small></td>
-  <td><code>isBlank()</code><br><small style="color:var(--muted)">graphrag/schema/SchemaValidator.java</small></td>
-  <td>.classContains() node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td><code>AddDocumentSourceRequest</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>AddDocumentSourceRequest node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>Element</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>SourceResponse</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small></td>
+  <td><code>SchemaDraftController.java</code><br><small style="color:var(--muted)">graphrag/controller/SchemaDraftController.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Element node in graphrag/document/RoutedDocumentParser.java.</td>
+  <td>SourceResponse node in graphrag/controller/SchemaDraftController.java.</td>
 </tr>
 </table>
 
@@ -494,7 +494,7 @@ flowchart LR
 <tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>82 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>79 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
-<tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>65 nodes</td></tr>
+<tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>60 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>50 nodes</td></tr>
@@ -502,7 +502,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x4262, method x1990, imports x1586, calls x1447. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x4377, method x2080, imports x1631, calls x1459. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1539,12 +1539,12 @@ flowchart LR
 
 <!-- ====== 6. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">6. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around codex, skills, skillmd, graphify, mostly in skills/graphify/SKILL.md, CLAUDE.md, skills/openspec-explore/SKILL.md. This section covers 60 nodes and 52 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around skillmd, codex, skills, graphify, mostly in skills/graphify/SKILL.md, CLAUDE.md, skills/openspec-explore/SKILL.md. This section covers 62 nodes and 52 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (60 nodes, 52 edges)
+    %% Section: CLI &amp; Skill Installers (62 nodes, 52 edges)
     subgraph cli_skills_CLAUDE_md_27387765["CLAUDE.md"]
         claude_claude_md_dbf0debe("CLAUDE.md")
         claude_architecture_7297293e("Architecture<br/><small>CLAUDE.md</small>")
@@ -1583,7 +1583,7 @@ flowchart LR
     claude_architecture_7297293e -->|contains| claude_four_main_controllers_8aaf2c3a
     claude_architecture_7297293e -->|contains| claude_layers_8bd64c70
     claude_architecture_7297293e -->|contains| claude_llm_client_interfaces_103daeff
-    %% Omitted for readability: 42 nodes, 0 edges
+    %% Omitted for readability: 44 nodes, 0 edges
     class claude_claude_md_dbf0debe concept;
     class claude_architecture_7297293e concept;
     class claude_f1dda22f concept;
@@ -2915,12 +2915,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around openspec, specmd, test, specs, mostly in specs/service-helper-utilities/spec.md, specs/test-coverage-governance/spec.md, specs/architecture-boundary-governance/spec.md. This section covers 140 nodes and 126 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around openspec, specmd, test, specs, mostly in specs/service-helper-utilities/spec.md, specs/architecture-boundary-governance/spec.md, specs/test-coverage-governance/spec.md. This section covers 143 nodes and 129 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (140 nodes, 126 edges)
+    %% Section: Tests &amp; Fixtures (143 nodes, 129 edges)
     subgraph tests_fixtures_fixtures_documents_contract_sampl_b1f6db96["fixtures/documents/contract-sample.txt"]
         documents_contract_sample_acme_corp_a79f55fa("Acme Corp<br/><small>fixtures/documents/contract-sample.txt</small>")
         documents_contract_sample_contract_c_100_9308dfb7("Contract C-100<br/><small>fixtures/documents/contract-sample.txt</small>")
@@ -2958,7 +2958,7 @@ flowchart LR
     schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_relationships_52113e18
     schemas_contracts_v1_787c5b2d -->|contains| schemas_contracts_v1_version_b55fa889
     documents_contract_sample_supplier_b2d8e911 -->|relates| documents_contract_sample_supply_obligations_bb3c6786
-    %% Omitted for readability: 122 nodes, 0 edges
+    %% Omitted for readability: 125 nodes, 0 edges
     class documents_contract_sample_acme_corp_a79f55fa test;
     class documents_contract_sample_contract_c_100_9308dfb7 test;
     class documents_contract_sample_pricing_d516e3c8 test;
@@ -3160,7 +3160,7 @@ flowchart LR
 </tr>
 <tr>
   <td>21</td>
-  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -3168,15 +3168,15 @@ flowchart LR
 </tr>
 <tr>
   <td>22</td>
-  <td><code>test-coverage-governance Specification</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>architecture-boundary-governance Specification</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing test-coverage-governance Specification.</td>
+  <td>Documentation node describing architecture-boundary-governance Specification.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -3184,7 +3184,7 @@ flowchart LR
 </tr>
 <tr>
   <td>24</td>
-  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -3192,51 +3192,51 @@ flowchart LR
 </tr>
 <tr>
   <td>25</td>
-  <td><code>Requirement: Coverage audit identifies critical gaps</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Requirement: Architecture rules run with the test suite</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Coverage audit identifies critical gaps.</td>
+  <td>Documentation node describing Requirement: Architecture rules run with the test suite.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>Scenario: Existing tests are reviewed before adding new tests</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Scenario: Maven tests run</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Existing tests are reviewed before adding new tests.</td>
+  <td>Documentation node describing Scenario: Maven tests run.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>Scenario: Low-value coverage is excluded</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Requirement: Controller boundaries are enforced</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Low-value coverage is excluded.</td>
+  <td>Documentation node describing Requirement: Controller boundaries are enforced.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>Requirement: Unit tests cover deterministic isolated behavior</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Scenario: Controller dependency is checked</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Unit tests cover deterministic isolated behavior.</td>
+  <td>Documentation node describing Scenario: Controller dependency is checked.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>Scenario: Helper or service branch lacks coverage</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Requirement: Domain boundaries are enforced</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Helper or service branch lacks coverage.</td>
+  <td>Documentation node describing Requirement: Domain boundaries are enforced.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>Scenario: AI-dependent behavior is tested</code><br><small style="color:var(--muted)">specs/test-coverage-governance/spec.md</small></td>
+  <td><code>Scenario: Domain dependency is checked</code><br><small style="color:var(--muted)">specs/architecture-boundary-governance/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: AI-dependent behavior is tested.</td>
+  <td>Documentation node describing Scenario: Domain dependency is checked.</td>
 </tr>
 </table>
 
@@ -3245,9 +3245,9 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>specs/service-helper-utilities/spec.md</code></td><td>20 nodes</td></tr>
+      <tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>20 nodes</td></tr>
+<tr><td><code>specs/service-helper-utilities/spec.md</code></td><td>20 nodes</td></tr>
 <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>19 nodes</td></tr>
-<tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>17 nodes</td></tr>
 <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>archive/2026-06-04-improve-test-coverage/design.md</code></td><td>7 nodes</td></tr>
@@ -3257,7 +3257,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x120, references x4, relates x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x123, references x4, relates x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4168,49 +4168,242 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. Community 313 ====== -->
-<h2 id="community-313">15. Community 313</h2>
-<p>Community 313 groups implementation around designmd, processing, openspec, changes, mostly in archive/2026-07-11-decompose-processing-orchestration/design.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. Community 438 ====== -->
+<h2 id="community-438">15. Community 438</h2>
+<p>Community 438 groups implementation around shared, postgresql, specmd, isolation, mostly in specs/shared-postgresql-isolation/spec.md. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 313 (12 nodes, 11 edges)
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a("design.md")
+    %% Section: Community 438 (13 nodes, 12 edges)
+    shared_postgresql_isolation_spec_requirements_82d80697("Requirements<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_35ad5c71("Requirement: GraphRAG uses an isolated...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_1aedc548("Requirement: Provisioning preserves an...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_ad1842c9("Requirement: Relational startup is mana...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    shared_postgresql_isolation_spec_shared_postgres_07c0ab6b("shared-postgresql-isolation Specification<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_671ec18f("spec.md")
+    shared_postgresql_isolation_spec_purpose_3106938c("Purpose<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_13bb20be("Scenario: GraphRAG credentials are leas...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_fbbdcde6("Scenario: GraphRAG starts on the shared...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_05855d75("Scenario: Operators inspect datasource...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_90ed527b("Scenario: Provision an initialized shar...<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_cd46f19f("Scenario: Provisioning is repeated<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_afaf0554("Scenario: Unmanaged schema is non-empty<br/><small>specs/shared-postgresql-isolation/spec.md</small>")
+    openspec_specs_shared_postgresql_isolation_spec_671ec18f -->|contains| shared_postgresql_isolation_spec_shared_postgres_07c0ab6b
+    shared_postgresql_isolation_spec_shared_postgres_07c0ab6b -->|contains| shared_postgresql_isolation_spec_purpose_3106938c
+    shared_postgresql_isolation_spec_shared_postgres_07c0ab6b -->|contains| shared_postgresql_isolation_spec_requirements_82d80697
+    shared_postgresql_isolation_spec_requirements_82d80697 -->|contains| openspec_specs_shared_postgresql_isolation_spec_35ad5c71
+    shared_postgresql_isolation_spec_requirements_82d80697 -->|contains| openspec_specs_shared_postgresql_isolation_spec_1aedc548
+    shared_postgresql_isolation_spec_requirements_82d80697 -->|contains| openspec_specs_shared_postgresql_isolation_spec_ad1842c9
+    openspec_specs_shared_postgresql_isolation_spec_35ad5c71 -->|contains| openspec_specs_shared_postgresql_isolation_spec_13bb20be
+    openspec_specs_shared_postgresql_isolation_spec_35ad5c71 -->|contains| openspec_specs_shared_postgresql_isolation_spec_fbbdcde6
+    openspec_specs_shared_postgresql_isolation_spec_1aedc548 -->|contains| openspec_specs_shared_postgresql_isolation_spec_90ed527b
+    openspec_specs_shared_postgresql_isolation_spec_1aedc548 -->|contains| openspec_specs_shared_postgresql_isolation_spec_cd46f19f
+    openspec_specs_shared_postgresql_isolation_spec_ad1842c9 -->|contains| openspec_specs_shared_postgresql_isolation_spec_05855d75
+    openspec_specs_shared_postgresql_isolation_spec_ad1842c9 -->|contains| openspec_specs_shared_postgresql_isolation_spec_afaf0554
+    class shared_postgresql_isolation_spec_requirements_82d80697 concept;
+    class openspec_specs_shared_postgresql_isolation_spec_35ad5c71 concept;
+    class openspec_specs_shared_postgresql_isolation_spec_1aedc548 concept;
+    class openspec_specs_shared_postgresql_isolation_spec_ad1842c9 concept;
+    class shared_postgresql_isolation_spec_shared_postgres_07c0ab6b concept;
+    class openspec_specs_shared_postgresql_isolation_spec_671ec18f concept;
+    class shared_postgresql_isolation_spec_purpose_3106938c concept;
+    class openspec_specs_shared_postgresql_isolation_spec_13bb20be concept;
+    class openspec_specs_shared_postgresql_isolation_spec_fbbdcde6 concept;
+    class openspec_specs_shared_postgresql_isolation_spec_05855d75 concept;
+    class openspec_specs_shared_postgresql_isolation_spec_90ed527b concept;
+    class openspec_specs_shared_postgresql_isolation_spec_cd46f19f concept;
+    class openspec_specs_shared_postgresql_isolation_spec_afaf0554 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing spec.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>shared-postgresql-isolation Specification</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing shared-postgresql-isolation Specification.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Purpose.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirements.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Requirement: GraphRAG uses an isolated database on the shared PostgreSQL server</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: GraphRAG uses an isolated database on the shared PostgreSQL server.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Scenario: GraphRAG starts on the shared server</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: GraphRAG starts on the shared server.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Scenario: GraphRAG credentials are least-privileged</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: GraphRAG credentials are least-privileged.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Requirement: Provisioning preserves an existing Langfuse installation</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Provisioning preserves an existing Langfuse installation.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Scenario: Provision an initialized shared server</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Provision an initialized shared server.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Scenario: Provisioning is repeated</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Provisioning is repeated.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Requirement: Relational startup is managed and observable</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Relational startup is managed and observable.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Scenario: Unmanaged schema is non-empty</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Unmanaged schema is non-empty.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Scenario: Operators inspect datasource status</code><br><small style="color:var(--muted)">specs/shared-postgresql-isolation/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Operators inspect datasource status.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>specs/shared-postgresql-isolation/spec.md</code></td><td>13 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around openspec, changes, archive, 2026, mostly in specs/runtime-application-settings/spec.md, archive/2026-07-11-decompose-processing-orchestration/design.md, AGENTS.md. This section covers 783 nodes and 665 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (783 nodes, 665 edges)
+    subgraph other_docker_postgres_init_graphrag_sh_34e63333["docker/postgres/init-graphrag.sh"]
+        postgres_init_graphrag_33c9150a("init-graphrag.sh")
+        home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2("init-graphrag.sh script<br/><small>docker/postgres/init-graphrag.sh</small>")
+    end
+    agents_agents_md_0409b87c("AGENTS.md")
+    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
+    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
+    node_2026_06_18_expand_runtime_settings_manageme_5a63b876("design.md")
+    node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73("tasks.md")
+    node_2026_06_19_allow_restart_required_setting_o_dd4bbca8("design.md")
+    node_2026_06_19_allow_restart_required_setting_o_d699845f("tasks.md")
+    node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8("design.md")
+    node_2026_06_19_include_runtime_setting_version_d283ed99("design.md")
+    node_2026_06_30_add_document_processing_options_bbb8e2ce("design.md")
+    node_2026_06_30_add_page_aware_tika_processing_d_9c771f23("design.md")
+    node_2026_06_30_harden_neo4j_persistence_state_h_292675bb("design.md")
+    node_2026_07_01_backfill_neo4j_persistence_versi_99c1e910("design.md")
+    node_2026_07_10_enforce_embedding_space_invarian_b2091f39("design.md")
+    node_2026_07_10_unify_knowledge_base_lifecycle_d_7a662531("design.md")
     node_2026_07_11_decompose_processing_orchestrati_0267fdfd("Decisions<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_650ddfb6("Context<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_7c88996c("Goals / Non-Goals<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_63e2ff6f("Migration Plan<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_ea32dcdc("Open Questions<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_755f615a("Keep compatibility facades and extract...<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_4e9b275a("Make ownership visible in architecture...<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_1b7f7e41("Persist recoverable processing-stage ch...<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_dfc274ec("Risks / Trade-offs<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_349890d7("Separate pure policy from adapters<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_116166c7("Use injected shared serialization and r...<br/><small>archive/2026-07-11-decompose-processing-orchestration/design.md</small>")
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_650ddfb6
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_0267fdfd
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_7c88996c
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_63e2ff6f
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_ea32dcdc
-    node_2026_07_11_decompose_processing_orchestrati_bc28b82a -->|contains| node_2026_07_11_decompose_processing_orchestrati_dfc274ec
-    node_2026_07_11_decompose_processing_orchestrati_0267fdfd -->|contains| node_2026_07_11_decompose_processing_orchestrati_755f615a
-    node_2026_07_11_decompose_processing_orchestrati_0267fdfd -->|contains| node_2026_07_11_decompose_processing_orchestrati_4e9b275a
-    node_2026_07_11_decompose_processing_orchestrati_0267fdfd -->|contains| node_2026_07_11_decompose_processing_orchestrati_1b7f7e41
-    node_2026_07_11_decompose_processing_orchestrati_0267fdfd -->|contains| node_2026_07_11_decompose_processing_orchestrati_349890d7
-    node_2026_07_11_decompose_processing_orchestrati_0267fdfd -->|contains| node_2026_07_11_decompose_processing_orchestrati_116166c7
-    class node_2026_07_11_decompose_processing_orchestrati_bc28b82a concept;
+    postgres_init_graphrag_33c9150a -->|contains| home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2
+    %% Omitted for readability: 765 nodes, 0 edges
+    class postgres_init_graphrag_33c9150a function;
+    class home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2 function;
+    class agents_agents_md_0409b87c concept;
+    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
+    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
+    class node_2026_06_18_expand_runtime_settings_manageme_5a63b876 concept;
+    class node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73 concept;
+    class node_2026_06_19_allow_restart_required_setting_o_dd4bbca8 concept;
+    class node_2026_06_19_allow_restart_required_setting_o_d699845f concept;
+    class node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8 concept;
+    class node_2026_06_19_include_runtime_setting_version_d283ed99 concept;
+    class node_2026_06_30_add_document_processing_options_bbb8e2ce concept;
+    class node_2026_06_30_add_page_aware_tika_processing_d_9c771f23 concept;
+    class node_2026_06_30_harden_neo4j_persistence_state_h_292675bb concept;
+    class node_2026_07_01_backfill_neo4j_persistence_versi_99c1e910 concept;
+    class node_2026_07_10_enforce_embedding_space_invarian_b2091f39 concept;
+    class node_2026_07_10_unify_knowledge_base_lifecycle_d_7a662531 concept;
     class node_2026_07_11_decompose_processing_orchestrati_0267fdfd concept;
-    class node_2026_07_11_decompose_processing_orchestrati_650ddfb6 concept;
-    class node_2026_07_11_decompose_processing_orchestrati_7c88996c concept;
-    class node_2026_07_11_decompose_processing_orchestrati_63e2ff6f concept;
-    class node_2026_07_11_decompose_processing_orchestrati_ea32dcdc concept;
-    class node_2026_07_11_decompose_processing_orchestrati_755f615a concept;
-    class node_2026_07_11_decompose_processing_orchestrati_4e9b275a concept;
-    class node_2026_07_11_decompose_processing_orchestrati_1b7f7e41 concept;
-    class node_2026_07_11_decompose_processing_orchestrati_dfc274ec concept;
-    class node_2026_07_11_decompose_processing_orchestrati_349890d7 concept;
-    class node_2026_07_11_decompose_processing_orchestrati_116166c7 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4328,94 +4521,8 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Open Questions.</td>
 </tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>archive/2026-07-11-decompose-processing-orchestration/design.md</code></td><td>12 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around openspec, changes, archive, 2026, mostly in specs/runtime-application-settings/spec.md, AGENTS.md, specs/application-workflow-orchestration/spec.md. This section covers 759 nodes and 643 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (759 nodes, 643 edges)
-    subgraph other_docker_postgres_init_graphrag_sh_34e63333["docker/postgres/init-graphrag.sh"]
-        postgres_init_graphrag_33c9150a("init-graphrag.sh")
-        home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2("init-graphrag.sh script<br/><small>docker/postgres/init-graphrag.sh</small>")
-    end
-    agents_agents_md_0409b87c("AGENTS.md")
-    node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e("design.md")
-    node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb("tasks.md")
-    node_2026_06_18_expand_runtime_settings_manageme_5a63b876("design.md")
-    node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73("tasks.md")
-    node_2026_06_19_allow_restart_required_setting_o_dd4bbca8("design.md")
-    node_2026_06_19_allow_restart_required_setting_o_d699845f("tasks.md")
-    node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8("design.md")
-    node_2026_06_19_include_runtime_setting_version_d283ed99("design.md")
-    node_2026_06_30_add_document_processing_options_bbb8e2ce("design.md")
-    node_2026_06_30_add_page_aware_tika_processing_d_9c771f23("design.md")
-    node_2026_06_30_harden_neo4j_persistence_state_h_292675bb("design.md")
-    node_2026_07_01_backfill_neo4j_persistence_versi_99c1e910("design.md")
-    node_2026_07_10_enforce_embedding_space_invarian_b2091f39("design.md")
-    node_2026_07_10_unify_knowledge_base_lifecycle_d_7a662531("design.md")
-    node_2026_07_12_improve_operational_logging_and_d37818ea("design.md")
-    postgres_init_graphrag_33c9150a -->|contains| home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2
-    %% Omitted for readability: 741 nodes, 0 edges
-    class postgres_init_graphrag_33c9150a function;
-    class home_vitaliy_workspace_graphrag_docker_postgres_1fffdcb2 function;
-    class agents_agents_md_0409b87c concept;
-    class node_2026_05_15_overwrite_completed_extraction_d_cc91fe6e concept;
-    class node_2026_06_18_add_runtime_settings_ai_profiles_f2130eeb concept;
-    class node_2026_06_18_expand_runtime_settings_manageme_5a63b876 concept;
-    class node_2026_06_18_expand_runtime_settings_manageme_b6aa0a73 concept;
-    class node_2026_06_19_allow_restart_required_setting_o_dd4bbca8 concept;
-    class node_2026_06_19_allow_restart_required_setting_o_d699845f concept;
-    class node_2026_06_19_fix_runtime_setting_override_ver_d5ae48c8 concept;
-    class node_2026_06_19_include_runtime_setting_version_d283ed99 concept;
-    class node_2026_06_30_add_document_processing_options_bbb8e2ce concept;
-    class node_2026_06_30_add_page_aware_tika_processing_d_9c771f23 concept;
-    class node_2026_06_30_harden_neo4j_persistence_state_h_292675bb concept;
-    class node_2026_07_01_backfill_neo4j_persistence_versi_99c1e910 concept;
-    class node_2026_07_10_enforce_embedding_space_invarian_b2091f39 concept;
-    class node_2026_07_10_unify_knowledge_base_lifecycle_d_7a662531 concept;
-    class node_2026_07_12_improve_operational_logging_and_d37818ea concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
 <tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
+  <td>13</td>
   <td><code>AGENTS.md</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4423,7 +4530,7 @@ flowchart LR
   <td>Documentation node describing AGENTS.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>14</td>
   <td><code>AGENTS.md</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4431,7 +4538,7 @@ flowchart LR
   <td>Documentation node describing AGENTS.md.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>15</td>
   <td><code>Stack</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4439,7 +4546,7 @@ flowchart LR
   <td>Documentation node describing Stack.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>16</td>
   <td><code>Commands</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4447,7 +4554,7 @@ flowchart LR
   <td>Documentation node describing Commands.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>17</td>
   <td><code>Architecture</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4455,7 +4562,7 @@ flowchart LR
   <td>Documentation node describing Architecture.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>18</td>
   <td><code>Profiles</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4463,7 +4570,7 @@ flowchart LR
   <td>Documentation node describing Profiles.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>19</td>
   <td><code>Key Files</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4471,7 +4578,7 @@ flowchart LR
   <td>Documentation node describing Key Files.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>20</td>
   <td><code>Testing</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4479,7 +4586,7 @@ flowchart LR
   <td>Documentation node describing Testing.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>21</td>
   <td><code>OpenSpec Workflow</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4487,7 +4594,7 @@ flowchart LR
   <td>Documentation node describing OpenSpec Workflow.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>22</td>
   <td><code>Commit &amp; Pull Request Guidelines</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4495,7 +4602,7 @@ flowchart LR
   <td>Documentation node describing Commit &amp; Pull Request Guidelines.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>23</td>
   <td><code>Design Constraints</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4503,7 +4610,7 @@ flowchart LR
   <td>Documentation node describing Design Constraints.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>24</td>
   <td><code>graphify</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4511,7 +4618,7 @@ flowchart LR
   <td>Documentation node describing graphify.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>25</td>
   <td><code>spec.md</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4519,7 +4626,7 @@ flowchart LR
   <td>Documentation node describing spec.md.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>26</td>
   <td><code>application-workflow-orchestration Specification</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4527,7 +4634,7 @@ flowchart LR
   <td>Documentation node describing application-workflow-orchestration Specification.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>27</td>
   <td><code>Purpose</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4535,7 +4642,7 @@ flowchart LR
   <td>Documentation node describing Purpose.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>28</td>
   <td><code>Requirements</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4543,7 +4650,7 @@ flowchart LR
   <td>Documentation node describing Requirements.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>29</td>
   <td><code>Requirement: Document processing uses explicit workflow stages</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -4551,108 +4658,12 @@ flowchart LR
   <td>Documentation node describing Requirement: Document processing uses explicit workflow stages.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>30</td>
   <td><code>Scenario: Processing succeeds</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Documentation node describing Scenario: Processing succeeds.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>Scenario: Processing stage fails</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Processing stage fails.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Requirement: Runtime settings composition is typed and cohesive</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Runtime settings composition is typed and cohesive.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>Scenario: Feature resolves settings</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Feature resolves settings.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Scenario: Live setting is cleared</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Live setting is cleared.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Requirement: Schema generation collaborators are independently testable</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Schema generation collaborators are independently testable.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>Scenario: Model response is mapped</code><br><small style="color:var(--muted)">specs/application-workflow-orchestration/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Model response is mapped.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>spec.md</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing spec.md.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>embedding-space-management Specification</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing embedding-space-management Specification.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Purpose</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Purpose.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Requirements</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirements.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>Requirement: Embedding spaces have stable non-secret identities</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Requirement: Embedding spaces have stable non-secret identities.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>Scenario: Profiles use different providers with equal dimensions</code><br><small style="color:var(--muted)">specs/embedding-space-management/spec.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Scenario: Profiles use different providers with equal dimensions.</td>
 </tr>
 </table>
 
@@ -4664,16 +4675,16 @@ flowchart LR
       <tr><td><code>specs/runtime-application-settings/spec.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>AGENTS.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>specs/document-processing-run-history/spec.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>archive/2026-07-11-decompose-processing-orchestration/design.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>specs/application-workflow-orchestration/spec.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>specs/embedding-space-management/spec.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>specs/persistence-transaction-routing/spec.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>archive/2026-07-12-improve-operational-logging-and-docs/design.md</code></td><td>11 nodes</td></tr>
-<tr><td><code>specs/shared-postgresql-isolation/spec.md</code></td><td>11 nodes</td></tr>
-<tr><td><code>specs/ai-observability-monitoring/spec.md</code></td><td>10 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x643. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x665. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4698,18 +4709,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>9413</td></tr>
-      <tr><td>Edges</td><td>16601</td></tr>
+      <tr><td>Nodes</td><td>9592</td></tr>
+      <tr><td>Edges</td><td>16905</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>819</td></tr>
+      <tr><td>Communities</td><td>833</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>13958</td></tr>
-      <tr><td>INFERRED</td><td>2643</td></tr>
+      <tr><td>EXTRACTED</td><td>14255</td></tr>
+      <tr><td>INFERRED</td><td>2650</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4717,7 +4728,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-28 18:33 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-28 19:08 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

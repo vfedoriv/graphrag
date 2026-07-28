@@ -62,12 +62,12 @@ Out of scope (current implementation):
   - execution endpoint,
   - combined `/ask` endpoint.
 - Runtime AI configuration:
-  - Neo4j-persisted runtime setting overrides for allowlisted query, hybrid search, chunking, extraction, and AI observability settings,
-  - Neo4j-persisted OpenAI-compatible AI profiles with write-only API keys,
+  - PostgreSQL-persisted runtime setting overrides for allowlisted query, hybrid search, chunking, extraction, and AI observability settings,
+  - PostgreSQL-persisted OpenAI-compatible AI profiles with write-only API keys,
   - default AI profile seeding from `app.model.*`,
   - per-knowledge-base active AI profile selection with embedding compatibility checks.
 - Error handling via RFC 7807-style `ProblemDetail`.
-- Unit + integration tests (including Testcontainers for Neo4j).
+- Unit + integration tests (including Testcontainers for Neo4j and PostgreSQL).
 
 ## Main Architecture
 
@@ -182,9 +182,11 @@ flowchart TD
 - Java 25
 - Spring Boot 4.1.0
 - Spring Data Neo4j
+- Spring Data JPA + Flyway
 - Spring AI 2.0.0 (OpenAI-compatible chat + embeddings)
 - LangChain4j 1.16.2 Tika parser integration
 - Neo4j 5.26.25
+- PostgreSQL 17
 - Maven + JUnit + Testcontainers
 
 ## Data Model
@@ -196,14 +198,17 @@ Infrastructure nodes:
 - `(:DocumentUpload {id, knowledgeBaseId, originalFilename, contentType, sizeBytes, sha256, contentUri, status, uploadedAt, processedAt, errorMessage})`
 - `(:DocumentChunk {id, documentId, chunkIndex, text, tokenEstimate, embedding, embeddingModel, embeddingDimensions, metadata})`
 - `(:ExtractionRun {id, documentId, schemaId, model, status, startedAt, completedAt, errorMessage})`
-- `(:AiProfile {id, name, baseUrl, apiKey, chatModel, embeddingModel, embeddingDimensions, timeoutSeconds, maxRetries, defaultProfile, revision, createdAt, updatedAt})`
-- `(:RuntimeSettingOverride {key, value, lifecycleState, updatedAt})`
 
 Infrastructure relationships:
 
 - `(:KnowledgeBase)-[:USES_SCHEMA]->(:SchemaDefinition)`
 - `(:DocumentUpload)-[:HAS_CHUNK]->(:DocumentChunk)`
 - `(:DocumentUpload)-[:HAS_EXTRACTION_RUN]->(:ExtractionRun)`
+
+Relational operational tables:
+
+- `app.ai_profile` stores provider/model configuration, write-only credentials, revision/default state, timestamps, and optimistic version metadata.
+- `app.runtime_setting_override` stores accepted allowlisted values, lifecycle state, timestamps, and optimistic version metadata.
 
 Domain-specific nodes/relationships are dynamic and schema-driven. Extracted graph elements are written with provenance properties:
 
@@ -252,7 +257,7 @@ Persisted runtime settings override selected startup properties. `mutable=true` 
 
 The runtime settings list exposes `currentValue`, `defaultValue`, `activeValue`, `source`, and `lifecycleState`. Restart-required overrides report `pending-restart` while the saved desired value differs from the startup-active value and `active` after restart when the running default matches the persisted override. Profile-specific property files are resolved before the catalog is built, so listed defaults reflect active Spring profiles.
 
-Startup-bound settings consumed before Neo4j-backed overrides can load remain deployment-managed unless the implementation provides a safe runtime reassignment path. Neo4j URI, authentication, credentials, and database selection are not editable through `/api/v1/runtime-settings`; change them through environment variables, Docker Compose, Kubernetes, or equivalent deployment configuration. AI provider defaults under `app.model.*` and derived `spring.ai.openai.*` entries are visible as profile-managed context, but knowledge-base provider behavior must be changed through the AI profile API. API keys, Neo4j passwords, and OTLP authorization headers are masked in runtime settings responses and never expose raw secret values.
+Startup-bound settings consumed before PostgreSQL-backed overrides can load remain deployment-managed unless the implementation provides a safe runtime reassignment path. PostgreSQL and Neo4j connectivity, credentials, database/schema selection, and pool metadata are not editable through `/api/v1/runtime-settings`; change them through environment variables, Docker Compose, Kubernetes, or equivalent deployment configuration. AI provider defaults under `app.model.*` and derived `spring.ai.openai.*` entries are visible as profile-managed context, but knowledge-base provider behavior must be changed through the AI profile API. API keys, datasource/Neo4j passwords, and OTLP authorization headers are masked in runtime settings responses and never expose raw secret values.
 
 ## OpenAPI / Swagger
 
@@ -310,9 +315,9 @@ Runtime settings catalog categories:
 
 - Live mutable: `app.query.*`, `app.chunking.*`, `app.extraction.*`, `app.ai.observability.*`, and `logging.level.root`.
 - Restart-required mutable: supported non-secret entries such as `app.storage.documents-root`, reported with pending or active lifecycle metadata.
-- Read-only or restart-required visibility: `spring.application.name`, Spring AI bootstrap switches, Spring auto-configuration exclusions, Neo4j URI/username/database, multipart limits, actuator/health settings, tracing switches, OTLP endpoint and non-secret exporter headers.
+- Read-only or restart-required visibility: `spring.application.name`, Spring AI bootstrap switches, Spring auto-configuration exclusions, PostgreSQL datasource/schema/pool metadata, Neo4j URI/username/database, multipart limits, actuator/health settings, tracing switches, OTLP endpoint and non-secret exporter headers.
 - Profile-managed visibility: `app.model.base-url`, model names/dimensions, and derived Spring AI OpenAI base URL/model aliases. Use AI profile management for operational provider changes.
-- Sensitive read-only: `app.model.api-key`, `spring.ai.openai.api-key`, `spring.neo4j.authentication.password`, and OTLP authorization headers. Responses indicate configured/masked status only.
+- Sensitive read-only: `app.model.api-key`, `spring.ai.openai.api-key`, `spring.datasource.password`, `spring.neo4j.authentication.password`, and OTLP authorization headers. Responses indicate configured/masked status only.
 
 The query API rejects explicit `LIMIT` values above `app.query.max-rows`, applies `app.query.timeout-seconds` at the transaction boundary, and includes the immutable applied policy snapshot under `validation.policy`.
 

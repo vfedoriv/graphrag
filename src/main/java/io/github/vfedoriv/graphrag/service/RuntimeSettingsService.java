@@ -30,7 +30,9 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class RuntimeSettingsService {
@@ -55,7 +57,7 @@ public class RuntimeSettingsService {
         this.lifecycle = new RuntimeSettingLifecycle(overrideStore, definitions);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public List<RuntimeSettingResponse> list() {
         ensureRestartRequiredOverridesLoaded();
         return definitions.values().stream()
@@ -63,7 +65,7 @@ public class RuntimeSettingsService {
             .toList();
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public RuntimeSettingResponse update(String key, Object value) {
         RuntimeSettingDefinition definition = requireDefinition(key);
         overrideStore.requireConfigured();
@@ -77,11 +79,11 @@ public class RuntimeSettingsService {
         node.setLifecycleState(lifecycle.state(definition, parsed));
         node.setUpdatedAt(Instant.now());
         overrideStore.save(node);
-        definition.applyLive(parsed);
+        applyAfterCommit(() -> definition.applyLive(parsed));
         return toResponse(definition);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public List<RuntimeSettingResponse> update(List<RuntimeSettingUpdateRequest> updates) {
         overrideStore.requireConfigured();
         ensureRestartRequiredOverridesLoaded();
@@ -118,9 +120,9 @@ public class RuntimeSettingsService {
             node.setUpdatedAt(updatedAt);
             overrideStore.save(node);
         }
-        for (ParsedSettingUpdate update : parsedUpdates) {
-            update.definition().applyLive(update.value());
-        }
+        applyAfterCommit(() -> parsedUpdates.forEach(
+            update -> update.definition().applyLive(update.value())
+        ));
 
         return parsedUpdates.stream()
             .map(ParsedSettingUpdate::definition)
@@ -128,7 +130,7 @@ public class RuntimeSettingsService {
             .toList();
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public RuntimeSettingResponse clear(String key) {
         RuntimeSettingDefinition definition = requireDefinition(key);
         overrideStore.requireConfigured();
@@ -137,18 +139,18 @@ public class RuntimeSettingsService {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
         overrideStore.delete(key);
-        definition.applyLive(definition.defaultValue());
+        applyAfterCommit(() -> definition.applyLive(definition.defaultValue()));
         return toResponse(definition);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public Path documentStorageRoot() {
         RuntimeSettingDefinition definition = requireDefinition("app.storage.documents-root");
         ensureRestartRequiredOverridesLoaded();
         return Path.of(String.valueOf(lifecycle.activeParsedValue(definition)));
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public QuerySettings query() {
         return new QuerySettings(
             integer("app.query.max-rows"),
@@ -165,7 +167,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public QueryPolicy queryPolicy() {
         QuerySettings settings = query();
         return new QueryPolicy(
@@ -176,7 +178,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public ChunkingSettings chunking() {
         return new ChunkingSettings(
             integer("app.chunking.max-tokens"),
@@ -185,7 +187,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public ExtractionSettings extraction() {
         return new ExtractionSettings(
             integer("app.extraction.max-entities-per-chunk"),
@@ -194,7 +196,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public DiscoverySettings discovery() {
         return new DiscoverySettings(
             integer("app.schema-discovery.max-sources"),
@@ -210,7 +212,7 @@ public class RuntimeSettingsService {
         );
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public AiObservationSettings aiObservation() {
         return new AiObservationSettings(
             bool("app.ai.observability.enabled"),
@@ -305,6 +307,19 @@ public class RuntimeSettingsService {
             throw new IllegalArgumentException("Runtime setting is not allowlisted: " + key);
         }
         return definition;
+    }
+
+    private void applyAfterCommit(Runnable action) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            action.run();
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                action.run();
+            }
+        });
     }
 
     private record ParsedSettingUpdate(RuntimeSettingDefinition definition, Object value) {

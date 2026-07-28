@@ -15,8 +15,9 @@ import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 public class AiProfileService implements ApplicationRunner {
@@ -52,12 +53,10 @@ public class AiProfileService implements ApplicationRunner {
     }
 
     @Override
-    @GraphTransactional
     public void run(ApplicationArguments args) {
         seedDefaultProfile();
     }
 
-    @GraphTransactional
     public AiProfileNode seedDefaultProfile() {
         return aiProfileRepository.findFirstByDefaultProfileTrue()
             .orElseGet(() -> {
@@ -76,29 +75,34 @@ public class AiProfileService implements ApplicationRunner {
                 profile.setRevision(1);
                 profile.setCreatedAt(now);
                 profile.setUpdatedAt(now);
-                return aiProfileRepository.save(profile);
+                try {
+                    return aiProfileRepository.save(profile);
+                } catch (DataIntegrityViolationException exception) {
+                    return aiProfileRepository.findFirstByDefaultProfileTrue()
+                        .orElseThrow(() -> exception);
+                }
             });
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<AiProfileResponse> list() {
         return aiProfileRepository.findAllByOrderByCreatedAtDesc().stream()
             .map(this::toResponse)
             .toList();
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public AiProfileNode getNode(String id) {
         return aiProfileRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("AI profile not found: " + id));
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public AiProfileResponse get(String id) {
         return toResponse(getNode(id));
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public AiProfileResponse create(CreateAiProfileRequest request) {
         if (aiProfileRepository.existsById(request.id())) {
             throw new ConflictException("AI profile already exists: " + request.id());
@@ -124,15 +128,20 @@ public class AiProfileService implements ApplicationRunner {
         );
         profile.setRevision(1);
         profile.setUpdatedAt(now);
-        AiProfileNode saved = aiProfileRepository.save(profile);
-        if (saved.isDefaultProfile()) {
-            unsetOtherDefaults(saved.getId());
+        if (profile.isDefaultProfile()) {
+            unsetOtherDefaults(profile.getId());
+        }
+        AiProfileNode saved;
+        try {
+            saved = aiProfileRepository.save(profile);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("AI profile identity or default selection conflicts with existing state");
         }
         invalidate(saved.getId());
         return toResponse(saved);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public AiProfileResponse update(String id, UpdateAiProfileRequest request) {
         AiProfileNode profile = getNode(id);
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
@@ -156,15 +165,20 @@ public class AiProfileService implements ApplicationRunner {
         );
         profile.setRevision(profile.getRevision() + 1);
         profile.setUpdatedAt(Instant.now());
-        AiProfileNode saved = aiProfileRepository.save(profile);
-        if (saved.isDefaultProfile()) {
-            unsetOtherDefaults(saved.getId());
+        if (profile.isDefaultProfile()) {
+            unsetOtherDefaults(profile.getId());
+        }
+        AiProfileNode saved;
+        try {
+            saved = aiProfileRepository.save(profile);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("AI profile default selection conflicts with existing state");
         }
         invalidate(saved.getId());
         return toResponse(saved);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void delete(String id) {
         AiProfileNode profile = getNode(id);
         if (profile.isDefaultProfile()) {
@@ -176,7 +190,6 @@ public class AiProfileService implements ApplicationRunner {
         aiProfileRepository.deleteById(id);
     }
 
-    @GraphTransactional
     public AiProfileNode defaultProfile() {
         return aiProfileRepository.findFirstByDefaultProfileTrue()
             .orElseGet(this::seedDefaultProfile);

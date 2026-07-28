@@ -54,21 +54,6 @@ class HybridSearchIntegrationTest {
     void setUpGraph() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         neo4jClient.query("""
-            CREATE (:AiProfile {
-              id: 'default',
-              name: 'Default test profile',
-              baseUrl: 'https://api.openai.com/v1',
-              apiKey: '',
-              chatModel: 'gpt-5-mini',
-              embeddingModel: 'text-embedding-3-small',
-              embeddingDimensions: 3,
-              timeoutSeconds: 60,
-              maxRetries: 2,
-              defaultProfile: true,
-              revision: 1,
-              createdAt: datetime(),
-              updatedAt: datetime()
-            })
             CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', activeAiProfileId: 'default', createdAt: datetime()})
             CREATE (:KnowledgeBase {id: 'kb-2', name: 'KB 2', activeAiProfileId: 'default', createdAt: datetime()})
             CREATE (:KnowledgeBase {id: 'kb-empty', name: 'Empty KB', activeAiProfileId: 'default', createdAt: datetime()})

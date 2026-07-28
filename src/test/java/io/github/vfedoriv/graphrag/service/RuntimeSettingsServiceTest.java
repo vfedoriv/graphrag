@@ -223,7 +223,7 @@ class RuntimeSettingsServiceTest {
         assertThat(settings.get("spring.datasource.url").updateMode()).isEqualTo("restart-required");
         assertThat(settings.get("spring.datasource.url").mutable()).isFalse();
         assertThat(settings.get("spring.datasource.hikari.maximum-pool-size").updateMode()).isEqualTo("restart-required");
-        assertThat(settings.get("spring.datasource.hikari.maximum-pool-size").mutable()).isTrue();
+        assertThat(settings.get("spring.datasource.hikari.maximum-pool-size").mutable()).isFalse();
         assertThat(settings.get("app.model.base-url").updateMode()).isEqualTo("profile-managed");
         assertThat(settings.get("app.model.base-url").mutable()).isFalse();
         assertThat(settings.get("spring.application.name").mutable()).isFalse();
@@ -483,12 +483,20 @@ class RuntimeSettingsServiceTest {
             .withProperty("spring.datasource.url", "jdbc:postgresql://localhost:5433/graphrag")
             .withProperty("spring.datasource.username", "graphrag")
             .withProperty("spring.datasource.password", "postgres-secret")
+            .withProperty("spring.datasource.driver-class-name", "org.postgresql.Driver")
             .withProperty("spring.datasource.hikari.maximum-pool-size", "10")
             .withProperty("spring.datasource.hikari.minimum-idle", "2")
+            .withProperty("spring.datasource.hikari.connection-timeout", "30000")
+            .withProperty("spring.datasource.hikari.pool-name", "graphrag-pool")
             .withProperty("spring.jpa.hibernate.ddl-auto", "validate")
             .withProperty("spring.jpa.open-in-view", "false")
+            .withProperty("spring.jpa.properties.hibernate.default_schema", "app")
             .withProperty("spring.flyway.default-schema", "app")
+            .withProperty("spring.flyway.schemas", "app")
+            .withProperty("spring.flyway.create-schemas", "true")
             .withProperty("spring.flyway.baseline-on-migrate", "false")
+            .withProperty("spring.flyway.validate-on-migrate", "true")
+            .withProperty("spring.flyway.clean-disabled", "true")
             .withProperty("spring.servlet.multipart.max-file-size", "100MB")
             .withProperty("spring.servlet.multipart.max-request-size", "100MB")
             .withProperty("management.endpoints.web.exposure.include", "health,metrics")

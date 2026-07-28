@@ -9,9 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
+import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
+import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
+import io.github.vfedoriv.graphrag.service.AiProfileService;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,8 +46,19 @@ class KnowledgeBaseControllerIntegrationTest {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
-    private Neo4jPersistenceVersionBackfillService versionBackfillService;
+    private AiProfileRepository aiProfileRepository;
+    @Autowired
+    private JpaAiProfileRepository jpaAiProfileRepository;
+    @Autowired
+    private AiProfileService aiProfileService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void resetOperationalState() {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        jpaAiProfileRepository.deleteAll();
+        aiProfileService.seedDefaultProfile();
+    }
 
     @Test
     void createListGetUpdateDeleteKnowledgeBase() throws Exception {
@@ -180,27 +196,22 @@ class KnowledgeBaseControllerIntegrationTest {
     }
 
     @Test
-    void updatesLegacyAiProfileAfterVersionBackfill() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        neo4jClient.query("""
-            CREATE (:AiProfile {
-              id: 'legacy-profile',
-              name: 'Legacy Profile',
-              baseUrl: 'https://profiles.example/v1',
-              apiKey: 'legacy-secret',
-              chatModel: 'legacy-chat',
-              embeddingModel: 'legacy-embedding',
-              embeddingDimensions: 768,
-              timeoutSeconds: 60,
-              maxRetries: 1,
-              defaultProfile: true,
-              revision: 1,
-              createdAt: datetime(),
-              updatedAt: datetime()
-            })
-            """).run();
-
-        versionBackfillService.run(null);
+    void updatesRelationalAiProfileWithOptimisticVersion() throws Exception {
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId("legacy-profile");
+        profile.setName("Legacy Profile");
+        profile.setBaseUrl("https://profiles.example/v1");
+        profile.setApiKey("legacy-secret");
+        profile.setChatModel("legacy-chat");
+        profile.setEmbeddingModel("legacy-embedding");
+        profile.setEmbeddingDimensions(768);
+        profile.setTimeoutSeconds(60);
+        profile.setMaxRetries(1);
+        profile.setDefaultProfile(false);
+        profile.setRevision(1);
+        profile.setCreatedAt(Instant.now());
+        profile.setUpdatedAt(Instant.now());
+        aiProfileRepository.save(profile);
 
         mockMvc.perform(put("/api/v1/ai-profiles/{profileId}", "legacy-profile")
                 .contentType("application/json")
@@ -213,7 +224,7 @@ class KnowledgeBaseControllerIntegrationTest {
                       "embeddingDimensions": 768,
                       "timeoutSeconds": 600,
                       "maxRetries": 1,
-                      "defaultProfile": true
+                      "defaultProfile": false
                     }
                     """))
             .andExpect(status().isOk())
@@ -222,16 +233,10 @@ class KnowledgeBaseControllerIntegrationTest {
             .andExpect(jsonPath("$.revision").value(2))
             .andExpect(jsonPath("$.apiKeyConfigured").value(true));
 
-        Map<String, Object> row = neo4jClient.query("""
-            MATCH (profile:AiProfile {id: 'legacy-profile'})
-            RETURN profile.version AS version, profile.timeoutSeconds AS timeoutSeconds
-            """)
-            .fetch()
-            .one()
-            .orElseThrow();
-        assertThat(row.get("version")).isInstanceOf(Number.class);
-        assertThat(((Number) row.get("version")).longValue()).isGreaterThanOrEqualTo(1L);
-        assertThat(row.get("timeoutSeconds")).isEqualTo(600L);
+        io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.AiProfileEntity persisted =
+            jpaAiProfileRepository.findById("legacy-profile").orElseThrow();
+        assertThat(persisted.getVersion()).isGreaterThanOrEqualTo(1L);
+        assertThat(persisted.getTimeoutSeconds()).isEqualTo(600);
     }
 
     @Test

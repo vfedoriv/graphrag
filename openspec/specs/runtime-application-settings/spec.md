@@ -20,7 +20,7 @@ The system SHALL expose application settings only through an explicit allowlist 
 - **AND** no persisted runtime setting is changed
 
 ### Requirement: Runtime setting updates are validated and persisted
-The system SHALL validate submitted runtime setting values before persisting mutable live overrides or mutable restart-required overrides in Neo4j or the configured runtime settings store, and SHALL persist runtime setting override records using stable entity state handling for assigned setting-key identifiers.
+The system SHALL validate submitted runtime setting values before persisting mutable live overrides or mutable restart-required overrides in PostgreSQL, and SHALL persist runtime setting override records using stable entity state handling for assigned setting-key identifiers.
 
 #### Scenario: Valid live setting update is submitted
 - **WHEN** a client updates an allowlisted mutable live setting with a valid value
@@ -38,7 +38,7 @@ The system SHALL validate submitted runtime setting values before persisting mut
 #### Scenario: Existing runtime setting override is updated
 - **WHEN** a client updates an allowlisted mutable setting that already has a persisted override record
 - **THEN** the system updates the existing override record for that setting key
-- **AND** the save path preserves persistence state needed by Spring Data Neo4j for assigned identifiers
+- **AND** the save path preserves persistence state and optimistic versioning for assigned identifiers
 - **AND** normal repeated updates do not emit assigned-id new-entity warnings
 - **AND** subsequent setting reads return the latest persisted value and lifecycle metadata
 
@@ -95,14 +95,14 @@ The system SHALL apply allowlisted live settings to subsequent workflow executio
 - **AND** update and clear requests for that setting are rejected
 - **AND** updating live-only behavior does not attempt to rebuild unrelated infrastructure
 
-#### Scenario: Pre-Neo4j-applied setting has no reassignment path
-- **WHEN** a setting value is consumed before Neo4j-backed runtime overrides can be loaded
+#### Scenario: Pre-relational-applied setting has no reassignment path
+- **WHEN** a setting value is consumed before PostgreSQL-backed runtime overrides can be loaded
 - **AND** the running application has no safe path to reassign that value after startup
 - **THEN** the settings API exposes it only as read-only or sensitive read-only inventory
 - **AND** update and clear requests for that setting are rejected
 
 #### Scenario: Neo4j connectivity remains deployment-managed
-- **WHEN** a setting controls Neo4j URI, authentication, credentials, or database selection required to reach the runtime settings store
+- **WHEN** a setting controls Neo4j URI, authentication, credentials, or database selection
 - **THEN** the settings API exposes it only as read-only or sensitive read-only inventory
 - **AND** clients must change the value through deployment configuration such as environment variables or Docker Compose
 - **AND** update and clear requests for that setting are rejected
@@ -237,3 +237,23 @@ The system SHALL represent discovery source/request deadlines separately from AI
 - **AND** the backend emits privacy-safe configuration metadata sufficient to diagnose the mismatch
 - **AND** the stored AI profile remains unchanged
 
+### Requirement: Runtime setting overrides are relational operational state
+The system SHALL persist accepted runtime setting overrides in PostgreSQL using typed, allowlisted, optimistic updates while retaining the catalog as the authority for editability, sensitivity, update mode, and lifecycle behavior.
+
+#### Scenario: A live setting is updated
+- **WHEN** a valid mutable live setting is saved
+- **THEN** the relational override commits atomically
+- **AND** the active runtime behavior and reported lifecycle state remain consistent with the catalog
+
+#### Scenario: Concurrent updates conflict
+- **WHEN** two callers update the same override from the same prior version
+- **THEN** one update succeeds
+- **AND** the stale update receives the existing conflict response
+
+### Requirement: PostgreSQL datasource settings are deployment-managed
+The settings catalog SHALL report supported GraphRAG datasource and pool properties as deployment-managed and SHALL keep datasource credentials non-mutable and masked.
+
+#### Scenario: Settings are listed
+- **WHEN** a caller lists runtime settings
+- **THEN** supported PostgreSQL URL, username, database/schema, and pool metadata are identified as deployment-managed
+- **AND** the datasource password value is not returned

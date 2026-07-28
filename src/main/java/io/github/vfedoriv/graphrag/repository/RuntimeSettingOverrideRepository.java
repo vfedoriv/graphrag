@@ -1,16 +1,17 @@
 package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.query.Query;
+import java.util.Optional;
 
-public interface RuntimeSettingOverrideRepository extends Neo4jRepository<RuntimeSettingOverrideNode, String> {
+public interface RuntimeSettingOverrideRepository {
 
-    @Query("""
-        MATCH (override:RuntimeSettingOverride)
-        WHERE override.version IS NULL
-        SET override.version = 0
-        RETURN count(override)
-        """)
-    Long backfillMissingVersions();
+    Optional<RuntimeSettingOverrideNode> findById(String key);
+
+    RuntimeSettingOverrideNode save(RuntimeSettingOverrideNode override);
+
+    void deleteById(String key);
+
+    default Long backfillMissingVersions() {
+        return 0L;
+    }
 }

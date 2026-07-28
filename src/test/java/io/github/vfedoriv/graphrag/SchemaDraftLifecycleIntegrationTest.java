@@ -130,6 +130,7 @@ class SchemaDraftLifecycleIntegrationTest {
         MODEL_CALL_COUNT.set(0);
         ACTIVE_MODEL_CALLS.set(0);
         MAX_ACTIVE_MODEL_CALLS.set(0);
+        clearSchemaDiscoveryOverrides();
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         TestDocumentStorage.clean();
         mockMvc.perform(post("/api/v1/knowledge-bases")
@@ -147,7 +148,14 @@ class SchemaDraftLifecycleIntegrationTest {
         MODEL_BLOCK_MARKER = "BLOCK_MODEL_SOURCE";
         FAIL_REPROCESSING.set(false);
         FAIL_RETRYABLE_MODEL.set(false);
+        clearSchemaDiscoveryOverrides();
         TestDocumentStorage.clean();
+    }
+
+    private void clearSchemaDiscoveryOverrides() {
+        runtimeSettingsService.clear("app.schema-discovery.max-concurrency");
+        runtimeSettingsService.clear("app.schema-discovery.source-timeout-seconds");
+        runtimeSettingsService.clear("app.schema-discovery.request-timeout-seconds");
     }
 
     @Test

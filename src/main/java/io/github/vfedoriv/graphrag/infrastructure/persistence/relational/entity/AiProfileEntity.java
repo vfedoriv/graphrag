@@ -1,29 +1,62 @@
-package io.github.vfedoriv.graphrag.domain;
+package io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
-@Node("AiProfile")
-public class AiProfileNode {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+
+@Entity
+@Table(name = "ai_profile")
+public class AiProfileEntity {
 
     @Id
+    @Column(nullable = false, length = 255)
     private String id;
-    @Version
-    private Long version;
+
+    @Column(nullable = false, length = 255)
     private String name;
+
+    @Column(name = "base_url", nullable = false, columnDefinition = "text")
     private String baseUrl;
+
+    @JsonIgnore
+    @Column(name = "api_key", columnDefinition = "text")
     private String apiKey;
+
+    @Column(name = "chat_model", nullable = false, length = 255)
     private String chatModel;
+
+    @Column(name = "embedding_model", nullable = false, length = 255)
     private String embeddingModel;
+
+    @Column(name = "embedding_dimensions", nullable = false)
     private int embeddingDimensions;
+
+    @Column(name = "timeout_seconds", nullable = false)
     private int timeoutSeconds;
+
+    @Column(name = "max_retries", nullable = false)
     private int maxRetries;
+
+    @Column(name = "default_profile", nullable = false)
     private boolean defaultProfile;
+
+    @Column(nullable = false)
     private long revision;
+
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
     public String getId() {
         return id;
@@ -31,14 +64,6 @@ public class AiProfileNode {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     public String getName() {
@@ -57,6 +82,7 @@ public class AiProfileNode {
         this.baseUrl = baseUrl;
     }
 
+    @JsonIgnore
     public String getApiKey() {
         return apiKey;
     }
@@ -135,5 +161,13 @@ public class AiProfileNode {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

@@ -13,6 +13,7 @@ import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
@@ -57,6 +58,8 @@ class SchemaDiscoveryIntegrationTest {
     @Autowired
     private AiProfileRepository aiProfileRepository;
     @Autowired
+    private JpaAiProfileRepository jpaAiProfileRepository;
+    @Autowired
     private SchemaDefinitionRepository schemaRepository;
     @Autowired
     private Neo4jClient neo4jClient;
@@ -64,6 +67,7 @@ class SchemaDiscoveryIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        jpaAiProfileRepository.deleteAll();
         TestDocumentStorage.clean();
         aiProfileRepository.save(profile("discovery-profile", 9));
         knowledgeBaseRepository.save(knowledgeBase("kb-discovery", "discovery-profile"));
