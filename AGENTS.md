@@ -31,7 +31,7 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 
 # Tests
 ./mvnw test
-./mvnw -Dtest=EndToEndMvpFlowIntegrationTest test
+./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
 
 # Neo4j only
 docker compose up -d neo4j
@@ -99,6 +99,19 @@ Runtime setting overrides are persisted in PostgreSQL. `mutable=true` means edit
 - Integration tests use Testcontainers (Neo4j started automatically)
 - AI clients are mocked for deterministic tests
 - Canonical full-flow integration test: `EndToEndMvpFlowIntegrationTest`
+
+## Docker and Testcontainers
+
+Docker and Testcontainers cannot run inside the Codex sandbox.
+
+Always request escalated execution immediately for:
+
+- `docker` and `docker compose` commands
+- Maven test/build commands that execute Testcontainers
+- Integration and end-to-end tests requiring Neo4j containers
+
+Place Maven arguments after the goal so project execution rules match, for
+example: `./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest`.
 
 ## OpenSpec Workflow
 

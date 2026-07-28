@@ -1,0 +1,32 @@
+# Testcontainers tests require access to the host Docker daemon.
+prefix_rule(
+    pattern = ["./mvnw", "test"],
+    decision = "allow",
+    justification = "Maven tests use Testcontainers and require host Docker access",
+    match = [
+        "./mvnw test",
+        "./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest",
+    ],
+)
+
+prefix_rule(
+    pattern = ["./mvnw", "clean", ["test", "verify", "package"]],
+    decision = "allow",
+    justification = "Build lifecycle may run Testcontainers tests",
+    match = [
+        "./mvnw clean test",
+        "./mvnw clean verify",
+        "./mvnw clean package",
+    ],
+)
+
+prefix_rule(
+    pattern = ["docker"],
+    decision = "allow",
+    justification = "Docker commands require access to the host Docker daemon",
+    match = [
+        "docker ps",
+        "docker compose up -d neo4j",
+        "docker compose logs neo4j",
+    ],
+)
