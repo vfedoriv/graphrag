@@ -55,6 +55,8 @@ class GraphProvenanceIntegrationTest {
     private GraphProvenanceMigrationService graphProvenanceMigrationService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Test
     void deletingEitherDocumentRetainsCanonicalFactsSupportedByTheOtherDocument() {
@@ -176,5 +178,6 @@ class GraphProvenanceIntegrationTest {
 
     private void clearGraph() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
     }
 }

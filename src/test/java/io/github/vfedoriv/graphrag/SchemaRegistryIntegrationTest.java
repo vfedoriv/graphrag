@@ -20,7 +20,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
@@ -42,11 +42,11 @@ class SchemaRegistryIntegrationTest {
     @Autowired
     private KnowledgeBaseRepository knowledgeBaseRepository;
     @Autowired
-    private Neo4jClient neo4jClient;
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void persistsAndActivatesSchema() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         String json = """
             {
@@ -68,21 +68,13 @@ class SchemaRegistryIntegrationTest {
         KnowledgeBaseNode kb = knowledgeBaseRepository.findById("kb-1").orElseThrow();
         assertThat(kb.getActiveSchemaId()).isEqualTo(schema.getId());
 
-        Long relCount = neo4jClient.query("""
-            MATCH (:KnowledgeBase {id: $kbId})-[:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
-            RETURN count(*) AS c
-            """)
-            .bind("kb-1").to("kbId")
-            .bind(schema.getId()).to("schemaId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        Long relCount = usesSchemaTargetCount("kb-1", schema.getId());
         assertThat(relCount).isEqualTo(1);
     }
 
     @Test
     void schemaVersionIsImmutable() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         String json = """
             {
@@ -109,7 +101,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void activatingSchemaDeactivatesSiblingsWithinKnowledgeBase() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode first = schemaRegistryService.createSchema(schemaJson("contracts-a"), SchemaSourceType.PREDEFINED);
         SchemaDefinitionNode second = schemaRegistryService.createSchema(schemaJson("contracts-b"), SchemaSourceType.PREDEFINED);
@@ -129,7 +121,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void activatingSchemaDoesNotAffectOtherKnowledgeBases() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode kb1SchemaA = schemaRegistryService.createSchema(schemaJson("kb1-a"), SchemaSourceType.PREDEFINED);
         SchemaDefinitionNode kb1SchemaB = schemaRegistryService.createSchema(schemaJson("kb1-b"), SchemaSourceType.PREDEFINED);
@@ -149,7 +141,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void repeatedActivationIsIdempotent() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-idempotent"), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-repeat", schema.getId());
@@ -163,7 +155,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void createSchemaWithKnowledgeBaseAssociatesWithoutActivating() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         saveKnowledgeBase("kb-create-association");
 
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(
@@ -186,7 +178,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void attachSchemaAssociatesExistingSchemaIdempotentlyWithoutActivating() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         saveKnowledgeBase("kb-attach");
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-attach"), SchemaSourceType.PREDEFINED);
 
@@ -207,7 +199,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void createSchemaWithoutKnowledgeBaseRemainsGlobal() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         saveKnowledgeBase("kb-global-regression");
 
         schemaRegistryService.createSchema(schemaJson("contracts-global-regression"), SchemaSourceType.GENERATED);
@@ -219,7 +211,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void updatesInactiveSchemaContentAndHash() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-update"), SchemaSourceType.PREDEFINED);
         String originalHash = schema.getContentHash();
@@ -238,7 +230,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void deletesInactiveSchemaAndRejectsSubsequentRetrieval() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-delete"), SchemaSourceType.PREDEFINED);
 
@@ -251,7 +243,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void updatesAndDeletesInactiveAssociatedSchemaWhileDetachingRelationship() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode inactive = schemaRegistryService.createSchema(schemaJson("contracts-inactive"), SchemaSourceType.PREDEFINED);
         SchemaDefinitionNode active = schemaRegistryService.createSchema(schemaJson("contracts-active"), SchemaSourceType.PREDEFINED);
@@ -277,7 +269,7 @@ class SchemaRegistryIntegrationTest {
 
     @Test
     void rejectsUpdateAndDeleteOfActiveSchema() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson("contracts-guarded"), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-guarded", schema.getId());
@@ -317,33 +309,37 @@ class SchemaRegistryIntegrationTest {
     }
 
     private Long usesSchemaRelationCount(String knowledgeBaseId) {
-        return neo4jClient.query("""
-            MATCH (:KnowledgeBase {id: $kbId})-[r:USES_SCHEMA]->(:SchemaDefinition)
-            RETURN count(r) AS c
-            """)
-            .bind(knowledgeBaseId).to("kbId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        return jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.knowledge_base_schema WHERE knowledge_base_id = ?",
+            Long.class,
+            knowledgeBaseId
+        );
     }
 
     private Long usesSchemaTargetCount(String knowledgeBaseId, String schemaId) {
-        return neo4jClient.query("""
-            MATCH (:KnowledgeBase {id: $kbId})-[:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
-            RETURN count(*) AS c
-            """)
-            .bind(knowledgeBaseId).to("kbId")
-            .bind(schemaId).to("schemaId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        return jdbcTemplate.queryForObject(
+            """
+            SELECT count(*) FROM app.knowledge_base_schema
+            WHERE knowledge_base_id = ? AND schema_id = ?
+            """,
+            Long.class,
+            knowledgeBaseId,
+            schemaId
+        );
     }
 
     private void saveKnowledgeBase(String knowledgeBaseId) {
         KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
         knowledgeBase.setId(knowledgeBaseId);
         knowledgeBase.setName(knowledgeBaseId);
+        knowledgeBase.setActiveAiProfileId("default");
         knowledgeBase.setCreatedAt(Instant.now());
         knowledgeBaseRepository.save(knowledgeBase);
+    }
+
+    private void resetRelationalMetadata() {
+        jdbcTemplate.update("DELETE FROM app.knowledge_base_schema");
+        jdbcTemplate.update("DELETE FROM app.knowledge_base");
+        jdbcTemplate.update("DELETE FROM app.schema_definition");
     }
 }

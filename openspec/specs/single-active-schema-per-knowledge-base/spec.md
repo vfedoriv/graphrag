@@ -38,6 +38,18 @@ The system MUST apply activation and sibling deactivation as one consistent stat
 - **WHEN** activation cannot complete successfully
 - **THEN** the system MUST NOT persist a partially applied state that leaves multiple active schemas in the same knowledge base
 
+### Requirement: Relational activation preserves one active schema
+The system SHALL change knowledge-base schema activation in one PostgreSQL relational transaction and SHALL prevent more than one active schema association per knowledge base.
+
+#### Scenario: A different schema is activated
+- **WHEN** a valid inactive associated schema is activated
+- **THEN** the prior active association is deactivated
+- **AND** the selected association becomes active in the same commit
+
+#### Scenario: Concurrent activation occurs
+- **WHEN** concurrent requests activate different schemas for the same knowledge base
+- **THEN** relational locking or constraints prevent a multiple-active result
+
 ### Requirement: Active schema cannot be deleted
 The system MUST reject deletion of a schema while that schema is active for any knowledge base.
 

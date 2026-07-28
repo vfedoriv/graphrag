@@ -60,6 +60,8 @@ class EndToEndMvpFlowIntegrationTest {
     private CypherExecutionService cypherExecutionService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -69,6 +71,7 @@ class EndToEndMvpFlowIntegrationTest {
     @Test
     void completesSynchronousFlowFromSchemaToAsk() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
 
         String schemaYaml = new ClassPathResource("fixtures/schemas/contracts-v1.json")
             .getContentAsString(StandardCharsets.UTF_8);

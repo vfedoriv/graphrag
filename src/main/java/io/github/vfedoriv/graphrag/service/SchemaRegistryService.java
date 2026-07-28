@@ -22,10 +22,10 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 @Slf4j
@@ -35,7 +35,6 @@ public class SchemaRegistryService {
     private final SchemaValidator schemaValidator;
     private final SchemaDefinitionRepository schemaRepository;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
-    private final Neo4jClient neo4jClient;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
 
     @Autowired
@@ -44,14 +43,12 @@ public class SchemaRegistryService {
         SchemaValidator schemaValidator,
         SchemaDefinitionRepository schemaRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
-        Neo4jClient neo4jClient,
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
     ) {
         this.schemaParser = schemaParser;
         this.schemaValidator = schemaValidator;
         this.schemaRepository = schemaRepository;
         this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.neo4jClient = neo4jClient;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
     }
 
@@ -62,15 +59,21 @@ public class SchemaRegistryService {
         KnowledgeBaseRepository knowledgeBaseRepository,
         Neo4jClient neo4jClient
     ) {
-        this(schemaParser, schemaValidator, schemaRepository, knowledgeBaseRepository, neo4jClient, null);
+        this(
+            schemaParser,
+            schemaValidator,
+            schemaRepository,
+            knowledgeBaseRepository,
+            (KnowledgeBaseLifecycleService) null
+        );
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SchemaDefinitionNode createSchema(String json, SchemaSourceType sourceType) {
         return createSchema(json, sourceType, null);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SchemaDefinitionNode createSchema(String json, SchemaSourceType sourceType, String knowledgeBaseId) {
         log.info(
             "Creating schema: sourceType={}, knowledgeBaseId={}, contentLength={}",
@@ -120,12 +123,12 @@ public class SchemaRegistryService {
         return saved;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SchemaDefinitionNode createGeneratedInactiveSchema(String json, String knowledgeBaseId) {
         return createSchema(json, SchemaSourceType.GENERATED, knowledgeBaseId);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<SchemaDefinitionNode> listSchemas() {
         log.info("Listing schemas");
         List<SchemaDefinitionNode> schemas = schemaRepository.findAll();
@@ -133,7 +136,7 @@ public class SchemaRegistryService {
         return schemas;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<SchemaDefinitionNode> listSchemasByKnowledgeBase(String knowledgeBaseId) {
         log.info("Listing schemas by knowledge base: knowledgeBaseId={}", knowledgeBaseId);
         if (!knowledgeBaseRepository.existsById(knowledgeBaseId)) {
@@ -144,7 +147,7 @@ public class SchemaRegistryService {
         return schemas;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public SchemaDefinitionNode getSchema(String schemaId) {
         log.info("Loading schema: schemaId={}", schemaId);
         SchemaDefinitionNode schema = schemaRepository.findById(schemaId).orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
@@ -152,7 +155,7 @@ public class SchemaRegistryService {
         return schema;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public SchemaDefinitionNode updateSchema(String schemaId, String json, SchemaSourceType sourceType) {
         log.info("Updating schema: schemaId={}, sourceType={}, contentLength={}", schemaId, sourceType, json == null ? 0 : json.length());
         SchemaDefinitionNode schema = schemaRepository.findById(schemaId)
@@ -181,7 +184,7 @@ public class SchemaRegistryService {
         return saved;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<String> validateJson(String json) {
         log.info("Validating schema JSON: contentLength={}", json == null ? 0 : json.length());
         SchemaDocument doc = schemaParser.parse(json);
@@ -190,7 +193,7 @@ public class SchemaRegistryService {
         return errors;
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void activateSchema(String knowledgeBaseId, String schemaId) {
         log.info("Activating schema: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         SchemaDefinitionNode schema = getSchema(schemaId);
@@ -212,29 +215,11 @@ public class SchemaRegistryService {
             log.info("Schema already active: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
             return;
         }
-        kb.setActiveSchemaId(schema.getId());
-        knowledgeBaseRepository.save(kb);
-
-        neo4jClient.query("""
-            MATCH (kb:KnowledgeBase {id: $knowledgeBaseId})
-            MATCH (s:SchemaDefinition {id: $schemaId})
-            MERGE (kb)-[:USES_SCHEMA]->(s)
-            """)
-            .bind(knowledgeBaseId).to("knowledgeBaseId")
-            .bind(schemaId).to("schemaId")
-            .run();
-
-        neo4jClient.query("""
-            MATCH (kb:KnowledgeBase {id: $knowledgeBaseId})-[:USES_SCHEMA]->(s:SchemaDefinition)
-            SET s.status = CASE WHEN s.id = $schemaId THEN 'ACTIVE' ELSE 'INACTIVE' END
-            """)
-            .bind(knowledgeBaseId).to("knowledgeBaseId")
-            .bind(schemaId).to("schemaId")
-            .run();
+        schemaRepository.activateForKnowledgeBase(knowledgeBaseId, schemaId);
         log.info("Schema activated: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void attachSchema(String knowledgeBaseId, String schemaId) {
         log.info("Attaching schema: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
         rejectBlankKnowledgeBaseId(knowledgeBaseId);
@@ -244,7 +229,7 @@ public class SchemaRegistryService {
         log.info("Schema attached: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void deleteSchema(String schemaId) {
         log.info("Deleting schema: schemaId={}", schemaId);
         SchemaDefinitionNode schema = schemaRepository.findById(schemaId)

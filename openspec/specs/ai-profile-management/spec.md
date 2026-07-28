@@ -80,6 +80,18 @@ The system SHALL prevent a knowledge base from activating an AI profile whose em
 - **THEN** the system rejects the profile update before persistence
 - **AND** the profile revision and all knowledge-base assignments remain unchanged
 
+### Requirement: Knowledge-base profile assignment is relational and compatibility-safe
+The system SHALL update a knowledge base's AI profile association in PostgreSQL only after validating embedding model and dimension compatibility with existing chunks.
+
+#### Scenario: An incompatible profile is assigned
+- **WHEN** chunks exist and the requested profile changes the effective embedding space incompatibly
+- **THEN** the assignment is rejected
+- **AND** the previous relational profile association remains unchanged
+
+#### Scenario: A compatible profile is assigned
+- **WHEN** the requested profile is compatible with the knowledge base's existing embedding space
+- **THEN** the relational association commits atomically
+
 ### Requirement: Knowledge-base AI workflows use active profiles
 The system SHALL resolve chat and embedding clients from the active profile of the target knowledge base for knowledge-base-scoped AI workflows.
 

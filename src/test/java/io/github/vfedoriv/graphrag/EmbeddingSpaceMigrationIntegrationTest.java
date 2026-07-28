@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceMigrationService;
+import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +36,23 @@ class EmbeddingSpaceMigrationIntegrationTest {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    @Autowired
     private AiProfileService aiProfileService;
     @Autowired
     private EmbeddingSpaceMigrationService migrationService;
     @Autowired
     private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    @Autowired
+    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
 
     @BeforeEach
     void setUp() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         aiProfileService.seedDefaultProfile();
+        knowledgeBaseLifecycleService.provision("kb-1", "KB 1");
         neo4jClient.query("""
-            CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', activeAiProfileId: 'default', createdAt: datetime()})
             CREATE (document:DocumentUpload {id: 'doc-1', knowledgeBaseId: 'kb-1'})
             CREATE (document)-[:HAS_CHUNK]->(:DocumentChunk {
               id: 'legacy-compatible', documentId: 'doc-1', embedding: [1.0, 0.0, 0.0],

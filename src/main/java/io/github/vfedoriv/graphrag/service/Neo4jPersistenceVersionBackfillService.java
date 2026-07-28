@@ -28,17 +28,10 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
                 node:DocumentChunk OR
                 node:DocumentProcessingRun OR
                 node:DocumentUpload OR
-                node:ExtractionRun OR
-                node:KnowledgeBase
+                node:ExtractionRun
             )
             AND node.version IS NULL
             SET node.version = 0
-            RETURN count(node) AS count
-            """);
-        long schemaBackfilled = executeCount("""
-            MATCH (node:SchemaDefinition)
-            WHERE node.entityVersion IS NULL
-            SET node.entityVersion = 0
             RETURN count(node) AS count
             """);
         long draftBackfilled = executeCount("""
@@ -63,11 +56,10 @@ public class Neo4jPersistenceVersionBackfillService implements ApplicationRunner
             SET node.persistenceVersion = 0
             RETURN count(node) AS count
             """);
-        if (versionBackfilled > 0 || schemaBackfilled > 0 || draftBackfilled > 0) {
+        if (versionBackfilled > 0 || draftBackfilled > 0) {
             log.info(
-                "Backfilled Neo4j persistence version metadata: versionNodes={}, schemaDefinitionNodes={}, schemaDraftNodes={}",
+                "Backfilled Neo4j persistence version metadata: versionNodes={}, schemaDraftNodes={}",
                 versionBackfilled,
-                schemaBackfilled,
                 draftBackfilled
             );
         }

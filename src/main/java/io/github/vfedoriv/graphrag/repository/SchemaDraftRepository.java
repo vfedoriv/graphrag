@@ -12,8 +12,7 @@ public interface SchemaDraftRepository extends Neo4jRepository<SchemaDraftNode, 
     Optional<SchemaDraftNode> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
 
     @Query("""
-        MATCH (kb:KnowledgeBase {id: $knowledgeBaseId}), (d:SchemaDraft {id: $draftId})
-        MERGE (kb)-[:OWNS_DRAFT]->(d)
+        MATCH (d:SchemaDraft {id: $draftId, knowledgeBaseId: $knowledgeBaseId})
         RETURN count(d)
         """)
     Long attachToKnowledgeBase(String knowledgeBaseId, String draftId);

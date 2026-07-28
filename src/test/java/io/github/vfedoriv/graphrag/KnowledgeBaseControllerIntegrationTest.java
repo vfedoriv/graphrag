@@ -11,6 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseSchemaRepository;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaSchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
 import io.github.vfedoriv.graphrag.service.AiProfileService;
 import java.time.Instant;
@@ -23,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -50,19 +54,27 @@ class KnowledgeBaseControllerIntegrationTest {
     @Autowired
     private JpaAiProfileRepository jpaAiProfileRepository;
     @Autowired
+    private JpaKnowledgeBaseRepository jpaKnowledgeBaseRepository;
+    @Autowired
+    private JpaKnowledgeBaseSchemaRepository jpaKnowledgeBaseSchemaRepository;
+    @Autowired
+    private JpaSchemaDefinitionRepository jpaSchemaDefinitionRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
     private AiProfileService aiProfileService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void resetOperationalState() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         jpaAiProfileRepository.deleteAll();
         aiProfileService.seedDefaultProfile();
     }
 
     @Test
     void createListGetUpdateDeleteKnowledgeBase() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         String createdBody = mockMvc.perform(post("/api/v1/knowledge-bases")
                 .contentType("application/json")
@@ -110,7 +122,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void createDuplicateKnowledgeBaseReturnsConflict() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         String payload = """
             {
@@ -132,7 +144,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void createKnowledgeBaseSeedsDefaultProfileAndPersistsProfileAssignment() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         mockMvc.perform(post("/api/v1/knowledge-bases")
                 .contentType("application/json")
@@ -184,14 +196,9 @@ class KnowledgeBaseControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.activeAiProfileId").value("profile-alt"));
 
-        String persistedProfileId = neo4jClient.query("""
-            MATCH (kb:KnowledgeBase {id: $id})
-            RETURN kb.activeAiProfileId
-            """)
-            .bind("kb-ai-profile").to("id")
-            .fetchAs(String.class)
-            .one()
-            .orElse("");
+        String persistedProfileId = jpaKnowledgeBaseRepository.findById("kb-ai-profile")
+            .orElseThrow()
+            .getActiveAiProfileId();
         assertThat(persistedProfileId).isEqualTo("profile-alt");
     }
 
@@ -241,7 +248,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void createKnowledgeBaseValidationFailureReturnsProblemDetails() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         mockMvc.perform(post("/api/v1/knowledge-bases")
                 .contentType("application/json")
@@ -263,7 +270,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void deleteKnowledgeBaseDetachesSchemaRelation() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         String schemaBody = mockMvc.perform(post("/api/v1/schemas")
                 .contentType("application/json")
@@ -286,17 +293,18 @@ class KnowledgeBaseControllerIntegrationTest {
         mockMvc.perform(delete("/api/v1/knowledge-bases/{knowledgeBaseId}", "kb-rel"))
             .andExpect(status().isOk());
 
-        Long count = neo4jClient.query("MATCH (kb:KnowledgeBase {id: $id}) RETURN count(kb)")
-            .bind("kb-rel").to("id")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        Long count = jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.knowledge_base WHERE id = ?",
+            Long.class,
+            "kb-rel"
+        );
         assertThat(count).isEqualTo(0L);
+        assertThat(usesSchemaTargetCount("kb-rel", schemaId)).isZero();
     }
 
     @Test
     void createSchemaWithKnowledgeBaseAppearsInKnowledgeBaseSchemaListWithoutActivation() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         createKnowledgeBase("kb-schema-create");
 
         String schemaBody = mockMvc.perform(post("/api/v1/schemas")
@@ -325,7 +333,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void attachExistingSchemaIsIdempotentAndDoesNotActivateSchema() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         createKnowledgeBase("kb-schema-attach");
         String schemaId = createSchemaAndReturnId("contracts-attach-kb", null);
 
@@ -350,7 +358,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void createSchemaWithUnknownKnowledgeBaseReturnsProblemDetailWithoutPersistingSchema() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
 
         mockMvc.perform(post("/api/v1/schemas")
                 .contentType("application/json")
@@ -365,7 +373,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void attachSchemaMissingResourcesReturnProblemDetail() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         String schemaId = createSchemaAndReturnId("contracts-attach-errors", null);
 
         mockMvc.perform(post("/api/v1/knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/attach", "missing-kb", schemaId))
@@ -386,7 +394,7 @@ class KnowledgeBaseControllerIntegrationTest {
 
     @Test
     void createSchemaWithoutKnowledgeBaseRemainsGlobalOnly() throws Exception {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        resetRelationalMetadata();
         createKnowledgeBase("kb-global-only");
 
         createSchemaAndReturnId("contracts-global-only", null);
@@ -446,32 +454,32 @@ class KnowledgeBaseControllerIntegrationTest {
     }
 
     private Long schemaCount() {
-        return neo4jClient.query("MATCH (s:SchemaDefinition) RETURN count(s)")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        return jpaSchemaDefinitionRepository.count();
     }
 
     private Long usesSchemaRelationCount(String knowledgeBaseId) {
-        return neo4jClient.query("""
-            MATCH (:KnowledgeBase {id: $kbId})-[r:USES_SCHEMA]->(:SchemaDefinition)
-            RETURN count(r) AS c
-            """)
-            .bind(knowledgeBaseId).to("kbId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        return jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.knowledge_base_schema WHERE knowledge_base_id = ?",
+            Long.class,
+            knowledgeBaseId
+        );
     }
 
     private Long usesSchemaTargetCount(String knowledgeBaseId, String schemaId) {
-        return neo4jClient.query("""
-            MATCH (:KnowledgeBase {id: $kbId})-[:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
-            RETURN count(*) AS c
-            """)
-            .bind(knowledgeBaseId).to("kbId")
-            .bind(schemaId).to("schemaId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
+        return jdbcTemplate.queryForObject(
+            """
+            SELECT count(*) FROM app.knowledge_base_schema
+            WHERE knowledge_base_id = ? AND schema_id = ?
+            """,
+            Long.class,
+            knowledgeBaseId,
+            schemaId
+        );
+    }
+
+    private void resetRelationalMetadata() {
+        jpaKnowledgeBaseSchemaRepository.deleteAllInBatch();
+        jpaKnowledgeBaseRepository.deleteAllInBatch();
+        jpaSchemaDefinitionRepository.deleteAllInBatch();
     }
 }

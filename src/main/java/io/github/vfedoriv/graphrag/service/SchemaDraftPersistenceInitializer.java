@@ -21,7 +21,6 @@ public class SchemaDraftPersistenceInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<String> statements = List.of(
             "CREATE CONSTRAINT schema_draft_id IF NOT EXISTS FOR (n:SchemaDraft) REQUIRE n.id IS UNIQUE",
-            "CREATE CONSTRAINT schema_definition_identity IF NOT EXISTS FOR (n:SchemaDefinition) REQUIRE (n.name, n.version) IS UNIQUE",
             "CREATE CONSTRAINT schema_draft_source_id IF NOT EXISTS FOR (n:SchemaDraftSource) REQUIRE n.id IS UNIQUE",
             "CREATE CONSTRAINT schema_draft_run_id IF NOT EXISTS FOR (n:SchemaDraftAnalysisRun) REQUIRE n.id IS UNIQUE",
             "CREATE CONSTRAINT schema_draft_analysis_lease_id IF NOT EXISTS FOR (n:SchemaDraftAnalysisLease) REQUIRE n.id IS UNIQUE",

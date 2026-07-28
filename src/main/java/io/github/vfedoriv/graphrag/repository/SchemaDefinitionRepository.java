@@ -2,37 +2,28 @@ package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import java.util.List;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.query.Query;
+import java.util.Optional;
 
-public interface SchemaDefinitionRepository extends Neo4jRepository<SchemaDefinitionNode, String> {
+public interface SchemaDefinitionRepository {
     Boolean existsByNameAndVersion(String name, int version);
 
-    @Query("""
-        MATCH (:KnowledgeBase {id: $knowledgeBaseId})-[:USES_SCHEMA]->(s:SchemaDefinition)
-        RETURN s
-        """)
+    Optional<SchemaDefinitionNode> findById(String id);
+
+    List<SchemaDefinitionNode> findAll();
+
+    long count();
+
+    SchemaDefinitionNode save(SchemaDefinitionNode schema);
+
+    void delete(SchemaDefinitionNode schema);
+
     List<SchemaDefinitionNode> findAllByKnowledgeBaseId(String knowledgeBaseId);
 
-    @Query("""
-        MATCH (kb:KnowledgeBase {id: $knowledgeBaseId})
-        MATCH (s:SchemaDefinition {id: $schemaId})
-        MERGE (kb)-[:USES_SCHEMA]->(s)
-        RETURN count(s)
-        """)
     Long associateWithKnowledgeBase(String knowledgeBaseId, String schemaId);
 
-    @Query("""
-        MATCH (kb:KnowledgeBase)
-        WHERE kb.activeSchemaId = $schemaId
-        RETURN count(kb) > 0
-        """)
+    void activateForKnowledgeBase(String knowledgeBaseId, String schemaId);
+
     Boolean existsActiveKnowledgeBaseReference(String schemaId);
 
-    @Query("""
-        MATCH (:KnowledgeBase)-[r:USES_SCHEMA]->(:SchemaDefinition {id: $schemaId})
-        DELETE r
-        RETURN count(*)
-        """)
     Long detachKnowledgeBaseAssociations(String schemaId);
 }

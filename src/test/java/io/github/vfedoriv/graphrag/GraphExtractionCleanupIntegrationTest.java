@@ -51,6 +51,8 @@ class GraphExtractionCleanupIntegrationTest {
     private SchemaRegistryService schemaRegistryService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -60,6 +62,7 @@ class GraphExtractionCleanupIntegrationTest {
     @Test
     void removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         String schemaJson = """
             {
               "name": "contracts-cleanup",
@@ -156,6 +159,7 @@ class GraphExtractionCleanupIntegrationTest {
     @Test
     void removesMultipleFailedRunsAfterLaterSuccessfulRetry() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
 
@@ -202,6 +206,7 @@ class GraphExtractionCleanupIntegrationTest {
     @Test
     void overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
 

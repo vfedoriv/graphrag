@@ -50,6 +50,8 @@ class EndToEndMvpFlowMvcIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @AfterEach
@@ -60,6 +62,7 @@ class EndToEndMvpFlowMvcIntegrationTest {
     @Test
     void completesFlowViaRestEndpoints() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
 
         String schemaYaml = new ClassPathResource("fixtures/schemas/contracts-v1.json")
             .getContentAsString(StandardCharsets.UTF_8);

@@ -63,10 +63,13 @@ class SchemaDiscoveryIntegrationTest {
     private SchemaDefinitionRepository schemaRepository;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         jpaAiProfileRepository.deleteAll();
         TestDocumentStorage.clean();
         aiProfileRepository.save(profile("discovery-profile", 9));

@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.service.HybridSearchService;
+import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,15 +49,20 @@ class HybridSearchIntegrationTest {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    @Autowired
     private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    @Autowired
+    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
 
     @BeforeEach
     void setUpGraph() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
+        knowledgeBaseLifecycleService.provision("kb-1", "KB 1");
+        knowledgeBaseLifecycleService.provision("kb-2", "KB 2");
+        knowledgeBaseLifecycleService.provision("kb-empty", "Empty KB");
         neo4jClient.query("""
-            CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', activeAiProfileId: 'default', createdAt: datetime()})
-            CREATE (:KnowledgeBase {id: 'kb-2', name: 'KB 2', activeAiProfileId: 'default', createdAt: datetime()})
-            CREATE (:KnowledgeBase {id: 'kb-empty', name: 'Empty KB', activeAiProfileId: 'default', createdAt: datetime()})
             CREATE (doc1:DocumentUpload {id: 'doc-1', knowledgeBaseId: 'kb-1', originalFilename: 'contract-a.txt', contentType: 'text/plain', sizeBytes: 100})
             CREATE (doc2:DocumentUpload {id: 'doc-2', knowledgeBaseId: 'kb-1', originalFilename: 'contract-b.txt', contentType: 'text/plain', sizeBytes: 110})
             CREATE (doc3:DocumentUpload {id: 'doc-3', knowledgeBaseId: 'kb-1', originalFilename: 'maintenance.txt', contentType: 'text/plain', sizeBytes: 120})

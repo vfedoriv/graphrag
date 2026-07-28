@@ -1,16 +1,10 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
-@Node("SchemaDefinition")
 public class SchemaDefinitionNode {
 
-    @Id
     private String id;
-    @Version
     private Long entityVersion;
     private String name;
     private int version;
@@ -20,6 +14,7 @@ public class SchemaDefinitionNode {
     private String contentHash;
     private SchemaStatus status;
     private Instant createdAt;
+    private Instant updatedAt;
 
     public String getId() {
         return id;
@@ -31,6 +26,10 @@ public class SchemaDefinitionNode {
 
     public Long getEntityVersion() {
         return entityVersion;
+    }
+
+    public void setEntityVersion(Long entityVersion) {
+        this.entityVersion = entityVersion;
     }
 
     public String getName() {
@@ -95,5 +94,13 @@ public class SchemaDefinitionNode {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

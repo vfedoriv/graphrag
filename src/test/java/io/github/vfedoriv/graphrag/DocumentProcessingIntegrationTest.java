@@ -54,6 +54,8 @@ class DocumentProcessingIntegrationTest {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    @Autowired
     private SchemaRegistryService schemaRegistryService;
     @Autowired
     private EmbeddingSpaceIndexService embeddingSpaceIndexService;
@@ -66,6 +68,7 @@ class DocumentProcessingIntegrationTest {
     @Test
     void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         String schemaJson = """
             {
               "name": "contracts",

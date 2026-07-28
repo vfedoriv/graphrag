@@ -107,6 +107,7 @@ class SchemaDraftLifecycleIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private Neo4jClient neo4jClient;
+    @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private SchemaRegistryService schemaRegistryService;
     @Autowired private SchemaDraftReviewService reviewService;
     @Autowired private DocumentUploadService documentUploadService;
@@ -132,6 +133,7 @@ class SchemaDraftLifecycleIntegrationTest {
         MAX_ACTIVE_MODEL_CALLS.set(0);
         clearSchemaDiscoveryOverrides();
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         TestDocumentStorage.clean();
         mockMvc.perform(post("/api/v1/knowledge-bases")
                 .contentType("application/json")

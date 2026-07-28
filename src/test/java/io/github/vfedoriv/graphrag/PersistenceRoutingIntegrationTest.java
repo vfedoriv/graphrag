@@ -19,9 +19,12 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.TestPropertySource;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -50,6 +53,10 @@ class PersistenceRoutingIntegrationTest {
     private PersistenceProbe persistenceProbe;
     @Autowired
     private SchemaDefinitionRepository schemaDefinitionRepository;
+    @Autowired
+    private KnowledgeBaseService knowledgeBaseService;
+    @Autowired
+    private SchemaRegistryService schemaRegistryService;
     @Autowired
     private MeterRegistry meterRegistry;
     @Autowired
@@ -92,16 +99,33 @@ class PersistenceRoutingIntegrationTest {
     }
 
     @Test
-    void customSdnRepositoryQueryUsesExplicitNeo4jTemplate() {
+    void operationalSchemaRepositoryUsesPostgresqlAndIgnoresLegacyGraphNodes() {
         neo4jClient.query("""
             CREATE (:KnowledgeBase:PersistenceRoutingProbe {id: 'routing-kb'})
                 -[:USES_SCHEMA]->
                 (:SchemaDefinition:PersistenceRoutingProbe {id: 'routing-schema', name: 'routing', version: 1})
             """).run();
 
-        List<SchemaDefinitionNode> schemas = schemaDefinitionRepository.findAllByKnowledgeBaseId("routing-kb");
+        assertThat(schemaDefinitionRepository.findAllByKnowledgeBaseId("routing-kb")).isEmpty();
 
-        assertThat(schemas).extracting(SchemaDefinitionNode::getId).containsExactly("routing-schema");
+        knowledgeBaseService.create("routing-kb", "Routing KB");
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(
+            """
+            {
+              "name": "routing-relational",
+              "version": 1,
+              "nodes": [
+                {"label": "Routing", "key": "id",
+                 "properties": [{"name": "id", "type": "string"}]}
+              ],
+              "relationships": []
+            }
+            """,
+            SchemaSourceType.GENERATED,
+            "routing-kb"
+        );
+        List<SchemaDefinitionNode> schemas = schemaDefinitionRepository.findAllByKnowledgeBaseId("routing-kb");
+        assertThat(schemas).extracting(SchemaDefinitionNode::getId).containsExactly(schema.getId());
     }
 
     private long graphProbeCount() {

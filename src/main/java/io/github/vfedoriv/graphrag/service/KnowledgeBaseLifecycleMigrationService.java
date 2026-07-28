@@ -31,18 +31,20 @@ public class KnowledgeBaseLifecycleMigrationService implements ApplicationRunner
     public void run(ApplicationArguments args) {
         aiProfileService.seedDefaultProfile();
         ensureIndexes();
-        Collection<String> missingKnowledgeBaseIds = neo4jClient.query("""
+        Collection<String> discoveredKnowledgeBaseIds = neo4jClient.query("""
             MATCH (document:DocumentUpload)
             WHERE document.knowledgeBaseId IS NOT NULL
-              AND NOT EXISTS { MATCH (:KnowledgeBase {id: document.knowledgeBaseId}) }
             RETURN DISTINCT document.knowledgeBaseId AS knowledgeBaseId
             """)
             .fetchAs(String.class)
             .all();
-        for (String knowledgeBaseId : missingKnowledgeBaseIds) {
+        for (String knowledgeBaseId : discoveredKnowledgeBaseIds) {
             knowledgeBaseLifecycleService.provision(knowledgeBaseId, "kb-" + knowledgeBaseId);
         }
-        log.info("Knowledge base lifecycle migration complete: provisionedKnowledgeBases={}", missingKnowledgeBaseIds.size());
+        log.info(
+            "Knowledge base lifecycle migration complete: discoveredKnowledgeBases={}",
+            discoveredKnowledgeBaseIds.size()
+        );
     }
 
     private void ensureIndexes() {

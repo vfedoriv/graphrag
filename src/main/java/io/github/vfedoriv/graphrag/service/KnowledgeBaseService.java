@@ -16,14 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 @Slf4j
 public class KnowledgeBaseService {
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
-    private final Neo4jClient neo4jClient;
     private final AiProfileService aiProfileService;
     private final DocumentChunkRepository documentChunkRepository;
     private final DocumentUploadRepository documentUploadRepository;
@@ -33,7 +32,6 @@ public class KnowledgeBaseService {
     @Autowired
     public KnowledgeBaseService(
         KnowledgeBaseRepository knowledgeBaseRepository,
-        Neo4jClient neo4jClient,
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository,
         DocumentUploadRepository documentUploadRepository,
@@ -41,7 +39,6 @@ public class KnowledgeBaseService {
         EmbeddingSpacePolicy embeddingSpacePolicy
     ) {
         this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.neo4jClient = neo4jClient;
         this.aiProfileService = aiProfileService;
         this.documentChunkRepository = documentChunkRepository;
         this.documentUploadRepository = documentUploadRepository;
@@ -57,7 +54,6 @@ public class KnowledgeBaseService {
     ) {
         this(
             knowledgeBaseRepository,
-            neo4jClient,
             aiProfileService,
             documentChunkRepository,
             null,
@@ -66,7 +62,26 @@ public class KnowledgeBaseService {
         );
     }
 
-    @GraphTransactional
+    public KnowledgeBaseService(
+        KnowledgeBaseRepository knowledgeBaseRepository,
+        Neo4jClient neo4jClient,
+        AiProfileService aiProfileService,
+        DocumentChunkRepository documentChunkRepository,
+        DocumentUploadRepository documentUploadRepository,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        EmbeddingSpacePolicy embeddingSpacePolicy
+    ) {
+        this(
+            knowledgeBaseRepository,
+            aiProfileService,
+            documentChunkRepository,
+            documentUploadRepository,
+            knowledgeBaseLifecycleService,
+            embeddingSpacePolicy
+        );
+    }
+
+    @RelationalTransactional
     public KnowledgeBaseNode create(String id, String name) {
         log.info("Creating knowledge base: knowledgeBaseId={}", id);
         if (knowledgeBaseRepository.existsById(id)) {
@@ -79,7 +94,7 @@ public class KnowledgeBaseService {
         return saved;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public List<KnowledgeBaseNode> list() {
         log.info("Listing knowledge bases");
         List<KnowledgeBaseNode> nodes = knowledgeBaseRepository.findAllByOrderByCreatedAtDesc();
@@ -87,7 +102,7 @@ public class KnowledgeBaseService {
         return nodes;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public KnowledgeBaseNode get(String id) {
         log.info("Loading knowledge base: knowledgeBaseId={}", id);
         KnowledgeBaseNode node = knowledgeBaseRepository.findById(id)
@@ -96,7 +111,7 @@ public class KnowledgeBaseService {
         return node;
     }
 
-    @GraphTransactional
+    @RelationalTransactional(readOnly = true)
     public AiProfileNode activeAiProfile(String knowledgeBaseId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         String profileId = knowledgeBase.getActiveAiProfileId();
@@ -106,26 +121,33 @@ public class KnowledgeBaseService {
         return aiProfileService.getNode(profileId);
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public AiProfileNode aiProfile(String profileId) {
         return aiProfileService.getNode(profileId);
     }
 
-    @GraphTransactional
+    @RelationalTransactional(readOnly = true)
     public AiProfileResponse getActiveAiProfile(String knowledgeBaseId) {
         return aiProfileService.toResponse(activeAiProfile(knowledgeBaseId));
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public KnowledgeBaseNode updateActiveAiProfile(String knowledgeBaseId, String profileId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         AiProfileNode profile = aiProfileService.getNode(profileId);
         embeddingSpacePolicy.requireCompatible(knowledgeBaseId, profile);
-        knowledgeBase.setActiveAiProfileId(profile.getId());
-        return knowledgeBaseRepository.save(knowledgeBase);
+        Long version = knowledgeBase.getVersion();
+        if (version == null) {
+            knowledgeBase.setActiveAiProfileId(profile.getId());
+            return knowledgeBaseRepository.save(knowledgeBase);
+        }
+        if (!knowledgeBaseRepository.assignAiProfile(knowledgeBaseId, version, profile.getId())) {
+            throw new ConflictException("Knowledge base was concurrently modified: " + knowledgeBaseId);
+        }
+        return get(knowledgeBaseId);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public KnowledgeBaseNode update(String id, String name) {
         log.info("Updating knowledge base: knowledgeBaseId={}", id);
         KnowledgeBaseNode kb = get(id);
@@ -144,7 +166,7 @@ public class KnowledgeBaseService {
         return knowledgeBaseRepository.save(node);
     }
 
-    @GraphTransactional
+    @RelationalTransactional
     public void delete(String id) {
         log.info("Deleting knowledge base: knowledgeBaseId={}", id);
         if (!knowledgeBaseRepository.existsById(id)) {
@@ -154,12 +176,7 @@ public class KnowledgeBaseService {
         if (documentCount > 0) {
             throw new KnowledgeBaseNotEmptyException(id, documentCount);
         }
-        neo4jClient.query("""
-            MATCH (kb:KnowledgeBase {id: $id})
-            DETACH DELETE kb
-            """)
-            .bind(id).to("id")
-            .run();
+        knowledgeBaseRepository.deleteById(id);
         log.info("Knowledge base deleted: knowledgeBaseId={}", id);
     }
 }

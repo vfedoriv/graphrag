@@ -31,6 +31,8 @@ class CypherValidationIntegrationTest {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    @Autowired
     private SchemaRegistryService schemaRegistryService;
     @Autowired
     private CypherValidationService cypherValidationService;
@@ -38,6 +40,7 @@ class CypherValidationIntegrationTest {
     @Test
     void validatesWithExplainAgainstNeo4j() {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
             {
               "name": "contracts",

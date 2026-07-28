@@ -9,7 +9,7 @@ The system SHALL allow clients to create a schema and associate it with an exist
 #### Scenario: Create schema associated with knowledge base
 - **WHEN** a client creates a valid schema with a knowledge base identifier
 - **THEN** the system persists the schema definition
-- **AND** the system creates a `USES_SCHEMA` association from that knowledge base to the schema
+- **AND** the system creates a relational ownership association from that knowledge base to the schema
 - **AND** the schema remains inactive unless separately activated
 - **AND** the associated schema is returned by the knowledge-base schema list
 
@@ -29,7 +29,7 @@ The system SHALL allow clients to associate an existing schema with an existing 
 
 #### Scenario: Attach existing schema
 - **WHEN** a client attaches an existing schema to an existing knowledge base
-- **THEN** the system creates a `USES_SCHEMA` association from that knowledge base to the schema
+- **THEN** the system creates a relational ownership association from that knowledge base to the schema
 - **AND** the knowledge base active schema remains unchanged
 - **AND** the schema status remains unchanged unless it was already active for that knowledge base
 - **AND** the attached schema is returned by the knowledge-base schema list
@@ -37,7 +37,7 @@ The system SHALL allow clients to associate an existing schema with an existing 
 #### Scenario: Attach existing schema is idempotent
 - **WHEN** a client attaches a schema that is already associated with the knowledge base
 - **THEN** the request succeeds
-- **AND** the system stores only one `USES_SCHEMA` association from that knowledge base to that schema
+- **AND** the system stores only one relational ownership association from that knowledge base to that schema
 - **AND** the knowledge base active schema remains unchanged
 
 #### Scenario: Attach unknown schema is rejected
@@ -76,6 +76,14 @@ The system SHALL provide a `GET` API operation that returns schemas associated w
 - **WHEN** a client calls the endpoint with a valid knowledge base identifier that has no associated schemas
 - **THEN** the system returns `200 OK`
 - **AND** the response body contains an empty list
+
+### Requirement: Knowledge-base schema listings use relational ownership
+The system SHALL list only schema definitions associated with the requested knowledge base through relational ownership and preserve existing sorting, pagination, content inclusion, and not-found behavior.
+
+#### Scenario: Associated schemas are listed
+- **WHEN** a caller lists schemas for an existing knowledge base
+- **THEN** only its relationally associated schemas are returned
+- **AND** active-state projection remains correct
 
 ### Requirement: Preserve response and error conventions
 The system MUST return schema list items using the established schema response contract and MUST use RFC 7807 `ProblemDetail` for errors.

@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -39,12 +40,17 @@ class DocumentUploadIntegrationTest {
     @Autowired
     private DocumentUploadRepository documentUploadRepository;
     @Autowired
+    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void clearGraph() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        neo4jClient.query("CREATE (:KnowledgeBase {id: 'kb-1', name: 'KB 1', createdAt: datetime()})").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
+        knowledgeBaseLifecycleService.provision("kb-1", "Knowledge Base 1");
         TestDocumentStorage.clean();
     }
 

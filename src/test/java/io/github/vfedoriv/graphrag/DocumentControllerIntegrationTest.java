@@ -45,11 +45,14 @@ class DocumentControllerIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void clearGraph() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         createKnowledgeBase("kb-1");
         createKnowledgeBase("kb-2");
         TestDocumentStorage.clean();

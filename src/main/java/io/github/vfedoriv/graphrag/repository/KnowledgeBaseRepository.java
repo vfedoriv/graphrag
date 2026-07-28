@@ -2,21 +2,22 @@ package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import java.util.List;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.query.Query;
+import java.util.Optional;
 
-public interface KnowledgeBaseRepository extends Neo4jRepository<KnowledgeBaseNode, String> {
+public interface KnowledgeBaseRepository {
     List<KnowledgeBaseNode> findAllByOrderByCreatedAtDesc();
 
-    @Query("""
-        MATCH (:KnowledgeBase {activeAiProfileId: $profileId})
-        RETURN count(*) > 0
-        """)
+    Optional<KnowledgeBaseNode> findById(String id);
+
+    boolean existsById(String id);
+
+    KnowledgeBaseNode save(KnowledgeBaseNode knowledgeBase);
+
+    void deleteById(String id);
+
+    boolean assignAiProfile(String id, long expectedVersion, String profileId);
+
     Boolean existsAiProfileAssignment(String profileId);
 
-    @Query("""
-        MATCH (knowledgeBase:KnowledgeBase {activeAiProfileId: $profileId})
-        RETURN knowledgeBase.id AS knowledgeBaseId
-        """)
     List<String> findIdsByActiveAiProfileId(String profileId);
 }

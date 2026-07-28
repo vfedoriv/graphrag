@@ -16,6 +16,19 @@ The system SHALL use one idempotent lifecycle path to provision a knowledge base
 - **THEN** the system provisions that knowledge base through the common lifecycle path before activation
 - **AND** the provisioned knowledge base has the default AI profile assignment
 
+### Requirement: Knowledge-base metadata is relational operational state
+The system SHALL persist knowledge-base identity, lifecycle metadata, and AI profile association in PostgreSQL while preserving existing create, read, list, and delete contracts.
+
+#### Scenario: A knowledge base is created
+- **WHEN** a valid create request is accepted
+- **THEN** its relational record references the selected default AI profile
+- **AND** its public representation is unchanged
+
+#### Scenario: A knowledge base is concurrently modified
+- **WHEN** a stale caller attempts a mutation
+- **THEN** optimistic concurrency rejects the stale mutation
+- **AND** the committed record remains intact
+
 ### Requirement: Knowledge-base deletion protects owned documents
 The system MUST reject deletion of a knowledge base that owns one or more document records.
 
