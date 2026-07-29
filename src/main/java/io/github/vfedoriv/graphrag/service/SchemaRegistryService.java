@@ -25,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
@@ -36,6 +39,7 @@ public class SchemaRegistryService {
     private final SchemaDefinitionRepository schemaRepository;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final ObjectProvider<SchemaReprocessingPlanService> reprocessingPlanService;
 
     @Autowired
     public SchemaRegistryService(
@@ -43,13 +47,15 @@ public class SchemaRegistryService {
         SchemaValidator schemaValidator,
         SchemaDefinitionRepository schemaRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        ObjectProvider<SchemaReprocessingPlanService> reprocessingPlanService
     ) {
         this.schemaParser = schemaParser;
         this.schemaValidator = schemaValidator;
         this.schemaRepository = schemaRepository;
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
+        this.reprocessingPlanService = reprocessingPlanService;
     }
 
     public SchemaRegistryService(
@@ -64,8 +70,21 @@ public class SchemaRegistryService {
             schemaValidator,
             schemaRepository,
             knowledgeBaseRepository,
-            (KnowledgeBaseLifecycleService) null
+            (KnowledgeBaseLifecycleService) null,
+            null
         );
+    }
+
+    public SchemaRegistryService(
+        SchemaParser schemaParser,
+        SchemaValidator schemaValidator,
+        SchemaDefinitionRepository schemaRepository,
+        KnowledgeBaseRepository knowledgeBaseRepository,
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+    ) {
+        this(
+            schemaParser, schemaValidator, schemaRepository, knowledgeBaseRepository,
+            knowledgeBaseLifecycleService, null);
     }
 
     @RelationalTransactional
@@ -216,7 +235,21 @@ public class SchemaRegistryService {
             return;
         }
         schemaRepository.activateForKnowledgeBase(knowledgeBaseId, schemaId);
+        scheduleReprocessingAfterCommit(knowledgeBaseId, schemaId);
         log.info("Schema activated: knowledgeBaseId={}, schemaId={}", knowledgeBaseId, schemaId);
+    }
+
+    private void scheduleReprocessingAfterCommit(String knowledgeBaseId, String schemaId) {
+        if (reprocessingPlanService == null || !TransactionSynchronizationManager.isSynchronizationActive()) {
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                reprocessingPlanService.ifAvailable(
+                    service -> service.createForActivation(knowledgeBaseId, schemaId));
+            }
+        });
     }
 
     @RelationalTransactional

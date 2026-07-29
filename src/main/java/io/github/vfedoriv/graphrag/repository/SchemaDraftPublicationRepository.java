@@ -2,9 +2,11 @@ package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
 import java.util.Optional;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface SchemaDraftPublicationRepository extends Neo4jRepository<SchemaDraftPublicationNode, String> {
+public interface SchemaDraftPublicationRepository {
     Optional<SchemaDraftPublicationNode> findByDraftId(String draftId);
     Optional<SchemaDraftPublicationNode> findByTargetIdentity(String targetIdentity);
+    Optional<SchemaDraftPublicationNode> findBySchemaId(String schemaId);
+    Optional<SchemaDraftPublicationNode> findById(String id);
+    SchemaDraftPublicationNode save(SchemaDraftPublicationNode publication);
 }

@@ -32,6 +32,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftPublicationRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
 import java.time.Instant;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,11 +47,12 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 @Slf4j
 public class SchemaReprocessingPlanService {
+    private static final Duration CLAIM_DURATION = Duration.ofMinutes(30);
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final DocumentUploadRepository documentRepository;
@@ -66,6 +68,7 @@ public class SchemaReprocessingPlanService {
     private final AiObservationService observationService;
     private final SchemaDraftLifecycleService draftLifecycleService;
     private final SchemaDraftWorkflowNavigationService workflowNavigationService;
+    private final SchemaDraftWorkflowCheckpointService checkpointService;
 
     public SchemaReprocessingPlanService(
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
@@ -82,6 +85,7 @@ public class SchemaReprocessingPlanService {
         AiObservationService observationService,
         SchemaDraftLifecycleService draftLifecycleService,
         SchemaDraftWorkflowNavigationService workflowNavigationService,
+        SchemaDraftWorkflowCheckpointService checkpointService,
         @Qualifier("schemaReprocessingExecutor") TaskExecutor executor
     ) {
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
@@ -98,10 +102,10 @@ public class SchemaReprocessingPlanService {
         this.observationService = observationService;
         this.draftLifecycleService = draftLifecycleService;
         this.workflowNavigationService = workflowNavigationService;
+        this.checkpointService = checkpointService;
         this.executor = executor;
     }
 
-    @GraphTransactional
     public StartPlanResponse create(String knowledgeBaseId, CreatePlanRequest request) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         SchemaDraftPublicationNode publication = publicationRepository.findByDraftId(request.draftId())
@@ -123,17 +127,25 @@ public class SchemaReprocessingPlanService {
         plan.setTotalDocuments(documents.size());
         plan.setQueuedDocuments(documents.size());
         plan.setCreatedAt(Instant.now());
-        SchemaReprocessingPlanNode saved = planRepository.save(plan);
+        List<SchemaReprocessingItemNode> items = new ArrayList<>();
         for (DocumentUploadNode document : documents) {
-            createItem(saved.getId(), document, null);
+            items.add(createItem(plan.getId(), document, null));
         }
+        SchemaReprocessingPlanNode saved = checkpointService.createPlan(plan, items);
         schedule(saved);
         log.info("Schema reprocessing plan queued: planId={}, knowledgeBaseId={}, schemaId={}, documentCount={}, schemaHash={}",
             saved.getId(), knowledgeBaseId, schema.getId(), documents.size(), schema.getContentHash());
         return new StartPlanResponse(saved.getId(), saved.getStatus(), statusLocation(saved));
     }
 
-    @GraphTransactional
+    public void createForActivation(String knowledgeBaseId, String schemaId) {
+        publicationRepository.findBySchemaId(schemaId)
+            .filter(publication -> knowledgeBaseId.equals(publication.getKnowledgeBaseId()))
+            .ifPresent(publication -> create(
+                knowledgeBaseId,
+                new CreatePlanRequest(publication.getDraftId(), schemaId, true, List.of(), Map.of())));
+    }
+
     public StartPlanResponse retry(String knowledgeBaseId, String planId, boolean resnapshot) {
         if (!resnapshot) throw new IllegalArgumentException("Retry requires explicit unresolved-document resnapshot");
         SchemaReprocessingPlanNode prior = requirePlan(knowledgeBaseId, planId);
@@ -161,18 +173,19 @@ public class SchemaReprocessingPlanService {
         retry.setTotalDocuments(unresolved.size());
         retry.setQueuedDocuments(unresolved.size());
         retry.setCreatedAt(Instant.now());
-        SchemaReprocessingPlanNode saved = planRepository.save(retry);
+        List<SchemaReprocessingItemNode> items = new ArrayList<>();
         for (SchemaReprocessingItemNode priorItem : unresolved) {
             DocumentUploadNode document = documentRepository.findByIdAndKnowledgeBaseId(
                 priorItem.getDocumentId(), knowledgeBaseId)
                 .orElseThrow(() -> new NotFoundException("Retry document not found in knowledge base: " + priorItem.getDocumentId()));
-            createItem(saved.getId(), document, priorItem.getId());
+            items.add(createItem(retry.getId(), document, priorItem.getId()));
         }
+        SchemaReprocessingPlanNode saved = checkpointService.createPlan(retry, items);
         schedule(saved);
         return new StartPlanResponse(saved.getId(), saved.getStatus(), statusLocation(saved));
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public PlanResponse get(String knowledgeBaseId, String planId, int page, int size) {
         SchemaReprocessingPlanNode plan = requirePlan(knowledgeBaseId, planId);
         int boundedPage = Math.max(0, page);
@@ -182,7 +195,7 @@ public class SchemaReprocessingPlanService {
         return toResponse(plan, boundedPage, boundedSize, items.getContent(), items.getTotalElements());
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public PlanPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         if (draftId != null && !draftId.isBlank()) {
@@ -206,7 +219,9 @@ public class SchemaReprocessingPlanService {
 
     void execute(String planId) {
         String workerId = UUID.randomUUID().toString();
-        if (!Long.valueOf(1).equals(planRepository.claim(planId, workerId, Instant.now()))) return;
+        Instant claimedAt = Instant.now();
+        if (!Long.valueOf(1).equals(
+            planRepository.claim(planId, workerId, claimedAt, claimedAt.plus(CLAIM_DURATION)))) return;
         SchemaReprocessingPlanNode plan = planRepository.findById(planId).orElseThrow();
         long started = System.nanoTime();
         Map<String, String> attributes = Map.of(
@@ -220,7 +235,7 @@ public class SchemaReprocessingPlanService {
                         blockRemaining(planId);
                         break;
                     }
-                    processItem(plan, item);
+                    processItem(plan, item, workerId);
                     aggregate(plan);
                 }
                 aggregate(plan);
@@ -235,30 +250,40 @@ public class SchemaReprocessingPlanService {
             plan.getFailedDocuments(), plan.getStaleDocuments(), plan.getBlockedDocuments(), LogMetadata.elapsedMillis(started));
     }
 
-    private void processItem(SchemaReprocessingPlanNode plan, SchemaReprocessingItemNode item) {
-        item.setStatus(SchemaReprocessingItemStatus.RUNNING);
-        item.setStartedAt(Instant.now());
-        itemRepository.save(item);
+    private void processItem(
+        SchemaReprocessingPlanNode plan, SchemaReprocessingItemNode item, String workerId
+    ) {
+        Instant claimedAt = Instant.now();
+        if (!Long.valueOf(1).equals(itemRepository.claim(
+            item.getId(), workerId, claimedAt, claimedAt.plus(CLAIM_DURATION)))) {
+            return;
+        }
+        SchemaReprocessingItemNode claimedItem = itemRepository.findById(item.getId()).orElseThrow();
         DocumentUploadNode current = documentRepository.findByIdAndKnowledgeBaseId(
-            item.getDocumentId(), plan.getKnowledgeBaseId()).orElse(null);
-        if (current == null || !item.getDocumentSha256().equals(current.getSha256())) {
-            completeItem(item, SchemaReprocessingItemStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
+            claimedItem.getDocumentId(), plan.getKnowledgeBaseId()).orElse(null);
+        if (current == null || !claimedItem.getDocumentSha256().equals(current.getSha256())) {
+            completeItem(
+                claimedItem, workerId, SchemaReprocessingItemStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
             return;
         }
         try {
             Map<String, Object> options = objectMapper.readValue(
                 plan.getProcessingOptionsJson(), new TypeReference<Map<String, Object>>() { });
             DocumentUploadNode processed = AiProfileContext.withProfile(plan.getAiProfileId(),
-                () -> processingService.process(item.getDocumentId(), true, options));
+                () -> processingService.process(claimedItem.getDocumentId(), true, options));
             if (processed.getStatus() == DocumentStatus.COMPLETED) {
-                completeItem(item, SchemaReprocessingItemStatus.SUCCEEDED, null, false);
+                completeItem(claimedItem, workerId, SchemaReprocessingItemStatus.SUCCEEDED, null, false);
             } else {
-                completeItem(item, SchemaReprocessingItemStatus.FAILED, "DOCUMENT_PROCESSING_FAILED", true);
+                completeItem(
+                    claimedItem, workerId, SchemaReprocessingItemStatus.FAILED,
+                    "DOCUMENT_PROCESSING_FAILED", true);
             }
         } catch (Exception exception) {
-            completeItem(item, SchemaReprocessingItemStatus.FAILED, exception.getClass().getSimpleName(), true);
+            completeItem(
+                claimedItem, workerId, SchemaReprocessingItemStatus.FAILED,
+                exception.getClass().getSimpleName(), true);
             log.warn("Schema reprocessing item failed: planId={}, documentId={}, exceptionType={}",
-                plan.getId(), item.getDocumentId(), LogMetadata.exceptionType(exception));
+                plan.getId(), claimedItem.getDocumentId(), LogMetadata.exceptionType(exception));
         }
     }
 
@@ -281,13 +306,18 @@ public class SchemaReprocessingPlanService {
                 : succeeded > 0 ? SchemaReprocessingPlanStatus.PARTIAL : SchemaReprocessingPlanStatus.FAILED);
             plan.setCompletedAt(Instant.now());
         }
-        planRepository.save(plan);
+        SchemaReprocessingPlanNode savedPlan = planRepository.save(plan);
+        plan.setPersistenceVersion(savedPlan.getPersistenceVersion());
     }
 
     private void blockRemaining(String planId) {
         for (SchemaReprocessingItemNode item : itemRepository.findByPlanIdOrderByDocumentIdAsc(planId)) {
             if (item.getStatus() == SchemaReprocessingItemStatus.QUEUED) {
-                completeItem(item, SchemaReprocessingItemStatus.BLOCKED, "ACTIVE_SCHEMA_CHANGED", true);
+                item.setStatus(SchemaReprocessingItemStatus.BLOCKED);
+                item.setFailureCategory("ACTIVE_SCHEMA_CHANGED");
+                item.setRetryable(true);
+                item.setCompletedAt(Instant.now());
+                itemRepository.save(item);
             }
         }
     }
@@ -322,7 +352,9 @@ public class SchemaReprocessingPlanService {
         return List.copyOf(documents);
     }
 
-    private void createItem(String planId, DocumentUploadNode document, String priorItemId) {
+    private SchemaReprocessingItemNode createItem(
+        String planId, DocumentUploadNode document, String priorItemId
+    ) {
         SchemaReprocessingItemNode item = new SchemaReprocessingItemNode();
         item.setId(UUID.randomUUID().toString());
         item.setPlanId(planId);
@@ -331,7 +363,7 @@ public class SchemaReprocessingPlanService {
         item.setStatus(SchemaReprocessingItemStatus.QUEUED);
         item.setRetryable(true);
         item.setPriorItemId(priorItemId);
-        itemRepository.save(item);
+        return item;
     }
 
     private void schedule(SchemaReprocessingPlanNode plan) {
@@ -346,13 +378,13 @@ public class SchemaReprocessingPlanService {
     }
 
     private void completeItem(
-        SchemaReprocessingItemNode item, SchemaReprocessingItemStatus status, String failureCategory, boolean retryable
+        SchemaReprocessingItemNode item, String workerId, SchemaReprocessingItemStatus status,
+        String failureCategory, boolean retryable
     ) {
-        item.setStatus(status);
-        item.setFailureCategory(failureCategory);
-        item.setRetryable(retryable);
-        item.setCompletedAt(Instant.now());
-        itemRepository.save(item);
+        if (!Long.valueOf(1).equals(itemRepository.complete(
+            item.getId(), workerId, status, failureCategory, retryable, Instant.now()))) {
+            throw new ConflictException("Reprocessing item claim ownership changed: " + item.getId());
+        }
     }
     private int count(List<SchemaReprocessingItemNode> items, SchemaReprocessingItemStatus status) {
         return (int) items.stream().filter(value -> value.getStatus() == status).count();

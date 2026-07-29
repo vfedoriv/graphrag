@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 10533 nodes, 19113 edges, 867 communities. Commit: 3db170e</p>
+<p class="subtitle">Generated from graphify knowledge graph: 10853 nodes, 19818 edges, 887 communities. Commit: 3d14758</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>5804 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>6099 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2920 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2945 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>189 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -136,7 +136,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>5804</td><td><code>127, 57, 439, 427, 56, 111, 3, 5, 9, 31, 25, 124, 398, 304, 14, 37, 45, 84, 18, 28, 13, 154, 22, 10, 42, 68, 19, 4, 29, 33, 108, 27, 275, 305, 12, 54, 23, 301, 15, 448, 46, 6, 76, 87, 151, 53, 771, 0, 153, 148, 40, 64, 72, 104, 17, 364, 52, 8, 1, 16, 21, 7, 107, 130, 155, 20, 24, 362, 49, 71, 156, 246, 248, 32, 60, 90, 36, 388, 106, 287, 73, 30, 395, 11, 389, 43, 98, 2, 268, 34, 50, 773, 97, 103, 393, 397, 41, 44, 464, 47, 48, 776, 78, 113, 134, 261, 400, 413, 415, 417, 51, 95, 117, 376, 540, 67, 763, 80, 112, 122, 26, 295, 296, 375, 412, 428, 539, 559, 61, 62, 625, 626, 627, 63, 690, 758, 765, 769, 781, 86, 161, 284, 297, 298, 35, 379, 380, 382, 386, 66, 694, 70, 703, 741, 762, 378, 384, 405, 628, 629, 651, 701, 74, 770, 83, 139, 373, 387, 401, 402, 445, 454, 630, 632, 637, 709, 75, 790, 865, 92, 100, 164, 396, 643, 644, 729, 85, 94, 96, 408, 411, 462, 695, 734, 777, 105, 109, 110, 118, 330, 407, 418, 425, 650, 652, 655, 782, 793, 152, 403, 656, 683, 696, 697, 753, 754, 818, 849, 120, 247, 424, 449, 756, 759, 778, 784, 123, 141, 699, 702, 707, 767, 77, 822, 824, 131, 133, 410, 488, 489, 505, 726, 730, 760, 829, 135, 137, 138, 142, 143, 631, 648, 732, 735, 743, 747, 788, 832, 146, 585, 601, 725, 750, 752, 772, 868, 157, 158, 159, 420, 671, 682, 749, 163, 717, 718, 719, 785, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848</code></td></tr><tr><td>Graph Build</td><td>2920</td><td><code>39, 38, 69, 89, 160, 537, 91, 149, 101, 162, 121, 129, 255, 252, 279, 128, 258, 253, 256, 538, 58, 79, 260, 306, 265, 266, 307, 372, 267, 293, 316, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 368, 377, 59, 649, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 426, 429, 431, 433, 435, 437, 443, 444, 65, 700, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 633, 634, 635, 636, 639, 640, 713, 715, 751, 761, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 653, 654, 658, 704, 705, 708, 710, 711, 712, 748, 755, 757, 764, 791, 825, 831, 850, 852, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 716, 853, 693, 737, 787, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>306</td><td><code>102, 119, 99, 263, 250, 262, 271, 276, 318, 352, 434, 495, 504, 547, 723, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>143</td><td><code>259, 270, 264, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 272</td><td>22</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 317</td><td>15</td><td><code>317</code></td></tr><tr><td>Other</td><td>790</td><td><code>315, 438, 313, 324, 365, 570, 329, 392, 440, 340, 342, 344, 345, 347, 349, 406, 363, 414, 416, 419, 421, 442, 451, 456, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 698, 706, 727, 728, 775, 783, 553, 554, 555, 557, 560, 642, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 657, 724, 733, 736, 821, 826, 830, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 731, 720</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>6099</td><td><code>439, 56, 28, 398, 154, 3, 31, 427, 5, 151, 84, 64, 25, 43, 36, 413, 18, 34, 14, 37, 42, 15, 70, 90, 19, 22, 46, 10, 35, 68, 304, 108, 124, 33, 106, 12, 16, 246, 54, 301, 305, 40, 45, 53, 57, 6, 60, 87, 113, 275, 104, 13, 29, 364, 0, 153, 76, 9, 72, 75, 1, 117, 445, 111, 17, 21, 32, 7, 8, 107, 155, 156, 20, 24, 49, 86, 127, 148, 248, 405, 652, 287, 295, 388, 397, 630, 30, 400, 73, 23, 268, 395, 402, 448, 627, 389, 393, 4, 790, 2, 27, 408, 417, 50, 771, 773, 83, 95, 103, 41, 44, 464, 47, 48, 539, 78, 415, 763, 865, 261, 376, 52, 540, 67, 71, 112, 130, 26, 375, 386, 412, 426, 428, 61, 62, 625, 626, 633, 634, 637, 690, 758, 762, 765, 781, 284, 296, 297, 298, 362, 379, 380, 382, 559, 63, 639, 640, 66, 694, 703, 139, 161, 378, 384, 628, 629, 643, 651, 701, 74, 770, 80, 373, 387, 401, 632, 648, 650, 709, 741, 769, 92, 100, 11, 164, 396, 644, 653, 729, 793, 94, 96, 98, 134, 411, 462, 695, 777, 105, 109, 110, 118, 330, 407, 425, 655, 752, 776, 782, 85, 122, 152, 403, 418, 656, 683, 696, 697, 699, 726, 754, 767, 818, 120, 247, 424, 704, 707, 756, 759, 778, 784, 123, 141, 449, 702, 710, 77, 822, 824, 97, 131, 133, 410, 488, 489, 505, 730, 743, 753, 760, 829, 135, 137, 138, 142, 143, 51, 631, 732, 735, 747, 787, 788, 832, 866, 867, 868, 146, 454, 585, 601, 725, 849, 873, 157, 158, 159, 420, 671, 682, 749, 874, 875, 876, 877, 163, 717, 718, 719, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 881, 882, 883, 884, 885, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848, 886</code></td></tr><tr><td>Graph Build</td><td>2945</td><td><code>39, 38, 69, 160, 537, 89, 149, 91, 101, 162, 121, 129, 538, 255, 252, 279, 128, 258, 253, 256, 316, 58, 79, 260, 306, 265, 266, 307, 372, 267, 293, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 368, 377, 59, 649, 116, 245, 254, 327, 331, 333, 334, 335, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 429, 431, 433, 435, 437, 443, 444, 65, 700, 708, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 635, 636, 713, 715, 734, 750, 751, 761, 772, 785, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 646, 647, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 654, 658, 705, 711, 712, 748, 755, 757, 764, 791, 825, 831, 850, 852, 869, 870, 871, 872, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 716, 853, 693, 737, 878, 879, 880, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>189</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>58</td><td><code>288, 432, 436, 566, 567, 609, 614, 684</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>306</td><td><code>102, 119, 99, 263, 250, 262, 271, 276, 318, 352, 434, 495, 504, 547, 723, 556, 565, 590, 591, 597, 599, 600, 820</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>143</td><td><code>259, 270, 264, 300, 322, 499, 500, 503, 136, 144, 645, 594, 598, 615, 670</code></td></tr><tr><td>Community 272</td><td>22</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Community 286</td><td>15</td><td><code>286</code></td></tr><tr><td>Community 317</td><td>15</td><td><code>317</code></td></tr><tr><td>Other</td><td>790</td><td><code>315, 438, 313, 324, 365, 570, 329, 392, 440, 340, 342, 344, 345, 347, 349, 406, 363, 414, 416, 419, 421, 442, 451, 456, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 698, 706, 727, 728, 775, 783, 553, 554, 555, 557, 560, 642, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 657, 724, 733, 736, 821, 826, 830, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 622, 624, 691, 692, 731, 720</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -148,11 +148,11 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>10533 nodes · 19113 edges · 867 communities (816 shown, 51 thin omitted)</li>
-      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 2994 edges (avg confidence: 0.8)</li>
+      <li>10853 nodes · 19818 edges · 887 communities (827 shown, 60 thin omitted)</li>
+      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 3033 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 478 edges</li>
-      <li>2. `of()` - 440 edges</li>
+      <li>2. `of()` - 448 edges</li>
       <li>3. `toString()` - 83 edges</li>
     </ul>
   </div>
@@ -160,12 +160,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 5804 nodes and 14819 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 6099 nodes and 15499 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (5804 nodes, 14819 edges)
+    %% Section: Extraction Pipeline (6099 nodes, 15499 edges)
     subgraph extract_pipeline_application_processing_ChunkPre_83f3f42a["application/processing/ChunkPreparationStage.java"]
         processing_chunkpreparationstage_chunkpreparatio_378274de("ChunkPreparationStage<br/><small>application/processing/ChunkPreparationStage.java</small>")
         processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a("ChunkPreparationStage()<br/><small>application/processing/ChunkPreparationStage.java</small>")
@@ -203,7 +203,7 @@ flowchart LR
     processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_84cacf9e
     processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_117f50f3
     processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_be731052
-    %% Omitted for readability: 5786 nodes, 0 edges
+    %% Omitted for readability: 6081 nodes, 0 edges
     class processing_chunkpreparationstage_chunkpreparatio_378274de klass;
     class processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a function;
     class processing_chunkpreparationstage_chunkpreparatio_af134cf5 function;
@@ -245,243 +245,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>GraphEdge</code><br><small style="color:var(--muted)">application/schema/SchemaGraphMapper.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AiProfileEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>AiProfileNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>AiProfileRepository</code><br>+4 more</td>
-  <td>RelationalAiProfileRepository.java node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>SchemaGraphMapper.java</code><br><small style="color:var(--muted)">application/schema/SchemaGraphMapper.java</small></td>
+  <td><code>LangChain4jSchemaGenerationService.java</code><br><small style="color:var(--muted)">graphrag/service/LangChain4jSchemaGenerationService.java</small><br><code>LangChain4jSchemaGenerationServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/LangChain4jSchemaGenerationServiceTest.java</small><br><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br>+1 more</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>SchemaDiscoveryRequest.java</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>existsByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>existsById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br>+10 more</td>
-  <td>RelationalAiProfileRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small><br><code>Pattern</code><br><small style="color:var(--muted)">graphrag/service/CypherParsingSupport.java</small></td>
+  <td>SchemaDiscoveryRequest.java node in graphrag/dto/SchemaDiscoveryRequest.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>AiProfileRepository</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><code>KnowledgeBaseControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java</small><br><code>SchemaDiscoveryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDiscoveryIntegrationTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
-  <td>AiProfileRepository node in project.</td>
+  <td><code>copy()</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>copy() node in graphrag/dto/SchemaDiscoveryRequest.java.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.RelationalAiProfileRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SchemaDiscoveryRequest.java</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.RelationalAiProfileRepository() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>List node in graphrag/dto/SchemaDiscoveryRequest.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>JpaAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>T</code><br><small style="color:var(--muted)">graphrag/dto/SchemaDiscoveryRequest.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><code>KnowledgeBaseControllerIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/KnowledgeBaseControllerIntegrationTest.java</small><br><code>SchemaDiscoveryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDiscoveryIntegrationTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
-  <td>JpaAiProfileRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>T node in graphrag/dto/SchemaDiscoveryRequest.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>KnowledgeBaseRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>KnowledgeBaseRepository node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>GraphEdge</code><br><small style="color:var(--muted)">application/schema/SchemaGraphMapper.java</small></td>
+  <td><code>ChatMessage</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>ChatModel</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>Document</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br>+6 more</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>.findAllByOrderByCreatedAtDesc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.findAllByOrderByCreatedAtDesc() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>buildOrMergeNode()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>createUnstructuredPrompt()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br>+9 more</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>LLMGraphTransformer</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>List node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>AiProfileNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.LLMGraphTransformerExt()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
   <td>No direct outbound edge</td>
-  <td>AiProfileNode node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>Override</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>ChatModel</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Override node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>.findFirstByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.findFirstByDefaultProfileTrue() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>List node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Optional node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>String node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.existsByDefaultProfileTrue()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>ChatMessage</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.existsByDefaultProfileTrue() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>Boolean</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>Integer</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Boolean node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Integer node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.createUnstructuredPrompt()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.findById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
+  <td><code>createUnstructuredPrompt_requiresDescriptionsAndUsefulProperties()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExtTest.java</small><br><code>transform()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>String</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>Override</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>String node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Override node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.existsById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.transform()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.existsById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>createUnstructuredPrompt()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>text()</code><br><small style="color:var(--muted)">graphrag/document/ParsedDocument.java</small></td>
+  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>buildOrMergeNode()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>extractGraph()</code><br><small style="color:var(--muted)">infrastructure/ai/SchemaGenerationModelAdapter.java</small><br>+8 more</td>
+  <td>.transform() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><code>toDomain()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>toEntity()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>.save() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>GraphDocument</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>.deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.buildOrMergeNode()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.deleteById() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>put()</code><br><small style="color:var(--muted)">application/settings/RuntimeSettingsCatalog.java</small><br><code>transform()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><code>extractProperties()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>validateNodePropertyContract()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td>.buildOrMergeNode() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.unsetDefaultProfileForOthers()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>Map</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.unsetDefaultProfileForOthers() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Map node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>Long</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>GraphNode</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>LLMGraphTransformerExt.java</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Long node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.existsKnowledgeBaseAssignment()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><code>existsAiProfileAssignment()</code><br><small style="color:var(--muted)">graphrag/repository/KnowledgeBaseRepository.java</small></td>
-  <td>.existsKnowledgeBaseAssignment() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>Object</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Object node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>.findAssignedKnowledgeBaseIds()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.getJsonResult()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><code>findIdsByActiveAiProfileId()</code><br><small style="color:var(--muted)">graphrag/repository/KnowledgeBaseRepository.java</small></td>
-  <td>.findAssignedKnowledgeBaseIds() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>text()</code><br><small style="color:var(--muted)">graphrag/document/ParsedDocument.java</small><br><code>transform()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><code>exceptionType()</code><br><small style="color:var(--muted)">graphrag/logging/LogMetadata.java</small><br><code>fingerprint()</code><br><small style="color:var(--muted)">graphrag/logging/LogMetadata.java</small><br><code>getBacktickText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br>+3 more</td>
+  <td>.getJsonResult() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>.toEntity()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.nodeTypeCount()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.toEntity() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>getJsonResult()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
+  <td><code>count()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/GraphProvenanceIntegrationTest.java</small></td>
+  <td>.nodeTypeCount() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>AiProfileEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalAiProfileRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>AiProfileEntity node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>.propertyKeyCount()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>getJsonResult()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small></td>
+  <td><code>count()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/GraphProvenanceIntegrationTest.java</small></td>
+  <td>.propertyKeyCount() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.toDomain()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
+  <td><code>.getBacktickText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalAiProfileRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small><br><code>save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalAiProfileRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.toDomain() node in persistence/relational/RelationalAiProfileRepository.java.</td>
+  <td><code>getJsonResult()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><code>find()</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small></td>
+  <td>.getBacktickText() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>RelationalRuntimeSettingOverrideRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>JpaRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>RuntimeSettingOverrideEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br>+2 more</td>
-  <td>RelationalRuntimeSettingOverrideRepository.java node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
+  <td><code>.extractProperties()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>buildOrMergeNode()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>getKey()</code><br><small style="color:var(--muted)">graphrag/domain/RuntimeSettingOverrideNode.java</small><br><code>getValue()</code><br><small style="color:var(--muted)">graphrag/domain/RuntimeSettingOverrideNode.java</small><br>+4 more</td>
+  <td><code>asText()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>normalizePropertyValue()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td>.extractProperties() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>RelationalRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>deleteById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br><code>RelationalRuntimeSettingOverrideRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small><br>+3 more</td>
-  <td>RelationalRuntimeSettingOverrideRepository node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
+  <td><code>.normalizePropertyValue()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>extractProperties()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.normalizePropertyValue() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>RuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalRuntimeSettingOverrideRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
-  <td><code>LocalFilesystemBinaryStorageServiceTest.java</code><br><small style="color:var(--muted)">graphrag/storage/LocalFilesystemBinaryStorageServiceTest.java</small><br><code>RuntimeSettingsServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/RuntimeSettingsServiceTest.java</small><br><code>SettingsAndAiProfileRelationalIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SettingsAndAiProfileRelationalIntegrationTest.java</small></td>
-  <td>RuntimeSettingOverrideRepository node in project.</td>
+  <td><code>.validateNodePropertyContract()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>buildOrMergeNode()</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>LLMGraphTransformerExt</code><br><small style="color:var(--muted)">graphrag/graph/LLMGraphTransformerExt.java</small><br><code>put()</code><br><small style="color:var(--muted)">application/settings/RuntimeSettingsCatalog.java</small><br>+1 more</td>
+  <td><code>count()</code><br><small style="color:var(--muted)">vfedoriv/graphrag/GraphProvenanceIntegrationTest.java</small><br><code>equals()</code><br><small style="color:var(--muted)">relational/entity/KnowledgeBaseSchemaId.java</small><br><code>isBlank()</code><br><small style="color:var(--muted)">graphrag/schema/SchemaValidator.java</small></td>
+  <td>.validateNodePropertyContract() node in graphrag/graph/LLMGraphTransformerExt.java.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>.RelationalRuntimeSettingOverrideRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalRuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalRuntimeSettingOverrideRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.RelationalRuntimeSettingOverrideRepository() node in persistence/relational/RelationalRuntimeSettingOverrideRepository.java.</td>
+  <td><code>RuntimeSettingOverrideStore.java</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Optional</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>RuntimeSettingOverrideNode</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>RuntimeSettingOverrideRepository</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small></td>
+  <td>RuntimeSettingOverrideStore.java node in infrastructure/persistence/RuntimeSettingOverrideStore.java.</td>
 </tr>
 </table>
 
@@ -494,27 +494,27 @@ flowchart LR
 <tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>81 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>79 nodes</td></tr>
 <tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>69 nodes</td></tr>
-<tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>65 nodes</td></tr>
+<tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>60 nodes</td></tr>
 <tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
-<tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>50 nodes</td></tr>
+<tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>52 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x5270, method x2479, imports x1940, calls x1562. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x5628, method x2586, imports x2074, calls x1582. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 2920 nodes and 2695 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 2945 nodes and 2720 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (2920 nodes, 2695 edges)
+    %% Section: Graph Build (2945 nodes, 2720 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -548,7 +548,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_config_d54d881b -->|contains| understand_anything_config_outputlanguage_5559b7c8
-    %% Omitted for readability: 2902 nodes, 0 edges
+    %% Omitted for readability: 2927 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -836,18 +836,18 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>.understand-anything/intermediate/scan-result.json</code></td><td>487 nodes</td></tr>
-<tr><td><code>specs/schema-draft-analysis/spec.md</code></td><td>78 nodes</td></tr>
+<tr><td><code>specs/schema-draft-analysis/spec.md</code></td><td>84 nodes</td></tr>
 <tr><td><code>specs/schema-draft-evaluation/spec.md</code></td><td>48 nodes</td></tr>
 <tr><td><code>specs/schema-generation-with-examples/spec.md</code></td><td>47 nodes</td></tr>
 <tr><td><code>README.md</code></td><td>43 nodes</td></tr>
-<tr><td><code>specs/multi-source-schema-discovery/spec.md</code></td><td>40 nodes</td></tr>
-<tr><td><code>specs/schema-draft-review/spec.md</code></td><td>40 nodes</td></tr>
+<tr><td><code>specs/multi-source-schema-discovery/spec.md</code></td><td>43 nodes</td></tr>
+<tr><td><code>specs/schema-draft-review/spec.md</code></td><td>43 nodes</td></tr>
 <tr><td><code>specs/extraction-run-cleanup/spec.md</code></td><td>38 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2695. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2720. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4774,18 +4774,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>10533</td></tr>
-      <tr><td>Edges</td><td>19113</td></tr>
+      <tr><td>Nodes</td><td>10853</td></tr>
+      <tr><td>Edges</td><td>19818</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>867</td></tr>
+      <tr><td>Communities</td><td>887</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>16119</td></tr>
-      <tr><td>INFERRED</td><td>2994</td></tr>
+      <tr><td>EXTRACTED</td><td>16785</td></tr>
+      <tr><td>INFERRED</td><td>3033</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4793,7 +4793,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-28 21:50 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-29 06:10 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

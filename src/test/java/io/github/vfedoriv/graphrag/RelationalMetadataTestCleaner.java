@@ -8,6 +8,11 @@ final class RelationalMetadataTestCleaner {
     static void clean(JdbcTemplate jdbcTemplate) {
         jdbcTemplate.update("UPDATE app.schema_draft SET running_analysis_run_id = NULL, current_aggregate_id = NULL");
         jdbcTemplate.update("UPDATE app.schema_draft_analysis_run SET aggregate_revision_id = NULL");
+        jdbcTemplate.update("DELETE FROM app.schema_reprocessing_item");
+        jdbcTemplate.update("DELETE FROM app.schema_reprocessing_plan");
+        jdbcTemplate.update("DELETE FROM app.schema_draft_publication");
+        jdbcTemplate.update("DELETE FROM app.schema_draft_evaluation_outcome");
+        jdbcTemplate.update("DELETE FROM app.schema_draft_evaluation_run");
         jdbcTemplate.update("DELETE FROM app.schema_draft_storage_mutation");
         jdbcTemplate.update("DELETE FROM app.schema_draft_decision");
         jdbcTemplate.update("DELETE FROM app.schema_draft_conflict");

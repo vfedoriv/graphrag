@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Component
 public class SchemaDraftEvaluationRecoveryService implements ApplicationRunner {
@@ -27,24 +28,38 @@ public class SchemaDraftEvaluationRecoveryService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        recover();
+    }
+
+    @Scheduled(fixedDelay = 300_000L)
+    public void recover() {
+        Instant now = Instant.now();
         List<SchemaDraftEvaluationRunNode> interrupted = runRepository.findByStatusIn(
             List.of(SchemaDraftEvaluationStatus.QUEUED, SchemaDraftEvaluationStatus.RUNNING));
         for (SchemaDraftEvaluationRunNode run : interrupted) {
+            if (run.getStatus() == SchemaDraftEvaluationStatus.RUNNING
+                && (run.getClaimUntil() == null || !run.getClaimUntil().isBefore(now)
+                    || !Long.valueOf(1).equals(runRepository.interruptExpired(
+                        run.getId(), run.getClaimedBy(), now, now)))) {
+                continue;
+            }
             for (SchemaDraftEvaluationOutcomeNode outcome : outcomeRepository.findByRunIdOrderByDocumentIdAsc(run.getId())) {
                 if (outcome.getStatus() == SchemaDraftEvaluationOutcomeStatus.QUEUED
                     || outcome.getStatus() == SchemaDraftEvaluationOutcomeStatus.RUNNING) {
                     outcome.setStatus(SchemaDraftEvaluationOutcomeStatus.INTERRUPTED);
                     outcome.setFailureCategory("APPLICATION_RESTART");
                     outcome.setRetryable(true);
-                    outcome.setCompletedAt(Instant.now());
+                    outcome.setCompletedAt(now);
                     outcomeRepository.save(outcome);
                 }
             }
-            run.setStatus(SchemaDraftEvaluationStatus.INTERRUPTED);
-            run.setFailureCategory("APPLICATION_RESTART");
-            run.setRetryable(true);
-            run.setCompletedAt(Instant.now());
-            runRepository.save(run);
+            if (run.getStatus() == SchemaDraftEvaluationStatus.QUEUED) {
+                run.setStatus(SchemaDraftEvaluationStatus.INTERRUPTED);
+                run.setFailureCategory("APPLICATION_RESTART");
+                run.setRetryable(true);
+                run.setCompletedAt(now);
+                runRepository.save(run);
+            }
         }
     }
 }

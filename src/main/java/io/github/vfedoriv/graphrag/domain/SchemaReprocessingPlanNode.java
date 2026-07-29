@@ -21,9 +21,11 @@ public class SchemaReprocessingPlanNode {
     private long aiProfileRevision;
     private String processingOptionsJson;
     private String retryOfPlanId;
+    private int retryCount;
     private SchemaReprocessingPlanStatus status;
     private String claimedBy;
     private Instant claimedAt;
+    private Instant claimUntil;
     private int totalDocuments;
     private int queuedDocuments;
     private int runningDocuments;

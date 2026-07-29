@@ -44,6 +44,7 @@ import io.github.vfedoriv.graphrag.schema.SchemaParser;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import java.time.Instant;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,11 +59,11 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 
 @Service
 @Slf4j
 public class SchemaDraftEvaluationService {
+    private static final Duration CLAIM_DURATION = Duration.ofMinutes(30);
     private final SchemaDraftLifecycleService lifecycleService;
     private final SchemaDraftReviewService reviewService;
     private final DocumentUploadRepository documentRepository;
@@ -86,6 +87,7 @@ public class SchemaDraftEvaluationService {
     private final TaskExecutor executor;
     private final SchemaDraftEvaluationEligibilityService eligibilityService;
     private final SchemaDraftWorkflowNavigationService workflowNavigationService;
+    private final SchemaDraftWorkflowCheckpointService checkpointService;
 
     public SchemaDraftEvaluationService(
         SchemaDraftLifecycleService lifecycleService,
@@ -110,6 +112,7 @@ public class SchemaDraftEvaluationService {
         AiObservationService observationService,
         SchemaDraftEvaluationEligibilityService eligibilityService,
         SchemaDraftWorkflowNavigationService workflowNavigationService,
+        SchemaDraftWorkflowCheckpointService checkpointService,
         @Qualifier("schemaDraftEvaluationExecutor") TaskExecutor executor
     ) {
         this.lifecycleService = lifecycleService;
@@ -134,10 +137,10 @@ public class SchemaDraftEvaluationService {
         this.observationService = observationService;
         this.eligibilityService = eligibilityService;
         this.workflowNavigationService = workflowNavigationService;
+        this.checkpointService = checkpointService;
         this.executor = executor;
     }
 
-    @GraphTransactional
     public StartEvaluationResponse start(
         String knowledgeBaseId, String draftId, StartEvaluationRequest request
     ) {
@@ -163,7 +166,6 @@ public class SchemaDraftEvaluationService {
         return createRun(current, snapshots, request.advisoryEnabled(), null);
     }
 
-    @GraphTransactional
     public StartEvaluationResponse retry(String knowledgeBaseId, String draftId, String runId, long revision) {
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, revision);
         SchemaDraftEvaluationRunNode prior = requireRun(draftId, runId);
@@ -178,7 +180,7 @@ public class SchemaDraftEvaluationService {
         return createRun(draft, snapshots, advisory, prior.getId());
     }
 
-    @GraphTransactional(readOnly = true)
+    @io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional(readOnly = true)
     public EvaluationRunResponse get(
         String knowledgeBaseId, String draftId, String runId, int page, int size
     ) {
@@ -191,7 +193,7 @@ public class SchemaDraftEvaluationService {
         return toResponse(run, boundedPage, boundedSize, outcomes.getContent(), outcomes.getTotalElements());
     }
 
-    @GraphTransactional(readOnly = true)
+    @io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional(readOnly = true)
     public EvaluationRunPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return workflowNavigationService.evaluationPage(draft, page, size);
@@ -237,19 +239,20 @@ public class SchemaDraftEvaluationService {
         run.setTotalDocuments(snapshots.size());
         run.setRetryable(true);
         run.setCreatedAt(Instant.now());
-        SchemaDraftEvaluationRunNode saved = runRepository.save(run);
+        List<SchemaDraftEvaluationOutcomeNode> outcomes = new ArrayList<>();
         for (DocumentSnapshot snapshot : snapshots) {
             SchemaDraftEvaluationOutcomeNode outcome = new SchemaDraftEvaluationOutcomeNode();
             outcome.setId(UUID.randomUUID().toString());
-            outcome.setRunId(saved.getId());
+            outcome.setRunId(run.getId());
             outcome.setDraftId(draft.getId());
             outcome.setDocumentId(snapshot.documentId());
             outcome.setDocumentSha256(snapshot.sha256());
-            outcome.setReuseKey(reuseKey(saved, snapshot));
+            outcome.setReuseKey(reuseKey(run, snapshot));
             outcome.setStatus(SchemaDraftEvaluationOutcomeStatus.QUEUED);
             outcome.setRetryable(true);
-            SchemaDraftEvaluationOutcomeNode savedOutcome = outcomeRepository.save(outcome);
+            outcomes.add(outcome);
         }
+        SchemaDraftEvaluationRunNode saved = checkpointService.createEvaluation(run, outcomes);
         try {
             executor.execute(() -> execute(saved.getId()));
         } catch (RuntimeException exception) {
@@ -266,7 +269,9 @@ public class SchemaDraftEvaluationService {
 
     void execute(String runId) {
         String workerId = UUID.randomUUID().toString();
-        if (!Long.valueOf(1).equals(runRepository.claim(runId, workerId, Instant.now()))) return;
+        Instant claimedAt = Instant.now();
+        if (!Long.valueOf(1).equals(
+            runRepository.claim(runId, workerId, claimedAt, claimedAt.plus(CLAIM_DURATION)))) return;
         SchemaDraftEvaluationRunNode run = runRepository.findById(runId).orElseThrow();
         long started = System.nanoTime();
         SchemaDocument schema = schemaParser.parse(run.getProjectionJson());
@@ -300,28 +305,31 @@ public class SchemaDraftEvaluationService {
     ) {
         outcome.setStatus(SchemaDraftEvaluationOutcomeStatus.RUNNING);
         outcome.setStartedAt(Instant.now());
-        outcomeRepository.save(outcome);
+        SchemaDraftEvaluationOutcomeNode runningOutcome = outcomeRepository.save(outcome);
         DocumentUploadNode document = documentRepository.findByIdAndKnowledgeBaseId(
-            outcome.getDocumentId(), run.getKnowledgeBaseId()).orElse(null);
-        if (document == null || !outcome.getDocumentSha256().equals(document.getSha256())) {
-            completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
+            runningOutcome.getDocumentId(), run.getKnowledgeBaseId()).orElse(null);
+        if (document == null || !runningOutcome.getDocumentSha256().equals(document.getSha256())) {
+            completeOutcome(
+                runningOutcome, SchemaDraftEvaluationOutcomeStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
             return;
         }
         java.util.Optional<SchemaDraftEvaluationOutcomeNode> reusable = outcomeRepository
-            .findFirstByDraftIdAndReuseKeyAndStatusInOrderByCompletedAtDesc(run.getDraftId(), outcome.getReuseKey(),
+            .findFirstByDraftIdAndReuseKeyAndStatusInOrderByCompletedAtDesc(
+                run.getDraftId(), runningOutcome.getReuseKey(),
                 List.of(SchemaDraftEvaluationOutcomeStatus.SUCCEEDED, SchemaDraftEvaluationOutcomeStatus.REUSED));
-        if (reusable.isPresent() && !reusable.get().getId().equals(outcome.getId())) {
+        if (reusable.isPresent() && !reusable.get().getId().equals(runningOutcome.getId())) {
             SchemaDraftEvaluationOutcomeNode prior = reusable.get();
-            outcome.setReused(true);
-            outcome.setReusedFromOutcomeId(prior.getId());
-            outcome.setChunkCount(prior.getChunkCount());
-            outcome.setMetricsJson(prior.getMetricsJson());
-            outcome.setEvidenceCoordinatesJson(prior.getEvidenceCoordinatesJson());
-            completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.REUSED, null, false);
+            runningOutcome.setReused(true);
+            runningOutcome.setReusedFromOutcomeId(prior.getId());
+            runningOutcome.setChunkCount(prior.getChunkCount());
+            runningOutcome.setMetricsJson(prior.getMetricsJson());
+            runningOutcome.setEvidenceCoordinatesJson(prior.getEvidenceCoordinatesJson());
+            completeOutcome(runningOutcome, SchemaDraftEvaluationOutcomeStatus.REUSED, null, false);
             return;
         }
         if (client == null) {
-            completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.FAILED, "AI_CLIENT_UNAVAILABLE", true);
+            completeOutcome(
+                runningOutcome, SchemaDraftEvaluationOutcomeStatus.FAILED, "AI_CLIENT_UNAVAILABLE", true);
             return;
         }
         try {
@@ -339,16 +347,16 @@ public class SchemaDraftEvaluationService {
                 raw.relationships().forEach(relationship -> coordinates.add(
                     "relationship:" + relationship.type() + ":" + relationship.fromLabel() + ":" + relationship.toLabel()));
             }
-            outcome.setChunkCount(chunks.size());
-            outcome.setMetricsJson(jsonSupport.canonical(contractMapper.metrics(
+            runningOutcome.setChunkCount(chunks.size());
+            runningOutcome.setMetricsJson(jsonSupport.canonical(contractMapper.metrics(
                 metricsCalculator.combine(metrics), List.copyOf(coordinates))));
-            outcome.setEvidenceCoordinatesJson(jsonSupport.canonical(coordinates));
-            completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.SUCCEEDED, null, false);
+            runningOutcome.setEvidenceCoordinatesJson(jsonSupport.canonical(coordinates));
+            completeOutcome(runningOutcome, SchemaDraftEvaluationOutcomeStatus.SUCCEEDED, null, false);
         } catch (Exception exception) {
-            completeOutcome(outcome, SchemaDraftEvaluationOutcomeStatus.FAILED,
+            completeOutcome(runningOutcome, SchemaDraftEvaluationOutcomeStatus.FAILED,
                 exception.getClass().getSimpleName().toUpperCase(Locale.ROOT), true);
             log.warn("Held-out evaluation document failed: runId={}, documentId={}, exceptionType={}",
-                run.getId(), outcome.getDocumentId(), LogMetadata.exceptionType(exception));
+                run.getId(), runningOutcome.getDocumentId(), LogMetadata.exceptionType(exception));
         }
     }
 

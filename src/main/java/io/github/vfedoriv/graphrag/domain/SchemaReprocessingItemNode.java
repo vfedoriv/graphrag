@@ -19,7 +19,11 @@ public class SchemaReprocessingItemNode {
     private SchemaReprocessingItemStatus status;
     private String failureCategory;
     private boolean retryable;
+    private int retryCount;
     private String priorItemId;
+    private String claimedBy;
+    private Instant claimedAt;
+    private Instant claimUntil;
     private Instant startedAt;
     private Instant completedAt;
 }

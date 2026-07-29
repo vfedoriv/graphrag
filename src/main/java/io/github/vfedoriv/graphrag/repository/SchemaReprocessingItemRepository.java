@@ -1,11 +1,22 @@
 package io.github.vfedoriv.graphrag.repository;
 
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
+import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface SchemaReprocessingItemRepository extends Neo4jRepository<SchemaReprocessingItemNode, String> {
+public interface SchemaReprocessingItemRepository {
     Page<SchemaReprocessingItemNode> findByPlanIdOrderByDocumentIdAsc(String planId, Pageable pageable);
-    java.util.List<SchemaReprocessingItemNode> findByPlanIdOrderByDocumentIdAsc(String planId);
+    List<SchemaReprocessingItemNode> findByPlanIdOrderByDocumentIdAsc(String planId);
+    List<SchemaReprocessingItemNode> findExpiredClaims(Instant now);
+    Long claim(String itemId, String workerId, Instant claimedAt, Instant claimUntil);
+    Long complete(
+        String itemId, String workerId, SchemaReprocessingItemStatus status,
+        String failureCategory, boolean retryable, Instant completedAt
+    );
+    Optional<SchemaReprocessingItemNode> findById(String id);
+    SchemaReprocessingItemNode save(SchemaReprocessingItemNode item);
 }

@@ -31,8 +31,10 @@ public class SchemaDraftEvaluationRunNode {
     private String settingsJson;
     private String snapshotFingerprint;
     private String retryOfRunId;
+    private int retryCount;
     private String claimedBy;
     private Instant claimedAt;
+    private Instant claimUntil;
     private int totalDocuments;
     private int succeededDocuments;
     private int failedDocuments;

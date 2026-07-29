@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ProjectionResponse;
@@ -39,7 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
 @Slf4j
@@ -61,6 +62,7 @@ public class SchemaDraftPublicationService {
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftEvaluationProperties evaluationProperties;
     private final AiObservationService observationService;
+    private final SchemaDraftWorkflowCheckpointService checkpointService;
 
     public SchemaDraftPublicationService(
         SchemaDraftLifecycleService lifecycleService,
@@ -75,7 +77,8 @@ public class SchemaDraftPublicationService {
         SchemaRegistryService schemaRegistryService,
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftEvaluationProperties evaluationProperties,
-        AiObservationService observationService
+        AiObservationService observationService,
+        SchemaDraftWorkflowCheckpointService checkpointService
     ) {
         this.lifecycleService = lifecycleService;
         this.reviewService = reviewService;
@@ -90,9 +93,10 @@ public class SchemaDraftPublicationService {
         this.jsonSupport = jsonSupport;
         this.evaluationProperties = evaluationProperties;
         this.observationService = observationService;
+        this.checkpointService = checkpointService;
     }
 
-    @GraphTransactional(readOnly = true)
+    @RelationalTransactional(readOnly = true)
     public PublicationReadinessResponse readiness(String knowledgeBaseId, String draftId) {
         SchemaDraftNode draft = lifecycleService.requireOwned(knowledgeBaseId, draftId);
         ProjectionResponse projection = reviewService.projection(knowledgeBaseId, draftId);
@@ -143,7 +147,6 @@ public class SchemaDraftPublicationService {
             contentHash, draft.getTargetName(), draft.getTargetVersion(), List.copyOf(reasons));
     }
 
-    @GraphTransactional
     public PublicationResponse publish(String knowledgeBaseId, String draftId, PublishDraftRequest request) {
         try (AiObservationScope workflow = observationService.startWorkflow(new AiWorkflowContext(
             AiObservationService.WORKFLOW_SCHEMA_DRAFT_PUBLICATION, null,
@@ -168,7 +171,9 @@ public class SchemaDraftPublicationService {
                 || !publication.getProjectionContentHash().equals(request.projectionContentHash())) {
                 throw new ConflictException("Published draft preconditions do not match the existing publication");
             }
-            return toResponse(publication);
+            return publication.getStatus() == SchemaDraftPublicationStatus.COMPLETED
+                ? toResponse(publication)
+                : resumePublication(publication, lifecycleService.requireOwned(knowledgeBaseId, draftId));
         }
         SchemaDraftNode draft = lifecycleService.requireMutable(knowledgeBaseId, draftId, request.revision());
         PublicationReadinessResponse readiness = readiness(knowledgeBaseId, draftId);
@@ -183,30 +188,67 @@ public class SchemaDraftPublicationService {
         if (publicationRepository.findByTargetIdentity(targetIdentity).isPresent()) {
             throw new ConflictException("Schema publication target identity is already claimed: " + targetIdentity);
         }
-        ProjectionResponse projection = reviewService.projection(knowledgeBaseId, draftId);
-        String projectionJson = jsonSupport.canonical(projection.schema());
-        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(projectionJson, knowledgeBaseId);
         SchemaDraftPublicationNode publication = new SchemaDraftPublicationNode();
         publication.setId(UUID.randomUUID().toString());
         publication.setDraftId(draftId);
         publication.setKnowledgeBaseId(knowledgeBaseId);
         publication.setTargetIdentity(targetIdentity);
         publication.setDraftRevision(draft.getRevision());
+        publication.setAggregateRevisionId(readiness.aggregateRevisionId());
         publication.setProjectionContentHash(readiness.projectionContentHash());
-        publication.setSchemaId(schema.getId());
+        publication.setStatus(SchemaDraftPublicationStatus.PENDING);
+        publication.setRetryable(true);
         publication.setCreatedAt(Instant.now());
-        SchemaDraftPublicationNode saved = publicationRepository.save(publication);
+        SchemaDraftPublicationNode saved = checkpointService.savePublicationIntent(publication);
+        return resumePublication(saved, draft);
+    }
+
+    private PublicationResponse resumePublication(
+        SchemaDraftPublicationNode publication, SchemaDraftNode draft
+    ) {
+        ProjectionResponse projection = reviewService.projection(
+            publication.getKnowledgeBaseId(), publication.getDraftId());
+        String projectionJson = jsonSupport.canonical(projection.schema());
+        if (!publication.getAggregateRevisionId().equals(projection.aggregateRevisionId())
+            || !publication.getProjectionContentHash().equals(jsonSupport.fingerprint(projectionJson))) {
+            throw new ConflictException("Publication intent no longer matches the exact aggregate revision");
+        }
+        SchemaDefinitionNode schema = resolveOrCreateSchema(
+            draft, projectionJson, publication.getKnowledgeBaseId());
+        publication.setSchemaId(schema.getId());
+        publication.setStatus(SchemaDraftPublicationStatus.COMPLETED);
+        publication.setRetryable(false);
+        publication.setFailureCategory(null);
+        publication.setCompletedAt(Instant.now());
         draft.setStatus(SchemaDraftStatus.PUBLISHED);
         draft.setPublicationSchemaId(schema.getId());
-        draft.setPublicationContentHash(readiness.projectionContentHash());
+        draft.setPublicationContentHash(publication.getProjectionContentHash());
         draft.setUpdatedAt(Instant.now());
-        draftRepository.save(draft);
+        SchemaDraftPublicationNode saved = checkpointService.completePublication(publication, draft);
         log.info("Schema draft published: knowledgeBaseId={}, draftId={}, schemaId={}, revision={}, contentHash={}",
-            knowledgeBaseId, draftId, schema.getId(), draft.getRevision(), readiness.projectionContentHash());
+            publication.getKnowledgeBaseId(), publication.getDraftId(), schema.getId(),
+            draft.getRevision(), publication.getProjectionContentHash());
         return toResponse(saved);
     }
 
-    @GraphTransactional(readOnly = true)
+    private SchemaDefinitionNode resolveOrCreateSchema(
+        SchemaDraftNode draft, String projectionJson, String knowledgeBaseId
+    ) {
+        List<SchemaDefinitionNode> matching = schemaRepository.findAllByKnowledgeBaseId(knowledgeBaseId).stream()
+            .filter(schema -> schema.getName().equals(draft.getTargetName())
+                && schema.getVersion() == draft.getTargetVersion())
+            .toList();
+        if (!matching.isEmpty()) {
+            SchemaDefinitionNode existing = matching.getFirst();
+            if (!existing.getContentHash().equals(jsonSupport.fingerprint(projectionJson))) {
+                throw new ConflictException("Existing publication schema content does not match the publication intent");
+            }
+            return existing;
+        }
+        return schemaRegistryService.createGeneratedInactiveSchema(projectionJson, knowledgeBaseId);
+    }
+
+    @RelationalTransactional(readOnly = true)
     public PublicationResponse get(String knowledgeBaseId, String draftId) {
         lifecycleService.requireOwned(knowledgeBaseId, draftId);
         return toResponse(publicationRepository.findByDraftId(draftId)

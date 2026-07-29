@@ -56,6 +56,7 @@ class SchemaDraftEvaluationServiceTest {
     @Mock private AiObservationService observationService;
     @Mock private SchemaDraftEvaluationEligibilityService eligibilityService;
     @Mock private SchemaDraftWorkflowNavigationService workflowNavigationService;
+    @Mock private SchemaDraftWorkflowCheckpointService checkpointService;
     @Mock private TaskExecutor executor;
     @InjectMocks private SchemaDraftEvaluationService service;
 
