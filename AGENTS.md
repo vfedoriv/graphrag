@@ -121,10 +121,9 @@ The `langfuse-postgres` service is ignored for Spring Boot service-connection
 discovery, so explicit
 `GRAPHRAG_POSTGRES_*` settings route GraphRAG to `graphrag / graphrag / app`.
 Never run `docker compose down -v`, delete the `langfuse_postgres_data` volume, or
-drop the `langfuse` database. Also preserve `langfuse_garage_meta`,
-`langfuse_garage_data`, and the former MinIO volume during the documented
-rollback window. Use `docs/langfuse-minio-to-garage.md` for non-destructive
-copy, verification, cutover, rollback, and delayed retirement.
+drop the `langfuse` database. Preserve both `langfuse_garage_meta` and
+`langfuse_garage_data`. Back up both Garage volumes consistently and
+regularly verify that the pair can be restored.
 
 ## Docker and Testcontainers
 

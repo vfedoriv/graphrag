@@ -94,7 +94,7 @@ The system SHALL attach privacy-safe attempt, response, and failure metadata to 
 - **AND** response-only fields are absent rather than fabricated
 
 ### Requirement: Optional local Langfuse uses Garage object storage
-The system SHALL provide Garage as the S3-compatible object-storage service for the optional local Langfuse Compose stack and SHALL NOT require MinIO for normal Langfuse profile startup.
+The system SHALL provide Garage as the sole S3-compatible object-storage service described and configured for the optional local Langfuse Compose stack.
 
 #### Scenario: Default Compose startup
 - **WHEN** the Langfuse Compose profile is not selected
@@ -104,7 +104,7 @@ The system SHALL provide Garage as the S3-compatible object-storage service for 
 - **WHEN** the Langfuse Compose profile is selected
 - **THEN** a pinned Garage image starts with persistent metadata and object-data volumes
 - **AND** an idempotent initialization step configures the local cluster layout, `langfuse` bucket, and scoped access key before Langfuse web and worker become ready
-- **AND** the normal profile does not start or depend on a MinIO service
+- **AND** all documented and tested local object-storage paths use Garage
 
 #### Scenario: Garage restarts
 - **WHEN** the Garage container is recreated with its persistent volumes intact
@@ -126,29 +126,6 @@ The system SHALL configure Langfuse web and worker with the Garage region, crede
 #### Scenario: Garage is unavailable
 - **WHEN** Garage is unhealthy or its Langfuse bucket initialization has not completed
 - **THEN** Langfuse web and worker are not reported as ready against an unusable object-store dependency
-
-### Requirement: Existing Langfuse objects can be migrated without destructive cutover
-The system MUST provide a repeatable migration procedure that copies existing Langfuse objects from MinIO to Garage, verifies the copy, supports rollback, and preserves the MinIO data volume until an explicit retirement step.
-
-#### Scenario: Operator prepares migration
-- **WHEN** an operator follows the migration procedure before switching Langfuse endpoints
-- **THEN** MinIO and Garage can be made available concurrently
-- **AND** the procedure copies the existing `langfuse` bucket without deleting source objects
-
-#### Scenario: Operator verifies copied objects
-- **WHEN** the initial and final delta copies complete
-- **THEN** the procedure verifies source and destination object inventories and content integrity
-- **AND** it does not assume that multipart-object ETags are content hashes
-
-#### Scenario: Operator cuts over Langfuse
-- **WHEN** copied objects have been verified and Langfuse writes are quiesced
-- **THEN** a final delta copy runs before Langfuse web and worker are configured to use Garage
-- **AND** event ingestion plus media upload and download are smoke-tested after startup
-
-#### Scenario: Operator rolls back
-- **WHEN** Garage-backed Langfuse fails acceptance checks during the rollback window
-- **THEN** the operator can restore the prior MinIO endpoints and credentials
-- **AND** the preserved MinIO volume remains available for rollback
 
 ### Requirement: Garage adoption is scoped to Langfuse
 The system SHALL keep GraphRAG application binary storage behavior unchanged by the Langfuse object-store replacement.

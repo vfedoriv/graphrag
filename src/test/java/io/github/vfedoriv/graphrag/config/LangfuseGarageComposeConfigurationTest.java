@@ -18,13 +18,16 @@ class LangfuseGarageComposeConfigurationTest {
         assertThat(compose)
             .contains("langfuse-garage:")
             .contains("image: 'dxflrs/garage:v2.3.0'")
+            .contains("profiles: ['langfuse']")
             .contains("'langfuse_garage_meta:/var/lib/garage/meta'")
             .contains("'langfuse_garage_data:/var/lib/garage/data'")
             .contains("'127.0.0.1:9090:3900'")
             .contains("test: ['CMD', '/garage', 'status']")
             .contains("langfuse-garage-init:")
             .contains("condition: service_completed_successfully")
-            .contains("LANGFUSE_GARAGE_NODE_CAPACITY: '${LANGFUSE_GARAGE_NODE_CAPACITY:-10G}'");
+            .contains("LANGFUSE_GARAGE_NODE_CAPACITY: '${LANGFUSE_GARAGE_NODE_CAPACITY:-10G}'")
+            .contains("langfuse_garage_meta:")
+            .contains("langfuse_garage_data:");
     }
 
     @Test
@@ -42,26 +45,27 @@ class LangfuseGarageComposeConfigurationTest {
             .contains("LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'")
             .contains("LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'")
             .contains("LANGFUSE_GARAGE_ACCESS_KEY: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'")
-            .contains("LANGFUSE_GARAGE_SECRET_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'")
-            .doesNotContain("langfuse-minio:")
-            .doesNotContain("LANGFUSE_MINIO_ROOT_")
-            .doesNotContain("langfuse_minio_data:");
+            .contains("LANGFUSE_GARAGE_SECRET_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'");
     }
 
     @Test
-    void migrationAssetsPreserveSourceAndVerifyDownloadedContent() throws IOException {
-        String migrationCompose = Files.readString(Path.of("compose.langfuse-migration.yaml"));
-        String migrationScript = Files.readString(Path.of("scripts/migrate-langfuse-minio-to-garage.sh"));
+    void garageSmokeTestCoversAuthorizedObjectOperationsAndPersistence() throws IOException {
+        String smokeCompose = Files.readString(Path.of("compose.garage-smoke.yaml"));
+        String smokeScript = Files.readString(Path.of("scripts/garage-smoke-test.sh"));
 
-        assertThat(migrationCompose)
-            .contains("langfuse_minio_source:")
-            .contains("external: true")
-            .contains("name: '${LANGFUSE_MINIO_VOLUME_NAME:-graphrag_langfuse_minio_data}'")
-            .contains("image: 'rclone/rclone:1.74.4'");
-        assertThat(migrationScript)
-            .contains("run_rclone copy minio:langfuse garage:langfuse")
-            .contains("run_rclone check minio:langfuse garage:langfuse")
-            .contains("--download --one-way")
-            .doesNotContain("rclone sync", "rclone move", "purge");
+        assertThat(smokeCompose)
+            .contains("image: 'rclone/rclone:1.74.4'")
+            .contains("condition: service_healthy")
+            .contains("condition: service_completed_successfully")
+            .contains("RCLONE_CONFIG_GARAGE_ENDPOINT: 'http://langfuse-garage:3900'")
+            .contains("RCLONE_CONFIG_GARAGE_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'")
+            .contains("RCLONE_CONFIG_GARAGE_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'");
+        assertThat(smokeScript)
+            .contains("run --rm langfuse-garage-init")
+            .contains("rcat \"$object_path\"")
+            .contains("cat \"$object_path\"")
+            .contains("lsf garage:langfuse/smoke --files-only")
+            .contains("up -d --force-recreate --wait langfuse-garage")
+            .contains("deletefile \"$object_path\"");
     }
 }

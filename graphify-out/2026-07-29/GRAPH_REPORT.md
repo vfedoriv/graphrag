@@ -1,11 +1,11 @@
 # Graph Report - graphrag  (2026-07-29)
 
 ## Corpus Check
-- 977 files · ~529,153 words
+- 977 files · ~529,162 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 10979 nodes · 19904 edges · 915 communities (848 shown, 67 thin omitted)
+- 10979 nodes · 19904 edges · 914 communities (847 shown, 67 thin omitted)
 - Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 3022 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -698,7 +698,6 @@
 - [[_COMMUNITY_Community 770|Community 770]]
 - [[_COMMUNITY_Community 771|Community 771]]
 - [[_COMMUNITY_Community 772|Community 772]]
-- [[_COMMUNITY_Community 773|Community 773]]
 - [[_COMMUNITY_Community 774|Community 774]]
 - [[_COMMUNITY_Community 775|Community 775]]
 - [[_COMMUNITY_Community 776|Community 776]]
@@ -851,7 +850,7 @@
 ## Hyperedges (group relationships)
 - **Agreement Scope** — documents_contract_sample_master_supply_agreement, documents_contract_sample_supply_obligations, documents_contract_sample_pricing [EXTRACTED 1.00]
 
-## Communities (915 total, 67 thin omitted)
+## Communities (914 total, 67 thin omitted)
 
 ### Community 0 - "Graph Extraction"
 Cohesion: 0.20
@@ -867,7 +866,7 @@ Nodes (18): ChatRequest, LLMGraphTransformerExt, LLMGraphTransformerExtTest, LLM
 
 ### Community 3 - "Query and Search"
 Cohesion: 0.06
-Nodes (25): DocumentProcessingRunRepository, DocumentProcessingRunNode, ProcessingRunLifecycle, DocumentWorkflowRelationalMapper, DocumentProcessingOptionSet, DocumentProcessingRunNode, DocumentProcessingRunRepository, DocumentUploadNode (+17 more)
+Nodes (24): DocumentProcessingRunRepository, DocumentProcessingRunNode, ProcessingRunLifecycle, DocumentWorkflowRelationalMapper, DocumentProcessingOptionSet, DocumentProcessingRunNode, DocumentProcessingRunRepository, DocumentUploadNode (+16 more)
 
 ### Community 4 - "Graph Extraction"
 Cohesion: 0.23
@@ -1110,8 +1109,8 @@ Cohesion: 0.26
 Nodes (10): Neo4jException, Record, QueryNeo4jExecutor, AppProperties, Driver, List, Map, Object (+2 more)
 
 ### Community 64 - "Graph Extraction"
-Cohesion: 0.08
-Nodes (20): DocumentParsingService, DocumentUploadNode, OptimisticLockingFailureException, RoutedDocumentParser, DocumentProcessingServiceTest, Map, Object, ParsedDocument (+12 more)
+Cohesion: 0.07
+Nodes (21): DocumentParsingService, DocumentUploadNode, OptimisticLockingFailureException, RoutedDocumentParser, DocumentProcessingServiceTest, Map, Object, ParsedDocument (+13 more)
 
 ### Community 65 - "Schema Management"
 Cohesion: 0.25
@@ -1270,8 +1269,8 @@ Cohesion: 0.24
 Nodes (8): GraphWriteSupport, List, Map, NodeDefinition, Object, SchemaDocument, Set, String
 
 ### Community 104 - "Document Processing"
-Cohesion: 0.10
-Nodes (26): SchemaDraftEvaluationContractMapper, SchemaDraftEvaluationEligibilityService, SchemaDraftEvaluationMetricsCalculator, AdvisoryAssessment, AiObservationService, ChunkingService, DocumentParsingService, DocumentUploadRepository (+18 more)
+Cohesion: 0.09
+Nodes (28): SchemaDraftEvaluationContractMapper, SchemaDraftEvaluationEligibilityService, SchemaDraftEvaluationMetricsCalculator, AdvisoryAssessment, AiObservationService, ChunkingService, DocumentParsingService, DocumentUploadRepository (+20 more)
 
 ### Community 105 - "AI Observability"
 Cohesion: 0.29
@@ -1730,8 +1729,8 @@ Cohesion: 0.29
 Nodes (6): Capabilities, Impact, Modified Capabilities, New Capabilities, What Changes, Why
 
 ### Community 305 - "Community 305"
-Cohesion: 0.13
-Nodes (18): DocumentSnapshot, SchemaDraftEvaluationService, EvaluationEligibleDocumentPageResponse, EvaluationOutcomeResponse, EvaluationRunPageResponse, EvaluationRunResponse, GraphExtractionClient, List (+10 more)
+Cohesion: 0.14
+Nodes (16): DocumentSnapshot, SchemaDraftEvaluationService, EvaluationEligibleDocumentPageResponse, EvaluationOutcomeResponse, EvaluationRunPageResponse, EvaluationRunResponse, GraphExtractionClient, List (+8 more)
 
 ### Community 306 - "Community 306"
 Cohesion: 0.10
@@ -2298,8 +2297,8 @@ Cohesion: 0.33
 Nodes (5): 1. Captured Execution Policy, 2. Bounded Source Task Orchestration, 3. Deadline Enforcement and Cancellation, 4. Deterministic Aggregation and Durable Retry, 5. Operational Verification
 
 ### Community 451 - "Community 451"
-Cohesion: 0.26
-Nodes (6): TestDocumentStorage, Iterator, EmptyObjectProvider, Override, T, Stream
+Cohesion: 0.16
+Nodes (11): ProfileScopedAiClientResolver, TestDocumentStorage, Iterator, EmptyObjectProvider, AiRuntimeModelFactory, ChatModel, EmbeddingClient, ObjectProvider (+3 more)
 
 ### Community 452 - "Community 452"
 Cohesion: 0.33
@@ -3497,10 +3496,6 @@ Nodes (13): EvaluationEligibleDocumentPageResponse, EvaluationIneligibilityReaso
 Cohesion: 0.29
 Nodes (6): ADDED Requirements, Requirement: Draft identity and lifecycle are relational, Requirement: Draft navigation remains bounded during staged migration, Scenario: A draft is created, Scenario: A stale draft mutation occurs, Scenario: Drafts are listed
 
-### Community 773 - "Community 773"
-Cohesion: 0.17
-Nodes (11): ProfileScopedAiClientResolver, AiProfileContext, AiRuntimeModelFactory, ChatModel, EmbeddingClient, ObjectProvider, ChatModel, Runnable (+3 more)
-
 ### Community 774 - "Community 774"
 Cohesion: 0.15
 Nodes (12): Add paged summary endpoints rather than full status history, Context, Decisions, Derive currentness from authoritative draft state, Embed lightweight workflow references in draft responses, Goals / Non-Goals, Migration Plan, Open Questions (+4 more)
@@ -3562,8 +3557,8 @@ Cohesion: 0.15
 Nodes (12): Context, Decisions, Give draft-owned content its own storage namespace, Goals / Non-Goals, Keep immutable aggregate revisions and append-only decisions, Migration Plan, Model drafts as a separate Neo4j subgraph, Open Questions (+4 more)
 
 ### Community 790 - "Community 790"
-Cohesion: 0.24
-Nodes (9): SpringAiEmbeddingClient, AiObservationService, AiRuntimeModelFactory, Double, EmbeddingModel, List, ObjectProvider, Override (+1 more)
+Cohesion: 0.13
+Nodes (15): SpringAiEmbeddingClient, AiProfileContext, AiObservationService, AiRuntimeModelFactory, Double, EmbeddingModel, List, ObjectProvider (+7 more)
 
 ### Community 791 - "Community 791"
 Cohesion: 0.40

@@ -995,8 +995,8 @@
     "semantic_hash": ""
   },
   "compose.yaml": {
-    "mtime": 1785354799.5574977,
-    "ast_hash": "79ad6f68b1ad38e47f313cedf625c212",
+    "mtime": 1785356812.3299134,
+    "ast_hash": "93952f74d7a3e2c90af59ee55a859644",
     "semantic_hash": ""
   },
   "docs/ONBOARDING.md": {
@@ -5190,18 +5190,18 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java": {
-    "mtime": 1785355026.6935763,
-    "ast_hash": "e625e04734b0bb6502911dfc61f5a48e",
+    "mtime": 1785356826.247228,
+    "ast_hash": "b7d6ece3f3c35518323800baadd8629a",
     "semantic_hash": ""
   },
   "compose.garage-smoke.yaml": {
-    "mtime": 1785355026.454572,
-    "ast_hash": "fb76c0741c4e5b12441d459a1386d0b3",
+    "mtime": 1785356812.5079174,
+    "ast_hash": "0475b8a3dcbaeb2665b7f03376197e67",
     "semantic_hash": ""
   },
   "compose.langfuse-migration.yaml": {
-    "mtime": 1785354972.0325766,
-    "ast_hash": "a8fefc65c2ba8480cc0de6a98d700f01",
+    "mtime": 1785356812.6789215,
+    "ast_hash": "212273cfb7790a7291cc7c550d2291b9",
     "semantic_hash": ""
   },
   "compose.langfuse-minio-rollback.yaml": {
@@ -5275,8 +5275,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/replace-langfuse-minio-with-garage/tasks.md": {
-    "mtime": 1785355564.9858031,
-    "ast_hash": "25388673d4db801323e0ec1dbffbe85e",
+    "mtime": 1785355887.02211,
+    "ast_hash": "7a6f8147d36cf0ebb79fe3d15c18b9e5",
     "semantic_hash": ""
   }
 }

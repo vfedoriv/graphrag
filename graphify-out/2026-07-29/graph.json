@@ -15446,7 +15446,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "domain_documentuploadnode",
-      "community": 3,
+      "community": 64,
       "norm_label": "documentuploadnode.java"
     },
     {
@@ -15676,7 +15676,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "domain_documentuploadnode_documentuploadnode_getuploadedat",
-      "community": 3,
+      "community": 64,
       "norm_label": ".getuploadedat()"
     },
     {
@@ -15686,7 +15686,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_domain_documentuploadnode_java_instant",
-      "community": 3,
+      "community": 64,
       "norm_label": "instant"
     },
     {
@@ -15706,7 +15706,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "domain_documentuploadnode_documentuploadnode_getprocessedat",
-      "community": 3,
+      "community": 64,
       "norm_label": ".getprocessedat()"
     },
     {
@@ -15716,7 +15716,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "domain_documentuploadnode_documentuploadnode_setprocessedat",
-      "community": 3,
+      "community": 64,
       "norm_label": ".setprocessedat()"
     },
     {
@@ -15766,7 +15766,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "domain_documentuploadnode_documentuploadnode_getprocessingdefaultsupdatedat",
-      "community": 3,
+      "community": 64,
       "norm_label": ".getprocessingdefaultsupdatedat()"
     },
     {
@@ -15776,7 +15776,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "domain_documentuploadnode_documentuploadnode_setprocessingdefaultsupdatedat",
-      "community": 3,
+      "community": 64,
       "norm_label": ".setprocessingdefaultsupdatedat()"
     },
     {
@@ -21246,7 +21246,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ai_profilescopedaiclientresolver",
-      "community": 773,
+      "community": 451,
       "norm_label": "profilescopedaiclientresolver.java"
     },
     {
@@ -21256,7 +21256,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "ai_profilescopedaiclientresolver_profilescopedaiclientresolver",
-      "community": 773,
+      "community": 451,
       "norm_label": "profilescopedaiclientresolver"
     },
     {
@@ -21266,7 +21266,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "ai_profilescopedaiclientresolver_profilescopedaiclientresolver_profilescopedaiclientresolver",
-      "community": 773,
+      "community": 451,
       "norm_label": ".profilescopedaiclientresolver()"
     },
     {
@@ -21276,7 +21276,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_infrastructure_ai_profilescopedaiclientresolver_java_objectprovider",
-      "community": 773,
+      "community": 451,
       "norm_label": "objectprovider"
     },
     {
@@ -21286,7 +21286,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_infrastructure_ai_profilescopedaiclientresolver_java_embeddingclient",
-      "community": 773,
+      "community": 451,
       "norm_label": "embeddingclient"
     },
     {
@@ -21296,7 +21296,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_infrastructure_ai_profilescopedaiclientresolver_java_chatmodel",
-      "community": 773,
+      "community": 451,
       "norm_label": "chatmodel"
     },
     {
@@ -21306,7 +21306,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_infrastructure_ai_profilescopedaiclientresolver_java_airuntimemodelfactory",
-      "community": 773,
+      "community": 451,
       "norm_label": "airuntimemodelfactory"
     },
     {
@@ -21316,7 +21316,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "ai_profilescopedaiclientresolver_profilescopedaiclientresolver_embeddingclient",
-      "community": 773,
+      "community": 451,
       "norm_label": ".embeddingclient()"
     },
     {
@@ -21326,7 +21326,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "ai_profilescopedaiclientresolver_profilescopedaiclientresolver_chatmodel",
-      "community": 773,
+      "community": 451,
       "norm_label": ".chatmodel()"
     },
     {
@@ -36886,7 +36886,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "service_aiprofilecontext",
-      "community": 773,
+      "community": 790,
       "norm_label": "aiprofilecontext.java"
     },
     {
@@ -36896,7 +36896,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext",
-      "community": 773,
+      "community": 790,
       "norm_label": "aiprofilecontext"
     },
     {
@@ -36906,7 +36906,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext_aiprofilecontext",
-      "community": 773,
+      "community": 790,
       "norm_label": ".aiprofilecontext()"
     },
     {
@@ -36916,7 +36916,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext_activeprofileid",
-      "community": 773,
+      "community": 790,
       "norm_label": ".activeprofileid()"
     },
     {
@@ -36926,7 +36926,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_aiprofilecontext_java_string",
-      "community": 773,
+      "community": 790,
       "norm_label": "string"
     },
     {
@@ -36936,7 +36936,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext_capturedchatmodel",
-      "community": 773,
+      "community": 790,
       "norm_label": ".capturedchatmodel()"
     },
     {
@@ -36946,7 +36946,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_aiprofilecontext_java_chatmodel",
-      "community": 773,
+      "community": 790,
       "norm_label": "chatmodel"
     },
     {
@@ -36956,7 +36956,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext_withprofile",
-      "community": 773,
+      "community": 790,
       "norm_label": ".withprofile()"
     },
     {
@@ -36966,7 +36966,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "supplier",
-      "community": 773,
+      "community": 790,
       "norm_label": "supplier"
     },
     {
@@ -36976,7 +36976,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_aiprofilecontext_java_t",
-      "community": 773,
+      "community": 790,
       "norm_label": "t"
     },
     {
@@ -36986,7 +36986,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_aiprofilecontext_java_runnable",
-      "community": 773,
+      "community": 790,
       "norm_label": "runnable"
     },
     {
@@ -36996,7 +36996,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "service_aiprofilecontext_aiprofilecontext_withcapturedchatmodel",
-      "community": 773,
+      "community": 790,
       "norm_label": ".withcapturedchatmodel()"
     },
     {
@@ -45926,7 +45926,7 @@
       "source_location": "L144",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_schemadraftevaluationservice_java_startevaluationrequest",
-      "community": 305,
+      "community": 104,
       "norm_label": "startevaluationrequest"
     },
     {
@@ -46036,7 +46036,7 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "src_main_java_io_github_vfedoriv_graphrag_service_schemadraftevaluationservice_java_schemadraftnode",
-      "community": 305,
+      "community": 104,
       "norm_label": "schemadraftnode"
     },
     {
@@ -56463,7 +56463,7 @@
       "label": ".migrationAssetsPreserveSourceAndVerifyDownloadedContent()",
       "file_type": "code",
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
-      "source_location": "L47",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_migrationassetspreservesourceandverifydownloadedcontent",
       "community": 650,
@@ -114995,9 +114995,9 @@
       "source_file": "docker/garage/init.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "garage_init",
-      "target": "home_vitaliy_workspace_graphrag_docker_garage_init_sh__entry",
-      "confidence_score": 1.0
+      "target": "home_vitaliy_workspace_graphrag_docker_garage_init_sh__entry"
     },
     {
       "relation": "contains",
@@ -115015,9 +115015,9 @@
       "source_file": "scripts/garage-smoke-test.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_garage_smoke_test",
-      "target": "home_vitaliy_workspace_graphrag_scripts_garage_smoke_test_sh__entry",
-      "confidence_score": 1.0
+      "target": "home_vitaliy_workspace_graphrag_scripts_garage_smoke_test_sh__entry"
     },
     {
       "relation": "contains",
@@ -115025,9 +115025,9 @@
       "source_file": "scripts/migrate-langfuse-minio-to-garage.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_migrate_langfuse_minio_to_garage",
-      "target": "home_vitaliy_workspace_graphrag_scripts_migrate_langfuse_minio_to_garage_sh__entry",
-      "confidence_score": 1.0
+      "target": "home_vitaliy_workspace_graphrag_scripts_migrate_langfuse_minio_to_garage_sh__entry"
     },
     {
       "relation": "defines",
@@ -115035,9 +115035,9 @@
       "source_file": "scripts/migrate-langfuse-minio-to-garage.sh",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_migrate_langfuse_minio_to_garage",
-      "target": "scripts_migrate_langfuse_minio_to_garage_run_rclone",
-      "confidence_score": 1.0
+      "target": "scripts_migrate_langfuse_minio_to_garage_run_rclone"
     },
     {
       "relation": "defines",
@@ -115045,9 +115045,9 @@
       "source_file": "scripts/migrate-langfuse-minio-to-garage.sh",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_migrate_langfuse_minio_to_garage",
-      "target": "scripts_migrate_langfuse_minio_to_garage_usage",
-      "confidence_score": 1.0
+      "target": "scripts_migrate_langfuse_minio_to_garage_usage"
     },
     {
       "relation": "calls",
@@ -115056,9 +115056,9 @@
       "source_location": "L27",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "home_vitaliy_workspace_graphrag_scripts_migrate_langfuse_minio_to_garage_sh__entry",
-      "target": "scripts_migrate_langfuse_minio_to_garage_run_rclone",
-      "confidence_score": 1.0
+      "target": "scripts_migrate_langfuse_minio_to_garage_run_rclone"
     },
     {
       "relation": "calls",
@@ -115067,9 +115067,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "home_vitaliy_workspace_graphrag_scripts_migrate_langfuse_minio_to_garage_sh__entry",
-      "target": "scripts_migrate_langfuse_minio_to_garage_usage",
-      "confidence_score": 1.0
+      "target": "scripts_migrate_langfuse_minio_to_garage_usage"
     },
     {
       "relation": "contains",
@@ -262377,9 +262377,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest",
-      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest",
-      "confidence_score": 1.0
+      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest"
     },
     {
       "relation": "imports",
@@ -262388,9 +262388,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test",
-      "confidence_score": 1.0
+      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test"
     },
     {
       "relation": "method",
@@ -262398,9 +262398,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest",
-      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseprofileusespinnedinitializedgarage",
-      "confidence_score": 1.0
+      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseprofileusespinnedinitializedgarage"
     },
     {
       "relation": "method",
@@ -262408,9 +262408,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest",
-      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseusesgarageendpointsandcredentials",
-      "confidence_score": 1.0
+      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseusesgarageendpointsandcredentials"
     },
     {
       "relation": "method",
@@ -262418,9 +262418,9 @@
       "source_file": "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest",
-      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_migrationassetspreservesourceandverifydownloadedcontent",
-      "confidence_score": 1.0
+      "target": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_migrationassetspreservesourceandverifydownloadedcontent"
     },
     {
       "relation": "references",
@@ -262429,9 +262429,9 @@
       "source_location": "L14",
       "weight": 1.0,
       "context": "attribute",
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseprofileusespinnedinitializedgarage",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test",
-      "confidence_score": 1.0
+      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test"
     },
     {
       "relation": "references",
@@ -262440,9 +262440,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "context": "attribute",
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_langfuseusesgarageendpointsandcredentials",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test",
-      "confidence_score": 1.0
+      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test"
     },
     {
       "relation": "references",
@@ -262451,9 +262451,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "attribute",
+      "confidence_score": 1.0,
       "source": "config_langfusegaragecomposeconfigurationtest_langfusegaragecomposeconfigurationtest_migrationassetspreservesourceandverifydownloadedcontent",
-      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test",
-      "confidence_score": 1.0
+      "target": "src_test_java_io_github_vfedoriv_graphrag_config_langfusegaragecomposeconfigurationtest_java_test"
     },
     {
       "relation": "contains",
@@ -283169,9 +283169,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage",
-      "target": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration"
     },
     {
       "relation": "contains",
@@ -283179,9 +283179,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_delayed_retirement",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_delayed_retirement"
     },
     {
       "relation": "contains",
@@ -283189,9 +283189,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_initial_non_destructive_copy_and_verification",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_initial_non_destructive_copy_and_verification"
     },
     {
       "relation": "contains",
@@ -283199,9 +283199,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_prerequisites",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_prerequisites"
     },
     {
       "relation": "contains",
@@ -283209,9 +283209,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_quiesce_final_delta_and_cutover",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_quiesce_final_delta_and_cutover"
     },
     {
       "relation": "contains",
@@ -283219,9 +283219,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_rollback",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_rollback"
     },
     {
       "relation": "contains",
@@ -283229,9 +283229,9 @@
       "source_file": "docs/langfuse-minio-to-garage.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_langfuse_minio_to_garage_langfuse_minio_to_garage_migration",
-      "target": "docs_langfuse_minio_to_garage_start_both_object_stores",
-      "confidence_score": 1.0
+      "target": "docs_langfuse_minio_to_garage_start_both_object_stores"
     },
     {
       "relation": "contains",
@@ -289939,9 +289939,9 @@
       "source_file": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_langfuse_is_available_as_an_optional_local_backend",
-      "target": "openspec_changes_archive_2026_06_04_add_ai_observability_monitoring_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_default_compose_startup",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_06_04_add_ai_observability_monitoring_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_default_compose_startup"
     },
     {
       "relation": "contains",
@@ -289949,9 +289949,9 @@
       "source_file": "openspec/changes/archive/2026-06-04-add-ai-observability-monitoring/specs/ai-observability-monitoring/spec.md",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_langfuse_is_available_as_an_optional_local_backend",
-      "target": "openspec_changes_archive_2026_06_04_add_ai_observability_monitoring_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_langfuse_profile_startup",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_06_04_add_ai_observability_monitoring_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_langfuse_profile_startup"
     },
     {
       "relation": "contains",
@@ -307539,9 +307539,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-complete-polyglot-persistence-cutover/specs/documentation-alignment/spec.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_complete_polyglot_persistence_cutover_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology",
-      "target": "documentation_alignment_spec_scenario_destructive_operations_are_documented",
-      "confidence_score": 1.0
+      "target": "documentation_alignment_spec_scenario_destructive_operations_are_documented"
     },
     {
       "relation": "contains",
@@ -307609,9 +307609,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-complete-polyglot-persistence-cutover/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_complete_polyglot_persistence_cutover_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state",
-      "target": "polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_must_be_retained",
-      "confidence_score": 1.0
+      "target": "polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_must_be_retained"
     },
     {
       "relation": "contains",
@@ -307619,9 +307619,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-complete-polyglot-persistence-cutover/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_complete_polyglot_persistence_cutover_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_graphrag_backups_and_restores_are_database_scoped",
-      "target": "polyglot_persistence_cutover_spec_scenario_graphrag_is_restored",
-      "confidence_score": 1.0
+      "target": "polyglot_persistence_cutover_spec_scenario_graphrag_is_restored"
     },
     {
       "relation": "contains",
@@ -307629,9 +307629,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-complete-polyglot-persistence-cutover/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_complete_polyglot_persistence_cutover_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_final_startup_is_verified_across_both_stores",
-      "target": "polyglot_persistence_cutover_spec_scenario_smoke_verification_succeeds",
-      "confidence_score": 1.0
+      "target": "polyglot_persistence_cutover_spec_scenario_smoke_verification_succeeds"
     },
     {
       "relation": "contains",
@@ -307739,9 +307739,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_context",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_context"
     },
     {
       "relation": "contains",
@@ -307749,9 +307749,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_decisions",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_decisions"
     },
     {
       "relation": "contains",
@@ -307759,9 +307759,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_goals_non_goals",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_goals_non_goals"
     },
     {
       "relation": "contains",
@@ -307769,9 +307769,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_migration_plan",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_migration_plan"
     },
     {
       "relation": "contains",
@@ -307779,9 +307779,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L72",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_open_questions",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_open_questions"
     },
     {
       "relation": "contains",
@@ -307789,9 +307789,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_risks_trade_offs",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_risks_trade_offs"
     },
     {
       "relation": "contains",
@@ -307799,9 +307799,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design_decisions",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_ignore_the_shared_postgresql_service_for_spring_boot_connection_discovery",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_ignore_the_shared_postgresql_service_for_spring_boot_connection_discovery"
     },
     {
       "relation": "contains",
@@ -307809,9 +307809,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design_decisions",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_keep_deployment_configuration_simple",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_keep_deployment_configuration_simple"
     },
     {
       "relation": "contains",
@@ -307819,9 +307819,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design_decisions",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_reset_disposable_graphrag_state_once",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_reset_disposable_graphrag_state_once"
     },
     {
       "relation": "contains",
@@ -307829,9 +307829,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_design_decisions",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_design_verify_configuration_rather_than_every_startup",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_design_verify_configuration_rather_than_every_startup"
     },
     {
       "relation": "contains",
@@ -307839,9 +307839,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_capabilities",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_capabilities"
     },
     {
       "relation": "contains",
@@ -307849,9 +307849,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_impact",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_impact"
     },
     {
       "relation": "contains",
@@ -307859,9 +307859,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_what_changes",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_what_changes"
     },
     {
       "relation": "contains",
@@ -307869,9 +307869,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_why",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_why"
     },
     {
       "relation": "contains",
@@ -307879,9 +307879,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal_capabilities",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_modified_capabilities",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_modified_capabilities"
     },
     {
       "relation": "contains",
@@ -307889,9 +307889,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_proposal_capabilities",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_new_capabilities",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_proposal_new_capabilities"
     },
     {
       "relation": "contains",
@@ -307899,9 +307899,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_added_requirements",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_added_requirements"
     },
     {
       "relation": "contains",
@@ -307909,9 +307909,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_modified_requirements",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_modified_requirements"
     },
     {
       "relation": "contains",
@@ -307919,9 +307919,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_modified_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology"
     },
     {
       "relation": "contains",
@@ -307929,9 +307929,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_disposable_graphrag_state_is_reset",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_disposable_graphrag_state_is_reset"
     },
     {
       "relation": "contains",
@@ -307939,9 +307939,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_shared_guidance_is_updated",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_shared_guidance_is_updated"
     },
     {
       "relation": "contains",
@@ -307949,9 +307949,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_added_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence"
     },
     {
       "relation": "contains",
@@ -307959,9 +307959,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_local_startup_guidance_is_followed",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_local_startup_guidance_is_followed"
     },
     {
       "relation": "contains",
@@ -307969,9 +307969,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec",
-      "target": "polyglot_persistence_cutover_spec_modified_requirements",
-      "confidence_score": 1.0
+      "target": "polyglot_persistence_cutover_spec_modified_requirements"
     },
     {
       "relation": "contains",
@@ -307979,9 +307979,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec",
-      "target": "polyglot_persistence_cutover_spec_removed_requirements",
-      "confidence_score": 1.0
+      "target": "polyglot_persistence_cutover_spec_removed_requirements"
     },
     {
       "relation": "contains",
@@ -307989,9 +307989,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "polyglot_persistence_cutover_spec_modified_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state"
     },
     {
       "relation": "contains",
@@ -307999,9 +307999,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "polyglot_persistence_cutover_spec_modified_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_final_startup_is_verified_across_both_stores",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_final_startup_is_verified_across_both_stores"
     },
     {
       "relation": "contains",
@@ -308009,9 +308009,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_is_present",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_is_present"
     },
     {
       "relation": "contains",
@@ -308019,9 +308019,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_graphrag_is_cut_over",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_graphrag_is_cut_over"
     },
     {
       "relation": "contains",
@@ -308029,9 +308029,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_final_startup_is_verified_across_both_stores",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_fresh_start_smoke_verification_succeeds",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_fresh_start_smoke_verification_succeeds"
     },
     {
       "relation": "contains",
@@ -308039,9 +308039,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "polyglot_persistence_cutover_spec_removed_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_graphrag_backups_and_restores_are_database_scoped",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_graphrag_backups_and_restores_are_database_scoped"
     },
     {
       "relation": "contains",
@@ -308049,9 +308049,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_added_requirements",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_added_requirements"
     },
     {
       "relation": "contains",
@@ -308059,9 +308059,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_added_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership"
     },
     {
       "relation": "contains",
@@ -308069,9 +308069,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_compose_metadata_describes_langfuse_ownership",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_compose_metadata_describes_langfuse_ownership"
     },
     {
       "relation": "contains",
@@ -308079,9 +308079,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_local_application_starts_with_compose_support_enabled",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_local_application_starts_with_compose_support_enabled"
     },
     {
       "relation": "contains",
@@ -308089,9 +308089,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/test-coverage-governance/spec.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_added_requirements",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_added_requirements"
     },
     {
       "relation": "contains",
@@ -308099,9 +308099,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/test-coverage-governance/spec.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_added_requirements",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage"
     },
     {
       "relation": "contains",
@@ -308109,9 +308109,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/test-coverage-governance/spec.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage",
-      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_scenario_compose_routing_regression_test_runs",
-      "confidence_score": 1.0
+      "target": "openspec_changes_archive_2026_07_29_correct_graphrag_postgres_routing_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_scenario_compose_routing_regression_test_runs"
     },
     {
       "relation": "contains",
@@ -308119,9 +308119,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/tasks.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_tasks",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_1_correct_local_datasource_routing",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_1_correct_local_datasource_routing"
     },
     {
       "relation": "contains",
@@ -308129,9 +308129,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/tasks.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_tasks",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_2_simplify_persistence_guidance",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_2_simplify_persistence_guidance"
     },
     {
       "relation": "contains",
@@ -308139,9 +308139,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/tasks.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_tasks",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_3_reset_the_local_disposable_stores",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_3_reset_the_local_disposable_stores"
     },
     {
       "relation": "contains",
@@ -308149,9 +308149,9 @@
       "source_file": "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/tasks.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "2026_07_29_correct_graphrag_postgres_routing_tasks",
-      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_4_final_verification",
-      "confidence_score": 1.0
+      "target": "2026_07_29_correct_graphrag_postgres_routing_tasks_4_final_verification"
     },
     {
       "relation": "contains",
@@ -309519,9 +309519,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_context",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_context"
     },
     {
       "relation": "contains",
@@ -309529,9 +309529,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_decisions",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_decisions"
     },
     {
       "relation": "contains",
@@ -309539,9 +309539,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_goals_non_goals",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_goals_non_goals"
     },
     {
       "relation": "contains",
@@ -309549,9 +309549,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_migration_plan",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_migration_plan"
     },
     {
       "relation": "contains",
@@ -309559,9 +309559,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_open_questions",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_open_questions"
     },
     {
       "relation": "contains",
@@ -309569,9 +309569,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L90",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design",
-      "target": "replace_langfuse_minio_with_garage_design_risks_trade_offs",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_risks_trade_offs"
     },
     {
       "relation": "contains",
@@ -309579,9 +309579,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design_decisions",
-      "target": "replace_langfuse_minio_with_garage_design_initialize_layout_bucket_and_credentials_through_an_idempotent_one_shot_service",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_initialize_layout_bucket_and_credentials_through_an_idempotent_one_shot_service"
     },
     {
       "relation": "contains",
@@ -309589,9 +309589,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design_decisions",
-      "target": "replace_langfuse_minio_with_garage_design_keep_migration_operator_driven_and_non_destructive",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_keep_migration_operator_driven_and_non_destructive"
     },
     {
       "relation": "contains",
@@ -309599,9 +309599,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design_decisions",
-      "target": "replace_langfuse_minio_with_garage_design_run_a_pinned_single_node_garage_deployment_for_the_local_profile",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_run_a_pinned_single_node_garage_deployment_for_the_local_profile"
     },
     {
       "relation": "contains",
@@ -309609,9 +309609,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design_decisions",
-      "target": "replace_langfuse_minio_with_garage_design_treat_garage_backup_and_durability_separately_from_migration",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_treat_garage_backup_and_durability_separately_from_migration"
     },
     {
       "relation": "contains",
@@ -309619,9 +309619,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/design.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_design_decisions",
-      "target": "replace_langfuse_minio_with_garage_design_use_distinct_internal_event_and_host_reachable_media_endpoints",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_design_use_distinct_internal_event_and_host_reachable_media_endpoints"
     },
     {
       "relation": "contains",
@@ -309629,9 +309629,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal",
-      "target": "replace_langfuse_minio_with_garage_proposal_capabilities",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_capabilities"
     },
     {
       "relation": "contains",
@@ -309639,9 +309639,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal",
-      "target": "replace_langfuse_minio_with_garage_proposal_impact",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_impact"
     },
     {
       "relation": "contains",
@@ -309649,9 +309649,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal",
-      "target": "replace_langfuse_minio_with_garage_proposal_what_changes",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_what_changes"
     },
     {
       "relation": "contains",
@@ -309659,9 +309659,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal",
-      "target": "replace_langfuse_minio_with_garage_proposal_why",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_why"
     },
     {
       "relation": "contains",
@@ -309669,9 +309669,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal_capabilities",
-      "target": "replace_langfuse_minio_with_garage_proposal_modified_capabilities",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_modified_capabilities"
     },
     {
       "relation": "contains",
@@ -309679,9 +309679,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/proposal.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_proposal_capabilities",
-      "target": "replace_langfuse_minio_with_garage_proposal_new_capabilities",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_proposal_new_capabilities"
     },
     {
       "relation": "contains",
@@ -309689,9 +309689,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec",
-      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements",
-      "confidence_score": 1.0
+      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements"
     },
     {
       "relation": "contains",
@@ -309699,9 +309699,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements",
-      "target": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover"
     },
     {
       "relation": "contains",
@@ -309709,9 +309709,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements",
-      "target": "ai_observability_monitoring_spec_requirement_garage_adoption_is_scoped_to_langfuse",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_requirement_garage_adoption_is_scoped_to_langfuse"
     },
     {
       "relation": "contains",
@@ -309719,9 +309719,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements",
-      "target": "ai_observability_monitoring_spec_requirement_langfuse_uses_garage_compatible_s3_endpoints",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_requirement_langfuse_uses_garage_compatible_s3_endpoints"
     },
     {
       "relation": "contains",
@@ -309729,9 +309729,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_added_requirements",
-      "target": "ai_observability_monitoring_spec_requirement_optional_local_langfuse_uses_garage_object_storage",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_requirement_optional_local_langfuse_uses_garage_object_storage"
     },
     {
       "relation": "contains",
@@ -309739,9 +309739,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_optional_local_langfuse_uses_garage_object_storage",
-      "target": "ai_observability_monitoring_spec_scenario_garage_restarts",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_garage_restarts"
     },
     {
       "relation": "contains",
@@ -309749,9 +309749,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_optional_local_langfuse_uses_garage_object_storage",
-      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_default_compose_startup",
-      "confidence_score": 1.0
+      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_default_compose_startup"
     },
     {
       "relation": "contains",
@@ -309759,9 +309759,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_optional_local_langfuse_uses_garage_object_storage",
-      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_langfuse_profile_startup",
-      "confidence_score": 1.0
+      "target": "openspec_changes_replace_langfuse_minio_with_garage_specs_ai_observability_monitoring_spec_md_ai_observability_monitoring_spec_scenario_langfuse_profile_startup"
     },
     {
       "relation": "contains",
@@ -309769,9 +309769,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_langfuse_uses_garage_compatible_s3_endpoints",
-      "target": "ai_observability_monitoring_spec_scenario_browser_accesses_media",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_browser_accesses_media"
     },
     {
       "relation": "contains",
@@ -309779,9 +309779,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_langfuse_uses_garage_compatible_s3_endpoints",
-      "target": "ai_observability_monitoring_spec_scenario_garage_is_unavailable",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_garage_is_unavailable"
     },
     {
       "relation": "contains",
@@ -309789,9 +309789,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_langfuse_uses_garage_compatible_s3_endpoints",
-      "target": "ai_observability_monitoring_spec_scenario_langfuse_stores_event_objects",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_langfuse_stores_event_objects"
     },
     {
       "relation": "contains",
@@ -309799,9 +309799,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover",
-      "target": "ai_observability_monitoring_spec_scenario_operator_cuts_over_langfuse",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_operator_cuts_over_langfuse"
     },
     {
       "relation": "contains",
@@ -309809,9 +309809,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover",
-      "target": "ai_observability_monitoring_spec_scenario_operator_prepares_migration",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_operator_prepares_migration"
     },
     {
       "relation": "contains",
@@ -309819,9 +309819,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover",
-      "target": "ai_observability_monitoring_spec_scenario_operator_rolls_back",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_operator_rolls_back"
     },
     {
       "relation": "contains",
@@ -309829,9 +309829,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_existing_langfuse_objects_can_be_migrated_without_destructive_cutover",
-      "target": "ai_observability_monitoring_spec_scenario_operator_verifies_copied_objects",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_operator_verifies_copied_objects"
     },
     {
       "relation": "contains",
@@ -309839,9 +309839,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ai_observability_monitoring_spec_requirement_garage_adoption_is_scoped_to_langfuse",
-      "target": "ai_observability_monitoring_spec_scenario_graphrag_document_is_uploaded",
-      "confidence_score": 1.0
+      "target": "ai_observability_monitoring_spec_scenario_graphrag_document_is_uploaded"
     },
     {
       "relation": "contains",
@@ -309849,9 +309849,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/tasks.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_tasks",
-      "target": "replace_langfuse_minio_with_garage_tasks_1_garage_deployment",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_tasks_1_garage_deployment"
     },
     {
       "relation": "contains",
@@ -309859,9 +309859,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/tasks.md",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_tasks",
-      "target": "replace_langfuse_minio_with_garage_tasks_2_langfuse_integration",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_tasks_2_langfuse_integration"
     },
     {
       "relation": "contains",
@@ -309869,9 +309869,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/tasks.md",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_tasks",
-      "target": "replace_langfuse_minio_with_garage_tasks_3_migration_and_operations_documentation",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_tasks_3_migration_and_operations_documentation"
     },
     {
       "relation": "contains",
@@ -309879,9 +309879,9 @@
       "source_file": "openspec/changes/replace-langfuse-minio-with-garage/tasks.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "replace_langfuse_minio_with_garage_tasks",
-      "target": "replace_langfuse_minio_with_garage_tasks_4_verification",
-      "confidence_score": 1.0
+      "target": "replace_langfuse_minio_with_garage_tasks_4_verification"
     },
     {
       "relation": "contains",
@@ -312229,9 +312229,9 @@
       "source_file": "openspec/specs/documentation-alignment/spec.md",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "documentation_alignment_spec_requirements",
-      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence",
-      "confidence_score": 1.0
+      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence"
     },
     {
       "relation": "contains",
@@ -312329,9 +312329,9 @@
       "source_file": "openspec/specs/documentation-alignment/spec.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_contributor_and_operator_guidance_reflects_the_final_persistence_topology",
-      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_disposable_graphrag_state_is_reset",
-      "confidence_score": 1.0
+      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_disposable_graphrag_state_is_reset"
     },
     {
       "relation": "contains",
@@ -312349,9 +312349,9 @@
       "source_file": "openspec/specs/documentation-alignment/spec.md",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_requirement_persistence_guidance_describes_effective_datasource_precedence",
-      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_local_startup_guidance_is_followed",
-      "confidence_score": 1.0
+      "target": "openspec_specs_documentation_alignment_spec_md_documentation_alignment_spec_scenario_local_startup_guidance_is_followed"
     },
     {
       "relation": "contains",
@@ -315149,9 +315149,9 @@
       "source_file": "openspec/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_cutover_resets_only_graphrag_owned_state",
-      "target": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_is_present",
-      "confidence_score": 1.0
+      "target": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_existing_graphrag_data_is_present"
     },
     {
       "relation": "contains",
@@ -315169,9 +315169,9 @@
       "source_file": "openspec/specs/polyglot-persistence-cutover/spec.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_requirement_final_startup_is_verified_across_both_stores",
-      "target": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_fresh_start_smoke_verification_succeeds",
-      "confidence_score": 1.0
+      "target": "openspec_specs_polyglot_persistence_cutover_spec_md_polyglot_persistence_cutover_spec_scenario_fresh_start_smoke_verification_succeeds"
     },
     {
       "relation": "contains",
@@ -320599,9 +320599,9 @@
       "source_file": "openspec/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "shared_postgresql_isolation_spec_requirements",
-      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "confidence_score": 1.0
+      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership"
     },
     {
       "relation": "contains",
@@ -320699,9 +320699,9 @@
       "source_file": "openspec/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_compose_metadata_describes_langfuse_ownership",
-      "confidence_score": 1.0
+      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_compose_metadata_describes_langfuse_ownership"
     },
     {
       "relation": "contains",
@@ -320709,9 +320709,9 @@
       "source_file": "openspec/specs/shared-postgresql-isolation/spec.md",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_requirement_compose_lifecycle_cannot_override_graphrag_datasource_ownership",
-      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_local_application_starts_with_compose_support_enabled",
-      "confidence_score": 1.0
+      "target": "openspec_specs_shared_postgresql_isolation_spec_md_shared_postgresql_isolation_spec_scenario_local_application_starts_with_compose_support_enabled"
     },
     {
       "relation": "contains",
@@ -320929,9 +320929,9 @@
       "source_file": "openspec/specs/test-coverage-governance/spec.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_coverage_governance_spec_requirements",
-      "target": "openspec_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage",
-      "confidence_score": 1.0
+      "target": "openspec_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage"
     },
     {
       "relation": "contains",
@@ -321119,9 +321119,9 @@
       "source_file": "openspec/specs/test-coverage-governance/spec.md",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "openspec_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_requirement_datasource_precedence_has_focused_configuration_coverage",
-      "target": "openspec_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_scenario_compose_routing_regression_test_runs",
-      "confidence_score": 1.0
+      "target": "openspec_specs_test_coverage_governance_spec_md_test_coverage_governance_spec_scenario_compose_routing_regression_test_runs"
     },
     {
       "relation": "references",

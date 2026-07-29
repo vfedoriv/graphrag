@@ -980,18 +980,18 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1785355138.5526505,
-    "ast_hash": "071e6d7a74e02acc477e7d9b1d4d50fc",
+    "mtime": 1785358666.6276233,
+    "ast_hash": "28f7bae4ba834e36475eebdc1649572a",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785355138.686653,
-    "ast_hash": "9e408950720158246403cb07e3b26edc",
+    "mtime": 1785358666.7986264,
+    "ast_hash": "4409b2cf06fbb12c7fab3d52185141ab",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785355138.417648,
-    "ast_hash": "903e39fc5e4e7f9ef263ad9a49df794b",
+    "mtime": 1785358448.269549,
+    "ast_hash": "40d54b0a2099fe8023fdb606972aec29",
     "semantic_hash": ""
   },
   "compose.yaml": {
@@ -1755,8 +1755,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/ai-observability-monitoring/spec.md": {
-    "mtime": 1785066150.2485769,
-    "ast_hash": "cc8d93db3d5a68424dedbf950d6867b8",
+    "mtime": 1785358514.2308123,
+    "ast_hash": "b8fe51e064c9635f32ea047ffdfccaea",
     "semantic_hash": ""
   },
   "openspec/specs/cypher-validation/spec.md": {
@@ -5184,34 +5184,14 @@
     "ast_hash": "18edb3c7b6c723c636ed182d6ced046b",
     "semantic_hash": ""
   },
-  "scripts/migrate-langfuse-minio-to-garage.sh": {
-    "mtime": 1785354972.323582,
-    "ast_hash": "13fb56ceeb22163a856a2e7da2b9f160",
-    "semantic_hash": ""
-  },
   "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java": {
-    "mtime": 1785356826.247228,
-    "ast_hash": "b7d6ece3f3c35518323800baadd8629a",
+    "mtime": 1785358484.9192817,
+    "ast_hash": "b6c73a6ee33c02eafc1e16386494e548",
     "semantic_hash": ""
   },
   "compose.garage-smoke.yaml": {
     "mtime": 1785356812.5079174,
     "ast_hash": "0475b8a3dcbaeb2665b7f03376197e67",
-    "semantic_hash": ""
-  },
-  "compose.langfuse-migration.yaml": {
-    "mtime": 1785356812.6789215,
-    "ast_hash": "212273cfb7790a7291cc7c550d2291b9",
-    "semantic_hash": ""
-  },
-  "compose.langfuse-minio-rollback.yaml": {
-    "mtime": 1785354972.21158,
-    "ast_hash": "70f8cd36f9859666be59135f435b1ce2",
-    "semantic_hash": ""
-  },
-  "docs/langfuse-minio-to-garage.md": {
-    "mtime": 1785354972.488585,
-    "ast_hash": "703b6530c55c1b310e7d179e2243a416",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/.openspec.yaml": {
@@ -5254,29 +5234,54 @@
     "ast_hash": "cebe74072af28a8659da81585404f645",
     "semantic_hash": ""
   },
-  "openspec/changes/replace-langfuse-minio-with-garage/.openspec.yaml": {
+  "openspec/changes/archive/2026-07-29-replace-langfuse-minio-with-garage/.openspec.yaml": {
     "mtime": 1785354251.1670268,
     "ast_hash": "4b73e626833ad537213df5cd1bfa63a5",
     "semantic_hash": ""
   },
-  "openspec/changes/replace-langfuse-minio-with-garage/design.md": {
+  "openspec/changes/archive/2026-07-29-replace-langfuse-minio-with-garage/design.md": {
     "mtime": 1785354391.1609147,
     "ast_hash": "b827d0e68a317eba19c6b9215c4d2e74",
     "semantic_hash": ""
   },
-  "openspec/changes/replace-langfuse-minio-with-garage/proposal.md": {
+  "openspec/changes/archive/2026-07-29-replace-langfuse-minio-with-garage/proposal.md": {
     "mtime": 1785354282.0086803,
     "ast_hash": "a284c3c7cdc889ac688723d2303538ac",
     "semantic_hash": ""
   },
-  "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md": {
+  "openspec/changes/archive/2026-07-29-replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md": {
     "mtime": 1785354390.926911,
     "ast_hash": "bc25c20f1e177b83a16d28d61baa8eb1",
     "semantic_hash": ""
   },
-  "openspec/changes/replace-langfuse-minio-with-garage/tasks.md": {
+  "openspec/changes/archive/2026-07-29-replace-langfuse-minio-with-garage/tasks.md": {
     "mtime": 1785355887.02211,
     "ast_hash": "7a6f8147d36cf0ebb79fe3d15c18b9e5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/remove-minio-migration-assets/.openspec.yaml": {
+    "mtime": 1785358070.1037295,
+    "ast_hash": "4b73e626833ad537213df5cd1bfa63a5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/remove-minio-migration-assets/design.md": {
+    "mtime": 1785358200.806436,
+    "ast_hash": "5e6259af923a9db2070c9e3e6d6f4d06",
+    "semantic_hash": ""
+  },
+  "openspec/changes/remove-minio-migration-assets/proposal.md": {
+    "mtime": 1785358200.6714334,
+    "ast_hash": "ba4cbcb52ec51e47814db6c34f60e7fc",
+    "semantic_hash": ""
+  },
+  "openspec/changes/remove-minio-migration-assets/specs/ai-observability-monitoring/spec.md": {
+    "mtime": 1785358160.4696014,
+    "ast_hash": "4eec88ca994298627f1c6b99f2d42a5b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/remove-minio-migration-assets/tasks.md": {
+    "mtime": 1785358644.4102085,
+    "ast_hash": "7c4a111da667ec4e5ee45dbf5d37abdd",
     "semantic_hash": ""
   }
 }

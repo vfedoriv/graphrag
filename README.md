@@ -448,12 +448,9 @@ persistence across container recreation:
 ./scripts/garage-smoke-test.sh
 ```
 
-For existing local Langfuse installations, follow the non-destructive
-[MinIO-to-Garage migration runbook](docs/langfuse-minio-to-garage.md). It
-documents backup prerequisites, initial and quiesced delta copies, inventory
-and byte-content verification, cutover, acceptance checks, rollback, and
-delayed MinIO retirement. Never delete the old MinIO volume during the rollback
-window.
+Back up both `langfuse_garage_meta` and `langfuse_garage_data` consistently,
+and regularly verify that the pair can be restored before relying on those
+backups.
 
 Run the app with Langfuse tracing enabled:
 
@@ -793,7 +790,7 @@ Security and access:
 
 Data and storage:
 
-- Move binary storage from local filesystem to durable object storage (S3/MinIO/GCS/Azure Blob).
+- Move binary storage from local filesystem to durable object storage (S3-compatible/GCS/Azure Blob).
 - Define retention policy for raw documents, chunks, extraction runs, and query logs.
 - Configure Neo4j backup/restore procedures and regularly verify restore drills.
 - Plan schema migration/version activation workflow for production knowledge bases.
