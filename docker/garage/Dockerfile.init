@@ -1,0 +1,8 @@
+ARG GARAGE_IMAGE=dxflrs/garage:v2.3.0
+FROM ${GARAGE_IMAGE} AS garage
+
+FROM alpine:3.22.1
+RUN apk add --no-cache ca-certificates
+COPY --from=garage /garage /usr/local/bin/garage
+COPY init.sh /usr/local/bin/garage-init
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/garage-init"]

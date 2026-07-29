@@ -25,8 +25,10 @@ services:
         condition: service_healthy
       langfuse-redis:
         condition: service_healthy
-      langfuse-minio:
+      langfuse-garage:
         condition: service_healthy
+      langfuse-garage-init:
+        condition: service_completed_successfully
     ports:
       - '127.0.0.1:3030:3030'
     environment: &langfuse-env
@@ -44,16 +46,16 @@ services:
       REDIS_PORT: '6379'
       REDIS_AUTH: '${LANGFUSE_REDIS_AUTH:-langfuse-local-redis}'
       LANGFUSE_S3_EVENT_UPLOAD_BUCKET: 'langfuse'
-      LANGFUSE_S3_EVENT_UPLOAD_REGION: 'auto'
-      LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: '${LANGFUSE_MINIO_ROOT_USER:-minio}'
-      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: '${LANGFUSE_MINIO_ROOT_PASSWORD:-minio-local-secret}'
-      LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: 'http://langfuse-minio:9000'
+      LANGFUSE_S3_EVENT_UPLOAD_REGION: '${LANGFUSE_GARAGE_REGION:-garage}'
+      LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'
+      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'
+      LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: 'http://langfuse-garage:3900'
       LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: 'true'
       LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: 'langfuse'
-      LANGFUSE_S3_MEDIA_UPLOAD_REGION: 'auto'
-      LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: '${LANGFUSE_MINIO_ROOT_USER:-minio}'
-      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: '${LANGFUSE_MINIO_ROOT_PASSWORD:-minio-local-secret}'
-      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: 'http://localhost:9090'
+      LANGFUSE_S3_MEDIA_UPLOAD_REGION: '${LANGFUSE_GARAGE_REGION:-garage}'
+      LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'
+      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: '${LANGFUSE_GARAGE_MEDIA_ENDPOINT:-http://localhost:9090}'
       LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: 'true'
       LANGFUSE_INIT_ORG_ID: '${LANGFUSE_INIT_ORG_ID:-graphrag-local-org}'
       LANGFUSE_INIT_ORG_NAME: '${LANGFUSE_INIT_ORG_NAME:-GraphRAG Local}'
@@ -76,8 +78,10 @@ services:
         condition: service_healthy
       langfuse-redis:
         condition: service_healthy
-      langfuse-minio:
+      langfuse-garage:
         condition: service_healthy
+      langfuse-garage-init:
+        condition: service_completed_successfully
     ports:
       - '3000:3000'
     environment:
@@ -140,26 +144,50 @@ services:
       timeout: 10s
       retries: 10
 
-  langfuse-minio:
-    image: 'minio/minio:latest'
+  langfuse-garage:
+    image: 'dxflrs/garage:v2.3.0'
     profiles: ['langfuse']
     restart: unless-stopped
-    entrypoint: 'sh'
-    command: '-c "mkdir -p /data/langfuse && minio server --address :9000 --console-address :9001 /data"'
     environment:
-      MINIO_ROOT_USER: '${LANGFUSE_MINIO_ROOT_USER:-minio}'
-      MINIO_ROOT_PASSWORD: '${LANGFUSE_MINIO_ROOT_PASSWORD:-minio-local-secret}'
+      GARAGE_RPC_SECRET: '${LANGFUSE_GARAGE_RPC_SECRET:-0000000000000000000000000000000000000000000000000000000000000000}'
+      GARAGE_ADMIN_TOKEN: '${LANGFUSE_GARAGE_ADMIN_TOKEN:-garage-local-admin-token}'
+      GARAGE_METRICS_TOKEN: '${LANGFUSE_GARAGE_METRICS_TOKEN:-garage-local-metrics-token}'
     ports:
-      - '9090:9000'
-      - '127.0.0.1:9091:9001'
+      - '127.0.0.1:9090:3900'
     volumes:
-      - 'langfuse_minio_data:/data'
+      - './docker/garage/garage.toml:/etc/garage.toml:ro'
+      - 'langfuse_garage_meta:/var/lib/garage/meta'
+      - 'langfuse_garage_data:/var/lib/garage/data'
     healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
+      test: ['CMD', '/garage', 'status']
       interval: 1s
       timeout: 5s
-      retries: 5
+      retries: 30
       start_period: 1s
+
+  langfuse-garage-init:
+    build:
+      context: './docker/garage'
+      dockerfile: 'Dockerfile.init'
+      args:
+        GARAGE_IMAGE: 'dxflrs/garage:v2.3.0'
+    profiles: ['langfuse']
+    depends_on:
+      langfuse-garage:
+        condition: service_healthy
+    restart: 'no'
+    environment:
+      GARAGE_RPC_SECRET: '${LANGFUSE_GARAGE_RPC_SECRET:-0000000000000000000000000000000000000000000000000000000000000000}'
+      GARAGE_ADMIN_TOKEN: '${LANGFUSE_GARAGE_ADMIN_TOKEN:-garage-local-admin-token}'
+      LANGFUSE_GARAGE_ACCESS_KEY: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'
+      LANGFUSE_GARAGE_SECRET_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'
+      LANGFUSE_GARAGE_BUCKET: 'langfuse'
+      LANGFUSE_GARAGE_KEY_NAME: 'langfuse-local'
+      LANGFUSE_GARAGE_NODE_ZONE: '${LANGFUSE_GARAGE_NODE_ZONE:-local}'
+      LANGFUSE_GARAGE_NODE_CAPACITY: '${LANGFUSE_GARAGE_NODE_CAPACITY:-10G}'
+    volumes:
+      - './docker/garage/garage.toml:/etc/garage.toml:ro'
+      - 'langfuse_garage_meta:/var/lib/garage/meta'
 
 volumes:
   neo4j_data:
@@ -171,4 +199,5 @@ volumes:
   langfuse_postgres_data:
   langfuse_clickhouse_data:
   langfuse_clickhouse_logs:
-  langfuse_minio_data:
+  langfuse_garage_meta:
+  langfuse_garage_data:

@@ -980,23 +980,23 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1785310821.0857813,
-    "ast_hash": "5d35e23a95429ff212ef460446324bc0",
+    "mtime": 1785355138.5526505,
+    "ast_hash": "071e6d7a74e02acc477e7d9b1d4d50fc",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785310821.2067735,
-    "ast_hash": "0ae9995e32ac8af206924967cf50f7d8",
+    "mtime": 1785355138.686653,
+    "ast_hash": "9e408950720158246403cb07e3b26edc",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785311055.6852493,
-    "ast_hash": "292e75bf664091150d3a8938062ce205",
+    "mtime": 1785355138.417648,
+    "ast_hash": "903e39fc5e4e7f9ef263ad9a49df794b",
     "semantic_hash": ""
   },
   "compose.yaml": {
-    "mtime": 1785310751.4263735,
-    "ast_hash": "509683007f441326067cac7e5fd90eb0",
+    "mtime": 1785356812.3299134,
+    "ast_hash": "93952f74d7a3e2c90af59ee55a859644",
     "semantic_hash": ""
   },
   "docs/ONBOARDING.md": {
@@ -1770,8 +1770,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/documentation-alignment/spec.md": {
-    "mtime": 1785307642.297936,
-    "ast_hash": "a0110cce9d1db3ade0f5da0e94f01b54",
+    "mtime": 1785312076.5842535,
+    "ast_hash": "e1d4cc55bae51dcfbeabf57d7650334b",
     "semantic_hash": ""
   },
   "openspec/specs/extraction-run-cleanup/spec.md": {
@@ -1845,8 +1845,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/test-coverage-governance/spec.md": {
-    "mtime": 1785307642.844953,
-    "ast_hash": "77fccb4658a8f0e1106f90d93ce5e33e",
+    "mtime": 1785312076.9522562,
+    "ast_hash": "ccd288cae88eebe2cbdb5c31121bb349",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupService.java": {
@@ -3100,8 +3100,8 @@
     "semantic_hash": "193ef2c600a2eb4e040ace87ec1d9d66"
   },
   "src/test/java/io/github/vfedoriv/graphrag/logging/DocumentationAlignmentTest.java": {
-    "mtime": 1785311005.5621727,
-    "ast_hash": "da657a8c996d5a8c422eccb9843dc633",
+    "mtime": 1785342680.5934267,
+    "ast_hash": "bd86dc56af8d6a239ee7f08b8230cd7d",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/logging/LogMetadataTest.java": {
@@ -4425,8 +4425,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/shared-postgresql-isolation/spec.md": {
-    "mtime": 1785263700.9914389,
-    "ast_hash": "42c70fb7ae1ae0cf7899d9db081dc85e",
+    "mtime": 1785312076.8122551,
+    "ast_hash": "863f98f4396569db1d5870db393c5d78",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalKnowledgeBaseRepository.java": {
@@ -5079,11 +5079,6 @@
     "ast_hash": "2948548ee3feb0dc7ae64ad9cb59a830",
     "semantic_hash": ""
   },
-  "docs/PERSISTENCE_CUTOVER.md": {
-    "mtime": 1785310820.7678018,
-    "ast_hash": "aa78303c0dd560daed0f3f08e2ef4be7",
-    "semantic_hash": ""
-  },
   "openspec/changes/archive/2026-07-29-migrate-schema-publication-and-reprocessing-to-postgresql/.openspec.yaml": {
     "mtime": 1785261439.6729622,
     "ast_hash": "04ddb19fc5ce2983d692f2401153450f",
@@ -5174,49 +5169,114 @@
     "ast_hash": "8657d4bf7e18c14942d61fde833901e2",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/.openspec.yaml": {
+  "openspec/specs/polyglot-persistence-cutover/spec.md": {
+    "mtime": 1785312076.6822543,
+    "ast_hash": "fd2b75cf9c96fd408fa14a44926d4416",
+    "semantic_hash": ""
+  },
+  "docker/garage/init.sh": {
+    "mtime": 1785354799.333494,
+    "ast_hash": "5d58dc4923b21850b58ed6bcffb74cbc",
+    "semantic_hash": ""
+  },
+  "scripts/garage-smoke-test.sh": {
+    "mtime": 1785355026.564574,
+    "ast_hash": "18edb3c7b6c723c636ed182d6ced046b",
+    "semantic_hash": ""
+  },
+  "scripts/migrate-langfuse-minio-to-garage.sh": {
+    "mtime": 1785354972.323582,
+    "ast_hash": "13fb56ceeb22163a856a2e7da2b9f160",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/config/LangfuseGarageComposeConfigurationTest.java": {
+    "mtime": 1785356826.247228,
+    "ast_hash": "b7d6ece3f3c35518323800baadd8629a",
+    "semantic_hash": ""
+  },
+  "compose.garage-smoke.yaml": {
+    "mtime": 1785356812.5079174,
+    "ast_hash": "0475b8a3dcbaeb2665b7f03376197e67",
+    "semantic_hash": ""
+  },
+  "compose.langfuse-migration.yaml": {
+    "mtime": 1785356812.6789215,
+    "ast_hash": "212273cfb7790a7291cc7c550d2291b9",
+    "semantic_hash": ""
+  },
+  "compose.langfuse-minio-rollback.yaml": {
+    "mtime": 1785354972.21158,
+    "ast_hash": "70f8cd36f9859666be59135f435b1ce2",
+    "semantic_hash": ""
+  },
+  "docs/langfuse-minio-to-garage.md": {
+    "mtime": 1785354972.488585,
+    "ast_hash": "703b6530c55c1b310e7d179e2243a416",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/.openspec.yaml": {
     "mtime": 1785309047.6059985,
     "ast_hash": "4b73e626833ad537213df5cd1bfa63a5",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/design.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/design.md": {
     "mtime": 1785310409.2366378,
     "ast_hash": "7619cdcc84aa3ae085e2a929eeb3b786",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/proposal.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/proposal.md": {
     "mtime": 1785310350.0503204,
     "ast_hash": "937e17e11f7f7cc497a7c9c73db8c07e",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/documentation-alignment/spec.md": {
     "mtime": 1785310455.2196662,
     "ast_hash": "2cf80679e4966da14b438af3b516c675",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/polyglot-persistence-cutover/spec.md": {
     "mtime": 1785310455.517673,
     "ast_hash": "ca3749cfa004b1e573e3c3eca1b44b73",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/shared-postgresql-isolation/spec.md": {
     "mtime": 1785310455.7106771,
     "ast_hash": "57217ebfcfd6d339a8a0bcb02510620a",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/specs/test-coverage-governance/spec.md": {
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/specs/test-coverage-governance/spec.md": {
     "mtime": 1785310456.0016837,
     "ast_hash": "8b00164c3a30393b968c91f4e5ddfb8f",
     "semantic_hash": ""
   },
-  "openspec/changes/correct-graphrag-postgres-routing/tasks.md": {
-    "mtime": 1785311362.3400085,
-    "ast_hash": "4c75681095314834589b4d913ea89e2f",
+  "openspec/changes/archive/2026-07-29-correct-graphrag-postgres-routing/tasks.md": {
+    "mtime": 1785311409.4284265,
+    "ast_hash": "cebe74072af28a8659da81585404f645",
     "semantic_hash": ""
   },
-  "openspec/specs/polyglot-persistence-cutover/spec.md": {
-    "mtime": 1785307642.6459467,
-    "ast_hash": "7421913dde6a83b69cb89e95b0cd9398",
+  "openspec/changes/replace-langfuse-minio-with-garage/.openspec.yaml": {
+    "mtime": 1785354251.1670268,
+    "ast_hash": "4b73e626833ad537213df5cd1bfa63a5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/replace-langfuse-minio-with-garage/design.md": {
+    "mtime": 1785354391.1609147,
+    "ast_hash": "b827d0e68a317eba19c6b9215c4d2e74",
+    "semantic_hash": ""
+  },
+  "openspec/changes/replace-langfuse-minio-with-garage/proposal.md": {
+    "mtime": 1785354282.0086803,
+    "ast_hash": "a284c3c7cdc889ac688723d2303538ac",
+    "semantic_hash": ""
+  },
+  "openspec/changes/replace-langfuse-minio-with-garage/specs/ai-observability-monitoring/spec.md": {
+    "mtime": 1785354390.926911,
+    "ast_hash": "bc25c20f1e177b83a16d28d61baa8eb1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/replace-langfuse-minio-with-garage/tasks.md": {
+    "mtime": 1785355887.02211,
+    "ast_hash": "7a6f8147d36cf0ebb79fe3d15c18b9e5",
     "semantic_hash": ""
   }
 }

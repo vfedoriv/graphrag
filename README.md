@@ -416,7 +416,19 @@ Start Neo4j plus the local Langfuse stack:
 docker compose --profile langfuse up -d
 ```
 
-The `langfuse` profile starts Langfuse web/worker, Postgres, ClickHouse, Redis, and MinIO. Without the profile, Compose still starts only Neo4j.
+The `langfuse` profile starts Langfuse web/worker, Postgres, ClickHouse, Redis,
+and pinned Garage `v2.3.0` object storage. Garage uses separate persistent
+metadata and object-data volumes and an idempotent initializer; Langfuse does
+not start until Garage is healthy and its `langfuse` bucket and scoped key are
+ready. Without the profile, Garage and the other profile-gated services remain
+stopped.
+
+The local Garage S3 API is published at `http://localhost:9090`. Langfuse event
+traffic uses the internal Compose endpoint, while presigned media URLs use the
+host-reachable endpoint controlled by `LANGFUSE_GARAGE_MEDIA_ENDPOINT`. Garage
+region, credentials, RPC/admin secrets, zone, and logical capacity can be
+overridden with `LANGFUSE_GARAGE_*` variables. Repository defaults are for
+local development only.
 
 Local Langfuse UI:
 
@@ -428,6 +440,20 @@ Local Langfuse UI:
 - Spring Boot OTLP HTTP traces endpoint: `http://localhost:3000/api/public/otel/v1/traces`
 
 These credentials are auto-created from Compose environment variables and are local-development defaults only. Do not reuse them in shared or production environments.
+
+Verify Garage initialization, bucket authorization, object operations, and
+persistence across container recreation:
+
+```bash
+./scripts/garage-smoke-test.sh
+```
+
+For existing local Langfuse installations, follow the non-destructive
+[MinIO-to-Garage migration runbook](docs/langfuse-minio-to-garage.md). It
+documents backup prerequisites, initial and quiesced delta copies, inventory
+and byte-content verification, cutover, acceptance checks, rollback, and
+delayed MinIO retirement. Never delete the old MinIO volume during the rollback
+window.
 
 Run the app with Langfuse tracing enabled:
 
@@ -469,6 +495,11 @@ curl -u pk-lf-local-dev:sk-lf-local-dev \
 ```
 
 The trace response should include an HTTP parent trace with observations such as `graphrag.ai.model` and `chat <model>`. The AI span includes stable attributes like `ai.workflow`, `ai.operation`, `ai.provider.profile`, `ai.model.name`, `ai.status`, and `ai.content_capture`; the Spring AI generation observation includes token usage when the provider returns it.
+
+After Garage cutover, also upload and download a media attachment from the
+Langfuse UI. Inspect the presigned request in browser developer tools and
+confirm it uses the host-reachable `localhost:9090` endpoint rather than the
+Compose-only `langfuse-garage` hostname.
 
 ### Content Capture
 

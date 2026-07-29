@@ -43,6 +43,9 @@ docker compose exec -T langfuse-postgres bash /docker-entrypoint-initdb.d/20-ini
 
 # Start Neo4j + local Langfuse stack
 docker compose --profile langfuse up -d
+
+# Garage object-operation and persistence smoke test
+./scripts/garage-smoke-test.sh
 ```
 
 Neo4j default credentials (dev): `neo4j / notverysecret`, ports `7474` (HTTP) and `7687` (Bolt).
@@ -148,13 +151,20 @@ PostgreSQL owns profiles, settings, knowledge bases, schemas, documents, runs,
 draft workflows, publications, and reprocessing. Neo4j owns only chunks/embeddings,
 schema-defined facts, evidence, provenance, direct scope, and graph-native
 relationships. Local Langfuse uses a separate `langfuse` database and role on the
-shared PostgreSQL server.
+shared PostgreSQL server. Langfuse event and media objects use pinned Garage
+`v2.3.0` with separate persistent metadata and data volumes, an idempotent
+initializer, an internal event endpoint, and a host-reachable media endpoint.
+GraphRAG document and schema-draft binaries remain on the configured local
+filesystem.
 
 The `langfuse-postgres` service is ignored for Spring Boot service-connection
 discovery, so explicit
 `GRAPHRAG_POSTGRES_*` settings route GraphRAG to `graphrag / graphrag / app`.
 Never run `docker compose down -v`, delete the `langfuse_postgres_data` volume, or
-drop the `langfuse` database.
+drop the `langfuse` database. Preserve `langfuse_garage_meta`,
+`langfuse_garage_data`, and the former MinIO volume during the rollback window.
+Use `docs/langfuse-minio-to-garage.md` for non-destructive migration,
+verification, cutover, rollback, and delayed retirement.
 
 ## Key Design Decisions
 

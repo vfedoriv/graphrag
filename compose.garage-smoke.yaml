@@ -1,0 +1,17 @@
+services:
+  langfuse-garage-smoke:
+    image: 'rclone/rclone:1.74.4'
+    profiles: ['garage-smoke']
+    depends_on:
+      langfuse-garage:
+        condition: service_healthy
+      langfuse-garage-init:
+        condition: service_completed_successfully
+    environment:
+      RCLONE_CONFIG_GARAGE_TYPE: 's3'
+      RCLONE_CONFIG_GARAGE_PROVIDER: 'Other'
+      RCLONE_CONFIG_GARAGE_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'
+      RCLONE_CONFIG_GARAGE_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'
+      RCLONE_CONFIG_GARAGE_ENDPOINT: 'http://langfuse-garage:3900'
+      RCLONE_CONFIG_GARAGE_REGION: '${LANGFUSE_GARAGE_REGION:-garage}'
+      RCLONE_CONFIG_GARAGE_FORCE_PATH_STYLE: 'true'

@@ -1,0 +1,51 @@
+services:
+  langfuse-minio-migration:
+    image: '${LANGFUSE_MIGRATION_MINIO_IMAGE:-minio/minio:latest}'
+    profiles: ['langfuse-migration']
+    restart: unless-stopped
+    command: 'server --address :9000 --console-address :9001 /data'
+    environment:
+      MINIO_ROOT_USER: '${LANGFUSE_MIGRATION_MINIO_ACCESS_KEY:-minio}'
+      MINIO_ROOT_PASSWORD: '${LANGFUSE_MIGRATION_MINIO_SECRET_KEY:-minio-local-secret}'
+    ports:
+      - '127.0.0.1:9190:9000'
+      - '127.0.0.1:9191:9001'
+    volumes:
+      - 'langfuse_minio_source:/data'
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 1s
+      timeout: 5s
+      retries: 30
+      start_period: 1s
+
+  langfuse-object-migrator:
+    image: 'rclone/rclone:1.74.4'
+    profiles: ['langfuse-migration']
+    depends_on:
+      langfuse-minio-migration:
+        condition: service_healthy
+      langfuse-garage:
+        condition: service_healthy
+      langfuse-garage-init:
+        condition: service_completed_successfully
+    environment:
+      RCLONE_CONFIG_MINIO_TYPE: 's3'
+      RCLONE_CONFIG_MINIO_PROVIDER: 'Minio'
+      RCLONE_CONFIG_MINIO_ACCESS_KEY_ID: '${LANGFUSE_MIGRATION_MINIO_ACCESS_KEY:-minio}'
+      RCLONE_CONFIG_MINIO_SECRET_ACCESS_KEY: '${LANGFUSE_MIGRATION_MINIO_SECRET_KEY:-minio-local-secret}'
+      RCLONE_CONFIG_MINIO_ENDPOINT: 'http://langfuse-minio-migration:9000'
+      RCLONE_CONFIG_MINIO_REGION: 'auto'
+      RCLONE_CONFIG_MINIO_FORCE_PATH_STYLE: 'true'
+      RCLONE_CONFIG_GARAGE_TYPE: 's3'
+      RCLONE_CONFIG_GARAGE_PROVIDER: 'Other'
+      RCLONE_CONFIG_GARAGE_ACCESS_KEY_ID: '${LANGFUSE_GARAGE_ACCESS_KEY:-garage-local}'
+      RCLONE_CONFIG_GARAGE_SECRET_ACCESS_KEY: '${LANGFUSE_GARAGE_SECRET_KEY:-garage-local-secret}'
+      RCLONE_CONFIG_GARAGE_ENDPOINT: 'http://langfuse-garage:3900'
+      RCLONE_CONFIG_GARAGE_REGION: '${LANGFUSE_GARAGE_REGION:-garage}'
+      RCLONE_CONFIG_GARAGE_FORCE_PATH_STYLE: 'true'
+
+volumes:
+  langfuse_minio_source:
+    external: true
+    name: '${LANGFUSE_MINIO_VOLUME_NAME:-graphrag_langfuse_minio_data}'
