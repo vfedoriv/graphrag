@@ -86,6 +86,8 @@ services:
   langfuse-postgres:
     image: 'postgres:17'
     restart: unless-stopped
+    labels:
+      org.springframework.boot.ignore: true
     environment:
       POSTGRES_USER: 'langfuse'
       POSTGRES_PASSWORD: '${LANGFUSE_POSTGRES_PASSWORD:-langfuse-local-postgres}'

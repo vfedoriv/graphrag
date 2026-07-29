@@ -50,13 +50,23 @@ The repository SHALL keep documented Java, Spring Boot, Spring AI, and LangChain
 - **THEN** it identifies conflicting shared stack/configuration facts before merge
 
 ### Requirement: Contributor and operator guidance reflects the final persistence topology
-The system documentation SHALL consistently describe PostgreSQL as required operational storage, Neo4j as graph-only storage, shared-server isolation, supported profiles, provisioning, startup, reset, backup, restore, and monitoring commands.
+The system documentation SHALL consistently describe PostgreSQL as required operational storage, Neo4j as graph-only storage, shared-server isolation, supported profiles, provisioning, startup, and the current reset-only fresh-start commands.
 
 #### Scenario: Shared guidance is updated
-- **WHEN** persistence cutover documentation is changed
+- **WHEN** persistence startup or reset documentation is changed
 - **THEN** overlapping facts in `README.md`, `AGENTS.md`, and `CLAUDE.md` are synchronized in the same change
-- **AND** commands use the Maven Wrapper and safe database-scoped operations
+- **AND** commands use the Maven Wrapper and the implemented provisioning path
 
-#### Scenario: Destructive operations are documented
-- **WHEN** the reset procedure names resources to recreate
-- **THEN** it explicitly prohibits deleting the shared PostgreSQL volume or dropping the `langfuse` database
+#### Scenario: Disposable GraphRAG state is reset
+- **WHEN** the one-time routing correction is documented
+- **THEN** guidance states that existing GraphRAG PostgreSQL and Neo4j data is intentionally discarded
+- **AND** does not require backup, restore, quarantine, or migration procedures
+- **AND** cleanup targets GraphRAG-owned state without deleting Langfuse-owned tables
+
+### Requirement: Persistence guidance describes effective datasource precedence
+Repository documentation SHALL explain that the `langfuse-postgres` Compose service is ignored for Spring Boot service-connection discovery and that local GraphRAG startup uses its explicit `GRAPHRAG_POSTGRES_*` datasource configuration.
+
+#### Scenario: Local startup guidance is followed
+- **WHEN** an operator provisions the empty GraphRAG database and starts the application
+- **THEN** the documented commands route GraphRAG to `graphrag / graphrag / app`
+- **AND** do not present Langfuse's bootstrap database as a GraphRAG datasource

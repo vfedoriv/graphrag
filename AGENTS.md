@@ -110,11 +110,13 @@ only chunks/embeddings, schema-defined facts, evidence, provenance, direct scope
 and graph-native relationships. The local Langfuse deployment shares the PostgreSQL
 server through a separate `langfuse` database and role.
 
-The final cutover is reset-only. Never run `docker compose down -v`, delete the
-`langfuse_postgres_data` volume, or drop/restore over the `langfuse` database.
-Use only database-scoped `pg_dump --dbname=graphrag` and
-`pg_restore --dbname=graphrag`. Full provisioning, reset, startup, smoke,
-rollback, and monitoring commands are in `docs/PERSISTENCE_CUTOVER.md`.
+The current correction is a one-time destructive fresh start that intentionally
+discards GraphRAG PostgreSQL and Neo4j state. The `langfuse-postgres` service is
+ignored for Spring Boot service-connection discovery, so explicit
+`GRAPHRAG_POSTGRES_*` settings route GraphRAG to `graphrag / graphrag / app`.
+Never run `docker compose down -v`, delete the `langfuse_postgres_data` volume, or
+drop the `langfuse` database. Exact GraphRAG-owned reset, provisioning, startup,
+and smoke-check commands are in `docs/PERSISTENCE_CUTOVER.md`.
 
 ## Docker and Testcontainers
 

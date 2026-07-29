@@ -150,11 +150,13 @@ schema-defined facts, evidence, provenance, direct scope, and graph-native
 relationships. Local Langfuse uses a separate `langfuse` database and role on the
 shared PostgreSQL server.
 
-The final cutover is reset-only. Never run `docker compose down -v`, delete the
-`langfuse_postgres_data` volume, or drop/restore over the `langfuse` database.
-Backups and restores must explicitly target `graphrag`. Follow
-`docs/PERSISTENCE_CUTOVER.md` for provisioning, startup, guarded reset, smoke
-verification, rollback, and monitoring.
+The current correction is a one-time destructive fresh start that intentionally
+discards GraphRAG PostgreSQL and Neo4j state. The `langfuse-postgres` service is
+ignored for Spring Boot service-connection discovery, so explicit
+`GRAPHRAG_POSTGRES_*` settings route GraphRAG to `graphrag / graphrag / app`.
+Never run `docker compose down -v`, delete the `langfuse_postgres_data` volume, or
+drop the `langfuse` database. Follow `docs/PERSISTENCE_CUTOVER.md` for the exact
+GraphRAG-owned reset, provisioning, startup, and smoke-check commands.
 
 ## Key Design Decisions
 

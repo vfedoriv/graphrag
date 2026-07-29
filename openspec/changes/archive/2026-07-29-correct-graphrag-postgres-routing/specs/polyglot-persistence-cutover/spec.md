@@ -1,9 +1,4 @@
-# polyglot-persistence-cutover Specification
-
-## Purpose
-Define the reset-only fresh-start and verification requirements for GraphRAG's final PostgreSQL and Neo4j persistence topology.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Cutover resets only GraphRAG-owned state
 The system SHALL provide a one-time reset procedure that discards and recreates GraphRAG's PostgreSQL database/schema and Neo4j data, removes the known GraphRAG-owned `langfuse.app` residue, and does not require preservation of existing GraphRAG data.
@@ -26,3 +21,11 @@ The cutover procedure MUST use the normal application health and repository test
 - **THEN** application health responds successfully
 - **AND** the normal deterministic test suite passes without external AI credentials
 - **AND** no recurring cutover verifier is required
+
+## REMOVED Requirements
+
+### Requirement: GraphRAG backups and restores are database-scoped
+
+**Reason**: The current environment is explicitly disposable and the routing correction starts from empty GraphRAG stores, so backup and restore procedures add unnecessary migration complexity.
+
+**Migration**: Discard existing GraphRAG state and follow the fresh-start reset procedure. Design a separate preservation workflow only if a future deployment requires retained data.

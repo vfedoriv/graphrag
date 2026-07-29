@@ -370,6 +370,12 @@ docker compose exec -T langfuse-postgres \
   bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
 ```
 
+The Langfuse PostgreSQL service is labeled `org.springframework.boot.ignore: true`
+so Spring Boot Compose support cannot replace GraphRAG's explicit
+`GRAPHRAG_POSTGRES_*` datasource. The local defaults use database `graphrag`, role
+`graphrag`, and schema `app`—the effective identity is
+`graphrag / graphrag / app`.
+
 2. Run the app (default profile):
 
 ```bash
@@ -496,11 +502,12 @@ On startup, predefined schemas from `src/main/resources/schemas/*.json` are load
 
 ## Persistence Cutover Operations
 
-The final PostgreSQL/Neo4j topology uses a reset-only cutover. It must never delete
-the shared PostgreSQL volume or modify the `langfuse` database. See
-[Polyglot Persistence Cutover](docs/PERSISTENCE_CUTOVER.md) for provisioning,
-startup order, database-scoped `pg_dump`/`pg_restore`, guarded reset, smoke checks,
-rollback, and shared-instance monitoring.
+The current PostgreSQL/Neo4j correction is a one-time destructive fresh start:
+existing GraphRAG state is intentionally discarded, including the known
+GraphRAG-owned `langfuse.app` residue, while Langfuse-owned tables and the shared
+PostgreSQL volume remain untouched. See
+[GraphRAG Persistence Fresh Start](docs/PERSISTENCE_CUTOVER.md) for the exact
+reset, provisioning, startup, and smoke-check commands.
 
 ## REST API
 
