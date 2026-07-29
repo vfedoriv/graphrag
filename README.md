@@ -500,15 +500,6 @@ Tests use `src/test/resources/logback-test.xml` to keep application warnings/err
 
 On startup, predefined schemas from `src/main/resources/schemas/*.json` are loaded into PostgreSQL (idempotent by schema name+version).
 
-## Persistence Cutover Operations
-
-The current PostgreSQL/Neo4j correction is a one-time destructive fresh start:
-existing GraphRAG state is intentionally discarded, including the known
-GraphRAG-owned `langfuse.app` residue, while Langfuse-owned tables and the shared
-PostgreSQL volume remain untouched. See
-[GraphRAG Persistence Fresh Start](docs/PERSISTENCE_CUTOVER.md) for the exact
-reset, provisioning, startup, and smoke-check commands.
-
 ## REST API
 
 Base path: `/api/v1`
