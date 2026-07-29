@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,61 @@ class EndToEndMvpFlowIntegrationTest {
         assertThat(execution.validation().valid()).isTrue();
         assertThat(execution.rowCount()).isEqualTo(1);
         assertThat(execution.rows()).containsExactly(Map.of("contractId", "C-100"));
+
+        assertGraphPurity();
+    }
+
+    private void assertGraphPurity() {
+        Set<String> labels = Set.copyOf(neo4jClient.query("""
+            MATCH (node)
+            UNWIND labels(node) AS label
+            RETURN DISTINCT label
+            """).fetchAs(String.class).all());
+        Set<String> allowedLabels = Set.of(
+            "DocumentChunk",
+            "GraphExtractionEvidence",
+            "NodeExtractionEvidence",
+            "RelationshipExtractionEvidence",
+            "Contract",
+            "Party"
+        );
+        assertThat(labels)
+            .contains("DocumentChunk", "GraphExtractionEvidence", "Contract", "Party")
+            .allMatch(label -> allowedLabels.contains(label) || label.startsWith("EmbeddingSpace_"));
+
+        Set<String> relationshipTypes = Set.copyOf(neo4jClient.query("""
+            MATCH ()-[relationship]->()
+            RETURN DISTINCT type(relationship)
+            """).fetchAs(String.class).all());
+        assertThat(relationshipTypes)
+            .contains("HAS_GRAPH_EVIDENCE", "ASSERTS_NODE", "ASSERTS_FROM", "ASSERTS_TO", "HAS_PARTY")
+            .allMatch(Set.of(
+                "HAS_GRAPH_EVIDENCE",
+                "ASSERTS_NODE",
+                "ASSERTS_FROM",
+                "ASSERTS_TO",
+                "HAS_PARTY"
+            )::contains);
+
+        Set<String> graphSchemaObjects = Set.copyOf(neo4jClient.query("""
+            SHOW INDEXES YIELD name
+            WHERE name STARTS WITH 'document_chunk_'
+               OR name STARTS WITH 'graph_extraction_evidence_'
+            RETURN name
+            """).fetchAs(String.class).all());
+        assertThat(graphSchemaObjects).contains(
+            "document_chunk_id",
+            "document_chunk_knowledge_base",
+            "document_chunk_document",
+            "document_chunk_scope_space",
+            "graph_extraction_evidence_id",
+            "graph_extraction_evidence_knowledge_base",
+            "graph_extraction_evidence_document",
+            "graph_extraction_evidence_run",
+            "graph_extraction_evidence_fact",
+            "graph_extraction_evidence_chunk"
+        );
+        assertThat(graphSchemaObjects).anyMatch(name -> name.startsWith("document_chunk_embedding_"));
     }
 
     @TestConfiguration

@@ -2,26 +2,31 @@ package io.github.vfedoriv.graphrag.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftEvaluationOutcomeEntity;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftEvaluationRunEntity;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftPublicationEntity;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingItemEntity;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingPlanEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import java.lang.reflect.Field;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
 class SchemaDraftPublicationPersistenceContractTest {
     @Test
-    void durableEntitiesExposeStableIdsLabelsAndOptimisticVersions() {
+    void relationalEntitiesExposeStableIdsAndOptimisticVersions() {
         List<Class<?>> entities = List.of(
-            SchemaDraftEvaluationRunNode.class,
-            SchemaDraftEvaluationOutcomeNode.class,
-            SchemaDraftPublicationNode.class,
-            SchemaReprocessingPlanNode.class,
-            SchemaReprocessingItemNode.class
+            SchemaDraftEvaluationRunEntity.class,
+            SchemaDraftEvaluationOutcomeEntity.class,
+            SchemaDraftPublicationEntity.class,
+            SchemaReprocessingPlanEntity.class,
+            SchemaReprocessingItemEntity.class
         );
 
         for (Class<?> entity : entities) {
-            assertThat(entity.getAnnotation(Node.class)).as(entity.getSimpleName()).isNotNull();
+            assertThat(entity.getAnnotation(Entity.class)).as(entity.getSimpleName()).isNotNull();
             assertThat(fieldWith(entity, Id.class)).as(entity.getSimpleName() + " id").isNotNull();
             assertThat(fieldWith(entity, Version.class)).as(entity.getSimpleName() + " version").isNotNull();
         }

@@ -2,7 +2,7 @@
 
 GraphRAG is a Java 25 + Spring Boot 4 REST API for:
 
-- schema-managed knowledge bases in Neo4j,
+- schema-managed knowledge bases backed by PostgreSQL,
 - document upload and local binary storage,
 - document parsing/chunking/embedding,
 - graph extraction from chunks using an LLM constrained by an active schema,
@@ -15,7 +15,7 @@ The project is intentionally API-first, synchronous, and focused on deterministi
 GraphRAG supports two schema strategies:
 
 - predefined domain schemas (bootstrapped from JSON files),
-- runtime-created schemas (validated JSON persisted in Neo4j).
+- runtime-created schemas (validated JSON persisted in PostgreSQL).
 
 For uploaded documents, the system stores:
 
@@ -35,7 +35,7 @@ Out of scope (current implementation):
   - JSON schema parsing/validation,
   - immutable versioning,
   - guarded inactive-schema content replacement and deletion,
-  - Neo4j persistence,
+  - PostgreSQL persistence,
   - activation per knowledge base,
   - schema generation from free text and uploaded files (optional save to registry).
   - review-only multi-source schema discovery from owned documents, pasted text, and request-scoped files, with structured guidance, evidence, support counts, conflicts, and partial source outcomes.
@@ -44,7 +44,7 @@ Out of scope (current implementation):
   - upload size limit: 100 MB,
   - SHA-256 deduplication within a knowledge base,
   - local filesystem binary storage,
-  - metadata persistence in Neo4j,
+  - metadata persistence in PostgreSQL,
   - list documents by knowledge base,
   - replace/delete documents with cleanup of chunks, extraction runs, graph relationships, and obsolete extracted nodes.
 - Processing pipeline:
@@ -191,24 +191,16 @@ flowchart TD
 
 ## Data Model
 
-Infrastructure nodes:
+PostgreSQL is authoritative for every operational aggregate: AI profiles, runtime
+settings, knowledge bases, schemas, documents, processing/extraction runs, schema
+draft analysis/evaluation, publication, storage mutations, and reprocessing plans.
+Flyway manages these tables in the `graphrag.app` schema.
 
-- `(:KnowledgeBase {id, name, activeSchemaId, activeAiProfileId, createdAt})`
-- `(:SchemaDefinition {id, name, version, sourceType, format, content, contentHash, status, createdAt})`
-- `(:DocumentUpload {id, knowledgeBaseId, originalFilename, contentType, sizeBytes, sha256, contentUri, status, uploadedAt, processedAt, errorMessage})`
-- `(:DocumentChunk {id, documentId, chunkIndex, text, tokenEstimate, embedding, embeddingModel, embeddingDimensions, metadata})`
-- `(:ExtractionRun {id, documentId, schemaId, model, status, startedAt, completedAt, errorMessage})`
-
-Infrastructure relationships:
-
-- `(:KnowledgeBase)-[:USES_SCHEMA]->(:SchemaDefinition)`
-- `(:DocumentUpload)-[:HAS_CHUNK]->(:DocumentChunk)`
-- `(:DocumentUpload)-[:HAS_EXTRACTION_RUN]->(:ExtractionRun)`
-
-Relational operational tables:
-
-- `app.ai_profile` stores provider/model configuration, write-only credentials, revision/default state, timestamps, and optimistic version metadata.
-- `app.runtime_setting_override` stores accepted allowlisted values, lifecycle state, timestamps, and optimistic version metadata.
+Neo4j is graph-only storage. It contains `DocumentChunk` embeddings,
+schema-defined facts, extraction evidence, provenance, direct knowledge-base and
+document scope properties, and graph-native relationships. It does not contain
+operational knowledge-base, schema, document, run, profile, setting, draft,
+publication, or reprocessing nodes/relationships.
 
 Domain-specific nodes/relationships are dynamic and schema-driven. Extracted graph elements are written with provenance properties:
 
@@ -323,7 +315,7 @@ The query API rejects explicit `LIMIT` values above `app.query.max-rows`, applie
 
 ## Schema Format
 
-Schemas are authored in JSON, parsed to Java records, validated, then stored as immutable versions in Neo4j.
+Schemas are authored in JSON, parsed to Java records, validated, then stored as immutable versions in PostgreSQL.
 
 Example:
 
@@ -370,10 +362,12 @@ Schema rules:
 
 ## Local Run
 
-1. Start Neo4j:
+1. Start required PostgreSQL and Neo4j services and provision GraphRAG's database:
 
 ```bash
-docker compose up -d
+docker compose up -d langfuse-postgres neo4j
+docker compose exec -T langfuse-postgres \
+  bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
 ```
 
 2. Run the app (default profile):
@@ -498,18 +492,15 @@ Tests use `src/test/resources/logback-test.xml` to keep application warnings/err
 
 ## Schema Bootstrap
 
-On startup, predefined schemas from `src/main/resources/schemas/*.json` are loaded into Neo4j (idempotent by schema name+version).
+On startup, predefined schemas from `src/main/resources/schemas/*.json` are loaded into PostgreSQL (idempotent by schema name+version).
 
-## Breaking Migration Note (YAML to JSON)
+## Persistence Cutover Operations
 
-This version removes YAML schema support completely (`SchemaFormat.YAML` is removed).
-Before upgrading, remove previously persisted YAML schema records from Neo4j.
-
-Example cleanup command:
-
-```cypher
-MATCH (s:SchemaDefinition) WHERE s.format = 'YAML' DETACH DELETE s;
-```
+The final PostgreSQL/Neo4j topology uses a reset-only cutover. It must never delete
+the shared PostgreSQL volume or modify the `langfuse` database. See
+[Polyglot Persistence Cutover](docs/PERSISTENCE_CUTOVER.md) for provisioning,
+startup order, database-scoped `pg_dump`/`pg_restore`, guarded reset, smoke checks,
+rollback, and shared-instance monitoring.
 
 ## REST API
 
@@ -730,21 +721,19 @@ Run all tests:
 Includes:
 
 - unit tests for services, validation, parsers, routing, and DTO validation,
-- integration tests with Testcontainers Neo4j,
+- integration tests with Testcontainers PostgreSQL and Neo4j,
 - end-to-end MVP flow tests with deterministic test doubles for model-dependent paths.
 
-Docker Compose smoke test:
+Full test suite (containers are managed by Testcontainers):
 
 ```bash
-docker compose up -d neo4j
 ./mvnw test
-docker compose down -v
 ```
 
 Optional focused E2E test:
 
 ```bash
-./mvnw -Dtest=EndToEndMvpFlowIntegrationTest test
+./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
 ```
 
 ## Notes and Constraints
@@ -758,7 +747,8 @@ Optional focused E2E test:
 
 - Keep infrastructure labels explicit in code; keep domain graph schema external and versioned.
 - Use JSON for authoring and Java validation for runtime safety.
-- Use Neo4j for both graph and vector data in MVP.
+- Use PostgreSQL for operational state and Neo4j for graph facts, provenance,
+  chunks, and vectors.
 - Keep all model interactions behind interfaces for deterministic tests and provider portability.
 - Validate all model-generated data before graph write or query execution.
 

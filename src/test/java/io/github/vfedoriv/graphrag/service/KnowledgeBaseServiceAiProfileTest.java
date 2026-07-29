@@ -19,7 +19,6 @@ import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 class KnowledgeBaseServiceAiProfileTest {
 
@@ -33,7 +32,6 @@ class KnowledgeBaseServiceAiProfileTest {
         when(knowledgeBaseRepository.save(any(KnowledgeBaseNode.class))).thenAnswer(invocation -> invocation.getArgument(0));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
-            mock(Neo4jClient.class),
             aiProfileService,
             chunkRepository
         );
@@ -56,7 +54,6 @@ class KnowledgeBaseServiceAiProfileTest {
         when(knowledgeBaseRepository.save(any(KnowledgeBaseNode.class))).thenAnswer(invocation -> invocation.getArgument(0));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
-            mock(Neo4jClient.class),
             aiProfileService,
             chunkRepository
         );
@@ -79,7 +76,6 @@ class KnowledgeBaseServiceAiProfileTest {
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
-            mock(Neo4jClient.class),
             aiProfileService,
             chunkRepository
         );
@@ -106,7 +102,6 @@ class KnowledgeBaseServiceAiProfileTest {
             .thenReturn(List.of(chunk("embed-default", 1536)));
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
-            mock(Neo4jClient.class),
             aiProfileService,
             chunkRepository
         );
@@ -126,7 +121,6 @@ class KnowledgeBaseServiceAiProfileTest {
         when(documentUploadRepository.countByKnowledgeBaseId("kb-1")).thenReturn(2L);
         KnowledgeBaseService service = new KnowledgeBaseService(
             knowledgeBaseRepository,
-            mock(Neo4jClient.class),
             mock(AiProfileService.class),
             mock(DocumentChunkRepository.class),
             documentUploadRepository,

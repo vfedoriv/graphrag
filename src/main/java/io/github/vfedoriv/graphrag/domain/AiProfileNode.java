@@ -1,16 +1,10 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
-@Node("AiProfile")
 public class AiProfileNode {
 
-    @Id
     private String id;
-    @Version
     private Long version;
     private String name;
     private String baseUrl;

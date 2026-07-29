@@ -7,7 +7,6 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.graph.GraphWriteService;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.GraphArtifactCleanupService;
-import io.github.vfedoriv.graphrag.service.GraphProvenanceMigrationService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -52,8 +51,6 @@ class GraphProvenanceIntegrationTest {
     private GraphWriteService graphWriteService;
     @Autowired
     private GraphArtifactCleanupService graphArtifactCleanupService;
-    @Autowired
-    private GraphProvenanceMigrationService graphProvenanceMigrationService;
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
@@ -142,29 +139,6 @@ class GraphProvenanceIntegrationTest {
             WHERE n:KnowledgeBase OR n:DocumentUpload OR n:ExtractionRun OR n:DocumentProcessingRun
             RETURN count(n) AS count
             """)).isZero();
-    }
-
-    @Test
-    void migrationIsIdempotentAndRetainsLegacyProvenanceForRollbackCompatibility() {
-        clearGraph();
-        neo4jClient.query("""
-            CREATE (document:DocumentUpload {id: 'legacy-document', knowledgeBaseId: 'kb-legacy'})
-            CREATE (run:ExtractionRun {id: 'legacy-run', status: 'COMPLETED'})
-            CREATE (chunk:DocumentChunk {id: 'legacy-chunk'})
-            CREATE (contract:Contract {id: 'node:legacy-contract', contractId: 'C-LEGACY', schemaId: 'legacy-schema', sourceDocumentId: 'legacy-document', sourceChunkIds: ['legacy-chunk'], extractionRunId: 'legacy-run'})
-            CREATE (party:Party {id: 'node:legacy-party', partyId: 'P-LEGACY', schemaId: 'legacy-schema', sourceDocumentId: 'legacy-document', sourceChunkIds: ['legacy-chunk'], extractionRunId: 'legacy-run'})
-            CREATE (contract)-[:HAS_PARTY {id: 'rel:legacy-contract-party', schemaId: 'legacy-schema', sourceDocumentId: 'legacy-document', sourceChunkIds: ['legacy-chunk'], extractionRunId: 'legacy-run'}]->(party)
-            CREATE (document)-[:HAS_EXTRACTION_RUN]->(run)
-            CREATE (document)-[:HAS_CHUNK]->(chunk)
-            """).run();
-
-        graphProvenanceMigrationService.run(null);
-        graphProvenanceMigrationService.run(null);
-
-        assertThat(count("MATCH (e:NodeExtractionEvidence {legacyProvenance: true}) RETURN count(e) AS count")).isEqualTo(2L);
-        assertThat(count("MATCH (e:RelationshipExtractionEvidence {legacyProvenance: true}) RETURN count(e) AS count")).isEqualTo(1L);
-        assertThat(count("MATCH (:GraphExtractionEvidence)-[:ASSERTS_NODE]->(:Contract {id: 'node:legacy-contract'}) RETURN count(*) AS count")).isEqualTo(1L);
-        assertThat(count("MATCH (:Contract {id: 'node:legacy-contract'}) WHERE exists { MATCH (n) WHERE n.sourceDocumentId = 'legacy-document' } RETURN count(*) AS count")).isEqualTo(1L);
     }
 
     private void createDocumentRunChunk(String documentId, String runId, String chunkId, String status) {

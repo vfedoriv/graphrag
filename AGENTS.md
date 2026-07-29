@@ -6,7 +6,8 @@ This file provides guidance to coding agents working in this repository.
 
 - Java 25
 - Spring Boot 4.1.0
-- Neo4j 5 (graph + vector index)
+- PostgreSQL 17 (all operational state, Flyway-managed `app` schema)
+- Neo4j 5 (graph facts, provenance, chunks, and vector indexes only)
 - Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
 - OpenTelemetry + Micrometer AI observability, optional local Langfuse
 - Maven Wrapper (`./mvnw`)
@@ -33,8 +34,9 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 ./mvnw test
 ./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
 
-# Neo4j only
-docker compose up -d neo4j
+# Required persistence services
+docker compose up -d langfuse-postgres neo4j
+docker compose exec -T langfuse-postgres bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
 
 # Neo4j + local Langfuse stack
 docker compose --profile langfuse up -d
@@ -46,7 +48,7 @@ Use `./mvnw` instead of bare `mvn`.
 
 - API prefix: `/api/v1`
 - Error format: RFC 7807 `ProblemDetail`
-- Layering: Controllers -> Services -> Repositories -> Neo4j
+- Layering: Controllers -> Services -> repository ports -> PostgreSQL adapters or graph-only Neo4j adapters
 
 Main controllers:
 - `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, review-only multi-source discovery, example generation, KB schema listing)
@@ -96,9 +98,23 @@ Runtime setting overrides are persisted in PostgreSQL. `mutable=true` means edit
 
 ## Testing
 
-- Integration tests use Testcontainers (Neo4j started automatically)
+- Integration tests use Testcontainers (PostgreSQL and Neo4j started automatically)
 - AI clients are mocked for deterministic tests
 - Canonical full-flow integration test: `EndToEndMvpFlowIntegrationTest`
+
+## Persistence Operations
+
+PostgreSQL is authoritative for profiles, settings, knowledge bases, schemas,
+documents, runs, draft workflows, publications, and reprocessing. Neo4j contains
+only chunks/embeddings, schema-defined facts, evidence, provenance, direct scope,
+and graph-native relationships. The local Langfuse deployment shares the PostgreSQL
+server through a separate `langfuse` database and role.
+
+The final cutover is reset-only. Never run `docker compose down -v`, delete the
+`langfuse_postgres_data` volume, or drop/restore over the `langfuse` database.
+Use only database-scoped `pg_dump --dbname=graphrag` and
+`pg_restore --dbname=graphrag`. Full provisioning, reset, startup, smoke,
+rollback, and monitoring commands are in `docs/PERSISTENCE_CUTOVER.md`.
 
 ## Docker and Testcontainers
 

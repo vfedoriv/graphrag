@@ -163,10 +163,45 @@ class DocumentUploadIntegrationTest {
                 chunkIndex: 0,
                 text: 'chunk'
             })
-            CREATE (contract:Contract {id: $contractId, contractId: $contractId, sourceDocumentId: $documentId, extractionRunId: $runId})
-            CREATE (party:Party {id: $partyId, partyId: $partyId, sourceDocumentId: $documentId, extractionRunId: $runId})
+            CREATE (contract:Contract {
+                id: 'node:' + $contractId,
+                contractId: $contractId,
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId
+            })
+            CREATE (party:Party {
+                id: 'node:' + $partyId,
+                partyId: $partyId,
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId
+            })
             CREATE (chunk)-[:MENTIONS]->(contract)
-            CREATE (contract)-[:HAS_PARTY {sourceDocumentId: $documentId, extractionRunId: $runId}]->(party)
+            CREATE (contract)-[:HAS_PARTY {
+                id: 'relationship:' + $contractId + ':' + $partyId,
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId
+            }]->(party)
+            CREATE (:GraphExtractionEvidence {
+                id: $runId + ':contract',
+                knowledgeBaseId: 'kb-1',
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId,
+                canonicalFactId: 'node:' + $contractId
+            })
+            CREATE (:GraphExtractionEvidence {
+                id: $runId + ':party',
+                knowledgeBaseId: 'kb-1',
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId,
+                canonicalFactId: 'node:' + $partyId
+            })
+            CREATE (:GraphExtractionEvidence {
+                id: $runId + ':relationship',
+                knowledgeBaseId: 'kb-1',
+                sourceDocumentId: $documentId,
+                extractionRunId: $runId,
+                canonicalFactId: 'relationship:' + $contractId + ':' + $partyId
+            })
             """)
             .bind(documentId).to("documentId")
             .bind(runId).to("runId")
@@ -195,6 +230,7 @@ class DocumentUploadIntegrationTest {
         Long nodes = neo4jClient.query("""
             MATCH (n)
             WHERE n.sourceDocumentId = $documentId
+              AND NOT n:GraphExtractionEvidence
             RETURN count(n) AS c
             """)
             .bind(documentId).to("documentId")

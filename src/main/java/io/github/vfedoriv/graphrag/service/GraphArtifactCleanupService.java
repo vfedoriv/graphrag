@@ -28,7 +28,6 @@ public class GraphArtifactCleanupService {
     public DocumentArtifactCleanupResult cleanupDocumentArtifacts(String documentId) {
         List<String> runIds = extractionRunIds(documentId);
         EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, true);
-        long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
         CleanupCounts cleanupCounts = deleteDocumentInfrastructure(documentId);
         long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(evidenceResult.canonicalFactIds());
         return new DocumentArtifactCleanupResult(
@@ -36,7 +35,7 @@ public class GraphArtifactCleanupService {
             cleanupCounts.deletedProcessingRuns(),
             cleanupCounts.deletedRuns(),
             evidenceResult.deletedEvidence(),
-            deletedLegacyFacts + deletedUnsupportedFacts,
+            deletedUnsupportedFacts,
             deletedUnsupportedFacts
         );
     }
@@ -84,12 +83,11 @@ public class GraphArtifactCleanupService {
             return ExtractionRunCleanupResult.zero();
         }
         EvidenceCleanupResult evidenceResult = cleanupEvidence(documentId, runIds, false);
-        long deletedLegacyFacts = cleanupLegacyFacts(documentId, runIds);
         long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(evidenceResult.canonicalFactIds());
         return new ExtractionRunCleanupResult(
             0L,
             evidenceResult.deletedEvidence(),
-            deletedLegacyFacts + deletedUnsupportedFacts,
+            deletedUnsupportedFacts,
             deletedUnsupportedFacts
         );
     }
@@ -182,36 +180,6 @@ public class GraphArtifactCleanupService {
             .fetch()
             .one()
             .orElse(Map.of());
-    }
-
-    private long cleanupLegacyFacts(String documentId, List<String> runIds) {
-        long deletedRelationships = executeCount("""
-            MATCH ()-[legacyRelationship]->()
-            WHERE legacyRelationship.sourceDocumentId = $documentId
-                AND (size($runIds) = 0 OR legacyRelationship.extractionRunId IN $runIds)
-                AND NOT EXISTS {
-                    MATCH (:GraphExtractionEvidence {canonicalFactId: legacyRelationship.id})
-                }
-            DELETE legacyRelationship
-            RETURN count(legacyRelationship) AS count
-            """, documentId, runIds, "runIds");
-        long deletedNodes = executeCount("""
-            MATCH (legacyNode)
-            WHERE legacyNode.sourceDocumentId = $documentId
-                AND (size($runIds) = 0 OR legacyNode.extractionRunId IN $runIds)
-                AND NOT legacyNode:ExtractionRun
-                AND NOT legacyNode:DocumentProcessingRun
-                AND NOT legacyNode:DocumentUpload
-                AND NOT legacyNode:DocumentChunk
-                AND NOT legacyNode:KnowledgeBase
-                AND NOT legacyNode:SchemaDefinition
-                AND NOT EXISTS {
-                    MATCH (:GraphExtractionEvidence {canonicalFactId: legacyNode.id})
-                }
-            DETACH DELETE legacyNode
-            RETURN count(legacyNode) AS count
-            """, documentId, runIds, "runIds");
-        return deletedRelationships + deletedNodes;
     }
 
     private CleanupCounts deleteDocumentInfrastructure(String documentId) {

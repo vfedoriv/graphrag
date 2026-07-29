@@ -1,16 +1,10 @@
 package io.github.vfedoriv.graphrag.domain;
 
 import java.time.Instant;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.neo4j.core.schema.Node;
 
-@Node("RuntimeSettingOverride")
 public class RuntimeSettingOverrideNode {
 
-    @Id
     private String key;
-    @Version
     private Long version;
     private String value;
     private String lifecycleState;

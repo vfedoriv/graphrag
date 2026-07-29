@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Tech Stack
 
 - **Language:** Java 25, **Framework:** Spring Boot 4.1.0
-- **Database:** Neo4j 5 (graph + vector index via Spring Data Neo4j)
+- **Operational database:** PostgreSQL 17 (Spring Data JPA + Flyway `app` schema)
+- **Graph database:** Neo4j 5 (facts, provenance, chunks, and vector indexes only)
 - **LLM Integration:** Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
 - **AI Observability:** OpenTelemetry + Micrometer, optional local Langfuse
 - **Document Parsing:** LangChain4j Apache Tika
@@ -36,8 +37,9 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 # Single test class
 ./mvnw -Dtest=EndToEndMvpFlowIntegrationTest test
 
-# Start Neo4j only
-docker compose up -d neo4j
+# Start required persistence services
+docker compose up -d langfuse-postgres neo4j
+docker compose exec -T langfuse-postgres bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
 
 # Start Neo4j + local Langfuse stack
 docker compose --profile langfuse up -d
@@ -50,7 +52,7 @@ Neo4j default credentials (dev): `neo4j / notverysecret`, ports `7474` (HTTP) an
 ### Layers
 
 ```
-REST Controllers  →  Service Layer  →  Repository (Spring Data Neo4j)  →  Neo4j
+REST Controllers → Services → repository ports → PostgreSQL adapters / graph-only Neo4j adapters
 ```
 
 All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `ProblemDetail`.
@@ -136,9 +138,23 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 
 ## Testing Approach
 
-- Integration tests use **Testcontainers** — Neo4j container is started automatically; no manual setup needed.
+- Integration tests use **Testcontainers** — PostgreSQL and Neo4j containers are started automatically.
 - Mock AI clients return hardcoded deterministic results, making tests independent of external APIs.
 - `EndToEndMvpFlowIntegrationTest` is the canonical example of the complete pipeline under test.
+
+## Persistence Operations
+
+PostgreSQL owns profiles, settings, knowledge bases, schemas, documents, runs,
+draft workflows, publications, and reprocessing. Neo4j owns only chunks/embeddings,
+schema-defined facts, evidence, provenance, direct scope, and graph-native
+relationships. Local Langfuse uses a separate `langfuse` database and role on the
+shared PostgreSQL server.
+
+The final cutover is reset-only. Never run `docker compose down -v`, delete the
+`langfuse_postgres_data` volume, or drop/restore over the `langfuse` database.
+Backups and restores must explicitly target `graphrag`. Follow
+`docs/PERSISTENCE_CUTOVER.md` for provisioning, startup, guarded reset, smoke
+verification, rollback, and monitoring.
 
 ## Key Design Decisions
 

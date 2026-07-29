@@ -43,20 +43,19 @@ class ArchitectureBoundaryTest {
     private static final String RELATIONAL_ENTITY_PACKAGE = INFRASTRUCTURE_PERSISTENCE_PACKAGE + ".relational.entity";
     private static final String RELATIONAL_REPOSITORY_PACKAGE = INFRASTRUCTURE_PERSISTENCE_PACKAGE + ".relational.repository";
     private static final String TRANSACTION_ANNOTATION_PACKAGE = BASE_PACKAGE + ".persistence.transaction";
+    private static final Set<String> ALLOWED_SDN_NODE_TYPES = Set.of(
+            BASE_PACKAGE + ".domain.DocumentChunkNode"
+    );
+    private static final Set<String> ALLOWED_NEO4J_REPOSITORIES = Set.of(
+            BASE_PACKAGE + ".repository.DocumentChunkRepository"
+    );
 
     private static final Set<String> FROZEN_LEGACY_NEO4J_CLIENT_EXCEPTIONS = Set.of(
             BASE_PACKAGE + ".graph.GraphWriteService",
             BASE_PACKAGE + ".config.PersistenceConfiguration",
             BASE_PACKAGE + ".service.EmbeddingSpaceIndexService",
-            BASE_PACKAGE + ".service.EmbeddingSpaceMigrationService",
             BASE_PACKAGE + ".service.GraphArtifactCleanupService",
-            BASE_PACKAGE + ".service.GraphExtractionService",
-            BASE_PACKAGE + ".service.GraphProvenanceMigrationService",
-            BASE_PACKAGE + ".service.HybridSearchService",
-            BASE_PACKAGE + ".service.KnowledgeBaseService",
-            BASE_PACKAGE + ".service.KnowledgeBaseLifecycleMigrationService",
-            BASE_PACKAGE + ".service.Neo4jPersistenceVersionBackfillService",
-            BASE_PACKAGE + ".service.SchemaRegistryService"
+            BASE_PACKAGE + ".service.HybridSearchService"
     );
     private static final Set<String> FROZEN_LEGACY_TRANSACTIONAL_SELF_INVOCATION_EXCEPTIONS = Set.of(
             BASE_PACKAGE + ".service.AiProfileService",
@@ -174,6 +173,23 @@ class ArchitectureBoundaryTest {
                 .filter(javaClass -> isInPackage(javaClass, RELATIONAL_ENTITY_PACKAGE))
                 .filter(javaClass -> javaClass.isAnnotatedWith(Node.class))
                 .map(JavaClass::getName)
+                .forEach(violations::add);
+
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void only_graph_native_sdn_nodes_and_repositories_remain() {
+        Set<String> violations = new TreeSet<>();
+        productionClasses.stream()
+                .filter(javaClass -> javaClass.isAnnotatedWith(Node.class))
+                .map(JavaClass::getName)
+                .filter(className -> !ALLOWED_SDN_NODE_TYPES.contains(className))
+                .forEach(violations::add);
+        productionClasses.stream()
+                .filter(javaClass -> javaClass.isAssignableTo(Neo4jRepository.class))
+                .map(JavaClass::getName)
+                .filter(className -> !ALLOWED_NEO4J_REPOSITORIES.contains(className))
                 .forEach(violations::add);
 
         assertNoViolations(violations);

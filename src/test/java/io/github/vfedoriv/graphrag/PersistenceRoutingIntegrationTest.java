@@ -20,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
@@ -49,6 +50,8 @@ class PersistenceRoutingIntegrationTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private Neo4jTemplate neo4jTemplate;
     @Autowired
     private PersistenceProbe persistenceProbe;
     @Autowired
@@ -128,8 +131,58 @@ class PersistenceRoutingIntegrationTest {
         assertThat(schemas).extracting(SchemaDefinitionNode::getId).containsExactly(schema.getId());
     }
 
+    @Test
+    void explicitNeo4jTemplateSupportsGraphEntityQueries() {
+        DocumentChunkNode chunk = new DocumentChunkNode();
+        chunk.setId("template-chunk");
+        chunk.setKnowledgeBaseId("template-kb");
+        chunk.setDocumentId("template-document");
+        chunk.setChunkIndex(0);
+        chunk.setText("template query");
+        chunk.setTokenEstimate(2);
+
+        neo4jTemplate.save(chunk);
+
+        assertThat(neo4jTemplate.findById("template-chunk", DocumentChunkNode.class))
+            .get()
+            .extracting(DocumentChunkNode::getKnowledgeBaseId)
+            .isEqualTo("template-kb");
+    }
+
+    @Test
+    void crossStoreRecoveryRetriesOnlyTheFailedGraphStep() {
+        persistenceProbe.relationalCommit("recovery");
+
+        assertThatThrownBy(() -> persistenceProbe.graphFailure("recovery"))
+            .isInstanceOf(IllegalStateException.class);
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.transaction_probe WHERE id = 'recovery'",
+            Long.class
+        )).isEqualTo(1L);
+        assertThat(graphProbeCount("recovery")).isZero();
+
+        persistenceProbe.graphCommit("recovery");
+
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.transaction_probe WHERE id = 'recovery'",
+            Long.class
+        )).isEqualTo(1L);
+        assertThat(graphProbeCount("recovery")).isEqualTo(1L);
+    }
+
     private long graphProbeCount() {
         return neo4jClient.query("MATCH (n:PersistenceRoutingProbe) RETURN count(n) AS count")
+            .fetchAs(Long.class)
+            .one()
+            .orElse(0L);
+    }
+
+    private long graphProbeCount(String id) {
+        return neo4jClient.query("""
+            MATCH (n:PersistenceRoutingProbe {id: $id})
+            RETURN count(n) AS count
+            """)
+            .bind(id).to("id")
             .fetchAs(Long.class)
             .one()
             .orElse(0L);
@@ -155,6 +208,26 @@ class PersistenceRoutingIntegrationTest {
         public void graphFailure() {
             neo4jClient.query("CREATE (:PersistenceRoutingProbe {id: 'rolled-back'})").run();
             throw new IllegalStateException("graph rollback");
+        }
+
+        @RelationalTransactional
+        public void relationalCommit(String id) {
+            jdbcTemplate.update("INSERT INTO app.transaction_probe (id) VALUES (?)", id);
+        }
+
+        @GraphTransactional
+        public void graphFailure(String id) {
+            neo4jClient.query("CREATE (:PersistenceRoutingProbe {id: $id})")
+                .bind(id).to("id")
+                .run();
+            throw new IllegalStateException("graph rollback");
+        }
+
+        @GraphTransactional
+        public void graphCommit(String id) {
+            neo4jClient.query("CREATE (:PersistenceRoutingProbe {id: $id})")
+                .bind(id).to("id")
+                .run();
         }
     }
 

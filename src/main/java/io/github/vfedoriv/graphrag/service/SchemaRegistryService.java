@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -63,28 +62,22 @@ public class SchemaRegistryService {
         SchemaValidator schemaValidator,
         SchemaDefinitionRepository schemaRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
-        Neo4jClient neo4jClient
+        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
     ) {
         this(
-            schemaParser,
-            schemaValidator,
-            schemaRepository,
-            knowledgeBaseRepository,
-            (KnowledgeBaseLifecycleService) null,
-            null
-        );
+            schemaParser, schemaValidator, schemaRepository, knowledgeBaseRepository,
+            knowledgeBaseLifecycleService, null);
     }
 
     public SchemaRegistryService(
         SchemaParser schemaParser,
         SchemaValidator schemaValidator,
         SchemaDefinitionRepository schemaRepository,
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService
+        KnowledgeBaseRepository knowledgeBaseRepository
     ) {
         this(
             schemaParser, schemaValidator, schemaRepository, knowledgeBaseRepository,
-            knowledgeBaseLifecycleService, null);
+            (KnowledgeBaseLifecycleService) null, null);
     }
 
     @RelationalTransactional

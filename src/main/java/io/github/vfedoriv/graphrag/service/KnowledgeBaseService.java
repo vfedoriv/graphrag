@@ -13,7 +13,6 @@ import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.time.Instant;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
@@ -51,7 +50,6 @@ public class KnowledgeBaseService {
 
     public KnowledgeBaseService(
         KnowledgeBaseRepository knowledgeBaseRepository,
-        Neo4jClient neo4jClient,
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository
     ) {
@@ -68,7 +66,6 @@ public class KnowledgeBaseService {
 
     public KnowledgeBaseService(
         KnowledgeBaseRepository knowledgeBaseRepository,
-        Neo4jClient neo4jClient,
         AiProfileService aiProfileService,
         DocumentChunkRepository documentChunkRepository,
         DocumentUploadRepository documentUploadRepository,

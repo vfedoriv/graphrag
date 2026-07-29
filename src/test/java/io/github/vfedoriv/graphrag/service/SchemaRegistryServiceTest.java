@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 class SchemaRegistryServiceTest {
 
@@ -33,7 +32,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         String json = schemaJson("contracts", 1, "Contract");
         when(schemaParser.parse(json)).thenReturn(schemaDocument("contracts", 1));
@@ -45,8 +43,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         SchemaDefinitionNode created = service.createSchema(json, SchemaSourceType.PREDEFINED);
@@ -64,7 +61,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         String json = schemaJson("contracts", 1, "Contract");
         when(schemaParser.parse(json)).thenReturn(schemaDocument("contracts", 1));
@@ -75,8 +71,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.createSchema(json, SchemaSourceType.PREDEFINED))
@@ -91,7 +86,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         String json = schemaJson("contracts", 1, "Contract");
         KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
@@ -106,8 +100,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         SchemaDefinitionNode created = service.createSchema(json, SchemaSourceType.GENERATED, "kb-01");
@@ -123,7 +116,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(knowledgeBaseRepository.findById("missing-kb")).thenReturn(Optional.empty());
 
@@ -131,8 +123,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.createSchema(schemaJson("contracts", 1, "Contract"), SchemaSourceType.GENERATED, "missing-kb"))
@@ -149,7 +140,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-01");
@@ -161,8 +151,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         List<SchemaDefinitionNode> result = service.listSchemasByKnowledgeBase("kb-01");
@@ -179,7 +168,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(knowledgeBaseRepository.existsById("kb-empty")).thenReturn(true);
         when(schemaRepository.findAllByKnowledgeBaseId("kb-empty")).thenReturn(List.of());
@@ -188,8 +176,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         List<SchemaDefinitionNode> result = service.listSchemasByKnowledgeBase("kb-empty");
@@ -205,7 +192,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(knowledgeBaseRepository.existsById("missing-kb")).thenReturn(false);
 
@@ -213,8 +199,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.listSchemasByKnowledgeBase("missing-kb"))
@@ -228,7 +213,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         SchemaDefinitionNode schema = schemaNode("schema-01", "contracts", 1);
         KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
@@ -240,8 +224,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         service.attachSchema("kb-01", "schema-01");
@@ -257,7 +240,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("missing-schema")).thenReturn(Optional.empty());
 
@@ -265,8 +247,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.attachSchema("kb-01", "missing-schema"))
@@ -282,7 +263,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
         when(knowledgeBaseRepository.findById("missing-kb")).thenReturn(Optional.empty());
@@ -291,8 +271,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.attachSchema("missing-kb", "schema-01"))
@@ -307,7 +286,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         SchemaDefinitionNode existing = schemaNode("schema-01", "contracts", 1);
         String updatedJson = schemaJson("contracts", 1, "Agreement");
@@ -321,8 +299,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         SchemaDefinitionNode updated = service.updateSchema("schema-01", updatedJson, SchemaSourceType.GENERATED);
@@ -341,7 +318,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         String invalidJson = schemaJson("contracts", 1, "Contract");
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
@@ -353,8 +329,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.updateSchema("schema-01", invalidJson, SchemaSourceType.GENERATED))
@@ -368,7 +343,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("missing")).thenReturn(Optional.empty());
 
@@ -376,8 +350,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.updateSchema("missing", schemaJson("contracts", 1, "Contract"), SchemaSourceType.GENERATED))
@@ -391,7 +364,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         String updatedJson = schemaJson("contracts-renamed", 1, "Contract");
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
@@ -403,8 +375,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.updateSchema("schema-01", updatedJson, SchemaSourceType.GENERATED))
@@ -419,7 +390,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
         when(schemaRepository.existsActiveKnowledgeBaseReference("schema-01")).thenReturn(true);
@@ -428,8 +398,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.updateSchema("schema-01", schemaJson("contracts", 1, "Contract"), SchemaSourceType.GENERATED))
@@ -445,7 +414,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         SchemaDefinitionNode schema = schemaNode("schema-01", "contracts", 1);
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schema));
@@ -455,8 +423,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         service.deleteSchema("schema-01");
@@ -471,7 +438,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("missing")).thenReturn(Optional.empty());
 
@@ -479,8 +445,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.deleteSchema("missing"))
@@ -494,7 +459,6 @@ class SchemaRegistryServiceTest {
         SchemaValidator schemaValidator = Mockito.mock(SchemaValidator.class);
         SchemaDefinitionRepository schemaRepository = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseRepository knowledgeBaseRepository = Mockito.mock(KnowledgeBaseRepository.class);
-        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
 
         when(schemaRepository.findById("schema-01")).thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
         when(schemaRepository.existsActiveKnowledgeBaseReference("schema-01")).thenReturn(true);
@@ -503,8 +467,7 @@ class SchemaRegistryServiceTest {
             schemaParser,
             schemaValidator,
             schemaRepository,
-            knowledgeBaseRepository,
-            neo4jClient
+            knowledgeBaseRepository
         );
 
         assertThatThrownBy(() -> service.deleteSchema("schema-01"))

@@ -40,7 +40,6 @@ import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.Neo4jPersistenceVersionBackfillService;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.time.Duration;
 import java.time.Instant;
@@ -120,7 +119,6 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftEvaluationRunRepository evaluationRunRepository;
     @Autowired private SchemaDraftConflictRepository conflictRepository;
     @Autowired private SchemaDraftJsonSupport jsonSupport;
-    @Autowired private Neo4jPersistenceVersionBackfillService versionBackfillService;
     @Autowired private RuntimeSettingsService runtimeSettingsService;
 
     @BeforeEach
@@ -1072,6 +1070,12 @@ class SchemaDraftLifecycleIntegrationTest {
         schemaRegistryService.activateSchema(KNOWLEDGE_BASE_ID, schemaId);
         assertThatThrownBy(() -> schemaRegistryService.updateSchema(schemaId, editedContent, SchemaSourceType.GENERATED))
             .isInstanceOf(ConflictException.class);
+        JsonNode activationPlans = json(mockMvc.perform(get(
+                "/api/v1/knowledge-bases/{knowledgeBaseId}/reprocessing-plans", KNOWLEDGE_BASE_ID)
+                .param("draftId", draftId).param("size", "1"))
+            .andExpect(status().isOk()).andReturn());
+        JsonNode activationPlan = awaitPlanTerminal(activationPlans.path("content").get(0).path("id").asText());
+        assertThat(activationPlan.path("status").asText()).isEqualTo("COMPLETED");
 
         DocumentUploadNode failing = documentUploadService.upload(KNOWLEDGE_BASE_ID,
             new MockMultipartFile("file", "failing.txt", "text/plain", "FAIL_REPROCESSING".getBytes()));
@@ -1461,30 +1465,6 @@ class SchemaDraftLifecycleIntegrationTest {
             }
             assertThat(winners).isEqualTo(1);
         }
-    }
-
-    @Test
-    void backfillsPersistenceVersionsForDownstreamDraftEntityTypes() {
-        neo4jClient.query("""
-            CREATE (:SchemaDraftEvaluationRun {id: 'legacy-evaluation-run'}),
-                   (:SchemaDraftEvaluationOutcome {id: 'legacy-evaluation-outcome'}),
-                   (:SchemaDraftPublication {id: 'legacy-publication'}),
-                   (:SchemaReprocessingPlan {id: 'legacy-reprocessing-plan'}),
-                   (:SchemaReprocessingItem {id: 'legacy-reprocessing-item'})
-            """).run();
-
-        versionBackfillService.run(null);
-
-        Long count = neo4jClient.query("""
-            MATCH (n)
-            WHERE (n:SchemaDraftEvaluationRun OR n:SchemaDraftEvaluationOutcome OR
-                   n:SchemaDraftPublication OR n:SchemaReprocessingPlan OR
-                   n:SchemaReprocessingItem)
-              AND n.id STARTS WITH 'legacy-'
-              AND n.persistenceVersion = 0
-            RETURN count(n)
-            """).fetchAs(Long.class).one().orElse(0L);
-        assertThat(count).isEqualTo(5L);
     }
 
     @Test
