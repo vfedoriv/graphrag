@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaRuntimeSettingOverrideRepository;
@@ -173,9 +174,13 @@ class SettingsAndAiProfileRelationalIntegrationTest {
         stale.setUpdatedAt(Instant.now());
 
         assertThat(response.apiKeyConfigured()).isTrue();
+        assertThat(response.tokenizerId()).isEqualTo(TokenizerId.CL100K_BASE);
+        assertThat(response.resolvedTokenizerId()).isEqualTo(TokenizerId.CL100K_BASE);
         assertThat(response.toString()).doesNotContain("secret-profile-key");
         assertThat(aiProfileRepository.findById("profile-1").orElseThrow().getApiKey())
             .isEqualTo("secret-profile-key");
+        assertThat(aiProfileRepository.findById("profile-1").orElseThrow().getTokenizerId().value())
+            .isEqualTo(TokenizerId.CL100K_BASE);
         assertThatThrownBy(() -> aiProfileRepository.save(stale))
             .isInstanceOf(OptimisticLockingFailureException.class);
         assertThat(aiProfileRepository.findById("profile-1").orElseThrow().getName()).isEqualTo("Winner");
@@ -259,6 +264,7 @@ class SettingsAndAiProfileRelationalIntegrationTest {
             apiKey,
             "chat-model",
             "embedding-model",
+            TokenizerId.CL100K_BASE,
             768,
             30,
             1,

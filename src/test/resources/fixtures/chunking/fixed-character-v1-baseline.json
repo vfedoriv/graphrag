@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "name": "repeated-text",
+      "text": "same same same",
+      "hardCharacterLimit": 6,
+      "overlapTokens": 2,
+      "chunks": ["same s", " same ", "e same"],
+      "sourceStarts": [0, 4, 8],
+      "emittedCharacters": 18,
+      "estimatedTokens": 18
+    },
+    {
+      "name": "multilingual-utf8",
+      "text": "Привіт🌍",
+      "hardCharacterLimit": 5,
+      "overlapTokens": 1,
+      "chunks": ["Приві", "іт🌍"],
+      "sourceStarts": [0, 4],
+      "emittedCharacters": 9,
+      "estimatedTokens": 18
+    },
+    {
+      "name": "paragraph-and-sentence-boundaries",
+      "text": "one.\n\ntwo.",
+      "hardCharacterLimit": 5,
+      "overlapTokens": 0,
+      "chunks": ["one.\n", "\ntwo."],
+      "sourceStarts": [0, 5],
+      "emittedCharacters": 10,
+      "estimatedTokens": 10
+    },
+    {
+      "name": "long-identifier",
+      "text": "abcdefghijklmnop",
+      "hardCharacterLimit": 7,
+      "overlapTokens": 1,
+      "chunks": ["abcdefg", "ghijklm", "mnop"],
+      "sourceStarts": [0, 6, 12],
+      "emittedCharacters": 18,
+      "estimatedTokens": 18
+    },
+    {
+      "name": "overlap-accounting",
+      "text": "0123456789",
+      "hardCharacterLimit": 4,
+      "overlapTokens": 2,
+      "chunks": ["0123", "2345", "4567", "6789"],
+      "sourceStarts": [0, 2, 4, 6],
+      "emittedCharacters": 16,
+      "estimatedTokens": 16
+    }
+  ]
+}

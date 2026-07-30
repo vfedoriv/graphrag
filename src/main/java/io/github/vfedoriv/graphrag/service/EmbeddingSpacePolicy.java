@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,15 @@ public class EmbeddingSpacePolicy {
         List<DocumentChunkNode> chunks = embeddedChunks(knowledgeBaseId);
         List<String> incompatibleChunkIds = new ArrayList<>();
         for (DocumentChunkNode chunk : chunks) {
-            if (!targetSpace.id().equals(chunk.getEmbeddingSpaceId())) {
+            String chunkTokenizerId = chunk.getTokenizerId();
+            if (chunkTokenizerId == null || chunkTokenizerId.isBlank()) {
+                chunkTokenizerId = new TokenizerPolicy()
+                    .resolve(null, chunk.getEmbeddingModel())
+                    .tokenizerId()
+                    .value();
+            }
+            if (!targetSpace.id().equals(chunk.getEmbeddingSpaceId())
+                || !targetSpace.tokenizerId().equals(chunkTokenizerId)) {
                 incompatibleChunkIds.add(chunk.getId());
             }
         }

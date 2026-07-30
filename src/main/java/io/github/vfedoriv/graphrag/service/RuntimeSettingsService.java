@@ -74,6 +74,7 @@ public class RuntimeSettingsService {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
         Object parsed = definition.parse(value);
+        validateProspectiveChunking(Map.of(key, parsed), null);
         RuntimeSettingOverrideNode node = overrideStore.getOrCreate(key);
         node.setValue(definition.toStorage(parsed));
         node.setLifecycleState(lifecycle.state(definition, parsed));
@@ -111,6 +112,9 @@ public class RuntimeSettingsService {
             Object parsed = definition.parse(update.value());
             parsedUpdates.add(new ParsedSettingUpdate(definition, parsed));
         }
+        Map<String, Object> prospectiveValues = new LinkedHashMap<>();
+        parsedUpdates.forEach(update -> prospectiveValues.put(update.definition().key(), update.value()));
+        validateProspectiveChunking(prospectiveValues, null);
 
         Instant updatedAt = Instant.now();
         for (ParsedSettingUpdate update : parsedUpdates) {
@@ -138,6 +142,7 @@ public class RuntimeSettingsService {
         if (!definition.mutable()) {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
+        validateProspectiveChunking(Map.of(), key);
         overrideStore.delete(key);
         applyAfterCommit(() -> definition.applyLive(definition.defaultValue()));
         return toResponse(definition);
@@ -180,10 +185,16 @@ public class RuntimeSettingsService {
 
     @RelationalTransactional(readOnly = true)
     public ChunkingSettings chunking() {
+        int targetTokens = precedenceInteger("app.chunking.target-tokens", "app.chunking.max-tokens");
+        int hardCharacterLimit =
+            precedenceInteger("app.chunking.hard-character-limit", "app.chunking.max-characters");
+        int overlapTokens = integer("app.chunking.overlap-tokens");
+        validateChunking(targetTokens, overlapTokens, hardCharacterLimit);
         return new ChunkingSettings(
-            integer("app.chunking.max-tokens"),
-            integer("app.chunking.overlap-tokens"),
-            integer("app.chunking.max-characters")
+            string("app.chunking.strategy"),
+            targetTokens,
+            overlapTokens,
+            hardCharacterLimit
         );
     }
 
@@ -296,6 +307,93 @@ public class RuntimeSettingsService {
         return (Boolean) currentValue(requireDefinition(key));
     }
 
+    private String string(String key) {
+        return String.valueOf(currentValue(requireDefinition(key)));
+    }
+
+    private int precedenceInteger(String canonicalKey, String compatibilityKey) {
+        if (hasOverride(canonicalKey)) {
+            return integer(canonicalKey);
+        }
+        if (hasOverride(compatibilityKey)) {
+            return integer(compatibilityKey);
+        }
+        return integer(canonicalKey);
+    }
+
+    private boolean hasOverride(String key) {
+        return overrideStore.configured() && overrideStore.find(key).isPresent();
+    }
+
+    private void validateProspectiveChunking(Map<String, Object> pending, String clearedKey) {
+        boolean touchesChunking = pending.keySet().stream().anyMatch(key -> key.startsWith("app.chunking."))
+            || (clearedKey != null && clearedKey.startsWith("app.chunking."));
+        if (!touchesChunking) {
+            return;
+        }
+        int targetTokens = prospectivePrecedenceInteger(
+            "app.chunking.target-tokens",
+            "app.chunking.max-tokens",
+            pending,
+            clearedKey
+        );
+        int overlapTokens = prospectiveInteger("app.chunking.overlap-tokens", pending, clearedKey);
+        int hardCharacterLimit = prospectivePrecedenceInteger(
+            "app.chunking.hard-character-limit",
+            "app.chunking.max-characters",
+            pending,
+            clearedKey
+        );
+        validateChunking(targetTokens, overlapTokens, hardCharacterLimit);
+    }
+
+    private int prospectivePrecedenceInteger(
+        String canonicalKey,
+        String compatibilityKey,
+        Map<String, Object> pending,
+        String clearedKey
+    ) {
+        if (pending.containsKey(canonicalKey)) {
+            return (Integer) pending.get(canonicalKey);
+        }
+        boolean canonicalOverride = !canonicalKey.equals(clearedKey) && hasOverride(canonicalKey);
+        if (canonicalOverride) {
+            return integer(canonicalKey);
+        }
+        if (pending.containsKey(compatibilityKey)) {
+            return (Integer) pending.get(compatibilityKey);
+        }
+        boolean compatibilityOverride = !compatibilityKey.equals(clearedKey) && hasOverride(compatibilityKey);
+        if (compatibilityOverride) {
+            return integer(compatibilityKey);
+        }
+        return (Integer) requireDefinition(canonicalKey).defaultValue();
+    }
+
+    private int prospectiveInteger(String key, Map<String, Object> pending, String clearedKey) {
+        if (pending.containsKey(key)) {
+            return (Integer) pending.get(key);
+        }
+        if (key.equals(clearedKey)) {
+            return (Integer) requireDefinition(key).defaultValue();
+        }
+        return integer(key);
+    }
+
+    private void validateChunking(int targetTokens, int overlapTokens, int hardCharacterLimit) {
+        if (targetTokens < 1) {
+            throw new IllegalArgumentException("app.chunking.target-tokens must be greater than zero");
+        }
+        if (overlapTokens < 0 || overlapTokens >= targetTokens) {
+            throw new IllegalArgumentException(
+                "app.chunking.overlap-tokens must be non-negative and smaller than the effective target"
+            );
+        }
+        if (hardCharacterLimit < 1) {
+            throw new IllegalArgumentException("app.chunking.hard-character-limit must be greater than zero");
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private List<String> stringList(String key) {
         return (List<String>) currentValue(requireDefinition(key));
@@ -340,7 +438,19 @@ public class RuntimeSettingsService {
     ) {
     }
 
-    public record ChunkingSettings(int maxTokens, int overlapTokens, int maxCharacters) {
+    public record ChunkingSettings(
+        String strategy,
+        int targetTokens,
+        int overlapTokens,
+        int hardCharacterLimit
+    ) {
+        public int maxTokens() {
+            return targetTokens;
+        }
+
+        public int maxCharacters() {
+            return hardCharacterLimit;
+        }
     }
 
     public record ExtractionSettings(int maxEntitiesPerChunk, int maxRelationshipsPerChunk, int maxRetries) {

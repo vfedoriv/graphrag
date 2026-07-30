@@ -136,6 +136,12 @@ class DocumentProcessingServiceTest {
         assertThat(completedRun.getSavedDefaultsJson()).contains("\"preserveLineBreaks\":true");
         assertThat(completedRun.getRequestedOptionsJson()).contains("\"preserveLineBreaks\":false");
         assertThat(completedRun.getEffectiveOptionsJson()).contains("\"preserveLineBreaks\":false");
+        assertThat(completedRun.getChunkStrategy()).isEqualTo("fixed-character");
+        assertThat(completedRun.getChunkStrategyRevision()).isEqualTo("fixed-character-v1");
+        assertThat(completedRun.getChunkSettingsHash()).matches("[0-9a-f]{64}");
+        assertThat(completedRun.getTokenizerId()).isEqualTo("cl100k_base");
+        assertThat(completedRun.getTokenCountMode()).isEqualTo("EXACT");
+        assertThat(completedRun.getEffectiveChunkerRevision()).startsWith("chunker_");
         verify(documentProcessingRunRepository).deactivateOtherCompletedRuns("doc-1", completedRun.getId());
     }
 
@@ -151,6 +157,7 @@ class DocumentProcessingServiceTest {
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
+        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile(appProperties));
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
         when(documentParsingService.parseStructured(
@@ -303,6 +310,12 @@ class DocumentProcessingServiceTest {
             .contains("\"pageNumber\":1")
             .contains("\"pageCount\":2")
             .contains("\"parserMetadata\":{\"Content-Type\":\"application/pdf\"}");
+        assertThat(chunkCaptor.getAllValues().get(0).getChunkStrategy()).isEqualTo("fixed-character");
+        assertThat(chunkCaptor.getAllValues().get(0).getChunkStrategyRevision()).isEqualTo("fixed-character-v1");
+        assertThat(chunkCaptor.getAllValues().get(0).getTokenizerId()).isEqualTo("cl100k_base");
+        assertThat(chunkCaptor.getAllValues().get(0).getTokenCountMode()).isEqualTo("EXACT");
+        assertThat(chunkCaptor.getAllValues().get(0).getEffectiveChunkerRevision()).startsWith("chunker_");
+        assertThat(chunkCaptor.getAllValues().get(0).getSourceStart()).isZero();
         assertThat(chunkCaptor.getAllValues().get(2).getMetadata())
             .contains("\"sectionIndex\":1")
             .contains("\"pageNumber\":2")

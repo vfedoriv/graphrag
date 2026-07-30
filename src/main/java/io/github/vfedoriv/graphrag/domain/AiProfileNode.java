@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.domain;
 
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import java.time.Instant;
 
 public class AiProfileNode {
@@ -11,6 +12,7 @@ public class AiProfileNode {
     private String apiKey;
     private String chatModel;
     private String embeddingModel;
+    private TokenizerId tokenizerId;
     private int embeddingDimensions;
     private int timeoutSeconds;
     private int maxRetries;
@@ -73,6 +75,14 @@ public class AiProfileNode {
 
     public void setEmbeddingModel(String embeddingModel) {
         this.embeddingModel = embeddingModel;
+    }
+
+    public TokenizerId getTokenizerId() {
+        return tokenizerId;
+    }
+
+    public void setTokenizerId(TokenizerId tokenizerId) {
+        this.tokenizerId = tokenizerId;
     }
 
     public int getEmbeddingDimensions() {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.springframework.core.env.Environment;
@@ -46,9 +47,51 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.query.hybrid-search-default-graph-depth", "query", appProperties.query().hybridSearchDefaultGraphDepth(), 0);
         addInt(map, "app.query.hybrid-search-max-graph-depth", "query", appProperties.query().hybridSearchMaxGraphDepth(), 0);
         addBool(map, "app.query.hybrid-search-include-chunk-text", "query", appProperties.query().hybridSearchIncludeChunkText());
-        addInt(map, "app.chunking.max-tokens", "chunking", appProperties.chunking().maxTokens(), 1);
-        addInt(map, "app.chunking.overlap-tokens", "chunking", appProperties.chunking().overlapTokens(), 0);
-        addInt(map, "app.chunking.max-characters", "chunking", appProperties.chunking().maxCharacters(), 1);
+        addLiveString(
+            map,
+            "app.chunking.strategy",
+            "chunking",
+            appProperties.chunking().effectiveStrategy(),
+            Map.of("enum", List.of("fixed-character")),
+            value -> codecs.enumString("app.chunking.strategy", value, Set.of("fixed-character")),
+            value -> { },
+            "Selects the versioned strategy for subsequent processing; existing chunks retain their snapshotted revision."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.target-tokens",
+            appProperties.chunking().effectiveTargetTokens(),
+            1,
+            "Canonical target token count for subsequent processing."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.overlap-tokens",
+            appProperties.chunking().overlapTokens(),
+            0,
+            "Canonical overlap token count; it must remain smaller than the effective target."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.hard-character-limit",
+            appProperties.chunking().effectiveHardCharacterLimit(),
+            1,
+            "Hard provider-safety guard for chunk characters."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.max-tokens",
+            appProperties.chunking().maxTokens(),
+            1,
+            "Compatibility alias for app.chunking.target-tokens; the canonical key takes precedence."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.max-characters",
+            appProperties.chunking().maxCharacters(),
+            1,
+            "Compatibility alias for app.chunking.hard-character-limit; the canonical key takes precedence."
+        );
         addInt(map, "app.extraction.max-entities-per-chunk", "extraction", appProperties.extraction().maxEntitiesPerChunk(), 1);
         addInt(map, "app.extraction.max-relationships-per-chunk", "extraction", appProperties.extraction().maxRelationshipsPerChunk(), 1);
         addInt(map, "app.extraction.max-retries", "extraction", appProperties.extraction().maxRetries(), 0);
@@ -129,6 +172,33 @@ public final class RuntimeSettingsCatalog {
     private void addInt(Map<String, RuntimeSettingDefinition> map, String key, String category, int defaultValue, int min) {
         put(map, key, category, SettingType.INTEGER, defaultValue, true, true, false, Map.of("min", min),
             value -> codecs.integer(key, value, min), Objects::toString, Function.identity(), value -> { }, UpdateMode.LIVE, null);
+    }
+
+    private void addChunkingInt(
+        Map<String, RuntimeSettingDefinition> map,
+        String key,
+        int defaultValue,
+        int min,
+        String description
+    ) {
+        put(
+            map,
+            key,
+            "chunking",
+            SettingType.INTEGER,
+            defaultValue,
+            true,
+            true,
+            false,
+            Map.of("min", min),
+            value -> codecs.integer(key, value, min),
+            Objects::toString,
+            Function.identity(),
+            value -> { },
+            UpdateMode.LIVE,
+            null,
+            description
+        );
     }
 
     private void addBool(Map<String, RuntimeSettingDefinition> map, String key, String category, boolean defaultValue) {

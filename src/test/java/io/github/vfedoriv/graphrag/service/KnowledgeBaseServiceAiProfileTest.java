@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.KnowledgeBaseNotEmptyException;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
@@ -110,6 +111,32 @@ class KnowledgeBaseServiceAiProfileTest {
             .isInstanceOf(ConflictException.class)
             .hasMessageContaining("embedding space");
 
+        verify(knowledgeBaseRepository, never()).save(any(KnowledgeBaseNode.class));
+    }
+
+    @Test
+    void rejectsProfileAssignmentWhenResolvedTokenizerChanges() {
+        KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
+        AiProfileService aiProfileService = mock(AiProfileService.class);
+        DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
+        KnowledgeBaseNode knowledgeBase = knowledgeBase("kb-1", "profile-old");
+        AiProfileNode incompatible = profile("profile-new", "embedding-alias", 768);
+        incompatible.setTokenizerId(new TokenizerId(TokenizerId.CL100K_BASE));
+        when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
+        when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
+        when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1"))
+            .thenReturn(List.of(chunk("embedding-alias", 768)));
+        KnowledgeBaseService service = new KnowledgeBaseService(
+            knowledgeBaseRepository,
+            aiProfileService,
+            chunkRepository
+        );
+
+        assertThatThrownBy(() -> service.updateActiveAiProfile("kb-1", "profile-new"))
+            .isInstanceOf(ConflictException.class)
+            .hasMessageContaining("incompatible");
+
+        assertThat(knowledgeBase.getActiveAiProfileId()).isEqualTo("profile-old");
         verify(knowledgeBaseRepository, never()).save(any(KnowledgeBaseNode.class));
     }
 

@@ -1,6 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,14 +15,35 @@ public final class EmbeddingSpaceIdentity {
     }
 
     public static EmbeddingSpace fromProfile(AiProfileNode profile) {
-        return derive(profile.getBaseUrl(), profile.getEmbeddingModel(), profile.getEmbeddingDimensions());
+        return derive(
+            profile.getBaseUrl(),
+            profile.getEmbeddingModel(),
+            profile.getEmbeddingDimensions(),
+            profile.getTokenizerId()
+        );
     }
 
     public static EmbeddingSpace derive(String baseUrl, String model, int dimensions) {
+        return derive(baseUrl, model, dimensions, null);
+    }
+
+    public static EmbeddingSpace derive(
+        String baseUrl,
+        String model,
+        int dimensions,
+        TokenizerId explicitTokenizerId
+    ) {
         String normalizedBaseUrl = normalizeBaseUrl(baseUrl);
         String normalizedModel = model == null ? "" : model.strip();
         String source = normalizedBaseUrl + "\n" + normalizedModel + "\n" + dimensions;
-        return new EmbeddingSpace("es_" + sha256(source), normalizedBaseUrl, normalizedModel, dimensions);
+        TokenEstimator estimator = new TokenizerPolicy().resolve(explicitTokenizerId, normalizedModel);
+        return new EmbeddingSpace(
+            "es_" + sha256(source),
+            normalizedBaseUrl,
+            normalizedModel,
+            dimensions,
+            estimator.tokenizerId().value()
+        );
     }
 
     static String normalizeBaseUrl(String baseUrl) {

@@ -33,6 +33,9 @@ public class AiProfileEntity {
     @Column(name = "embedding_model", nullable = false, length = 255)
     private String embeddingModel;
 
+    @Column(name = "tokenizer_id", length = 255)
+    private String tokenizerId;
+
     @Column(name = "embedding_dimensions", nullable = false)
     private int embeddingDimensions;
 
@@ -105,6 +108,14 @@ public class AiProfileEntity {
 
     public void setEmbeddingModel(String embeddingModel) {
         this.embeddingModel = embeddingModel;
+    }
+
+    public String getTokenizerId() {
+        return tokenizerId;
+    }
+
+    public void setTokenizerId(String tokenizerId) {
+        this.tokenizerId = tokenizerId;
     }
 
     public int getEmbeddingDimensions() {

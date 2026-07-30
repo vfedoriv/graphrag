@@ -21,6 +21,14 @@ public class DocumentChunkNode {
     private String embeddingModel;
     private int embeddingDimensions;
     private String embeddingSpaceId;
+    private String tokenizerId;
+    private String chunkStrategy;
+    private String chunkStrategyRevision;
+    private String chunkSettingsHash;
+    private String tokenCountMode;
+    private String effectiveChunkerRevision;
+    private Integer sourceStart;
+    private Integer sourceEnd;
     private String metadata;
 
     public String getId() {
@@ -105,6 +113,70 @@ public class DocumentChunkNode {
 
     public void setEmbeddingSpaceId(String embeddingSpaceId) {
         this.embeddingSpaceId = embeddingSpaceId;
+    }
+
+    public String getTokenizerId() {
+        return tokenizerId;
+    }
+
+    public void setTokenizerId(String tokenizerId) {
+        this.tokenizerId = tokenizerId;
+    }
+
+    public String getChunkStrategy() {
+        return chunkStrategy;
+    }
+
+    public void setChunkStrategy(String chunkStrategy) {
+        this.chunkStrategy = chunkStrategy;
+    }
+
+    public String getChunkStrategyRevision() {
+        return chunkStrategyRevision;
+    }
+
+    public void setChunkStrategyRevision(String chunkStrategyRevision) {
+        this.chunkStrategyRevision = chunkStrategyRevision;
+    }
+
+    public String getChunkSettingsHash() {
+        return chunkSettingsHash;
+    }
+
+    public void setChunkSettingsHash(String chunkSettingsHash) {
+        this.chunkSettingsHash = chunkSettingsHash;
+    }
+
+    public String getTokenCountMode() {
+        return tokenCountMode;
+    }
+
+    public void setTokenCountMode(String tokenCountMode) {
+        this.tokenCountMode = tokenCountMode;
+    }
+
+    public String getEffectiveChunkerRevision() {
+        return effectiveChunkerRevision;
+    }
+
+    public void setEffectiveChunkerRevision(String effectiveChunkerRevision) {
+        this.effectiveChunkerRevision = effectiveChunkerRevision;
+    }
+
+    public Integer getSourceStart() {
+        return sourceStart;
+    }
+
+    public void setSourceStart(Integer sourceStart) {
+        this.sourceStart = sourceStart;
+    }
+
+    public Integer getSourceEnd() {
+        return sourceEnd;
+    }
+
+    public void setSourceEnd(Integer sourceEnd) {
+        this.sourceEnd = sourceEnd;
     }
 
     public String getMetadata() {

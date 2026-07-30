@@ -31,8 +31,11 @@ class AppPropertiesTest {
                 "app.model.embedding-dimensions=1536",
                 "app.model.chat-model=gpt-5-mini",
                 "app.storage.documents-root=./var/documents",
+                "app.chunking.strategy=fixed-character",
+                "app.chunking.target-tokens=700",
                 "app.chunking.max-tokens=800",
                 "app.chunking.overlap-tokens=80",
+                "app.chunking.hard-character-limit=3500",
                 "app.chunking.max-characters=4000",
                 "app.query.max-rows=200",
                 "app.query.timeout-seconds=15",
@@ -47,6 +50,9 @@ class AppPropertiesTest {
                 AppProperties properties = context.getBean(AppProperties.class);
                 assertThat(properties.model().chatModel()).isEqualTo("gpt-5-mini");
                 assertThat(properties.query().blockedKeywords()).containsExactly("CREATE", "MERGE");
+                assertThat(properties.chunking().effectiveStrategy()).isEqualTo("fixed-character");
+                assertThat(properties.chunking().effectiveTargetTokens()).isEqualTo(700);
+                assertThat(properties.chunking().effectiveHardCharacterLimit()).isEqualTo(3500);
             });
     }
 

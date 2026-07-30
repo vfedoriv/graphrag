@@ -241,11 +241,29 @@ Domain-specific nodes/relationships are dynamic and schema-driven. Extracted gra
 
 ## Runtime Settings And AI Profiles
 
-On startup, the application seeds a default AI profile from `app.model.*` when no default exists. New knowledge bases are assigned that default profile. Profile API keys are write-only: create/update requests may supply or clear the secret, but read responses expose only configured/masked metadata.
+On startup, the application seeds a default AI profile from `app.model.*` when no default exists. New knowledge bases are assigned that default profile. Profile API keys are write-only: create/update requests may supply or clear the secret, but read responses expose only configured/masked metadata. Profiles may also set a non-secret `tokenizerId`; `cl100k_base` is the supported explicit value. If it is omitted, `text-embedding-ada-002`, `text-embedding-3-small`, and `text-embedding-3-large` resolve to `cl100k_base`, while unknown models use the conservative, versioned `utf8-byte-v1` estimator.
 
 Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, knowledge-base-scoped schema generation, and multi-source schema discovery resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
 
-Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, schema-discovery source/size/chunk/concurrency/timeout limits, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
+Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, schema-discovery source/size/chunk/concurrency/timeout limits, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Chunking updates are validated atomically and apply only to subsequent processing; existing chunks and in-flight attempts retain their snapshotted revisions. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
+
+The active default remains `fixed-character`. Each processing attempt snapshots the strategy and strategy revision, canonical settings hash, tokenizer/estimator identity and revision, exact-versus-conservative count mode, and effective chunker revision. New chunks also retain this provenance plus reliable source offsets. Exact `cl100k_base` counting is implemented through a project-owned adapter over JTokkit; LangChain4j provider types do not leak into application or persistence contracts.
+
+An AI profile request may select an explicit tokenizer for an embedding-model alias:
+
+```json
+{
+  "id": "openai-alias",
+  "name": "OpenAI embedding alias",
+  "baseUrl": "https://api.openai.com/v1",
+  "chatModel": "gpt-5-mini",
+  "embeddingModel": "company-embedding-alias",
+  "tokenizerId": "cl100k_base",
+  "embeddingDimensions": 1536
+}
+```
+
+Profile reads return both `tokenizerId` (nullable configured value) and `resolvedTokenizerId`; they never return the raw API key. Once embedded chunks exist, profile assignment or mutation is rejected if the resolved tokenizer identity would change, just as it is for provider/model/dimension incompatibility.
 
 The runtime settings list exposes `currentValue`, `defaultValue`, `activeValue`, `source`, and `lifecycleState`. Restart-required overrides report `pending-restart` while the saved desired value differs from the startup-active value and `active` after restart when the running default matches the persisted override. Profile-specific property files are resolved before the catalog is built, so listed defaults reflect active Spring profiles.
 
@@ -276,9 +294,12 @@ Key app properties:
 - Storage:
   - `app.storage.documents-root=./var/documents`
 - Chunking:
-  - `app.chunking.max-tokens=800`
+  - `app.chunking.strategy=fixed-character`
+  - `app.chunking.target-tokens=800`
+  - `app.chunking.hard-character-limit=4000`
   - `app.chunking.overlap-tokens=80`
-  - `app.chunking.max-characters=4000`
+  - `app.chunking.max-tokens=800` (compatibility alias; canonical `target-tokens` wins)
+  - `app.chunking.max-characters=4000` (compatibility alias; canonical `hard-character-limit` wins)
 - Query safety:
   - `app.query.max-rows=200`
   - `app.query.timeout-seconds=15`

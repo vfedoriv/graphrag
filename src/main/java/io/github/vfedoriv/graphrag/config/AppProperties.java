@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.nio.file.Path;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -41,10 +42,32 @@ public record AppProperties(
     }
 
     public record Chunking(
-        @Min(1) int maxTokens,
+        String strategy,
+        @Min(1) Integer targetTokens,
         @Min(0) int overlapTokens,
+        @Min(1) Integer hardCharacterLimit,
+        @Min(1) int maxTokens,
         @Min(1) int maxCharacters
     ) {
+        @ConstructorBinding
+        public Chunking {
+        }
+
+        public Chunking(int maxTokens, int overlapTokens, int maxCharacters) {
+            this(null, null, overlapTokens, null, maxTokens, maxCharacters);
+        }
+
+        public String effectiveStrategy() {
+            return strategy == null || strategy.isBlank() ? "fixed-character" : strategy.strip();
+        }
+
+        public int effectiveTargetTokens() {
+            return targetTokens == null ? maxTokens : targetTokens;
+        }
+
+        public int effectiveHardCharacterLimit() {
+            return hardCharacterLimit == null ? maxCharacters : hardCharacterLimit;
+        }
     }
 
     public record Query(

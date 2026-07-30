@@ -63,6 +63,63 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void canonicalChunkingKeysTakePrecedenceOverCompatibilityAliases() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        service.update("app.chunking.max-tokens", 700);
+        assertThat(service.chunking().targetTokens()).isEqualTo(700);
+
+        service.update("app.chunking.target-tokens", 600);
+        service.update("app.chunking.max-tokens", 500);
+
+        assertThat(service.chunking().strategy()).isEqualTo("fixed-character");
+        assertThat(service.chunking().targetTokens()).isEqualTo(600);
+        assertThat(service.chunking().hardCharacterLimit()).isEqualTo(4000);
+    }
+
+    @Test
+    void invalidChunkingBulkUpdateIsRejectedAtomically() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.chunking.target-tokens", 100),
+            new RuntimeSettingUpdateRequest("app.chunking.overlap-tokens", 100)
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("smaller than the effective target");
+
+        assertThat(store).doesNotContainKeys(
+            "app.chunking.target-tokens",
+            "app.chunking.overlap-tokens"
+        );
+        assertThat(service.chunking().targetTokens()).isEqualTo(800);
+        assertThat(service.chunking().overlapTokens()).isEqualTo(80);
+    }
+
+    @Test
+    void chunkingCatalogReportsCanonicalLifecycleAndSnapshotRetention() {
+        RuntimeSettingsService service = service(new LinkedHashMap<>());
+
+        Map<String, RuntimeSettingResponse> settings = settingsByKey(service);
+
+        assertThat(settings).containsKeys(
+            "app.chunking.strategy",
+            "app.chunking.target-tokens",
+            "app.chunking.overlap-tokens",
+            "app.chunking.hard-character-limit",
+            "app.chunking.max-tokens",
+            "app.chunking.max-characters"
+        );
+        assertThat(settings.get("app.chunking.strategy").constraints())
+            .containsEntry("enum", List.of("fixed-character"));
+        assertThat(settings.get("app.chunking.strategy").description())
+            .contains("existing chunks retain their snapshotted revision");
+        assertThat(settings.get("app.chunking.target-tokens").updateMode()).isEqualTo("live");
+    }
+
+    @Test
     void mutableRestartRequiredOverrideIsPersistedAsPendingDesiredValue() {
         Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
         RuntimeSettingsService service = service(store);

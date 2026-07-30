@@ -102,6 +102,13 @@ final class DocumentWorkflowRelationalMapper {
         target.setRequestedOptionsJson(source.getRequestedOptionsJson());
         target.setSavedDefaultsJson(source.getSavedDefaultsJson());
         target.setEffectiveOptionsJson(source.getEffectiveOptionsJson());
+        target.setChunkStrategy(source.getChunkStrategy());
+        target.setChunkStrategyRevision(source.getChunkStrategyRevision());
+        target.setChunkSettingsHash(source.getChunkSettingsHash());
+        target.setTokenizerId(source.getTokenizerId());
+        target.setTokenizerRevision(source.getTokenizerRevision());
+        target.setTokenCountMode(source.getTokenCountMode());
+        target.setEffectiveChunkerRevision(source.getEffectiveChunkerRevision());
         target.setStatus(source.getStatus());
         target.setStage(source.getStage());
         target.setStartedAt(source.getStartedAt());
@@ -127,6 +134,13 @@ final class DocumentWorkflowRelationalMapper {
         target.setRequestedOptionsJson(source.getRequestedOptionsJson());
         target.setSavedDefaultsJson(source.getSavedDefaultsJson());
         target.setEffectiveOptionsJson(source.getEffectiveOptionsJson());
+        target.setChunkStrategy(source.getChunkStrategy());
+        target.setChunkStrategyRevision(source.getChunkStrategyRevision());
+        target.setChunkSettingsHash(source.getChunkSettingsHash());
+        target.setTokenizerId(source.getTokenizerId());
+        target.setTokenizerRevision(source.getTokenizerRevision());
+        target.setTokenCountMode(source.getTokenCountMode());
+        target.setEffectiveChunkerRevision(source.getEffectiveChunkerRevision());
         target.setStatus(source.getStatus());
         target.setStage(source.getStage());
         target.setStartedAt(source.getStartedAt());

@@ -14,6 +14,7 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.document.ParsedDocument;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
@@ -138,19 +139,23 @@ public class DocumentProcessingService {
             null,
             workflowAttributes
         ))) {
-            DocumentProcessingRunNode processingRun = processingRunLifecycle.start(document, optionSet);
+            AiProfileNode activeProfile = activeProfile(document.getKnowledgeBaseId());
+            ChunkingContext chunkingContext =
+                chunkingService.snapshot(activeProfile, optionSet.detection().parserId());
+            DocumentProcessingRunNode processingRun =
+                processingRunLifecycle.start(document, optionSet, chunkingContext);
             try {
                 processingRun = processingRunLifecycle.checkpoint(processingRun, "PARSING");
                 document = setStatus(document, DocumentStatus.PARSING, null);
                 ParsedDocument parsedDocument = sourceParsingStage.parse(document, optionSet.effectiveOptions());
                 processingRun = processingRunLifecycle.checkpoint(processingRun, "CHUNKING");
-                List<PreparedChunk> chunks = chunkPreparationStage.prepare(document, processingRun, parsedDocument);
+                List<PreparedChunk> chunks =
+                    chunkPreparationStage.prepare(document, processingRun, parsedDocument, chunkingContext);
                 workflow.highCardinalityAttribute("document.chunk_count", String.valueOf(chunks.size()));
                 log.info("Document parsed and chunked: documentId={}, chunks={}", documentId, chunks.size());
                 processingRun = processingRunLifecycle.checkpoint(processingRun, "EMBEDDING");
                 document = setStatus(document, DocumentStatus.EMBEDDING, null);
 
-                AiProfileNode activeProfile = activeProfile(document.getKnowledgeBaseId());
                 List<DocumentChunkNode> persistedChunks = embeddingPersistenceStage.execute(document, activeProfile, chunks);
                 document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
                 processingRun = processingRunLifecycle.checkpoint(processingRun, "EXTRACTING_GRAPH");

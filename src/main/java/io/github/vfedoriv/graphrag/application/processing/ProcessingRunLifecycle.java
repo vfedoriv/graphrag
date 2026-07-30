@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.application.processing;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingOptionSet;
 import java.time.Instant;
@@ -25,6 +26,23 @@ public class ProcessingRunLifecycle {
 
     @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public DocumentProcessingRunNode start(DocumentUploadNode document, DocumentProcessingOptionSet options) {
+        return createRun(document, options, null);
+    }
+
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
+    public DocumentProcessingRunNode start(
+        DocumentUploadNode document,
+        DocumentProcessingOptionSet options,
+        ChunkingContext chunkingContext
+    ) {
+        return createRun(document, options, chunkingContext);
+    }
+
+    private DocumentProcessingRunNode createRun(
+        DocumentUploadNode document,
+        DocumentProcessingOptionSet options,
+        ChunkingContext chunkingContext
+    ) {
         DocumentProcessingRunNode run = new DocumentProcessingRunNode();
         run.setId(UUID.randomUUID().toString());
         run.setDocumentId(document.getId());
@@ -35,6 +53,15 @@ public class ProcessingRunLifecycle {
         run.setRequestedOptionsJson(jsonCodec.writeMap(options.requestedOptions()));
         run.setSavedDefaultsJson(jsonCodec.writeMap(options.savedDefaults()));
         run.setEffectiveOptionsJson(jsonCodec.writeMap(options.effectiveOptions()));
+        if (chunkingContext != null) {
+            run.setChunkStrategy(chunkingContext.strategyName());
+            run.setChunkStrategyRevision(chunkingContext.strategyRevision());
+            run.setChunkSettingsHash(chunkingContext.settingsHash().value());
+            run.setTokenizerId(chunkingContext.tokenEstimator().tokenizerId().value());
+            run.setTokenizerRevision(chunkingContext.tokenEstimator().revision());
+            run.setTokenCountMode(chunkingContext.tokenEstimator().countMode().name());
+            run.setEffectiveChunkerRevision(chunkingContext.effectiveRevision().value());
+        }
         run.setStatus(DocumentProcessingRunStatus.RUNNING);
         run.setStage("STARTED");
         run.setStartedAt(Instant.now());

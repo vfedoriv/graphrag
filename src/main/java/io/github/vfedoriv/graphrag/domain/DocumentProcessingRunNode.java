@@ -13,6 +13,13 @@ public class DocumentProcessingRunNode {
     private String requestedOptionsJson;
     private String savedDefaultsJson;
     private String effectiveOptionsJson;
+    private String chunkStrategy;
+    private String chunkStrategyRevision;
+    private String chunkSettingsHash;
+    private String tokenizerId;
+    private String tokenizerRevision;
+    private String tokenCountMode;
+    private String effectiveChunkerRevision;
     private DocumentProcessingRunStatus status;
     private String stage;
     private Instant startedAt;
@@ -102,6 +109,62 @@ public class DocumentProcessingRunNode {
 
     public void setEffectiveOptionsJson(String effectiveOptionsJson) {
         this.effectiveOptionsJson = effectiveOptionsJson;
+    }
+
+    public String getChunkStrategy() {
+        return chunkStrategy;
+    }
+
+    public void setChunkStrategy(String chunkStrategy) {
+        this.chunkStrategy = chunkStrategy;
+    }
+
+    public String getChunkStrategyRevision() {
+        return chunkStrategyRevision;
+    }
+
+    public void setChunkStrategyRevision(String chunkStrategyRevision) {
+        this.chunkStrategyRevision = chunkStrategyRevision;
+    }
+
+    public String getChunkSettingsHash() {
+        return chunkSettingsHash;
+    }
+
+    public void setChunkSettingsHash(String chunkSettingsHash) {
+        this.chunkSettingsHash = chunkSettingsHash;
+    }
+
+    public String getTokenizerId() {
+        return tokenizerId;
+    }
+
+    public void setTokenizerId(String tokenizerId) {
+        this.tokenizerId = tokenizerId;
+    }
+
+    public String getTokenizerRevision() {
+        return tokenizerRevision;
+    }
+
+    public void setTokenizerRevision(String tokenizerRevision) {
+        this.tokenizerRevision = tokenizerRevision;
+    }
+
+    public String getTokenCountMode() {
+        return tokenCountMode;
+    }
+
+    public void setTokenCountMode(String tokenCountMode) {
+        this.tokenCountMode = tokenCountMode;
+    }
+
+    public String getEffectiveChunkerRevision() {
+        return effectiveChunkerRevision;
+    }
+
+    public void setEffectiveChunkerRevision(String effectiveChunkerRevision) {
+        this.effectiveChunkerRevision = effectiveChunkerRevision;
     }
 
     public DocumentProcessingRunStatus getStatus() {

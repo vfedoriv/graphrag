@@ -144,6 +144,11 @@ class DocumentWorkflowRelationalRepositoryIntegrationTest {
         DocumentProcessingRunNode second = processingRunRepository.save(completedRun("run-second", "doc-runs", true));
 
         assertThat(second.isActiveCompleted()).isTrue();
+        assertThat(second.getChunkStrategy()).isEqualTo("fixed-character");
+        assertThat(second.getChunkSettingsHash()).isEqualTo("a".repeat(64));
+        assertThat(second.getTokenizerId()).isEqualTo("cl100k_base");
+        assertThat(second.getTokenCountMode()).isEqualTo("EXACT");
+        assertThat(second.getEffectiveChunkerRevision()).startsWith("chunker_");
         assertThat(processingRunRepository.findByDocumentIdOrderByStartedAtAsc("doc-runs"))
             .hasSize(2)
             .extracting(DocumentProcessingRunNode::isActiveCompleted)
@@ -232,6 +237,13 @@ class DocumentWorkflowRelationalRepositoryIntegrationTest {
         run.setRequestedOptionsJson("{}");
         run.setSavedDefaultsJson("{}");
         run.setEffectiveOptionsJson("{}");
+        run.setChunkStrategy("fixed-character");
+        run.setChunkStrategyRevision("fixed-character-v1");
+        run.setChunkSettingsHash("a".repeat(64));
+        run.setTokenizerId("cl100k_base");
+        run.setTokenizerRevision("cl100k-base-jtokkit-1.1.0");
+        run.setTokenCountMode("EXACT");
+        run.setEffectiveChunkerRevision("chunker_" + "b".repeat(64));
         run.setStatus(DocumentProcessingRunStatus.COMPLETED);
         run.setStage("COMPLETED");
         run.setStartedAt("run-first".equals(id)

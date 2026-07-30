@@ -108,10 +108,14 @@ class HybridSearchIntegrationTest {
         neo4jClient.query("""
             MATCH (chunk:DocumentChunk {knowledgeBaseId: $knowledgeBaseId})
             SET chunk.embeddingSpaceId = $embeddingSpaceId
+            SET chunk.embeddingModel = $embeddingModel
+            SET chunk.tokenizerId = $tokenizerId
             SET chunk:%s
             """.formatted(embeddingSpaceIndexService.labelName(knowledgeBaseId, embeddingSpace.id())))
             .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(embeddingSpace.id()).to("embeddingSpaceId")
+            .bind(embeddingSpace.model()).to("embeddingModel")
+            .bind(embeddingSpace.tokenizerId()).to("tokenizerId")
             .run();
     }
 

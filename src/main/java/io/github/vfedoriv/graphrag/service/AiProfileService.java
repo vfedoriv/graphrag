@@ -5,6 +5,9 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
+import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
@@ -30,6 +33,7 @@ public class AiProfileService implements ApplicationRunner {
     private final AppProperties appProperties;
     private final org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
+    private final TokenizerPolicy tokenizerPolicy = new TokenizerPolicy();
 
     @Autowired
     public AiProfileService(
@@ -68,6 +72,7 @@ public class AiProfileService implements ApplicationRunner {
                 profile.setApiKey(appProperties.model().apiKey());
                 profile.setChatModel(appProperties.model().chatModel());
                 profile.setEmbeddingModel(appProperties.model().embeddingModel());
+                profile.setTokenizerId(null);
                 profile.setEmbeddingDimensions(appProperties.model().embeddingDimensions());
                 profile.setTimeoutSeconds(DEFAULT_TIMEOUT_SECONDS);
                 profile.setMaxRetries(DEFAULT_MAX_RETRIES);
@@ -108,7 +113,7 @@ public class AiProfileService implements ApplicationRunner {
             throw new ConflictException("AI profile already exists: " + request.id());
         }
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
-            timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()));
+            timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()), request.tokenizerId());
         Instant now = Instant.now();
         AiProfileNode profile = new AiProfileNode();
         profile.setId(request.id());
@@ -121,6 +126,7 @@ public class AiProfileService implements ApplicationRunner {
             false,
             request.chatModel(),
             request.embeddingModel(),
+            tokenizerPolicy.validateExplicit(request.tokenizerId()),
             request.embeddingDimensions(),
             timeoutSeconds(request.timeoutSeconds()),
             maxRetries(request.maxRetries()),
@@ -145,9 +151,10 @@ public class AiProfileService implements ApplicationRunner {
     public AiProfileResponse update(String id, UpdateAiProfileRequest request) {
         AiProfileNode profile = getNode(id);
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
-            timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()));
+            timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()), request.tokenizerId());
+        TokenizerId requestedTokenizerId = tokenizerPolicy.validateExplicit(request.tokenizerId());
         EmbeddingSpace requestedEmbeddingSpace = EmbeddingSpaceIdentity.derive(
-            request.baseUrl(), request.embeddingModel(), request.embeddingDimensions()
+            request.baseUrl(), request.embeddingModel(), request.embeddingDimensions(), requestedTokenizerId
         );
         rejectIncompatibleProfileUpdate(profile.getId(), requestedEmbeddingSpace);
         applyValues(
@@ -158,6 +165,7 @@ public class AiProfileService implements ApplicationRunner {
             Boolean.TRUE.equals(request.clearApiKey()),
             request.chatModel(),
             request.embeddingModel(),
+            requestedTokenizerId,
             request.embeddingDimensions(),
             timeoutSeconds(request.timeoutSeconds()),
             maxRetries(request.maxRetries()),
@@ -203,6 +211,7 @@ public class AiProfileService implements ApplicationRunner {
         boolean clearApiKey,
         String chatModel,
         String embeddingModel,
+        TokenizerId tokenizerId,
         int embeddingDimensions,
         int timeoutSeconds,
         int maxRetries,
@@ -217,6 +226,7 @@ public class AiProfileService implements ApplicationRunner {
         }
         profile.setChatModel(chatModel.strip());
         profile.setEmbeddingModel(embeddingModel.strip());
+        profile.setTokenizerId(tokenizerId);
         profile.setEmbeddingDimensions(embeddingDimensions);
         profile.setTimeoutSeconds(timeoutSeconds);
         profile.setMaxRetries(maxRetries);
@@ -229,7 +239,8 @@ public class AiProfileService implements ApplicationRunner {
         String embeddingModel,
         int embeddingDimensions,
         int timeoutSeconds,
-        int maxRetries
+        int maxRetries,
+        String tokenizerId
     ) {
         try {
             URI uri = URI.create(baseUrl);
@@ -254,6 +265,7 @@ public class AiProfileService implements ApplicationRunner {
         if (maxRetries < 0) {
             throw new IllegalArgumentException("maxRetries must be greater than or equal to zero");
         }
+        tokenizerPolicy.validateExplicit(tokenizerId);
     }
 
     private void unsetOtherDefaults(String profileId) {
@@ -297,12 +309,15 @@ public class AiProfileService implements ApplicationRunner {
 
     public AiProfileResponse toResponse(AiProfileNode profile) {
         boolean configured = profile.getApiKey() != null && !profile.getApiKey().isBlank();
+        TokenEstimator resolvedTokenizer = tokenizerPolicy.resolve(profile.getTokenizerId(), profile.getEmbeddingModel());
         return new AiProfileResponse(
             profile.getId(),
             profile.getName(),
             profile.getBaseUrl(),
             profile.getChatModel(),
             profile.getEmbeddingModel(),
+            profile.getTokenizerId() == null ? null : profile.getTokenizerId().value(),
+            resolvedTokenizer.tokenizerId().value(),
             profile.getEmbeddingDimensions(),
             profile.getTimeoutSeconds(),
             profile.getMaxRetries(),

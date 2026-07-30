@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.infrastructure.persistence.relational;
 
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.AiProfileEntity;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
@@ -82,6 +83,7 @@ public class RelationalAiProfileRepository implements AiProfileRepository {
         target.setApiKey(source.getApiKey());
         target.setChatModel(source.getChatModel());
         target.setEmbeddingModel(source.getEmbeddingModel());
+        target.setTokenizerId(source.getTokenizerId() == null ? null : source.getTokenizerId().value());
         target.setEmbeddingDimensions(source.getEmbeddingDimensions());
         target.setTimeoutSeconds(source.getTimeoutSeconds());
         target.setMaxRetries(source.getMaxRetries());
@@ -101,6 +103,7 @@ public class RelationalAiProfileRepository implements AiProfileRepository {
         target.setApiKey(source.getApiKey());
         target.setChatModel(source.getChatModel());
         target.setEmbeddingModel(source.getEmbeddingModel());
+        target.setTokenizerId(source.getTokenizerId() == null ? null : new TokenizerId(source.getTokenizerId()));
         target.setEmbeddingDimensions(source.getEmbeddingDimensions());
         target.setTimeoutSeconds(source.getTimeoutSeconds());
         target.setMaxRetries(source.getMaxRetries());

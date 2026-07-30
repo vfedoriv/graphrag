@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
@@ -122,6 +123,23 @@ class DocumentProcessingIntegrationTest {
         );
         assertThat(chunks).extracting(DocumentChunkNode::getEmbeddingSpaceId)
             .containsOnly(embeddingSpace.id());
+        assertThat(chunks).extracting(DocumentChunkNode::getChunkStrategy)
+            .containsOnly("fixed-character");
+        assertThat(chunks).extracting(DocumentChunkNode::getTokenizerId)
+            .containsOnly("cl100k_base");
+        assertThat(chunks).extracting(DocumentChunkNode::getTokenCountMode)
+            .containsOnly("EXACT");
+        assertThat(chunks).extracting(DocumentChunkNode::getEffectiveChunkerRevision)
+            .allMatch(revision -> revision != null && revision.startsWith("chunker_"));
+        assertThat(chunks).extracting(DocumentChunkNode::getSourceStart)
+            .allMatch(position -> position != null && position >= 0);
+        List<DocumentProcessingRunNode> runHistory =
+            processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId());
+        assertThat(runHistory).hasSize(2);
+        assertThat(runHistory).extracting(DocumentProcessingRunNode::getTokenizerId)
+            .containsOnly("cl100k_base");
+        assertThat(runHistory).extracting(DocumentProcessingRunNode::getEffectiveChunkerRevision)
+            .allMatch(revision -> revision != null && revision.startsWith("chunker_"));
 
         Long indexCount = neo4jClient.query("""
             SHOW INDEXES YIELD name, type

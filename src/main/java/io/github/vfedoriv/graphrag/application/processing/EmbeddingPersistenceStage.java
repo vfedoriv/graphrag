@@ -78,7 +78,17 @@ public final class EmbeddingPersistenceStage {
         chunk.setDocumentId(document.getId());
         chunk.setChunkIndex(index);
         chunk.setText(preparedChunk.text());
-        chunk.setTokenEstimate(chunkingService.tokenEstimate(preparedChunk.text()));
+        chunk.setTokenEstimate(preparedChunk.tokenCount());
+        if (preparedChunk.slice() != null) {
+            chunk.setChunkStrategy(preparedChunk.slice().strategyName());
+            chunk.setChunkStrategyRevision(preparedChunk.slice().strategyRevision());
+            chunk.setChunkSettingsHash(preparedChunk.slice().settingsHash().value());
+            chunk.setTokenizerId(preparedChunk.slice().tokenizerId().value());
+            chunk.setTokenCountMode(preparedChunk.slice().countMode().name());
+            chunk.setEffectiveChunkerRevision(preparedChunk.slice().effectiveRevision().value());
+            chunk.setSourceStart(preparedChunk.slice().sourceStart());
+            chunk.setSourceEnd(preparedChunk.slice().sourceEnd());
+        }
         chunk.setEmbedding(embedding);
         chunk.setEmbeddingModel(profile.getEmbeddingModel());
         chunk.setEmbeddingDimensions(profile.getEmbeddingDimensions());

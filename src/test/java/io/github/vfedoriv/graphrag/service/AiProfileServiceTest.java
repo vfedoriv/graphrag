@@ -16,6 +16,7 @@ import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
@@ -144,6 +145,50 @@ class AiProfileServiceTest {
             .hasMessageContaining("valid absolute URL");
 
         assertThat(store).doesNotContainKey("bad");
+    }
+
+    @Test
+    void explicitTokenizerIsValidatedResolvedAndIncludedInRevisionedResponse() {
+        Map<String, AiProfileNode> store = new LinkedHashMap<>();
+        AiProfileService service = service(store);
+
+        AiProfileResponse created = service.create(new CreateAiProfileRequest(
+            "profile-tokenizer",
+            "Profile tokenizer",
+            "https://profiles.example/v1",
+            null,
+            "chat",
+            "embedding-alias",
+            TokenizerId.CL100K_BASE,
+            768,
+            null,
+            null,
+            false
+        ));
+
+        assertThat(created.tokenizerId()).isEqualTo(TokenizerId.CL100K_BASE);
+        assertThat(created.resolvedTokenizerId()).isEqualTo(TokenizerId.CL100K_BASE);
+        assertThat(created.revision()).isEqualTo(1);
+        assertThat(created.toString()).doesNotContain("apiKey=");
+
+        assertThatThrownBy(() -> service.update("profile-tokenizer", new UpdateAiProfileRequest(
+            "Profile tokenizer",
+            "https://profiles.example/v1",
+            null,
+            false,
+            "chat",
+            "embedding-alias",
+            "unsupported-tokenizer",
+            768,
+            null,
+            null,
+            false
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Unsupported tokenizerId");
+
+        assertThat(store.get("profile-tokenizer").getTokenizerId().value()).isEqualTo(TokenizerId.CL100K_BASE);
+        assertThat(store.get("profile-tokenizer").getRevision()).isEqualTo(1);
     }
 
     @Test

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.boot.logging.LogLevel;
 
 public final class RuntimeSettingCodecs {
@@ -57,6 +58,14 @@ public final class RuntimeSettingCodecs {
         String text = String.valueOf(value == null ? "" : value).trim();
         if (text.isBlank()) {
             throw new IllegalArgumentException(key + " must not be blank");
+        }
+        return text;
+    }
+
+    public String enumString(String key, Object value, Set<String> allowedValues) {
+        String text = nonBlankString(key, value).toLowerCase(Locale.ROOT);
+        if (!allowedValues.contains(text)) {
+            throw new IllegalArgumentException(key + " must be one of " + String.join(", ", allowedValues));
         }
         return text;
     }
