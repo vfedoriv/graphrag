@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.config;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -23,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Testcontainers
+@IntegrationTest
 class RelationalStartupIntegrationTest {
 
     @Container
@@ -32,6 +36,14 @@ class RelationalStartupIntegrationTest {
         .withDatabaseName("postgres")
         .withUsername("postgres")
         .withPassword("postgres");
+
+    @BeforeAll
+    static void reportFreshContainer() {
+        System.out.printf(
+            "GRAPHRAG_TEST_CONTAINER_START kind=postgresql scope=fresh id=%s%n",
+            POSTGRES.getContainerId()
+        );
+    }
 
     @Test
     void startsAgainstEmptyFlywayManagedSchema() throws Exception {

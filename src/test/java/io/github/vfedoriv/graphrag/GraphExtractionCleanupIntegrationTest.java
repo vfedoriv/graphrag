@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,23 +28,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @Import({TestcontainersConfiguration.class, GraphExtractionCleanupIntegrationTest.RetryFailureThenSuccessConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(properties = {
-    "spring.autoconfigure.exclude="
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration",
-    "app.storage.documents-root=./target/test-documents"
-})
+@IntegrationTest
 class GraphExtractionCleanupIntegrationTest {
 
     @Autowired
@@ -57,16 +47,16 @@ class GraphExtractionCleanupIntegrationTest {
     private ExtractionRunRepository extractionRunRepository;
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    @Autowired
+    private RetryCounters retryCounters;
 
-    @AfterEach
-    void cleanDocumentStorage() throws Exception {
-        TestDocumentStorage.clean();
+    @BeforeEach
+    void resetIntegrationState() throws Exception {
+        IntegrationTestLifecycle.reset(jdbcTemplate, neo4jClient, retryCounters);
     }
 
     @Test
     void removesFailedRunAndFailedOnlyOrphansAfterSuccessfulRetry() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         String schemaJson = """
             {
               "name": "contracts-cleanup",
@@ -153,8 +143,6 @@ class GraphExtractionCleanupIntegrationTest {
 
     @Test
     void removesMultipleFailedRunsAfterLaterSuccessfulRetry() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
 
@@ -191,8 +179,6 @@ class GraphExtractionCleanupIntegrationTest {
 
     @Test
     void overwriteCleanupDeletesStaleCompletedRunArtifactsAndRelationships() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson(), SchemaSourceType.PREDEFINED);
         schemaRegistryService.activateSchema("kb-cleanup", schema.getId());
 
@@ -280,13 +266,15 @@ class GraphExtractionCleanupIntegrationTest {
         }
 
         @Bean
-        GraphExtractionClient graphExtractionClient() {
-            AtomicInteger defaultCallCount = new AtomicInteger();
-            AtomicInteger multiFailCallCount = new AtomicInteger();
-            AtomicInteger overwriteCallCount = new AtomicInteger();
+        RetryCounters retryCounters() {
+            return new RetryCounters();
+        }
+
+        @Bean
+        GraphExtractionClient graphExtractionClient(RetryCounters counters) {
             return (schema, chunkText) -> {
                 if (chunkText.contains("MULTI_FAIL")) {
-                    int multiFailCall = multiFailCallCount.incrementAndGet();
+                    int multiFailCall = counters.multiFailCallCount.incrementAndGet();
                     if (multiFailCall <= 2) {
                         throw new IllegalStateException("Synthetic extraction failure for multi-fail retry path");
                     }
@@ -296,7 +284,7 @@ class GraphExtractionCleanupIntegrationTest {
                     );
                 }
                 if (chunkText.contains("OVERWRITE")) {
-                    int overwriteCall = overwriteCallCount.incrementAndGet();
+                    int overwriteCall = counters.overwriteCallCount.incrementAndGet();
                     if (overwriteCall == 1) {
                         return new GraphExtractionResult(
                             List.of(
@@ -334,7 +322,7 @@ class GraphExtractionCleanupIntegrationTest {
                         )
                     );
                 }
-                int call = defaultCallCount.incrementAndGet();
+                int call = counters.defaultCallCount.incrementAndGet();
                 if (call == 2) {
                     throw new IllegalStateException("Synthetic extraction failure for retry path");
                 }
@@ -384,6 +372,19 @@ class GraphExtractionCleanupIntegrationTest {
                 vector.add(base + (i * 0.000001));
             }
             return vector;
+        }
+    }
+
+    static final class RetryCounters implements IntegrationTestLifecycle.ResettableTestDouble {
+        private final AtomicInteger defaultCallCount = new AtomicInteger();
+        private final AtomicInteger multiFailCallCount = new AtomicInteger();
+        private final AtomicInteger overwriteCallCount = new AtomicInteger();
+
+        @Override
+        public void reset() {
+            defaultCallCount.set(0);
+            multiFailCallCount.set(0);
+            overwriteCallCount.set(0);
         }
     }
 }

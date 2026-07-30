@@ -31,11 +31,17 @@ OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,la
 # Run with local LM Studio
 LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm_studio
 
-# All tests (Testcontainers spins up Neo4j automatically)
+# Fast deterministic tests (no Docker)
+./mvnw test -Pfast
+
+# Complete suite (shared Testcontainers PostgreSQL and Neo4j)
 ./mvnw test
 
 # Single test class
-./mvnw -Dtest=EndToEndMvpFlowIntegrationTest test
+./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
+
+# Preserve a full-suite performance report
+./scripts/measure-test-suite.sh
 
 # Start required persistence services
 docker compose up -d langfuse-postgres neo4j
@@ -141,7 +147,10 @@ All application config is bound to `AppProperties` (validated `@ConfigurationPro
 
 ## Testing Approach
 
-- Integration tests use **Testcontainers** — PostgreSQL and Neo4j containers are started automatically.
+- `./mvnw test -Pfast` excludes the shared integration tag; `./mvnw test` remains complete and credential-free.
+- Application integration tests share one JVM-scoped PostgreSQL and Neo4j container, reset state before each test, and remain sequential.
+- Fresh-server provisioning and startup tests retain independent PostgreSQL containers.
+- `./scripts/measure-test-suite.sh` writes timing, inventory, context, container-start, and slowest-test reports under `target/test-performance`.
 - Mock AI clients return hardcoded deterministic results, making tests independent of external APIs.
 - `EndToEndMvpFlowIntegrationTest` is the canonical example of the complete pipeline under test.
 

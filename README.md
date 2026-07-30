@@ -759,29 +759,33 @@ Common status patterns:
 
 ## Testing
 
-Run all tests:
+Fast deterministic tests (no Docker or external AI credentials):
+
+```bash
+./mvnw test -Pfast
+```
+
+Complete regression suite (no external AI credentials; Docker is required):
 
 ```bash
 ./mvnw test
 ```
 
-Includes:
-
-- unit tests for services, validation, parsers, routing, and DTO validation,
-- integration tests with Testcontainers PostgreSQL and Neo4j,
-- end-to-end MVP flow tests with deterministic test doubles for model-dependent paths.
-
-Full test suite (containers are managed by Testcontainers):
-
-```bash
-./mvnw test
-```
+Application integration tests share one PostgreSQL and one Neo4j container for the Maven test JVM and reset relational, graph, filesystem, runtime-setting, and stateful fake data before each test. Fresh-server provisioning and startup tests retain independent PostgreSQL containers. Integration execution remains sequential.
 
 Optional focused E2E test:
 
 ```bash
 ./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
 ```
+
+Capture a successful full-suite timing, inventory, context count, container lifecycle count, and slowest-test report:
+
+```bash
+./scripts/measure-test-suite.sh
+```
+
+Reports are preserved under `target/test-performance/<run-name>/`.
 
 ## Notes and Constraints
 

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -76,19 +78,11 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class, SchemaDraftLifecycleIntegrationTest.DraftAiConfig.class})
 @TestPropertySource(properties = {
-    "spring.autoconfigure.exclude="
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration",
-    "app.storage.documents-root=./target/test-documents",
     "app.schema-discovery.chunk-characters=1000",
     "app.schema-draft.analysis.concurrency=1",
     "app.schema-draft.analysis.queue-capacity=2"
 })
+@IntegrationTest
 class SchemaDraftLifecycleIntegrationTest {
     private static final String KNOWLEDGE_BASE_ID = "kb-draft";
     private static final ObjectMapper MAPPER = new ObjectMapper();

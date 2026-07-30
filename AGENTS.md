@@ -31,8 +31,10 @@ OPENAI_API_KEY=<key> ./mvnw spring-boot:run -Dspring-boot.run.profiles=openai,la
 LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm_studio
 
 # Tests
+./mvnw test -Pfast
 ./mvnw test
 ./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
+./scripts/measure-test-suite.sh
 
 # Required persistence services
 docker compose up -d langfuse-postgres neo4j
@@ -101,7 +103,10 @@ Runtime setting overrides are persisted in PostgreSQL. `mutable=true` means edit
 
 ## Testing
 
-- Integration tests use Testcontainers (PostgreSQL and Neo4j started automatically)
+- `./mvnw test -Pfast` runs deterministic non-container tests; `./mvnw test` remains the complete credential-free suite
+- Application integration tests share one JVM-scoped PostgreSQL and Neo4j container, reset state before each test, and execute sequentially
+- Fresh-server provisioning and startup tests use independent PostgreSQL containers
+- `./scripts/measure-test-suite.sh` preserves timing, inventory, context, container-start, and slowest-test reports under `target/test-performance`
 - AI clients are mocked for deterministic tests
 - Canonical full-flow integration test: `EndToEndMvpFlowIntegrationTest`
 

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -45,17 +47,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @SpringBootTest
-@Import(TestcontainersConfiguration.class)
-@org.springframework.test.context.TestPropertySource(properties = {
-    "spring.autoconfigure.exclude="
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration"
-})
+@Import(PostgresTestcontainersConfiguration.class)
+@IntegrationTest
 class SchemaWorkflowRelationalRepositoryIntegrationTest {
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;

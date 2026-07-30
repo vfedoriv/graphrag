@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.config;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -11,6 +13,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.output.MigrateResult;
 import org.junit.jupiter.api.Test;
 
+@IntegrationTest
 class PostgresProvisioningIntegrationTest {
 
     @Test

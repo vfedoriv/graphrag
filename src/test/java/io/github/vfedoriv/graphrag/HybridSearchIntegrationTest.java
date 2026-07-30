@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
@@ -29,14 +31,6 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @Import({TestcontainersConfiguration.class, HybridSearchIntegrationTest.FakeEmbeddingConfig.class})
 @TestPropertySource(properties = {
-    "spring.autoconfigure.exclude="
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration",
     "app.model.embedding-dimensions=3",
     "app.query.hybrid-search-default-top-k=2",
     "app.query.hybrid-search-max-top-k=5",
@@ -46,6 +40,7 @@ import org.springframework.test.context.TestPropertySource;
     "app.query.hybrid-search-max-graph-depth=2",
     "app.query.hybrid-search-include-chunk-text=true"
 })
+@IntegrationTest
 class HybridSearchIntegrationTest {
 
     @Autowired

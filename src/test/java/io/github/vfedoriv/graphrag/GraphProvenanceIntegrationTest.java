@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.IntegrationTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -9,28 +11,17 @@ import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.GraphArtifactCleanupService;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@Import({TestcontainersConfiguration.class, GraphExtractionCleanupIntegrationTest.RetryFailureThenSuccessConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(properties = {
-    "spring.autoconfigure.exclude="
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration,"
-        + "org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration,"
-        + "org.springframework.ai.vectorstore.neo4j.autoconfigure.Neo4jVectorStoreAutoConfiguration",
-    "app.storage.documents-root=./target/test-documents"
-})
+@Import(TestcontainersConfiguration.class)
+@IntegrationTest
 class GraphProvenanceIntegrationTest {
 
     private static final String SCHEMA_ID = "schema-provenance";
@@ -56,9 +47,13 @@ class GraphProvenanceIntegrationTest {
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
+    @BeforeEach
+    void resetIntegrationState() throws Exception {
+        IntegrationTestLifecycle.reset(jdbcTemplate, neo4jClient);
+    }
+
     @Test
     void deletingEitherDocumentRetainsCanonicalFactsSupportedByTheOtherDocument() {
-        clearGraph();
         createDocumentRunChunk("doc-a", "run-a", "chunk-a", "COMPLETED");
         createDocumentRunChunk("doc-b", "run-b", "chunk-b", "COMPLETED");
         writeSharedFact("doc-a", "run-a", "chunk-a", "supplier-a");
@@ -85,7 +80,6 @@ class GraphProvenanceIntegrationTest {
 
     @Test
     void runScopedCleanupRemovesOnlyItsEvidenceWhenAnotherDocumentSupportsTheFact() {
-        clearGraph();
         createDocumentRunChunk("doc-a", "run-failed", "chunk-failed", "FAILED");
         createDocumentRunChunk("doc-a", "run-current", "chunk-current", "COMPLETED");
         createDocumentRunChunk("doc-a", "run-stale", "chunk-stale", "COMPLETED");
@@ -109,7 +103,6 @@ class GraphProvenanceIntegrationTest {
 
     @Test
     void graphWritesRequireConsistentScopeAndCreateNoOperationalAnchors() {
-        clearGraph();
         createDocumentRunChunk("doc-a", "run-a", "chunk-a", "COMPLETED");
 
         assertThatThrownBy(() -> graphWriteService.write(
@@ -184,8 +177,4 @@ class GraphProvenanceIntegrationTest {
         return neo4jClient.query(cypher).fetchAs(Long.class).one().orElse(0L);
     }
 
-    private void clearGraph() {
-        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
-        RelationalMetadataTestCleaner.clean(jdbcTemplate);
-    }
 }

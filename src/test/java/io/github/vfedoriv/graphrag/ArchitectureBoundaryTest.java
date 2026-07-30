@@ -69,7 +69,7 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".service.SchemaRegistryService"
     );
 
-    private final JavaClasses productionClasses = new ClassFileImporter()
+    private static final JavaClasses PRODUCTION_CLASSES = new ClassFileImporter()
             .withImportOption(new ImportOption.DoNotIncludeTests())
             .importPackages(BASE_PACKAGE);
 
@@ -102,7 +102,7 @@ class ArchitectureBoundaryTest {
 
     @Test
     void feature_and_application_code_do_not_depend_on_controllers() {
-        Set<String> violations = productionClasses.stream()
+        Set<String> violations = PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> !isInPackage(javaClass, CONTROLLER_PACKAGE))
                 .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
                 .filter(dependency -> isInPackage(dependency.getTargetClass(), CONTROLLER_PACKAGE))
@@ -114,7 +114,7 @@ class ArchitectureBoundaryTest {
 
     @Test
     void direct_neo4j_client_usage_stays_in_persistence_adapters_or_frozen_legacy_exceptions() {
-        Set<String> violations = productionClasses.stream()
+        Set<String> violations = PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> !isInPackage(javaClass, INFRASTRUCTURE_PERSISTENCE_PACKAGE))
                 .filter(javaClass -> !FROZEN_LEGACY_NEO4J_CLIENT_EXCEPTIONS.contains(javaClass.getName()))
                 .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
@@ -141,7 +141,7 @@ class ArchitectureBoundaryTest {
 
     @Test
     void persistence_transactions_are_store_qualified() {
-        Set<String> violations = productionClasses.stream()
+        Set<String> violations = PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> !isInPackage(javaClass, TRANSACTION_ANNOTATION_PACKAGE))
                 .filter(javaClass -> javaClass.isAnnotatedWith(Transactional.class)
                         || javaClass.getMethods().stream().anyMatch(method -> method.isAnnotatedWith(Transactional.class)))
@@ -154,22 +154,22 @@ class ArchitectureBoundaryTest {
     @Test
     void repository_and_entity_ownership_stays_disjoint() {
         Set<String> violations = new TreeSet<>();
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAssignableTo(JpaRepository.class))
                 .filter(javaClass -> !isInPackage(javaClass, RELATIONAL_REPOSITORY_PACKAGE))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAssignableTo(Neo4jRepository.class))
                 .filter(javaClass -> !isInPackage(javaClass, REPOSITORY_PACKAGE))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAnnotatedWith(Entity.class))
                 .filter(javaClass -> !isInPackage(javaClass, RELATIONAL_ENTITY_PACKAGE))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> isInPackage(javaClass, RELATIONAL_ENTITY_PACKAGE))
                 .filter(javaClass -> javaClass.isAnnotatedWith(Node.class))
                 .map(JavaClass::getName)
@@ -181,12 +181,12 @@ class ArchitectureBoundaryTest {
     @Test
     void only_graph_native_sdn_nodes_and_repositories_remain() {
         Set<String> violations = new TreeSet<>();
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAnnotatedWith(Node.class))
                 .map(JavaClass::getName)
                 .filter(className -> !ALLOWED_SDN_NODE_TYPES.contains(className))
                 .forEach(violations::add);
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAssignableTo(Neo4jRepository.class))
                 .map(JavaClass::getName)
                 .filter(className -> !ALLOWED_NEO4J_REPOSITORIES.contains(className))
@@ -198,7 +198,7 @@ class ArchitectureBoundaryTest {
     @Test
     void transactional_methods_are_not_called_through_self_invocation() {
         Set<String> violations = new TreeSet<>();
-        for (JavaClass javaClass : productionClasses) {
+        for (JavaClass javaClass : PRODUCTION_CLASSES) {
             if (FROZEN_LEGACY_TRANSACTIONAL_SELF_INVOCATION_EXCEPTIONS.contains(javaClass.getName())) {
                 continue;
             }
@@ -225,7 +225,7 @@ class ArchitectureBoundaryTest {
 
     private Set<Dependency> dependenciesFromClassesIn(String packageName) {
         Set<Dependency> dependencies = new TreeSet<>(Comparator.comparing(ArchitectureBoundaryTest::format));
-        productionClasses.stream()
+        PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> isInPackage(javaClass, packageName))
                 .forEach(javaClass -> dependencies.addAll(javaClass.getDirectDependenciesFromSelf()));
         return dependencies;

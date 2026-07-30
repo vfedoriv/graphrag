@@ -39,10 +39,12 @@ final class SharedPostgresTestFixture implements AutoCloseable {
             "/docker-entrypoint-initdb.d/20-init-graphrag.sh"
         );
         postgres.start();
+        reportStart();
     }
 
     void start() {
         postgres.start();
+        reportStart();
     }
 
     void provisionGraphRag() throws Exception {
@@ -110,6 +112,13 @@ final class SharedPostgresTestFixture implements AutoCloseable {
                 operation + " failed: " + result.getStdout() + System.lineSeparator() + result.getStderr()
             );
         }
+    }
+
+    private void reportStart() {
+        System.out.printf(
+            "GRAPHRAG_TEST_CONTAINER_START kind=postgresql scope=fresh id=%s%n",
+            postgres.getContainerId()
+        );
     }
 
     @Override
