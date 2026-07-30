@@ -47,14 +47,17 @@ public record AppProperties(
         @Min(0) int overlapTokens,
         @Min(1) Integer hardCharacterLimit,
         @Min(1) int maxTokens,
-        @Min(1) int maxCharacters
+        @Min(1) int maxCharacters,
+        @Min(0) Integer contextHeaderMaxTokens,
+        @Min(0) Integer contextHeaderMaxCharacters,
+        String representationRevision
     ) {
         @ConstructorBinding
         public Chunking {
         }
 
         public Chunking(int maxTokens, int overlapTokens, int maxCharacters) {
-            this(null, null, overlapTokens, null, maxTokens, maxCharacters);
+            this(null, null, overlapTokens, null, maxTokens, maxCharacters, 0, 0, "plain-text-v1");
         }
 
         public String effectiveStrategy() {
@@ -67,6 +70,20 @@ public record AppProperties(
 
         public int effectiveHardCharacterLimit() {
             return hardCharacterLimit == null ? maxCharacters : hardCharacterLimit;
+        }
+
+        public int effectiveContextHeaderMaxTokens() {
+            return contextHeaderMaxTokens == null ? 96 : contextHeaderMaxTokens;
+        }
+
+        public int effectiveContextHeaderMaxCharacters() {
+            return contextHeaderMaxCharacters == null ? 512 : contextHeaderMaxCharacters;
+        }
+
+        public String effectiveRepresentationRevision() {
+            return representationRevision == null || representationRevision.isBlank()
+                ? "context-header-v1"
+                : representationRevision.strip();
         }
     }
 

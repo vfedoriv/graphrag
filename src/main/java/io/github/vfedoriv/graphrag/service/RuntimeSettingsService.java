@@ -189,12 +189,23 @@ public class RuntimeSettingsService {
         int hardCharacterLimit =
             precedenceInteger("app.chunking.hard-character-limit", "app.chunking.max-characters");
         int overlapTokens = integer("app.chunking.overlap-tokens");
-        validateChunking(targetTokens, overlapTokens, hardCharacterLimit);
+        int contextHeaderMaxTokens = integer("app.chunking.context-header-max-tokens");
+        int contextHeaderMaxCharacters = integer("app.chunking.context-header-max-characters");
+        validateChunking(
+            targetTokens,
+            overlapTokens,
+            hardCharacterLimit,
+            contextHeaderMaxTokens,
+            contextHeaderMaxCharacters
+        );
         return new ChunkingSettings(
             string("app.chunking.strategy"),
             targetTokens,
             overlapTokens,
-            hardCharacterLimit
+            hardCharacterLimit,
+            contextHeaderMaxTokens,
+            contextHeaderMaxCharacters,
+            string("app.chunking.representation-revision")
         );
     }
 
@@ -344,7 +355,23 @@ public class RuntimeSettingsService {
             pending,
             clearedKey
         );
-        validateChunking(targetTokens, overlapTokens, hardCharacterLimit);
+        int contextHeaderMaxTokens = prospectiveInteger(
+            "app.chunking.context-header-max-tokens",
+            pending,
+            clearedKey
+        );
+        int contextHeaderMaxCharacters = prospectiveInteger(
+            "app.chunking.context-header-max-characters",
+            pending,
+            clearedKey
+        );
+        validateChunking(
+            targetTokens,
+            overlapTokens,
+            hardCharacterLimit,
+            contextHeaderMaxTokens,
+            contextHeaderMaxCharacters
+        );
     }
 
     private int prospectivePrecedenceInteger(
@@ -380,7 +407,13 @@ public class RuntimeSettingsService {
         return integer(key);
     }
 
-    private void validateChunking(int targetTokens, int overlapTokens, int hardCharacterLimit) {
+    private void validateChunking(
+        int targetTokens,
+        int overlapTokens,
+        int hardCharacterLimit,
+        int contextHeaderMaxTokens,
+        int contextHeaderMaxCharacters
+    ) {
         if (targetTokens < 1) {
             throw new IllegalArgumentException("app.chunking.target-tokens must be greater than zero");
         }
@@ -391,6 +424,16 @@ public class RuntimeSettingsService {
         }
         if (hardCharacterLimit < 1) {
             throw new IllegalArgumentException("app.chunking.hard-character-limit must be greater than zero");
+        }
+        if (contextHeaderMaxTokens < 0 || contextHeaderMaxTokens >= targetTokens) {
+            throw new IllegalArgumentException(
+                "app.chunking.context-header-max-tokens must be non-negative and smaller than the effective target"
+            );
+        }
+        if (contextHeaderMaxCharacters < 0 || contextHeaderMaxCharacters >= hardCharacterLimit) {
+            throw new IllegalArgumentException(
+                "app.chunking.context-header-max-characters must be non-negative and smaller than the hard character limit"
+            );
         }
     }
 
@@ -442,7 +485,10 @@ public class RuntimeSettingsService {
         String strategy,
         int targetTokens,
         int overlapTokens,
-        int hardCharacterLimit
+        int hardCharacterLimit,
+        int contextHeaderMaxTokens,
+        int contextHeaderMaxCharacters,
+        String representationRevision
     ) {
         public int maxTokens() {
             return targetTokens;

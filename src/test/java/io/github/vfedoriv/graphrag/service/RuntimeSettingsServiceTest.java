@@ -99,6 +99,25 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void contextHeaderBudgetsAreValidatedAgainstCompleteEmbeddingLimits() {
+        RuntimeSettingsService service = service(new LinkedHashMap<>());
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.chunking.target-tokens", 96),
+            new RuntimeSettingUpdateRequest("app.chunking.context-header-max-tokens", 96)
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("context-header-max-tokens");
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.chunking.hard-character-limit", 512),
+            new RuntimeSettingUpdateRequest("app.chunking.context-header-max-characters", 512)
+        )))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("context-header-max-characters");
+    }
+
+    @Test
     void chunkingCatalogReportsCanonicalLifecycleAndSnapshotRetention() {
         RuntimeSettingsService service = service(new LinkedHashMap<>());
 
@@ -109,11 +128,14 @@ class RuntimeSettingsServiceTest {
             "app.chunking.target-tokens",
             "app.chunking.overlap-tokens",
             "app.chunking.hard-character-limit",
+            "app.chunking.context-header-max-tokens",
+            "app.chunking.context-header-max-characters",
+            "app.chunking.representation-revision",
             "app.chunking.max-tokens",
             "app.chunking.max-characters"
         );
         assertThat(settings.get("app.chunking.strategy").constraints())
-            .containsEntry("enum", List.of("fixed-character"));
+            .containsEntry("enum", List.of("recursive", "fixed-character"));
         assertThat(settings.get("app.chunking.strategy").description())
             .contains("existing chunks retain their snapshotted revision");
         assertThat(settings.get("app.chunking.target-tokens").updateMode()).isEqualTo("live");

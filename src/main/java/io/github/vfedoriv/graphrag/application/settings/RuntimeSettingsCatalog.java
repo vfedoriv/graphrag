@@ -52,10 +52,10 @@ public final class RuntimeSettingsCatalog {
             "app.chunking.strategy",
             "chunking",
             appProperties.chunking().effectiveStrategy(),
-            Map.of("enum", List.of("fixed-character")),
-            value -> codecs.enumString("app.chunking.strategy", value, Set.of("fixed-character")),
+            Map.of("enum", List.of("recursive", "fixed-character")),
+            value -> codecs.enumString("app.chunking.strategy", value, Set.of("recursive", "fixed-character")),
             value -> { },
-            "Selects the versioned strategy for subsequent processing; existing chunks retain their snapshotted revision."
+            "Selects the versioned strategy for subsequent processing; existing chunks retain their snapshotted revision and require explicit overwrite or reprocessing to migrate."
         );
         addChunkingInt(
             map,
@@ -77,6 +77,29 @@ public final class RuntimeSettingsCatalog {
             appProperties.chunking().effectiveHardCharacterLimit(),
             1,
             "Hard provider-safety guard for chunk characters."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.context-header-max-tokens",
+            appProperties.chunking().effectiveContextHeaderMaxTokens(),
+            0,
+            "Maximum contextual-header tokens included in dense embedding input."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.context-header-max-characters",
+            appProperties.chunking().effectiveContextHeaderMaxCharacters(),
+            0,
+            "Maximum contextual-header characters included in dense embedding input."
+        );
+        addReadOnlyString(
+            map,
+            "app.chunking.representation-revision",
+            "chunking",
+            appProperties.chunking().effectiveRepresentationRevision(),
+            UpdateMode.READ_ONLY,
+            false,
+            "Representation revisions are deployment-owned; older chunks require explicit overwrite or reprocessing."
         );
         addChunkingInt(
             map,

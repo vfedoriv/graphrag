@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 11819 nodes, 21082 edges, 999 communities. Commit: ba18bd8</p>
+<p class="subtitle">Generated from graphify knowledge graph: 11975 nodes, 21545 edges, 1009 communities. Commit: dca600d</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,7 +88,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>6431 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>6584 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>3037 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -108,7 +108,7 @@ flowchart LR
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_272_4F75581B("Community 272<br/><small>25 nodes</small>")
     class COMMUNITY_272_4F75581B module;
-    COMMUNITY_269_0760C396("Community 269<br/><small>18 nodes</small>")
+    COMMUNITY_269_0760C396("Community 269<br/><small>21 nodes</small>")
     class COMMUNITY_269_0760C396 module;
     COMMUNITY_317_EE999369("Community 317<br/><small>18 nodes</small>")
     class COMMUNITY_317_EE999369 module;
@@ -136,7 +136,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>6431</td><td><code>400, 111, 305, 402, 56, 107, 398, 630, 427, 151, 31, 405, 5, 84, 50, 124, 3, 58, 304, 14, 54, 77, 18, 36, 25, 37, 10, 42, 70, 15, 17, 2, 22, 68, 33, 23, 108, 389, 16, 19, 246, 6, 301, 45, 87, 903, 40, 72, 373, 153, 76, 9, 0, 53, 57, 75, 154, 32, 47, 52, 73, 1, 155, 21, 275, 415, 62, 7, 78, 8, 12, 13, 141, 20, 24, 35, 127, 29, 43, 49, 248, 287, 388, 456, 90, 106, 30, 34, 771, 875, 28, 395, 397, 428, 64, 762, 86, 97, 11, 98, 104, 407, 408, 417, 46, 61, 653, 95, 103, 117, 135, 166, 41, 44, 48, 51, 644, 113, 134, 27, 539, 71, 763, 130, 261, 297, 298, 376, 384, 454, 540, 655, 759, 112, 26, 375, 382, 393, 412, 426, 439, 625, 633, 634, 637, 752, 758, 765, 781, 161, 284, 296, 362, 379, 380, 386, 559, 626, 63, 640, 66, 690, 694, 83, 971, 629, 632, 643, 701, 703, 731, 770, 866, 139, 396, 448, 709, 716, 74, 769, 793, 867, 910, 917, 956, 100, 156, 164, 295, 378, 451, 67, 729, 790, 80, 876, 899, 94, 96, 105, 411, 462, 639, 695, 777, 85, 904, 905, 92, 929, 109, 110, 118, 330, 401, 445, 652, 782, 868, 907, 914, 931, 152, 403, 418, 683, 697, 726, 767, 818, 911, 915, 923, 924, 928, 120, 247, 756, 784, 912, 916, 123, 702, 710, 822, 824, 930, 933, 952, 953, 131, 133, 410, 488, 489, 505, 743, 760, 773, 829, 936, 137, 138, 142, 143, 169, 387, 425, 60, 631, 650, 732, 747, 788, 832, 849, 937, 954, 960, 146, 148, 182, 216, 230, 364, 585, 601, 627, 725, 874, 958, 959, 157, 158, 159, 179, 420, 464, 635, 671, 682, 730, 946, 947, 972, 974, 978, 979, 984, 986, 988, 163, 717, 718, 719, 992, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 881, 882, 883, 884, 885, 993, 994, 165, 167, 168, 170, 171, 172, 173, 174, 175, 176, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848, 886, 975, 976, 995, 996, 997, 998</code></td></tr><tr><td>Graph Build</td><td>3037</td><td><code>39, 69, 160, 537, 89, 149, 91, 4, 162, 255, 101, 121, 129, 538, 253, 316, 252, 270, 279, 128, 258, 256, 79, 260, 306, 265, 266, 307, 372, 267, 293, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 368, 377, 59, 649, 116, 245, 254, 327, 331, 333, 334, 335, 38, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 429, 431, 433, 435, 443, 444, 65, 696, 699, 700, 708, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 707, 711, 713, 715, 734, 741, 750, 751, 761, 772, 785, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 647, 749, 753, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 658, 712, 748, 755, 757, 764, 778, 791, 825, 831, 850, 852, 869, 870, 871, 872, 887, 888, 938, 940, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 853, 891, 892, 893, 894, 895, 896, 962, 963, 964, 966, 693, 737, 873, 879, 880, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>194</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 941, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>76</td><td><code>288, 432, 436, 628, 566, 567, 609, 614, 909, 980</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>63</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>370</td><td><code>119, 102, 99, 263, 250, 262, 271, 276, 318, 437, 878, 352, 913, 434, 495, 504, 547, 723, 926, 556, 565, 590, 591, 597, 599, 600, 820, 939, 961, 965, 969</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>228</td><td><code>264, 122, 259, 413, 300, 704, 322, 951, 499, 500, 503, 934, 935, 957, 136, 144, 902, 594, 598, 615, 670, 889, 991, 900, 973, 990</code></td></tr><tr><td>Community 272</td><td>25</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>18</td><td><code>269</code></td></tr><tr><td>Community 317</td><td>18</td><td><code>317</code></td></tr><tr><td>Community 268</td><td>17</td><td><code>268</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Other</td><td>1151</td><td><code>438, 735, 286, 315, 636, 645, 651, 313, 324, 365, 449, 570, 654, 657, 776, 865, 925, 329, 392, 424, 440, 897, 906, 340, 342, 344, 345, 347, 349, 406, 363, 414, 646, 754, 416, 648, 419, 421, 442, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 642, 656, 698, 706, 727, 728, 775, 783, 877, 890, 918, 919, 920, 921, 922, 927, 955, 553, 554, 555, 557, 560, 901, 977, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 684, 705, 724, 733, 736, 787, 821, 826, 830, 908, 932, 942, 981, 982, 983, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 943, 944, 945, 948, 949, 950, 967, 968, 970, 985, 987, 622, 624, 691, 692, 989, 720, 898</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>6584</td><td><code>3, 57, 56, 398, 34, 31, 427, 151, 106, 630, 84, 25, 50, 124, 15, 400, 111, 58, 23, 36, 304, 10, 14, 37, 154, 90, 12, 46, 54, 68, 43, 73, 2, 33, 22, 42, 954, 108, 27, 16, 19, 246, 389, 5, 6, 301, 305, 76, 903, 29, 64, 87, 18, 40, 62, 72, 17, 45, 104, 153, 78, 9, 0, 53, 32, 425, 47, 8, 1, 21, 7, 77, 107, 13, 155, 20, 24, 49, 100, 127, 248, 166, 402, 456, 771, 141, 148, 287, 373, 388, 30, 395, 448, 86, 907, 97, 70, 875, 98, 156, 28, 35, 408, 417, 653, 92, 95, 103, 117, 135, 261, 41, 44, 48, 113, 134, 384, 393, 405, 52, 624, 71, 763, 130, 275, 297, 298, 376, 454, 540, 626, 644, 690, 75, 112, 26, 375, 382, 386, 412, 426, 428, 439, 625, 633, 634, 635, 637, 655, 731, 758, 759, 762, 765, 781, 161, 284, 296, 362, 379, 380, 415, 559, 63, 640, 66, 694, 83, 397, 629, 632, 643, 701, 703, 729, 74, 770, 85, 866, 139, 364, 709, 716, 730, 769, 790, 793, 849, 867, 910, 917, 923, 956, 11, 164, 295, 378, 396, 445, 61, 80, 873, 876, 94, 96, 105, 411, 451, 462, 539, 639, 67, 695, 777, 899, 904, 905, 906, 929, 109, 110, 118, 330, 401, 652, 782, 927, 931, 936, 937, 942, 958, 152, 403, 418, 683, 697, 726, 767, 818, 911, 915, 924, 928, 959, 975, 120, 247, 407, 756, 784, 916, 970, 123, 702, 710, 822, 824, 912, 933, 952, 953, 972, 131, 133, 410, 488, 489, 505, 743, 760, 773, 829, 930, 978, 979, 984, 137, 138, 142, 143, 169, 387, 51, 60, 631, 650, 732, 747, 752, 788, 832, 868, 960, 971, 986, 988, 989, 1001, 1002, 1003, 1004, 146, 182, 216, 230, 585, 601, 627, 725, 874, 992, 994, 999, 157, 158, 159, 179, 420, 464, 671, 682, 946, 947, 163, 717, 718, 719, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 881, 882, 883, 884, 885, 993, 165, 167, 168, 170, 171, 172, 173, 174, 175, 176, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848, 886, 976, 995, 996, 997, 998</code></td></tr><tr><td>Graph Build</td><td>3037</td><td><code>39, 69, 160, 537, 89, 149, 91, 4, 162, 255, 101, 121, 129, 538, 253, 316, 252, 270, 279, 128, 258, 256, 79, 260, 306, 265, 266, 307, 372, 267, 293, 273, 274, 277, 278, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 368, 377, 59, 649, 116, 245, 254, 327, 331, 333, 334, 335, 38, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 429, 431, 433, 435, 443, 444, 65, 696, 699, 700, 708, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 707, 711, 713, 715, 734, 741, 750, 751, 761, 772, 785, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 647, 749, 753, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 658, 712, 748, 755, 757, 764, 778, 791, 825, 831, 850, 852, 869, 870, 871, 872, 887, 888, 938, 940, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 853, 891, 892, 893, 894, 895, 896, 962, 963, 964, 966, 1008, 693, 737, 879, 880, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>194</td><td><code>251, 299, 325, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 582, 603, 612, 941, 663, 673, 680, 688, 623</code></td></tr><tr><td>Outputs &amp; Docs</td><td>76</td><td><code>288, 432, 436, 628, 566, 567, 609, 614, 909, 980</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>63</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>370</td><td><code>119, 102, 99, 263, 250, 262, 271, 276, 318, 437, 878, 352, 913, 434, 495, 504, 547, 723, 926, 556, 565, 590, 591, 597, 599, 600, 820, 939, 961, 965, 969</code></td></tr><tr><td>Security &amp; Global Graph</td><td>30</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>228</td><td><code>264, 122, 259, 413, 300, 704, 322, 951, 499, 500, 503, 934, 935, 957, 136, 144, 902, 594, 598, 615, 670, 889, 991, 900, 973, 990</code></td></tr><tr><td>Community 272</td><td>25</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>21</td><td><code>269</code></td></tr><tr><td>Community 317</td><td>18</td><td><code>317</code></td></tr><tr><td>Community 268</td><td>17</td><td><code>268</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Other</td><td>1151</td><td><code>438, 735, 286, 315, 636, 645, 651, 313, 324, 365, 449, 570, 654, 657, 776, 865, 925, 329, 392, 424, 440, 897, 914, 340, 342, 344, 345, 347, 349, 406, 363, 414, 646, 754, 416, 648, 419, 421, 442, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 642, 656, 698, 706, 727, 728, 775, 783, 877, 890, 918, 919, 920, 921, 922, 955, 974, 553, 554, 555, 557, 560, 901, 977, 1000, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 684, 705, 724, 733, 736, 787, 821, 826, 830, 908, 932, 981, 982, 983, 1005, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 943, 944, 945, 948, 949, 950, 967, 968, 985, 987, 1006, 1007, 622, 691, 692, 720, 898</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -148,8 +148,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>11819 nodes · 21082 edges · 999 communities (926 shown, 73 thin omitted)</li>
-      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 3152 edges (avg confidence: 0.8)</li>
+      <li>11975 nodes · 21545 edges · 1009 communities (942 shown, 67 thin omitted)</li>
+      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 3328 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 478 edges</li>
       <li>2. `of()` - 460 edges</li>
@@ -160,34 +160,32 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 6431 nodes and 16195 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 6584 nodes and 16655 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (6431 nodes, 16195 edges)
+    %% Section: Extraction Pipeline (6584 nodes, 16655 edges)
+    subgraph extract_pipeline_application_processing_Contextu_506177f7["application/processing/ContextualChunkTextBuilder.java"]
+        processing_contextualchunktextbuilder_contextual_03401a2a("ContextualChunkTextBuilder<br/><small>application/processing/ContextualChunkTextBuilder.java</small>")
+        processing_contextualchunktextbuilder_contextual_4ee25992("add()<br/><small>application/processing/ContextualChunkTextBuilder.java</small>")
+        processing_contextualchunktextbuilder_contextual_1e4ea1cb("build()<br/><small>application/processing/ContextualChunkTextBuilder.java</small>")
+        processing_contextualchunktextbuilder_contextual_43d848e6("header()<br/><small>application/processing/ContextualChunkTextBuilder.java</small>")
+    end
     subgraph extract_pipeline_application_processing_ChunkPre_83f3f42a["application/processing/ChunkPreparationStage.java"]
         processing_chunkpreparationstage_chunkpreparatio_378274de("ChunkPreparationStage<br/><small>application/processing/ChunkPreparationStage.java</small>")
         processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a("ChunkPreparationStage()<br/><small>application/processing/ChunkPreparationStage.java</small>")
         processing_chunkpreparationstage_chunkpreparatio_af134cf5("prepare()<br/><small>application/processing/ChunkPreparationStage.java</small>")
     end
-    subgraph extract_pipeline_application_processing_Document_d09b6a7a["application/processing/DocumentRunHistoryLifecycle.java"]
-        processing_documentrunhistorylifecycle_documentr_973198af("DocumentRunHistoryLifecycle<br/><small>application/processing/DocumentRunHistoryLifecycle.java</small>")
-        processing_documentrunhistorylifecycle_documentr_84cacf9e("deleteForReplacement()<br/><small>application/processing/DocumentRunHistoryLifecycle.java</small>")
-        processing_documentrunhistorylifecycle_documentr_117f50f3("DocumentRunHistoryLifecycle()<br/><small>application/processing/DocumentRunHistoryLifecycle.java</small>")
-    end
     subgraph extract_pipeline_application_processing_ChunkMet_a9903bb5["application/processing/ChunkMetadataFactory.java"]
         processing_chunkmetadatafactory_chunkmetadatafac_ff177be1("ChunkMetadataFactory<br/><small>application/processing/ChunkMetadataFactory.java</small>")
         processing_chunkmetadatafactory_chunkmetadatafac_30f1c025("create()<br/><small>application/processing/ChunkMetadataFactory.java</small>")
-    end
-    subgraph extract_pipeline_application_processing_Embeddin_09e956e3["application/processing/EmbeddingPersistenceStage.java"]
-        processing_embeddingpersistencestage_embeddingpe_649ad490("EmbeddingPersistenceStage<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
-        processing_embeddingpersistencestage_embeddingpe_be731052("EmbeddingPersistenceStage()<br/><small>application/processing/EmbeddingPersistenceStage.java</small>")
     end
     subgraph extract_pipeline_vfedoriv_graphrag_GraphragAppli_62b8432e["vfedoriv/graphrag/GraphragApplication.java"]
         graphrag_graphragapplication_graphragapplication_ca8d408d("GraphragApplication<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
         graphrag_graphragapplication_graphragapplication_e971e69e("main()<br/><small>vfedoriv/graphrag/GraphragApplication.java</small>")
     end
+    processing_documentrunhistorylifecycle_documentr_973198af("DocumentRunHistoryLifecycle<br/><small>application/processing/DocumentRunHistoryLifecycle.java</small>")
     controller_schemadraftcontroller_5de9038d("SchemaDraftController.java")
     domain_documentchunknode_documentchunknode_9adee12f("DocumentChunkNode<br/><small>graphrag/domain/DocumentChunkNode.java</small>")
     domain_documentprocessingrunnode_documentprocess_7ac1e74b("DocumentProcessingRunNode<br/><small>graphrag/domain/DocumentProcessingRunNode.java</small>")
@@ -198,22 +196,24 @@ flowchart LR
     processing_chunkmetadatafactory_chunkmetadatafac_ff177be1 -->|method| processing_chunkmetadatafactory_chunkmetadatafac_30f1c025
     processing_chunkpreparationstage_chunkpreparatio_378274de -->|method| processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a
     processing_chunkpreparationstage_chunkpreparatio_378274de -->|method| processing_chunkpreparationstage_chunkpreparatio_af134cf5
-    processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_84cacf9e
-    processing_documentrunhistorylifecycle_documentr_973198af -->|method| processing_documentrunhistorylifecycle_documentr_117f50f3
-    processing_embeddingpersistencestage_embeddingpe_649ad490 -->|method| processing_embeddingpersistencestage_embeddingpe_be731052
-    %% Omitted for readability: 6413 nodes, 0 edges
+    processing_contextualchunktextbuilder_contextual_03401a2a -->|method| processing_contextualchunktextbuilder_contextual_4ee25992
+    processing_contextualchunktextbuilder_contextual_03401a2a -->|method| processing_contextualchunktextbuilder_contextual_1e4ea1cb
+    processing_contextualchunktextbuilder_contextual_03401a2a -->|method| processing_contextualchunktextbuilder_contextual_43d848e6
+    processing_contextualchunktextbuilder_contextual_1e4ea1cb -->|calls| processing_contextualchunktextbuilder_contextual_4ee25992
+    processing_contextualchunktextbuilder_contextual_1e4ea1cb -->|calls| processing_contextualchunktextbuilder_contextual_43d848e6
+    %% Omitted for readability: 6566 nodes, 0 edges
+    class processing_contextualchunktextbuilder_contextual_03401a2a klass;
+    class processing_contextualchunktextbuilder_contextual_4ee25992 function;
+    class processing_contextualchunktextbuilder_contextual_1e4ea1cb function;
+    class processing_contextualchunktextbuilder_contextual_43d848e6 function;
     class processing_chunkpreparationstage_chunkpreparatio_378274de klass;
     class processing_chunkpreparationstage_chunkpreparatio_b2ae6a9a function;
     class processing_chunkpreparationstage_chunkpreparatio_af134cf5 function;
-    class processing_documentrunhistorylifecycle_documentr_973198af klass;
-    class processing_documentrunhistorylifecycle_documentr_84cacf9e function;
-    class processing_documentrunhistorylifecycle_documentr_117f50f3 function;
     class processing_chunkmetadatafactory_chunkmetadatafac_ff177be1 klass;
     class processing_chunkmetadatafactory_chunkmetadatafac_30f1c025 function;
-    class processing_embeddingpersistencestage_embeddingpe_649ad490 klass;
-    class processing_embeddingpersistencestage_embeddingpe_be731052 function;
     class graphrag_graphragapplication_graphragapplication_ca8d408d klass;
     class graphrag_graphragapplication_graphragapplication_e971e69e function;
+    class processing_documentrunhistorylifecycle_documentr_973198af klass;
     class controller_schemadraftcontroller_5de9038d klass;
     class domain_documentchunknode_documentchunknode_9adee12f klass;
     class domain_documentprocessingrunnode_documentprocess_7ac1e74b klass;
@@ -243,243 +243,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>StructuralPath.java</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small></td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>StructuralPath.java node in graphrag/document/StructuralPath.java.</td>
+  <td><code>ChunkingContext</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>DocumentProcessingOptionSet</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br>+4 more</td>
+  <td>ProcessingRunLifecycle.java node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>of()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>of() node in graphrag/document/StructuralPath.java.</td>
+  <td><code>applyRetryMetadata()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>checkpoint()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>complete()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br>+4 more</td>
+  <td>ProcessingRunLifecycle node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>StructuralPath</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.ProcessingRunLifecycle()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td>No direct outbound edge</td>
-  <td>StructuralPath node in graphrag/document/StructuralPath.java.</td>
+  <td>.ProcessingRunLifecycle() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>append()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>compatibilityText()</code><br><small style="color:var(--muted)">graphrag/discovery/SourceFailureClassifier.java</small><br><code>normalizeLabel()</code><br><small style="color:var(--muted)">graphrag/discovery/DiscoveryContracts.java</small></td>
-  <td><code>addLineHints()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendLeaf()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+7 more</td>
-  <td>append() node in graphrag/document/StructuralPath.java.</td>
+  <td><code>DocumentProcessingRunRepository</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>DocumentProcessingRunRepository node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>String</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small></td>
+  <td><code>ObjectMapper</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>String node in graphrag/document/StructuralPath.java.</td>
+  <td>ObjectMapper node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>StructuredTikaDocumentMapper.java</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Element</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>List</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>Map</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+1 more</td>
-  <td>StructuredTikaDocumentMapper.java node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>.start()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>savedDefaults()</code><br><small style="color:var(--muted)">application/processing/ProcessingOptionResolver.java</small><br><code>writeMap()</code><br><small style="color:var(--muted)">application/processing/ProcessingJsonCodec.java</small></td>
+  <td><code>applyRetryMetadata()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>createRun()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>getSha256()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentUploadNode.java</small><br>+12 more</td>
+  <td>.start() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>DocumentUploadNode</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendPdfPage()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendTable()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+20 more</td>
-  <td>StructuredTikaDocumentMapper node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>DocumentUploadNode node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>.StructuredTikaDocumentMapper()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>DocumentProcessingOptionSet</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.StructuredTikaDocumentMapper() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>DocumentProcessingOptionSet node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>TikaProcessingOptions</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td>No direct outbound edge</td>
-  <td>TikaProcessingOptions node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>DocumentProcessingRunNode node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>.parse()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>includeMetadata()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>isBlank()</code><br><small style="color:var(--muted)">graphrag/schema/SchemaValidator.java</small><br><code>mapXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+3 more</td>
-  <td>.parse() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>RelationalTransactional</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>RelationalTransactional node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>String</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>ChunkingContext</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ProcessingRunLifecycle.java</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td>No direct outbound edge</td>
-  <td>String node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>ChunkingContext node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Map</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>StructuredTikaDocumentMapper.java</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>Map node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>.createRun()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>savedDefaults()</code><br><small style="color:var(--muted)">application/processing/ProcessingOptionResolver.java</small><br><code>start()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br>+1 more</td>
+  <td><code>applyRetryMetadata()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>getSha256()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentUploadNode.java</small><br><code>setActiveCompleted()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br>+9 more</td>
+  <td>.createRun() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>Object</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Object node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>.checkpoint()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><code>process()</code><br><small style="color:var(--muted)">graphrag/service/DocumentProcessingService.java</small><br><code>save()</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>setStage()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>.checkpoint() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>ParsedDocument</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>ParsedDocument node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>String node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.mapXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.complete()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>parse()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>docxSection()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>equals()</code><br><small style="color:var(--muted)">relational/entity/KnowledgeBaseSchemaId.java</small><br><code>parseXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+2 more</td>
-  <td>Exports documentation data to a target format.</td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><code>deactivateOtherCompletedRuns()</code><br><small style="color:var(--muted)">graphrag/repository/DocumentProcessingRunRepository.java</small><br><code>save()</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>setActiveCompleted()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br>+1 more</td>
+  <td>.complete() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>List</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>StructuredTikaDocumentMapper.java</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>List node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>.fail()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
+  <td><code>process()</code><br><small style="color:var(--muted)">graphrag/service/DocumentProcessingService.java</small><br><code>save()</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>setActiveCompleted()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br>+1 more</td>
+  <td>.fail() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>ParsedSection</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>Exception</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>ParsedSection node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>Exception node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.parseXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.applyRetryMetadata()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>mapXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>parse()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>createRun()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>ProcessingRunLifecycle</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small><br><code>start()</code><br><small style="color:var(--muted)">application/processing/ProcessingRunLifecycle.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Exports documentation data to a target format.</td>
+  <td>.applyRetryMetadata() node in application/processing/ProcessingRunLifecycle.java.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>Document</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>DocumentProcessingRunNode.java</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Document node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>Instant</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>DocumentProcessingRunNode.java node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.docxSection()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>mapXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>build()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>childElements()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+1 more</td>
-  <td>.docxSection() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>getChunkSettingsHash()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br><code>getChunkStrategy()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br><code>getChunkStrategyRevision()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small><br>+51 more</td>
+  <td>DocumentProcessingRunNode node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.getId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small><br><code>docxSection()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>appendLeaf()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendTable()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>elementText()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+6 more</td>
-  <td>.appendDocxElement() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>Element</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RoutedDocumentParser.java</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParser.java</small><br><code>StructuredTikaDocumentMapper.java</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Element node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>String node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>SectionBuilder</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>SectionBuilder node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>.setId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>StructuralPath</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.getVersion()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>StructuralPath node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>.getVersion() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>SourceRange</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>Long</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>assertTraceableContract()</code><br><small style="color:var(--muted)">graphrag/document/RoutedDocumentParserTest.java</small></td>
-  <td>SourceRange node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>No direct outbound edge</td>
+  <td>Long node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.appendTable()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.setVersion()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small><br><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>addContainer()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendLeaf()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>childElements()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+7 more</td>
-  <td>.appendTable() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.setVersion() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>.pdfSections()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.getDocumentId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>mapXhtml()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>appendPdfPage()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>build()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>classContains()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+2 more</td>
-  <td>.pdfSections() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getDocumentId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>.appendPdfPage()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.setDocumentId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small><br><code>pdfSections()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>addContainer()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>addLineHints()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendLeaf()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br>+5 more</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.setDocumentId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>.paragraphDiagnostics()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.getKnowledgeBaseId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>appendTable()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
-  <td><code>elementText()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>find()</code><br><small style="color:var(--muted)">infrastructure/persistence/RuntimeSettingOverrideStore.java</small><br><code>isBlank()</code><br><small style="color:var(--muted)">graphrag/schema/SchemaValidator.java</small></td>
-  <td>Builds dependency relationships and graph data.</td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getKnowledgeBaseId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>.path()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>.setKnowledgeBaseId()</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">graphrag/document/StructuralPath.java</small><br><code>appendDocxElement()</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small><br><code>StructuredTikaDocumentMapper</code><br><small style="color:var(--muted)">graphrag/document/StructuredTikaDocumentMapper.java</small></td>
+  <td><code>DocumentProcessingRunNode</code><br><small style="color:var(--muted)">graphrag/domain/DocumentProcessingRunNode.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.path() node in graphrag/document/StructuredTikaDocumentMapper.java.</td>
+  <td>.setKnowledgeBaseId() node in graphrag/domain/DocumentProcessingRunNode.java.</td>
 </tr>
 </table>
 
@@ -492,15 +492,15 @@ flowchart LR
 <tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>81 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>79 nodes</td></tr>
 <tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>68 nodes</td></tr>
+<tr><td><code>graphrag/domain/DocumentChunkNode.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaController.java</code></td><td>60 nodes</td></tr>
 <tr><td><code>graphrag/domain/DocumentProcessingRunNode.java</code></td><td>60 nodes</td></tr>
-<tr><td><code>graphrag/observability/AiObservationService.java</code></td><td>58 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x5891, method x2734, imports x2104, calls x1665. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x6019, method x2797, imports x2127, calls x1704. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3565,33 +3565,33 @@ flowchart LR
 
 <!-- ====== 12. Community 269 ====== -->
 <h2 id="community-269">12. Community 269</h2>
-<p>Community 269 groups implementation around page, aware, tika, processing, mostly in specs/page-aware-tika-processing/spec.md. This section covers 18 nodes and 17 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Community 269 groups implementation around page, aware, tika, processing, mostly in specs/page-aware-tika-processing/spec.md. This section covers 21 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 269 (18 nodes, 17 edges)
+    %% Section: Community 269 (21 nodes, 20 edges)
     page_aware_tika_processing_spec_requirements_439b65f5("Requirements<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_4b98ede7("Requirement: Page-aware chunks preserve...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_1223c5b1("Requirement: Tika processing options ar...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
+    openspec_specs_page_aware_tika_processing_spec_m_b84a0561("Requirement: Classified PDF structure<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_bba5c050("Requirement: Non-page-aware formats kee...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_2247bab7("Requirement: PDF parsing can preserve p...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     page_aware_tika_processing_spec_page_aware_tika_bc4a7ef5("page-aware-tika-processing Specification<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     page_aware_tika_processing_spec_purpose_f3a99f38("Purpose<br/><small>specs/page-aware-tika-processing/spec.md</small>")
+    openspec_specs_page_aware_tika_processing_spec_m_88b19bd8("Scenario: Ambiguous styled text<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_2c10aadf("Scenario: Consecutive pages are chunked<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_447115b3("Scenario: DOCX document is processed<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_0ca68675("Scenario: Metadata options are applied<br/><small>specs/page-aware-tika-processing/spec.md</small>")
+    openspec_specs_page_aware_tika_processing_spec_m_39e0c3f3("Scenario: Multi-page PDF<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_451e7e89("Scenario: OCR options are applied<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_b49cc2c1("Scenario: PDF is processed with page sp...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_b82d8753("Scenario: PDF is processed with page sp...<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_4a7fe4b1("Scenario: PDF layout options are applied<br/><small>specs/page-aware-tika-processing/spec.md</small>")
     openspec_specs_page_aware_tika_processing_spec_m_5721f376("Scenario: Page section produces chunks<br/><small>specs/page-aware-tika-processing/spec.md</small>")
-    openspec_specs_page_aware_tika_processing_spec_m_cfa62c75("Scenario: Page text exceeds chunk limits<br/><small>specs/page-aware-tika-processing/spec.md</small>")
-    openspec_specs_page_aware_tika_processing_spec_m_743c70a7("Scenario: TXT document is processed<br/><small>specs/page-aware-tika-processing/spec.md</small>")
-    openspec_specs_page_aware_tika_processing_spec_m_f28c0095("spec.md")
-    openspec_specs_page_aware_tika_processing_spec_m_f28c0095 -->|contains| page_aware_tika_processing_spec_page_aware_tika_bc4a7ef5
     page_aware_tika_processing_spec_page_aware_tika_bc4a7ef5 -->|contains| page_aware_tika_processing_spec_purpose_f3a99f38
     page_aware_tika_processing_spec_page_aware_tika_bc4a7ef5 -->|contains| page_aware_tika_processing_spec_requirements_439b65f5
+    page_aware_tika_processing_spec_requirements_439b65f5 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_b84a0561
     page_aware_tika_processing_spec_requirements_439b65f5 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_bba5c050
     page_aware_tika_processing_spec_requirements_439b65f5 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_4b98ede7
     page_aware_tika_processing_spec_requirements_439b65f5 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_2247bab7
@@ -3603,27 +3603,28 @@ flowchart LR
     openspec_specs_page_aware_tika_processing_spec_m_2247bab7 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_b49cc2c1
     openspec_specs_page_aware_tika_processing_spec_m_4b98ede7 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_2c10aadf
     openspec_specs_page_aware_tika_processing_spec_m_4b98ede7 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_5721f376
-    openspec_specs_page_aware_tika_processing_spec_m_4b98ede7 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_cfa62c75
     openspec_specs_page_aware_tika_processing_spec_m_bba5c050 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_447115b3
-    openspec_specs_page_aware_tika_processing_spec_m_bba5c050 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_743c70a7
+    openspec_specs_page_aware_tika_processing_spec_m_b84a0561 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_88b19bd8
+    openspec_specs_page_aware_tika_processing_spec_m_b84a0561 -->|contains| openspec_specs_page_aware_tika_processing_spec_m_39e0c3f3
+    %% Omitted for readability: 3 nodes, 0 edges
     class page_aware_tika_processing_spec_requirements_439b65f5 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_4b98ede7 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_1223c5b1 concept;
+    class openspec_specs_page_aware_tika_processing_spec_m_b84a0561 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_bba5c050 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_2247bab7 concept;
     class page_aware_tika_processing_spec_page_aware_tika_bc4a7ef5 concept;
     class page_aware_tika_processing_spec_purpose_f3a99f38 concept;
+    class openspec_specs_page_aware_tika_processing_spec_m_88b19bd8 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_2c10aadf concept;
     class openspec_specs_page_aware_tika_processing_spec_m_447115b3 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_0ca68675 concept;
+    class openspec_specs_page_aware_tika_processing_spec_m_39e0c3f3 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_451e7e89 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_b49cc2c1 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_b82d8753 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_4a7fe4b1 concept;
     class openspec_specs_page_aware_tika_processing_spec_m_5721f376 concept;
-    class openspec_specs_page_aware_tika_processing_spec_m_cfa62c75 concept;
-    class openspec_specs_page_aware_tika_processing_spec_m_743c70a7 concept;
-    class openspec_specs_page_aware_tika_processing_spec_m_f28c0095 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3789,6 +3790,30 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Scenario: DOCX document is processed.</td>
 </tr>
+<tr>
+  <td>19</td>
+  <td><code>Requirement: Classified PDF structure</code><br><small style="color:var(--muted)">specs/page-aware-tika-processing/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Requirement: Classified PDF structure.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Scenario: Multi-page PDF</code><br><small style="color:var(--muted)">specs/page-aware-tika-processing/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Multi-page PDF.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Scenario: Ambiguous styled text</code><br><small style="color:var(--muted)">specs/page-aware-tika-processing/spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Scenario: Ambiguous styled text.</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -3796,12 +3821,12 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>specs/page-aware-tika-processing/spec.md</code></td><td>18 nodes</td></tr>
+      <tr><td><code>specs/page-aware-tika-processing/spec.md</code></td><td>21 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x17. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x20. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4861,18 +4886,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>11819</td></tr>
-      <tr><td>Edges</td><td>21082</td></tr>
+      <tr><td>Nodes</td><td>11975</td></tr>
+      <tr><td>Edges</td><td>21545</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>999</td></tr>
+      <tr><td>Communities</td><td>1009</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>17930</td></tr>
-      <tr><td>INFERRED</td><td>3152</td></tr>
+      <tr><td>EXTRACTED</td><td>18217</td></tr>
+      <tr><td>INFERRED</td><td>3328</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4880,7 +4905,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-30 20:58 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-30 21:23 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

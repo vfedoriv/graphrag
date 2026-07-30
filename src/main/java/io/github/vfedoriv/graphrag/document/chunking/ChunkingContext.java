@@ -9,6 +9,8 @@ public record ChunkingContext(
     int targetTokens,
     int overlapTokens,
     int hardCharacterLimit,
+    int contextHeaderMaxTokens,
+    int contextHeaderMaxCharacters,
     TokenEstimator tokenEstimator,
     String parserRevision,
     String representationRevision,
@@ -32,6 +34,9 @@ public record ChunkingContext(
         if (hardCharacterLimit < 1) {
             throw new IllegalArgumentException("hardCharacterLimit must be greater than zero");
         }
+        if (contextHeaderMaxTokens < 0 || contextHeaderMaxCharacters < 0) {
+            throw new IllegalArgumentException("Context header limits must not be negative");
+        }
         if (tokenEstimator == null || settingsHash == null || effectiveRevision == null) {
             throw new IllegalArgumentException("Chunking revisions and token estimator are required");
         }
@@ -47,9 +52,37 @@ public record ChunkingContext(
         String parserRevision,
         String representationRevision
     ) {
+        return create(
+            strategyName,
+            strategyRevision,
+            targetTokens,
+            overlapTokens,
+            hardCharacterLimit,
+            0,
+            0,
+            tokenEstimator,
+            parserRevision,
+            representationRevision
+        );
+    }
+
+    public static ChunkingContext create(
+        String strategyName,
+        String strategyRevision,
+        int targetTokens,
+        int overlapTokens,
+        int hardCharacterLimit,
+        int contextHeaderMaxTokens,
+        int contextHeaderMaxCharacters,
+        TokenEstimator tokenEstimator,
+        String parserRevision,
+        String representationRevision
+    ) {
         ChunkRevisionCalculator calculator = new ChunkRevisionCalculator();
         Map<String, Object> effectiveSettings = new LinkedHashMap<>();
         effectiveSettings.put("hardCharacterLimit", hardCharacterLimit);
+        effectiveSettings.put("contextHeaderMaxCharacters", contextHeaderMaxCharacters);
+        effectiveSettings.put("contextHeaderMaxTokens", contextHeaderMaxTokens);
         effectiveSettings.put("overlapTokens", overlapTokens);
         effectiveSettings.put("strategy", strategyName);
         effectiveSettings.put("targetTokens", targetTokens);
@@ -67,6 +100,8 @@ public record ChunkingContext(
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            contextHeaderMaxTokens,
+            contextHeaderMaxCharacters,
             tokenEstimator,
             parserRevision,
             representationRevision,

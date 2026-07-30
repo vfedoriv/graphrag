@@ -46,6 +46,14 @@ public final class FixedCharacterChunkingStrategy implements ChunkingStrategy {
                 context.tokenEstimator().countMode(),
                 context.settingsHash(),
                 context.effectiveRevision(),
+                "CHILD",
+                section.sectionIndex(),
+                chunks.size(),
+                section.pageNumber(),
+                section.pageNumber(),
+                List.of(),
+                null,
+                ChunkHashes.sha256(text),
                 Map.of("overlapCharacters", overlapCharacters)
             ));
             if (end == normalized.length()) {

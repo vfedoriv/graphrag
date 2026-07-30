@@ -8,6 +8,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkSlice;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.document.chunking.RecursiveTokenAwareChunkingStrategy;
+import io.github.vfedoriv.graphrag.document.chunking.Utf8ByteTokenEstimator;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,32 @@ class RoutedDocumentParserTest {
         assertThat(parser.parserFor("a.docx",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
             .isInstanceOf(ApacheTikaDocumentParser.class);
+    }
+
+    @Test
+    void chunksTxtDocxAndPageScopedPdfFixturesWithExactSourceRanges() throws Exception {
+        ParsedDocument txt = parser.parse(
+            "sample.txt",
+            "text/plain",
+            new ByteArrayInputStream("First paragraph.\n\nSecond paragraph.".getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+            Map.of()
+        );
+        ParsedDocument docx = parser.parse(
+            "structured.docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            new ByteArrayInputStream(docxBytes()),
+            Map.of()
+        );
+        ParsedDocument pdf = parser.parse(
+            "sample.pdf",
+            "application/pdf",
+            new ByteArrayInputStream(pdfBytes("First page text", "Second page text")),
+            Map.of("pdf.split-pages", true)
+        );
+
+        assertChunkContract(txt, false);
+        assertChunkContract(docx, false);
+        assertChunkContract(pdf, true);
     }
 
     @Test
@@ -227,6 +257,37 @@ class RoutedDocumentParserTest {
             .extracting(ParsedBlock::confidence)
             .containsOnly(ParsedBlockConfidence.HINT);
         assertTraceableContract(section);
+    }
+
+    private void assertChunkContract(ParsedDocument document, boolean requirePages) {
+        RecursiveTokenAwareChunkingStrategy strategy = new RecursiveTokenAwareChunkingStrategy();
+        ChunkingContext context = ChunkingContext.create(
+            strategy.name(),
+            strategy.revision(),
+            80,
+            8,
+            160,
+            new Utf8ByteTokenEstimator(),
+            document.parserId() + "-v1",
+            "context-header-v1"
+        );
+        List<ChunkSlice> chunks = document.sections().stream()
+            .flatMap(section -> strategy.split(section, context).stream())
+            .toList();
+
+        assertThat(chunks).isNotEmpty();
+        assertThat(chunks).allSatisfy(chunk -> {
+            ParsedSection section = document.sections().get(chunk.sectionIndex());
+            assertThat(chunk.text()).isEqualTo(
+                section.text().substring(chunk.sourceStart(), chunk.sourceEnd())
+            );
+            assertThat(chunk.tokenCount()).isLessThanOrEqualTo(context.targetTokens());
+            assertThat(chunk.text().length()).isLessThanOrEqualTo(context.hardCharacterLimit());
+            if (requirePages) {
+                assertThat(chunk.pageStart()).isEqualTo(section.pageNumber());
+                assertThat(chunk.pageEnd()).isEqualTo(section.pageNumber());
+            }
+        });
     }
 
     @Test

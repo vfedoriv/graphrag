@@ -29,12 +29,21 @@ public final class ChunkMetadataFactory {
         metadata.put("tokenizerId", slice.tokenizerId().value());
         metadata.put("tokenCountMode", slice.countMode().name());
         metadata.put("effectiveChunkerRevision", slice.effectiveRevision().value());
+        metadata.put("kind", slice.kind());
+        metadata.put("sectionChunkIndex", slice.sectionChunkIndex());
+        metadata.put("sourceHash", slice.sourceHash());
         if (slice.sourceStart() != null) {
             metadata.put("sourceStart", slice.sourceStart());
             metadata.put("sourceEnd", slice.sourceEnd());
         }
         if (!slice.diagnostics().isEmpty()) {
             metadata.put("chunkDiagnostics", slice.diagnostics());
+        }
+        if (!slice.structuralPath().isEmpty()) {
+            metadata.put("structuralPath", slice.structuralPath());
+        }
+        if (slice.blockConfidence() != null) {
+            metadata.put("blockConfidence", slice.blockConfidence());
         }
         if (section.pageNumber() != null) {
             metadata.put("pageNumber", section.pageNumber());

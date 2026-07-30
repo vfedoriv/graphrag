@@ -144,3 +144,10 @@ The system MUST preserve retryable relational mutation records until filesystem 
 - **WHEN** relational intent commits but a filesystem or graph cleanup step fails
 - **THEN** the document remains recoverably pending
 - **AND** unrelated document and knowledge-base data remain unchanged
+
+### Requirement: Rich flat chunk reads
+Document chunk reads SHALL return authoritative child source text and queryable provenance including chunk kind, section/page order, source range when reliable, structural path, token count, strategy revision, and tokenizer identity without returning the synthetic embedding header as document text.
+
+#### Scenario: Client lists recursive chunks
+- **WHEN** a client retrieves chunks for an owned recursively processed document
+- **THEN** chunks are in deterministic document order and expose exact source provenance plus revision metadata

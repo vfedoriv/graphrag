@@ -82,3 +82,10 @@ The system SHALL batch-load PostgreSQL document metadata for Neo4j search hits a
 - **WHEN** a hit's document no longer exists in PostgreSQL
 - **THEN** the hit is omitted or handled through the established stale-artifact policy
 - **AND** metadata from another document is never substituted
+
+### Requirement: Contextual-vector source-safe retrieval
+Hybrid search SHALL query vectors generated from child `embeddingText` while returning and scoring authoritative child identity, `sourceText`, and structured metadata under the existing knowledge-base and embedding-space guards.
+
+#### Scenario: Context term matches
+- **WHEN** a contextual header term helps a child vector become a candidate
+- **THEN** the hit may be returned but its public text excludes the synthetic header

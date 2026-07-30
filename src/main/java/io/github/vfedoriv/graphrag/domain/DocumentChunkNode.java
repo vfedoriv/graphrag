@@ -17,6 +17,7 @@ public class DocumentChunkNode {
     private int chunkIndex;
     private String text;
     private int tokenEstimate;
+    private int embeddingTokenCount;
     private List<Double> embedding;
     private String embeddingModel;
     private int embeddingDimensions;
@@ -29,6 +30,15 @@ public class DocumentChunkNode {
     private String effectiveChunkerRevision;
     private Integer sourceStart;
     private Integer sourceEnd;
+    private String kind;
+    private int sectionIndex;
+    private int sectionChunkIndex;
+    private Integer pageStart;
+    private Integer pageEnd;
+    private String structuralPath;
+    private String blockConfidence;
+    private String sourceHash;
+    private String representationRevision;
     private String metadata;
 
     public String getId() {
@@ -81,6 +91,14 @@ public class DocumentChunkNode {
 
     public void setTokenEstimate(int tokenEstimate) {
         this.tokenEstimate = tokenEstimate;
+    }
+
+    public int getEmbeddingTokenCount() {
+        return embeddingTokenCount;
+    }
+
+    public void setEmbeddingTokenCount(int embeddingTokenCount) {
+        this.embeddingTokenCount = embeddingTokenCount;
     }
 
     public List<Double> getEmbedding() {
@@ -177,6 +195,78 @@ public class DocumentChunkNode {
 
     public void setSourceEnd(Integer sourceEnd) {
         this.sourceEnd = sourceEnd;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public int getSectionIndex() {
+        return sectionIndex;
+    }
+
+    public void setSectionIndex(int sectionIndex) {
+        this.sectionIndex = sectionIndex;
+    }
+
+    public int getSectionChunkIndex() {
+        return sectionChunkIndex;
+    }
+
+    public void setSectionChunkIndex(int sectionChunkIndex) {
+        this.sectionChunkIndex = sectionChunkIndex;
+    }
+
+    public Integer getPageStart() {
+        return pageStart;
+    }
+
+    public void setPageStart(Integer pageStart) {
+        this.pageStart = pageStart;
+    }
+
+    public Integer getPageEnd() {
+        return pageEnd;
+    }
+
+    public void setPageEnd(Integer pageEnd) {
+        this.pageEnd = pageEnd;
+    }
+
+    public String getStructuralPath() {
+        return structuralPath;
+    }
+
+    public void setStructuralPath(String structuralPath) {
+        this.structuralPath = structuralPath;
+    }
+
+    public String getBlockConfidence() {
+        return blockConfidence;
+    }
+
+    public void setBlockConfidence(String blockConfidence) {
+        this.blockConfidence = blockConfidence;
+    }
+
+    public String getSourceHash() {
+        return sourceHash;
+    }
+
+    public void setSourceHash(String sourceHash) {
+        this.sourceHash = sourceHash;
+    }
+
+    public String getRepresentationRevision() {
+        return representationRevision;
+    }
+
+    public void setRepresentationRevision(String representationRevision) {
+        this.representationRevision = representationRevision;
     }
 
     public String getMetadata() {

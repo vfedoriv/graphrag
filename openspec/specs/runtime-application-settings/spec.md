@@ -272,3 +272,10 @@ The runtime settings catalog SHALL expose allowlisted strategy, target-token, ov
 #### Scenario: Compatibility alias
 - **WHEN** a legacy chunking key remains configured during the compatibility period
 - **THEN** the catalog resolves it according to documented precedence and reports one typed effective value
+
+### Requirement: Recursive default lifecycle
+The runtime settings API SHALL report recursive chunking as the default for subsequent processing, expose the effective strategy and representation revision, and state whether older processed documents require explicit migration.
+
+#### Scenario: Default strategy activated
+- **WHEN** the recursive strategy is deployed as the effective default
+- **THEN** new processing uses it while settings reads identify that no automatic corpus reprocessing was started

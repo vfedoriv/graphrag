@@ -14,10 +14,12 @@ public final class ChunkPreparationStage {
 
     private final ChunkingService chunkingService;
     private final ChunkMetadataFactory metadataFactory;
+    private final ContextualChunkTextBuilder contextualTextBuilder;
 
     public ChunkPreparationStage(ChunkingService chunkingService, ChunkMetadataFactory metadataFactory) {
         this.chunkingService = chunkingService;
         this.metadataFactory = metadataFactory;
+        this.contextualTextBuilder = new ContextualChunkTextBuilder();
     }
 
     public List<PreparedChunk> prepare(
@@ -29,11 +31,31 @@ public final class ChunkPreparationStage {
         List<PreparedChunk> chunks = new ArrayList<>();
         for (ParsedSection section : parsedDocument.sections()) {
             for (ChunkSlice slice : chunkingService.split(section, chunkingContext)) {
-                chunks.add(new PreparedChunk(
-                    slice.text(),
-                    slice.tokenCount(),
+                ContextualChunkTextBuilder.ContextualText contextualText = contextualTextBuilder.build(
+                    document,
+                    parsedDocument,
+                    section,
                     slice,
-                    metadataFactory.create(document, processingRun, parsedDocument, section, slice)
+                    chunkingContext
+                );
+                java.util.Map<String, Object> metadata =
+                    new java.util.LinkedHashMap<>(metadataFactory.create(
+                        document,
+                        processingRun,
+                        parsedDocument,
+                        section,
+                        slice
+                    ));
+                metadata.put("representationRevision", chunkingContext.representationRevision());
+                metadata.put("contextualized", contextualText.contextualized());
+                metadata.put("contextHeaderTokenCount", contextualText.headerTokenCount());
+                chunks.add(new PreparedChunk(
+                    contextualText.sourceText(),
+                    contextualText.embeddingText(),
+                    slice.tokenCount(),
+                    chunkingContext.tokenEstimator().count(contextualText.embeddingText()),
+                    slice,
+                    java.util.Map.copyOf(metadata)
                 ));
             }
         }

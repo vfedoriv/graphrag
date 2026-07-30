@@ -238,6 +238,19 @@ public class DocumentController {
                 chunk.getChunkIndex(),
                 chunk.getText(),
                 chunk.getTokenEstimate(),
+                chunk.getKind(),
+                chunk.getSectionIndex(),
+                chunk.getSectionChunkIndex(),
+                chunk.getSourceStart(),
+                chunk.getSourceEnd(),
+                chunk.getPageStart(),
+                chunk.getPageEnd(),
+                chunk.getStructuralPath(),
+                chunk.getBlockConfidence(),
+                chunk.getChunkStrategyRevision(),
+                chunk.getTokenizerId(),
+                chunk.getRepresentationRevision(),
+                chunk.getSourceHash(),
                 chunk.getMetadata()
             ))
             .toList();

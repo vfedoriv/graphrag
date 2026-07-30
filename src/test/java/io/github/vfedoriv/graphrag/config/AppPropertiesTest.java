@@ -37,6 +37,9 @@ class AppPropertiesTest {
                 "app.chunking.overlap-tokens=80",
                 "app.chunking.hard-character-limit=3500",
                 "app.chunking.max-characters=4000",
+                "app.chunking.context-header-max-tokens=64",
+                "app.chunking.context-header-max-characters=384",
+                "app.chunking.representation-revision=context-header-v1",
                 "app.query.max-rows=200",
                 "app.query.timeout-seconds=15",
                 "app.query.require-limit=true",
@@ -53,6 +56,9 @@ class AppPropertiesTest {
                 assertThat(properties.chunking().effectiveStrategy()).isEqualTo("fixed-character");
                 assertThat(properties.chunking().effectiveTargetTokens()).isEqualTo(700);
                 assertThat(properties.chunking().effectiveHardCharacterLimit()).isEqualTo(3500);
+                assertThat(properties.chunking().effectiveContextHeaderMaxTokens()).isEqualTo(64);
+                assertThat(properties.chunking().effectiveContextHeaderMaxCharacters()).isEqualTo(384);
+                assertThat(properties.chunking().effectiveRepresentationRevision()).isEqualTo("context-header-v1");
             });
     }
 

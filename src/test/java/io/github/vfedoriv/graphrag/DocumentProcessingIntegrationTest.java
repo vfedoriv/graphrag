@@ -102,6 +102,11 @@ class DocumentProcessingIntegrationTest {
         );
         DocumentUploadNode uploaded = documentUploadService.upload("kb-1", file);
         DocumentUploadNode processed = documentProcessingService.process(uploaded.getId());
+        List<String> firstChunkIds = documentChunkRepository
+            .findByDocumentIdOrderByChunkIndexAsc(uploaded.getId())
+            .stream()
+            .map(DocumentChunkNode::getId)
+            .toList();
         Throwable secondAttempt = catchThrowable(() -> documentProcessingService.process(uploaded.getId()));
         DocumentUploadNode processedAgain = documentProcessingService.process(uploaded.getId(), true);
 
@@ -118,7 +123,7 @@ class DocumentProcessingIntegrationTest {
         assertThat(chunks).extracting(DocumentChunkNode::getEmbeddingSpaceId)
             .containsOnly(embeddingSpace.id());
         assertThat(chunks).extracting(DocumentChunkNode::getChunkStrategy)
-            .containsOnly("fixed-character");
+            .containsOnly("recursive");
         assertThat(chunks).extracting(DocumentChunkNode::getTokenizerId)
             .containsOnly("cl100k_base");
         assertThat(chunks).extracting(DocumentChunkNode::getTokenCountMode)
@@ -127,6 +132,17 @@ class DocumentProcessingIntegrationTest {
             .allMatch(revision -> revision != null && revision.startsWith("chunker_"));
         assertThat(chunks).extracting(DocumentChunkNode::getSourceStart)
             .allMatch(position -> position != null && position >= 0);
+        assertThat(chunks).extracting(DocumentChunkNode::getId)
+            .containsExactlyElementsOf(firstChunkIds);
+        assertThat(chunks).extracting(DocumentChunkNode::getKind).containsOnly("CHILD");
+        assertThat(chunks).extracting(DocumentChunkNode::getSectionIndex).containsOnly(0);
+        assertThat(chunks).extracting(DocumentChunkNode::getSectionChunkIndex).containsExactly(0);
+        assertThat(chunks).extracting(DocumentChunkNode::getSourceHash)
+            .allMatch(hash -> hash != null && hash.matches("[0-9a-f]{64}"));
+        assertThat(chunks).extracting(DocumentChunkNode::getRepresentationRevision)
+            .containsOnly("context-header-v1");
+        assertThat(chunks).extracting(DocumentChunkNode::getText)
+            .allMatch(text -> !text.contains("context-header-v1"));
         List<DocumentProcessingRunNode> runHistory =
             processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId());
         assertThat(runHistory).hasSize(2);
@@ -253,7 +269,11 @@ class DocumentProcessingIntegrationTest {
             )
         );
 
-        assertThat(documentProcessingService.process(pdf.getId()).getStatus().name()).isEqualTo("COMPLETED");
+        assertThat(documentProcessingService.process(
+            pdf.getId(),
+            false,
+            java.util.Map.of("pdf.split-pages", true)
+        ).getStatus().name()).isEqualTo("COMPLETED");
         assertThat(documentProcessingService.process(docx.getId()).getStatus().name()).isEqualTo("COMPLETED");
 
         assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(pdf.getId()))
@@ -261,6 +281,12 @@ class DocumentProcessingIntegrationTest {
             .anySatisfy(text -> assertThat(text)
                 .contains("PDF contract paragraph")
                 .contains("PDF second line"));
+        assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(pdf.getId()))
+            .allSatisfy(chunk -> {
+                assertThat(chunk.getPageStart()).isNotNull();
+                assertThat(chunk.getPageEnd()).isEqualTo(chunk.getPageStart());
+                assertThat(chunk.getKind()).isEqualTo("CHILD");
+            });
         assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(docx.getId()))
             .extracting(DocumentChunkNode::getText)
             .anySatisfy(text -> assertThat(text)

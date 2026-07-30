@@ -4,6 +4,7 @@ import io.github.vfedoriv.graphrag.document.chunking.ChunkSlice;
 import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.document.chunking.ChunkingStrategy;
 import io.github.vfedoriv.graphrag.document.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.document.chunking.RecursiveTokenAwareChunkingStrategy;
 import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
 import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
@@ -25,7 +26,8 @@ public class ChunkingService {
         this.runtimeSettingsService = runtimeSettingsService;
         this.tokenizerPolicy = new TokenizerPolicy();
         ChunkingStrategy fixed = new FixedCharacterChunkingStrategy();
-        this.strategies = Map.of(fixed.name(), fixed);
+        ChunkingStrategy recursive = new RecursiveTokenAwareChunkingStrategy();
+        this.strategies = Map.of(fixed.name(), fixed, recursive.name(), recursive);
     }
 
     public ChunkingContext snapshot(AiProfileNode profile, String parserId) {
@@ -38,9 +40,11 @@ public class ChunkingService {
             settings.targetTokens(),
             settings.overlapTokens(),
             settings.hardCharacterLimit(),
+            settings.contextHeaderMaxTokens(),
+            settings.contextHeaderMaxCharacters(),
             estimator,
             parserRevision(parserId),
-            "plain-text-v1"
+            settings.representationRevision()
         );
     }
 
@@ -66,9 +70,11 @@ public class ChunkingService {
             settings.targetTokens(),
             settings.overlapTokens(),
             settings.hardCharacterLimit(),
+            settings.contextHeaderMaxTokens(),
+            settings.contextHeaderMaxCharacters(),
             new LegacyCharacterTokenEstimator(),
             "legacy-text-v1",
-            "plain-text-v1"
+            settings.representationRevision()
         );
         ParsedSection section = new ParsedSection(0, text, "legacy-text", "TEXT", null, null, Map.of());
         return strategy.split(section, context).stream().map(ChunkSlice::text).toList();

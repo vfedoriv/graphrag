@@ -49,7 +49,7 @@ public final class EmbeddingPersistenceStage {
         }
         log.info("Embedding client resolved: documentId={}, embeddingClientClass={}",
             document.getId(), embeddingClient.getClass().getName());
-        List<String> texts = preparedChunks.stream().map(PreparedChunk::text).toList();
+        List<String> texts = preparedChunks.stream().map(PreparedChunk::embeddingText).toList();
         List<List<Double>> embeddings = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(texts));
         log.info("Embedding request completed: documentId={}, vectors={}", document.getId(), embeddings.size());
         if (embeddings.size() != preparedChunks.size()) {
@@ -73,12 +73,13 @@ public final class EmbeddingPersistenceStage {
         int index
     ) {
         DocumentChunkNode chunk = new DocumentChunkNode();
-        chunk.setId(UUID.randomUUID().toString());
+        chunk.setId(deterministicId(document, preparedChunk));
         chunk.setKnowledgeBaseId(document.getKnowledgeBaseId());
         chunk.setDocumentId(document.getId());
         chunk.setChunkIndex(index);
-        chunk.setText(preparedChunk.text());
+        chunk.setText(preparedChunk.sourceText());
         chunk.setTokenEstimate(preparedChunk.tokenCount());
+        chunk.setEmbeddingTokenCount(preparedChunk.embeddingTokenCount());
         if (preparedChunk.slice() != null) {
             chunk.setChunkStrategy(preparedChunk.slice().strategyName());
             chunk.setChunkStrategyRevision(preparedChunk.slice().strategyRevision());
@@ -88,6 +89,17 @@ public final class EmbeddingPersistenceStage {
             chunk.setEffectiveChunkerRevision(preparedChunk.slice().effectiveRevision().value());
             chunk.setSourceStart(preparedChunk.slice().sourceStart());
             chunk.setSourceEnd(preparedChunk.slice().sourceEnd());
+            chunk.setKind(preparedChunk.slice().kind());
+            chunk.setSectionIndex(preparedChunk.slice().sectionIndex());
+            chunk.setSectionChunkIndex(preparedChunk.slice().sectionChunkIndex());
+            chunk.setPageStart(preparedChunk.slice().pageStart());
+            chunk.setPageEnd(preparedChunk.slice().pageEnd());
+            chunk.setStructuralPath(String.join(" / ", preparedChunk.slice().structuralPath()));
+            chunk.setBlockConfidence(preparedChunk.slice().blockConfidence());
+            chunk.setSourceHash(preparedChunk.slice().sourceHash());
+            chunk.setRepresentationRevision(String.valueOf(
+                preparedChunk.metadata().get("representationRevision")
+            ));
         }
         chunk.setEmbedding(embedding);
         chunk.setEmbeddingModel(profile.getEmbeddingModel());
@@ -95,5 +107,17 @@ public final class EmbeddingPersistenceStage {
         chunk.setEmbeddingSpaceId(embeddingSpace.id());
         chunk.setMetadata(jsonCodec.writeMap(preparedChunk.metadata()));
         return chunk;
+    }
+
+    private String deterministicId(DocumentUploadNode document, PreparedChunk preparedChunk) {
+        if (preparedChunk.slice() == null) {
+            return UUID.randomUUID().toString();
+        }
+        return io.github.vfedoriv.graphrag.document.chunking.ChunkIdentity.childId(
+            document.getSha256() == null || document.getSha256().isBlank()
+                ? document.getId()
+                : document.getSha256(),
+            preparedChunk.slice()
+        );
     }
 }
