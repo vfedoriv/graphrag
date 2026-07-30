@@ -2,6 +2,8 @@ package io.github.vfedoriv.graphrag;
 
 import io.github.vfedoriv.graphrag.IntegrationTest;
 
+import static io.github.vfedoriv.graphrag.document.StructuredDocumentTestFixtures.docxBytes;
+import static io.github.vfedoriv.graphrag.document.StructuredDocumentTestFixtures.pdfPageWithLines;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -202,6 +204,69 @@ class DocumentProcessingIntegrationTest {
         assertThat(extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
         assertThat(processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
         assertThat(documentProcessingService.process(uploaded.getId()).getStatus().name()).isEqualTo("COMPLETED");
+    }
+
+    @Test
+    void processesStructuredPdfAndDocxThroughFlatSectionConsumers() throws Exception {
+        neo4jClient.query("MATCH (n) DETACH DELETE n").run();
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
+        String schemaJson = """
+            {
+              "name": "structured-documents",
+              "version": 1,
+              "nodes": [
+                {
+                  "label": "Contract",
+                  "key": "contractId",
+                  "properties": [{"name": "contractId", "type": "string"}]
+                },
+                {
+                  "label": "Party",
+                  "key": "name",
+                  "properties": [{"name": "name", "type": "string"}]
+                }
+              ],
+              "relationships": [
+                {"type": "HAS_PARTY", "from": "Contract", "to": "Party"}
+              ]
+            }
+            """;
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema(schemaJson, SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-1", schema.getId());
+
+        DocumentUploadNode pdf = documentUploadService.upload(
+            "kb-1",
+            new MockMultipartFile(
+                "file",
+                "structured.pdf",
+                "application/pdf",
+                pdfPageWithLines("PDF contract paragraph", "PDF second line")
+            )
+        );
+        DocumentUploadNode docx = documentUploadService.upload(
+            "kb-1",
+            new MockMultipartFile(
+                "file",
+                "structured.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                docxBytes()
+            )
+        );
+
+        assertThat(documentProcessingService.process(pdf.getId()).getStatus().name()).isEqualTo("COMPLETED");
+        assertThat(documentProcessingService.process(docx.getId()).getStatus().name()).isEqualTo("COMPLETED");
+
+        assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(pdf.getId()))
+            .extracting(DocumentChunkNode::getText)
+            .anySatisfy(text -> assertThat(text)
+                .contains("PDF contract paragraph")
+                .contains("PDF second line"));
+        assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(docx.getId()))
+            .extracting(DocumentChunkNode::getText)
+            .anySatisfy(text -> assertThat(text)
+                .contains("Heading 1")
+                .contains("Cell A")
+                .contains("Custom style text"));
     }
 
     @TestConfiguration

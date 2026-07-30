@@ -60,9 +60,9 @@
     "semantic_hash": "8fde346a6ca3e8b5aeb4756fd39fb9eb"
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParser.java": {
-    "mtime": 1782825375.1745172,
-    "ast_hash": "74b3c812812ffb9dc6b8831546bfe928",
-    "semantic_hash": "74b3c812812ffb9dc6b8831546bfe928"
+    "mtime": 1785444740.9979136,
+    "ast_hash": "fa2010fb88e07792001a0efa350c600b",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/package-info.java": {
     "mtime": 1778080990.8131819,
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java": {
-    "mtime": 1785443113.647471,
-    "ast_hash": "925e14b59f068d450918c39099a7aedd",
+    "mtime": 1785445144.6622093,
+    "ast_hash": "9cc461f3093588aad417903ca8b253d9",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentUploadIntegrationTest.java": {
@@ -685,9 +685,9 @@
     "semantic_hash": "1acc78c831e58a2d181f8175c311986a"
   },
   "src/test/java/io/github/vfedoriv/graphrag/document/RoutedDocumentParserTest.java": {
-    "mtime": 1782825163.348662,
-    "ast_hash": "88fb3a4e351d5ccb7ecb4f1a904859cd",
-    "semantic_hash": "88fb3a4e351d5ccb7ecb4f1a904859cd"
+    "mtime": 1785445144.8702135,
+    "ast_hash": "a9237910e299af7fa39b8078173b9081",
+    "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/dto/GenerateSchemaExampleRequestValidationTest.java": {
     "mtime": 1778485306.7056494,
@@ -1845,8 +1845,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/test-coverage-governance/spec.md": {
-    "mtime": 1785312076.9522562,
-    "ast_hash": "ccd288cae88eebe2cbdb5c31121bb349",
+    "mtime": 1785444201.2918224,
+    "ast_hash": "d7f7118c0829389e283f0b419417ade6",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/GraphArtifactCleanupService.java": {
@@ -2510,9 +2510,9 @@
     "semantic_hash": "e9c94c275842faf05759485c3ce6374c"
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/ParsedSection.java": {
-    "mtime": 1782824996.5927474,
-    "ast_hash": "d38273946e7f845a64ca0f9fcb8b19a5",
-    "semantic_hash": "d38273946e7f845a64ca0f9fcb8b19a5"
+    "mtime": 1785444594.738908,
+    "ast_hash": "be52bd77a88003eb07523bd3c9aa0cfb",
+    "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/document/TikaProcessingOptions.java": {
     "mtime": 1782825369.1603808,
@@ -5590,8 +5590,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/preserve-structured-document-blocks/tasks.md": {
-    "mtime": 1785438544.922828,
-    "ast_hash": "4bdcd7a06fae770040bb6bb1a4544cf9",
+    "mtime": 1785445125.5628166,
+    "ast_hash": "1f887f0581c427cfc0ba3748eedc6650",
     "semantic_hash": ""
   },
   "scripts/measure-test-suite.sh": {
@@ -5694,44 +5694,94 @@
     "ast_hash": "2c8361bad41731dd0fa01565a5cb73a2",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/.openspec.yaml": {
+  "openspec/specs/versioned-chunking-strategy/spec.md": {
+    "mtime": 1785441504.233501,
+    "ast_hash": "f6fe47df92484e075c7e819473ac94bc",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParsedBlock.java": {
+    "mtime": 1785444594.5779047,
+    "ast_hash": "695bb3f4aaa3e1a5e8e575008a7cedb8",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParsedBlockConfidence.java": {
+    "mtime": 1785444594.0918946,
+    "ast_hash": "2664fc60eaaeda0647c4a88198a9ab26",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParsedBlockKind.java": {
+    "mtime": 1785444593.8888905,
+    "ast_hash": "a318f4316c18a8567ed15c1378077662",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/ParserRevision.java": {
+    "mtime": 1785444594.4739025,
+    "ast_hash": "17858674250a8717731774d87fa28563",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/SourceRange.java": {
+    "mtime": 1785444594.2588983,
+    "ast_hash": "58d5328f1f7e272490723c9c5c761cc6",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/StructuralPath.java": {
+    "mtime": 1785444594.3719006,
+    "ast_hash": "9f2f8c1a64deb93ffb71b08ff92ca0ba",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/document/StructuredTikaDocumentMapper.java": {
+    "mtime": 1785444851.2131786,
+    "ast_hash": "51fb1a9a0f177c7257bb14be62c84d91",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/document/ParsedSectionTest.java": {
+    "mtime": 1785444594.8939111,
+    "ast_hash": "9fede89708abee44cfbbe381587b7241",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/document/StructuredDocumentTestFixtures.java": {
+    "mtime": 1785445041.931098,
+    "ast_hash": "10c69a565e07061414b2d866029a9db3",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/.openspec.yaml": {
     "mtime": 1785442306.0308745,
     "ast_hash": "4905f24b2c5687093cf66e8f2f1db526",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/design.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/design.md": {
     "mtime": 1785442456.467966,
     "ast_hash": "479dc5690cda07cc9b5712043e6f6904",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/performance-results.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/performance-results.md": {
     "mtime": 1785443949.3176444,
     "ast_hash": "4d8580c90b44080b86420c0f6012da49",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/proposal.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/proposal.md": {
     "mtime": 1785442345.7456906,
     "ast_hash": "2c7c78f8002b51177fccedbeb623390f",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/specs/test-coverage-governance/spec.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/specs/test-coverage-governance/spec.md": {
     "mtime": 1785442456.271962,
     "ast_hash": "dc110a6d9aeebad62231b5f2129f7300",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/specs/test-suite-execution-performance/spec.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/specs/test-suite-execution-performance/spec.md": {
     "mtime": 1785442455.9979563,
     "ast_hash": "5f0bcf39cc9c22186bcc552a46db6c73",
     "semantic_hash": ""
   },
-  "openspec/changes/speed-up-test-suite/tasks.md": {
+  "openspec/changes/archive/2026-07-30-speed-up-test-suite/tasks.md": {
     "mtime": 1785443949.144641,
     "ast_hash": "e995167ad803cd195d57fb733339370e",
     "semantic_hash": ""
   },
-  "openspec/specs/versioned-chunking-strategy/spec.md": {
-    "mtime": 1785441504.233501,
-    "ast_hash": "f6fe47df92484e075c7e819473ac94bc",
+  "openspec/specs/test-suite-execution-performance/spec.md": {
+    "mtime": 1785444201.5418277,
+    "ast_hash": "6d9ed0826079a04151c9e854af99c553",
     "semantic_hash": ""
   }
 }

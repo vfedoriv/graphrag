@@ -5705,8 +5705,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/speed-up-test-suite/performance-results.md": {
-    "mtime": 1785443665.6808155,
-    "ast_hash": "266e2df171ed6f95ea2bd08cff02a1a1",
+    "mtime": 1785443949.3176444,
+    "ast_hash": "4d8580c90b44080b86420c0f6012da49",
     "semantic_hash": ""
   },
   "openspec/changes/speed-up-test-suite/proposal.md": {
@@ -5725,8 +5725,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/speed-up-test-suite/tasks.md": {
-    "mtime": 1785443665.8748195,
-    "ast_hash": "12a036812644af120cab80bc8ad3105d",
+    "mtime": 1785443949.144641,
+    "ast_hash": "e995167ad803cd195d57fb733339370e",
     "semantic_hash": ""
   },
   "openspec/specs/versioned-chunking-strategy/spec.md": {
