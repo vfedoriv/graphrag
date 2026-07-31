@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface SchemaReprocessingPlanRepository {
     Optional<SchemaReprocessingPlanNode> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
+    boolean existsActiveByKnowledgeBaseId(String knowledgeBaseId);
     List<SchemaReprocessingPlanNode> findByStatusIn(List<SchemaReprocessingPlanStatus> statuses);
     Page<SchemaReprocessingPlanNode> findPageByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
     Page<SchemaReprocessingPlanNode> findPageByKnowledgeBaseIdAndDraftId(

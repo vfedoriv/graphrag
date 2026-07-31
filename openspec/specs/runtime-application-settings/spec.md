@@ -279,3 +279,10 @@ The runtime settings API SHALL report recursive chunking as the default for subs
 #### Scenario: Default strategy activated
 - **WHEN** the recursive strategy is deployed as the effective default
 - **THEN** new processing uses it while settings reads identify that no automatic corpus reprocessing was started
+
+### Requirement: Chunk migration lifecycle reporting
+Runtime settings reads SHALL report the effective chunker revision and state that older documents require explicit reprocessing; updating a chunking setting SHALL never create a migration plan automatically.
+
+#### Scenario: Chunk setting updated
+- **WHEN** an operator saves a valid behavior-affecting chunk setting
+- **THEN** the response exposes the new effective revision and explicit migration requirement without queuing work

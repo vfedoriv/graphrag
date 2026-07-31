@@ -36,4 +36,30 @@ public final class GraphExtractionStage {
             () -> graphExtractionService.extract(document, extractionChunks, allowOverwrite)
         );
     }
+
+    public void execute(
+        DocumentUploadNode document,
+        List<DocumentChunkNode> persistedChunks,
+        AiProfileNode activeProfile,
+        boolean allowOverwrite,
+        String schemaId,
+        String schemaContentHash
+    ) {
+        List<DocumentChunkNode> parents = persistedChunks.stream()
+            .filter(chunk -> "PARENT".equals(chunk.getKind()))
+            .toList();
+        List<DocumentChunkNode> extractionChunks = parents.isEmpty()
+            ? persistedChunks.stream().filter(chunk -> !"PARENT".equals(chunk.getKind())).toList()
+            : parents;
+        AiProfileContext.withProfile(
+            activeProfile.getId(),
+            () -> graphExtractionService.extract(
+                document,
+                extractionChunks,
+                allowOverwrite,
+                schemaId,
+                schemaContentHash
+            )
+        );
+    }
 }

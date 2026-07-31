@@ -15,6 +15,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface JpaSchemaReprocessingPlanRepository extends JpaRepository<SchemaReprocessingPlanEntity, String> {
     Optional<SchemaReprocessingPlanEntity> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
+    boolean existsByKnowledgeBaseIdAndStatusIn(
+        String knowledgeBaseId,
+        List<SchemaReprocessingPlanStatus> statuses
+    );
     List<SchemaReprocessingPlanEntity> findByStatusIn(List<SchemaReprocessingPlanStatus> statuses);
     Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
     Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseIdAndDraftId(

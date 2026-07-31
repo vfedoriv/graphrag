@@ -50,6 +50,30 @@ public class GraphExtractionService {
     }
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks, boolean allowOverwrite) {
+        extract(document, chunks, allowOverwrite, activeSchemaResolver.resolve(document.getKnowledgeBaseId()));
+    }
+
+    public void extract(
+        DocumentUploadNode document,
+        List<DocumentChunkNode> chunks,
+        boolean allowOverwrite,
+        String schemaId,
+        String schemaContentHash
+    ) {
+        extract(
+            document,
+            chunks,
+            allowOverwrite,
+            activeSchemaResolver.resolveExpected(document.getKnowledgeBaseId(), schemaId, schemaContentHash)
+        );
+    }
+
+    private void extract(
+        DocumentUploadNode document,
+        List<DocumentChunkNode> chunks,
+        boolean allowOverwrite,
+        ActiveSchemaContext schemaContext
+    ) {
         long startNanos = System.nanoTime();
         requireConsistentScope(document, chunks);
         log.info(
@@ -58,7 +82,6 @@ public class GraphExtractionService {
             document.getKnowledgeBaseId(),
             chunks.size()
         );
-        ActiveSchemaContext schemaContext = activeSchemaResolver.resolve(document.getKnowledgeBaseId());
         SchemaDocument schema = schemaContext.schema();
 
         GraphExtractionClient client = resolveGraphExtractionClient();

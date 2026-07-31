@@ -8,6 +8,7 @@ import io.github.vfedoriv.graphrag.document.chunking.RecursiveTokenAwareChunking
 import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
 import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,67 @@ public class ChunkingService {
             parserRevision(parserId),
             settings.representationRevision()
         );
+    }
+
+    public String migrationTargetRevision(AiProfileNode profile) {
+        if (profile == null) {
+            throw new IllegalArgumentException("profile must not be null");
+        }
+        return runtimeSettingsService.effectiveChunkerRevision();
+    }
+
+    public String migrationTargetRevision() {
+        return runtimeSettingsService.effectiveChunkerRevision();
+    }
+
+    public ChunkMigrationSnapshot.ChunkTarget snapshotTarget(AiProfileNode profile) {
+        ChunkingContext context = snapshot(profile, "migration-target");
+        return new ChunkMigrationSnapshot.ChunkTarget(
+            context.strategyName(),
+            context.strategyRevision(),
+            context.targetTokens(),
+            context.overlapTokens(),
+            context.hardCharacterLimit(),
+            context.parentTargetTokens(),
+            context.parentHardCharacterLimit(),
+            context.parentMaxPages(),
+            context.contextHeaderMaxTokens(),
+            context.contextHeaderMaxCharacters(),
+            context.tokenEstimator().tokenizerId().value(),
+            context.tokenEstimator().revision(),
+            context.tokenEstimator().countMode().name(),
+            context.representationRevision(),
+            context.settingsHash().value()
+        );
+    }
+
+    public ChunkingContext restore(
+        AiProfileNode profile,
+        ChunkMigrationSnapshot.ChunkTarget target,
+        ChunkMigrationSnapshot.DocumentTarget documentTarget
+    ) {
+        TokenEstimator estimator = tokenizerPolicy.resolve(profile.getTokenizerId(), profile.getEmbeddingModel());
+        requireSnapshotIdentity(target, estimator);
+        ChunkingContext restored = ChunkingContext.create(
+            target.strategyName(),
+            target.strategyRevision(),
+            target.targetTokens(),
+            target.overlapTokens(),
+            target.hardCharacterLimit(),
+            target.parentTargetTokens(),
+            target.parentHardCharacterLimit(),
+            target.parentMaxPages(),
+            target.contextHeaderMaxTokens(),
+            target.contextHeaderMaxCharacters(),
+            estimator,
+            documentTarget.parserRevision(),
+            target.representationRevision()
+        );
+        if (!target.settingsHash().equals(restored.settingsHash().value())
+            || !documentTarget.effectiveChunkerRevision().equals(restored.effectiveRevision().value())) {
+            throw new IllegalStateException("Immutable chunk migration snapshot does not reproduce its target revision");
+        }
+        return restored;
     }
 
     public List<ChunkSlice> split(ParsedSection section, ChunkingContext context) {
@@ -104,6 +166,18 @@ public class ChunkingService {
     private String parserRevision(String parserId) {
         String normalized = parserId == null || parserId.isBlank() ? "unknown-parser" : parserId.strip();
         return normalized + "-v1";
+    }
+
+    private void requireSnapshotIdentity(
+        ChunkMigrationSnapshot.ChunkTarget target,
+        TokenEstimator estimator
+    ) {
+        if (!target.tokenizerId().equals(estimator.tokenizerId().value())
+            || !target.tokenizerRevision().equals(estimator.revision())
+            || !target.tokenCountMode().equals(estimator.countMode().name())) {
+            throw new IllegalStateException("AI profile no longer resolves the snapshotted tokenizer target");
+        }
+        requireStrategy(target.strategyName());
     }
 
     private final class LegacyCharacterTokenEstimator implements TokenEstimator {

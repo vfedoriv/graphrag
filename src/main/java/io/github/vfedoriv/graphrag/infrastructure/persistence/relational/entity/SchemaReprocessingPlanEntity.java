@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity;
 
+import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,10 +21,17 @@ import lombok.Setter;
 public class SchemaReprocessingPlanEntity {
     @Id private String id;
     @Version @Column(name = "version") private Long persistenceVersion;
-    @Column(name = "draft_id", nullable = false) private String draftId;
+    @Enumerated(EnumType.STRING) @Column(name = "reason", nullable = false)
+    private ReprocessingPlanReason reason = ReprocessingPlanReason.SCHEMA_ACTIVATION;
+    @Enumerated(EnumType.STRING) @Column(name = "selection_mode")
+    private ChunkReprocessingSelection selection;
+    @Column(name = "expected_chunker_revision", length = 80) private String expectedChunkerRevision;
+    @Column(name = "target_snapshot_json") private String targetSnapshotJson;
+    @Column(name = "embedding_space_id", length = 80) private String embeddingSpaceId;
+    @Column(name = "draft_id") private String draftId;
     @Column(name = "knowledge_base_id", nullable = false) private String knowledgeBaseId;
-    @Column(name = "schema_id", nullable = false) private String schemaId;
-    @Column(name = "schema_content_hash", nullable = false, length = 64) private String schemaContentHash;
+    @Column(name = "schema_id") private String schemaId;
+    @Column(name = "schema_content_hash", length = 64) private String schemaContentHash;
     @Column(name = "ai_profile_id", nullable = false) private String aiProfileId;
     @Column(name = "ai_profile_revision", nullable = false) private long aiProfileRevision;
     @Column(name = "processing_options_json", nullable = false) private String processingOptionsJson;

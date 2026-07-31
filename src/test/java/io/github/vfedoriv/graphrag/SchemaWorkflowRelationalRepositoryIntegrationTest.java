@@ -23,6 +23,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
@@ -47,7 +49,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @SpringBootTest
-@Import(PostgresTestcontainersConfiguration.class)
+@Import(TestcontainersConfiguration.class)
 @IntegrationTest
 class SchemaWorkflowRelationalRepositoryIntegrationTest {
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
@@ -148,6 +150,64 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
         assertThat(repaired.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.COMPLETED);
         assertThat(repaired.getQueuedDocuments()).isZero();
         assertThat(repaired.getSucceededDocuments()).isEqualTo(1);
+        assertThat(repaired.getReason()).isEqualTo(ReprocessingPlanReason.SCHEMA_ACTIVATION);
+    }
+
+    @Test
+    void enforcesOneActiveDestructivePlanPerKnowledgeBase() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-lock\",\"version\":1,\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],"
+                + "\"relationships\":[]}",
+            knowledgeBaseId
+        );
+        SchemaReprocessingPlanNode schemaPlan = plan(schema);
+        planRepository.save(schemaPlan);
+        SchemaReprocessingPlanNode competing = plan(schema);
+        competing.setId("plan-competing");
+
+        assertThatThrownBy(() -> planRepository.save(competing))
+            .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void persistsChunkMigrationOutcomesAndRepairsPartialProgress() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-migration\",\"version\":1,\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],"
+                + "\"relationships\":[]}",
+            knowledgeBaseId
+        );
+        DocumentUploadNode succeededDocument = documentRepository.save(document("document-success"));
+        DocumentUploadNode staleDocument = documentRepository.save(document("document-stale"));
+        DocumentUploadNode blockedDocument = documentRepository.save(document("document-blocked"));
+        SchemaReprocessingPlanNode plan = chunkPlan(schema);
+        planRepository.save(plan);
+        SchemaReprocessingItemNode succeeded = item(plan, succeededDocument, "item-success");
+        SchemaReprocessingItemNode stale = item(plan, staleDocument, "item-stale");
+        SchemaReprocessingItemNode blocked = item(plan, blockedDocument, "item-blocked");
+        itemRepository.save(succeeded);
+        itemRepository.save(stale);
+        itemRepository.save(blocked);
+        Instant claimedAt = Instant.now();
+        complete(succeeded, SchemaReprocessingItemStatus.SUCCEEDED, null, false, claimedAt);
+        complete(stale, SchemaReprocessingItemStatus.STALE_SOURCE, "SOURCE_CHANGED", true, claimedAt);
+        complete(
+            blocked,
+            SchemaReprocessingItemStatus.BLOCKED_TARGET_CHANGED,
+            "TARGET_CHANGED",
+            true,
+            claimedAt
+        );
+
+        SchemaReprocessingPlanNode repaired = recoveryService.repairCounters(plan.getId());
+
+        assertThat(repaired.getReason()).isEqualTo(ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION);
+        assertThat(repaired.getSelection()).isEqualTo(ChunkReprocessingSelection.ALL);
+        assertThat(repaired.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.PARTIAL);
+        assertThat(repaired.getSucceededDocuments()).isEqualTo(1);
+        assertThat(repaired.getStaleDocuments()).isEqualTo(1);
+        assertThat(repaired.getBlockedDocuments()).isEqualTo(1);
     }
 
     private SchemaDraftNode draft() {
@@ -259,18 +319,66 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
     }
 
     private DocumentUploadNode document() {
+        return document("document-1");
+    }
+
+    private DocumentUploadNode document(String id) {
         DocumentUploadNode value = new DocumentUploadNode();
-        value.setId("document-1");
+        value.setId(id);
         value.setKnowledgeBaseId(knowledgeBaseId);
         value.setOriginalFilename("document.txt");
         value.setContentType("text/plain");
         value.setSizeBytes(4);
-        value.setSha256("2".repeat(64));
-        value.setContentUri("file:///tmp/document-1");
+        value.setSha256(io.github.vfedoriv.graphrag.document.chunking.ChunkHashes.sha256(id));
+        value.setContentUri("file:///tmp/" + id);
         value.setStatus(DocumentStatus.COMPLETED);
         value.setUploadedAt(Instant.now());
         value.setProcessedAt(Instant.now());
         return value;
+    }
+
+    private SchemaReprocessingPlanNode chunkPlan(SchemaDefinitionNode schema) {
+        SchemaReprocessingPlanNode value = new SchemaReprocessingPlanNode();
+        value.setId("chunk-plan-1");
+        value.setReason(ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION);
+        value.setSelection(ChunkReprocessingSelection.ALL);
+        value.setExpectedChunkerRevision("chunker_" + "3".repeat(64));
+        value.setTargetSnapshotJson("{\"documents\":{}}");
+        value.setEmbeddingSpaceId("es_" + "4".repeat(64));
+        value.setKnowledgeBaseId(knowledgeBaseId);
+        value.setSchemaId(schema.getId());
+        value.setSchemaContentHash(schema.getContentHash());
+        value.setAiProfileId(profile.getId());
+        value.setAiProfileRevision(profile.getRevision());
+        value.setProcessingOptionsJson("{}");
+        value.setStatus(SchemaReprocessingPlanStatus.QUEUED);
+        value.setTotalDocuments(3);
+        value.setQueuedDocuments(3);
+        value.setCreatedAt(Instant.now());
+        return value;
+    }
+
+    private void complete(
+        SchemaReprocessingItemNode item,
+        SchemaReprocessingItemStatus status,
+        String failureCategory,
+        boolean retryable,
+        Instant claimedAt
+    ) {
+        assertThat(itemRepository.claim(
+            item.getId(),
+            "worker-" + item.getId(),
+            claimedAt,
+            claimedAt.plus(5, ChronoUnit.MINUTES)
+        )).isEqualTo(1);
+        assertThat(itemRepository.complete(
+            item.getId(),
+            "worker-" + item.getId(),
+            status,
+            failureCategory,
+            retryable,
+            Instant.now()
+        )).isEqualTo(1);
     }
 
     private SchemaReprocessingItemNode item(

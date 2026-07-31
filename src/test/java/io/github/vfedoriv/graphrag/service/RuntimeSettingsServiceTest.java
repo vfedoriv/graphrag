@@ -79,6 +79,19 @@ class RuntimeSettingsServiceTest {
     }
 
     @Test
+    void reportsRevisionAndExplicitMigrationLifecycleWithoutQueuingWork() {
+        RuntimeSettingsService service = service(new LinkedHashMap<>());
+        String before = service.effectiveChunkerRevision();
+
+        RuntimeSettingResponse response = service.update("app.chunking.target-tokens", 600);
+
+        assertThat(response.effectiveChunkerRevision())
+            .startsWith("chunker_")
+            .isNotEqualTo(before);
+        assertThat(response.chunkMigrationLifecycle()).isEqualTo("explicit-reprocessing-required");
+    }
+
+    @Test
     void invalidChunkingBulkUpdateIsRejectedAtomically() {
         Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
         RuntimeSettingsService service = service(store);

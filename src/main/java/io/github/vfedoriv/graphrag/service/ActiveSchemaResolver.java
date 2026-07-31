@@ -37,4 +37,27 @@ public class ActiveSchemaResolver {
         SchemaDocument schema = schemaParser.parse(schemaNode.getContent());
         return new ActiveSchemaContext(kb.getId(), schemaNode.getId(), schemaNode, schema);
     }
+
+    public ActiveSchemaContext resolveExpected(
+        String knowledgeBaseId,
+        String schemaId,
+        String schemaContentHash
+    ) {
+        KnowledgeBaseNode knowledgeBase = knowledgeBaseRepository.findById(knowledgeBaseId)
+            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
+        if (!schemaId.equals(knowledgeBase.getActiveSchemaId())) {
+            throw new IllegalStateException("Active schema no longer matches immutable processing target");
+        }
+        SchemaDefinitionNode schemaNode = schemaDefinitionRepository.findById(schemaId)
+            .orElseThrow(() -> new NotFoundException("Schema not found: " + schemaId));
+        if (!schemaContentHash.equals(schemaNode.getContentHash())) {
+            throw new IllegalStateException("Schema content no longer matches immutable processing target");
+        }
+        return new ActiveSchemaContext(
+            knowledgeBaseId,
+            schemaNode.getId(),
+            schemaNode,
+            schemaParser.parse(schemaNode.getContent())
+        );
+    }
 }

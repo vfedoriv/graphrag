@@ -108,11 +108,30 @@ public class DocumentProcessingService {
     }
 
     public DocumentUploadNode process(String documentId, boolean allowOverwrite, Map<String, Object> requestedOptions) {
+        return process(documentId, allowOverwrite, requestedOptions, null);
+    }
+
+    public DocumentUploadNode process(
+        String documentId,
+        boolean allowOverwrite,
+        ImmutableDocumentProcessingInput immutableInput
+    ) {
+        return process(documentId, allowOverwrite, Map.of(), immutableInput);
+    }
+
+    private DocumentUploadNode process(
+        String documentId,
+        boolean allowOverwrite,
+        Map<String, Object> requestedOptions,
+        ImmutableDocumentProcessingInput immutableInput
+    ) {
         long startNanos = System.nanoTime();
         DocumentUploadNode document = documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
         knowledgeBaseLifecycleService.requireManaged(document.getKnowledgeBaseId());
-        DocumentProcessingOptionSet optionSet = processingOptionResolver.resolve(document, requestedOptions);
+        DocumentProcessingOptionSet optionSet = immutableInput == null
+            ? processingOptionResolver.resolve(document, requestedOptions)
+            : immutableInput.processingOptions();
         if (!allowOverwrite && Boolean.TRUE.equals(extractionRunRepository.hasCompletedRun(documentId))) {
             throw new ConflictException(
                 "Document already has a completed extraction run. Set allowOverwrite=true to replace it."
@@ -139,9 +158,12 @@ public class DocumentProcessingService {
             null,
             workflowAttributes
         ))) {
-            AiProfileNode activeProfile = activeProfile(document.getKnowledgeBaseId());
-            ChunkingContext chunkingContext =
-                chunkingService.snapshot(activeProfile, optionSet.detection().parserId());
+            AiProfileNode activeProfile = immutableInput == null
+                ? activeProfile(document.getKnowledgeBaseId())
+                : requireImmutableProfile(document.getKnowledgeBaseId(), immutableInput);
+            ChunkingContext chunkingContext = immutableInput == null
+                ? chunkingService.snapshot(activeProfile, optionSet.detection().parserId())
+                : immutableInput.chunkingContext();
             DocumentProcessingRunNode processingRun =
                 processingRunLifecycle.start(document, optionSet, chunkingContext);
             try {
@@ -159,7 +181,18 @@ public class DocumentProcessingService {
                 List<DocumentChunkNode> persistedChunks = embeddingPersistenceStage.execute(document, activeProfile, chunks);
                 document = setStatus(document, DocumentStatus.EXTRACTING_GRAPH, null);
                 processingRun = processingRunLifecycle.checkpoint(processingRun, "EXTRACTING_GRAPH");
-                graphExtractionStage.execute(document, persistedChunks, activeProfile, allowOverwrite);
+                if (immutableInput == null) {
+                    graphExtractionStage.execute(document, persistedChunks, activeProfile, allowOverwrite);
+                } else {
+                    graphExtractionStage.execute(
+                        document,
+                        persistedChunks,
+                        activeProfile,
+                        allowOverwrite,
+                        immutableInput.schemaId(),
+                        immutableInput.schemaContentHash()
+                    );
+                }
 
                 document.setProcessedAt(Instant.now());
                 processingRunLifecycle.complete(processingRun);
@@ -265,6 +298,20 @@ public class DocumentProcessingService {
             return knowledgeBaseService.aiProfile(capturedProfileId);
         }
         return knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+    }
+
+    private AiProfileNode requireImmutableProfile(
+        String knowledgeBaseId,
+        ImmutableDocumentProcessingInput input
+    ) {
+        AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        EmbeddingSpace embeddingSpace = EmbeddingSpaceIdentity.fromProfile(profile);
+        if (!profile.getId().equals(input.aiProfileId())
+            || profile.getRevision() != input.aiProfileRevision()
+            || !embeddingSpace.id().equals(input.embeddingSpaceId())) {
+            throw new ConflictException("Immutable processing AI profile target changed");
+        }
+        return profile;
     }
 
 }

@@ -27,6 +27,12 @@ public class RelationalSchemaReprocessingPlanRepository implements SchemaReproce
         return repository.findByIdAndKnowledgeBaseId(id, knowledgeBaseId)
             .map(SchemaDraftRelationalMapper::toDomain);
     }
+    @Override public boolean existsActiveByKnowledgeBaseId(String knowledgeBaseId) {
+        return repository.existsByKnowledgeBaseIdAndStatusIn(
+            knowledgeBaseId,
+            List.of(SchemaReprocessingPlanStatus.QUEUED, SchemaReprocessingPlanStatus.RUNNING)
+        );
+    }
     @Override public List<SchemaReprocessingPlanNode> findByStatusIn(List<SchemaReprocessingPlanStatus> statuses) {
         return map(repository.findByStatusIn(statuses));
     }

@@ -11,6 +11,11 @@ import io.github.vfedoriv.graphrag.application.settings.RuntimeSettingsCatalog;
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
 import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkRevisionCalculator;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkSettingsHash;
+import io.github.vfedoriv.graphrag.document.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.document.chunking.RecursiveTokenAwareChunkingStrategy;
+import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import java.time.Duration;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
 import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
@@ -60,8 +65,9 @@ public class RuntimeSettingsService {
     @RelationalTransactional
     public List<RuntimeSettingResponse> list() {
         ensureRestartRequiredOverridesLoaded();
+        String chunkerRevision = effectiveChunkerRevision();
         return definitions.values().stream()
-            .map(this::toResponse)
+            .map(definition -> toResponse(definition, chunkerRevision))
             .toList();
     }
 
@@ -81,7 +87,7 @@ public class RuntimeSettingsService {
         node.setUpdatedAt(Instant.now());
         overrideStore.save(node);
         applyAfterCommit(() -> definition.applyLive(parsed));
-        return toResponse(definition);
+        return toResponse(definition, effectiveChunkerRevision());
     }
 
     @RelationalTransactional
@@ -128,9 +134,10 @@ public class RuntimeSettingsService {
             update -> update.definition().applyLive(update.value())
         ));
 
+        String chunkerRevision = effectiveChunkerRevision();
         return parsedUpdates.stream()
             .map(ParsedSettingUpdate::definition)
-            .map(this::toResponse)
+            .map(definition -> toResponse(definition, chunkerRevision))
             .toList();
     }
 
@@ -145,7 +152,7 @@ public class RuntimeSettingsService {
         validateProspectiveChunking(Map.of(), key);
         overrideStore.delete(key);
         applyAfterCommit(() -> definition.applyLive(definition.defaultValue()));
-        return toResponse(definition);
+        return toResponse(definition, effectiveChunkerRevision());
     }
 
     @RelationalTransactional(readOnly = true)
@@ -225,6 +232,35 @@ public class RuntimeSettingsService {
     }
 
     @RelationalTransactional(readOnly = true)
+    public String effectiveChunkerRevision() {
+        ChunkingSettings settings = chunking();
+        Map<String, Object> effectiveSettings = new LinkedHashMap<>();
+        effectiveSettings.put("hardCharacterLimit", settings.hardCharacterLimit());
+        effectiveSettings.put("parentHardCharacterLimit", settings.parentHardCharacterLimit());
+        effectiveSettings.put("parentMaxPages", settings.parentMaxPages());
+        effectiveSettings.put("parentTargetTokens", settings.parentTargetTokens());
+        effectiveSettings.put("contextHeaderMaxCharacters", settings.contextHeaderMaxCharacters());
+        effectiveSettings.put("contextHeaderMaxTokens", settings.contextHeaderMaxTokens());
+        effectiveSettings.put("overlapTokens", settings.overlapTokens());
+        effectiveSettings.put("strategy", settings.strategy());
+        effectiveSettings.put("targetTokens", settings.targetTokens());
+        ChunkRevisionCalculator calculator = new ChunkRevisionCalculator();
+        ChunkSettingsHash settingsHash = calculator.settingsHash(effectiveSettings);
+        String strategyRevision = switch (settings.strategy()) {
+            case "recursive" -> new RecursiveTokenAwareChunkingStrategy().revision();
+            case "fixed-character" -> new FixedCharacterChunkingStrategy().revision();
+            default -> throw new IllegalArgumentException("Unsupported chunking strategy: " + settings.strategy());
+        };
+        return calculator.chunkerRevision(
+            settingsHash,
+            strategyRevision,
+            TokenizerPolicy.REVISION,
+            "parser-policy-v1",
+            settings.representationRevision()
+        ).value();
+    }
+
+    @RelationalTransactional(readOnly = true)
     public ExtractionSettings extraction() {
         return new ExtractionSettings(
             integer("app.extraction.max-entities-per-chunk"),
@@ -266,7 +302,10 @@ public class RuntimeSettingsService {
         return bool("app.ai.observability.model-name-tag-enabled");
     }
 
-    private RuntimeSettingResponse toResponse(RuntimeSettingDefinition definition) {
+    private RuntimeSettingResponse toResponse(
+        RuntimeSettingDefinition definition,
+        String effectiveChunkerRevision
+    ) {
         RuntimeSettingOverrideNode override = overrideStore.find(definition.key()).orElse(null);
         boolean hasEffectiveOverride = override != null && definition.mutable();
         Object defaultValue = definition.displayValue(definition.defaultValue());
@@ -293,7 +332,9 @@ public class RuntimeSettingsService {
             definition.updateMode().apiValue(),
             definition.reason(),
             definition.label(),
-            definition.description()
+            definition.description(),
+            effectiveChunkerRevision,
+            "explicit-reprocessing-required"
         );
     }
 

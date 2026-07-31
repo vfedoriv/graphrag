@@ -9,6 +9,11 @@ import lombok.Setter;
 public class SchemaReprocessingPlanNode {
     private String id;
     private Long persistenceVersion;
+    private ReprocessingPlanReason reason = ReprocessingPlanReason.SCHEMA_ACTIVATION;
+    private ChunkReprocessingSelection selection;
+    private String expectedChunkerRevision;
+    private String targetSnapshotJson;
+    private String embeddingSpaceId;
     private String draftId;
     private String knowledgeBaseId;
     private String schemaId;

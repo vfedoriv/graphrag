@@ -6,6 +6,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationOutcomeRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftPublicationRepository;
@@ -14,7 +15,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
+import org.springframework.dao.DataIntegrityViolationException;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
@@ -65,13 +66,26 @@ public class SchemaDraftWorkflowCheckpointService {
         return saved;
     }
 
-    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
+    @RelationalTransactional
     public SchemaReprocessingPlanNode createPlan(
         SchemaReprocessingPlanNode plan, List<SchemaReprocessingItemNode> items
     ) {
-        SchemaReprocessingPlanNode saved = planRepository.save(plan);
-        items.forEach(itemRepository::save);
-        return saved;
+        if (planRepository.existsActiveByKnowledgeBaseId(plan.getKnowledgeBaseId())) {
+            throw new ConflictException(
+                "Another destructive reprocessing plan is active for knowledge base: "
+                    + plan.getKnowledgeBaseId()
+            );
+        }
+        try {
+            SchemaReprocessingPlanNode saved = planRepository.save(plan);
+            items.forEach(itemRepository::save);
+            return saved;
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException(
+                "Another destructive reprocessing plan is active for knowledge base: "
+                    + plan.getKnowledgeBaseId()
+            );
+        }
     }
 
     @RelationalTransactional

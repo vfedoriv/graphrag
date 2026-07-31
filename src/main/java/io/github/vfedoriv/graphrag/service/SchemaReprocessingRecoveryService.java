@@ -6,6 +6,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
@@ -22,17 +23,20 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
     private final SchemaReprocessingItemRepository itemRepository;
     private final DocumentProcessingRunRepository processingRunRepository;
     private final SchemaDraftWorkflowCheckpointService checkpointService;
+    private final SchemaDraftJsonSupport jsonSupport;
 
     public SchemaReprocessingRecoveryService(
         SchemaReprocessingPlanRepository planRepository,
         SchemaReprocessingItemRepository itemRepository,
         DocumentProcessingRunRepository processingRunRepository,
-        SchemaDraftWorkflowCheckpointService checkpointService
+        SchemaDraftWorkflowCheckpointService checkpointService,
+        SchemaDraftJsonSupport jsonSupport
     ) {
         this.planRepository = planRepository;
         this.itemRepository = itemRepository;
         this.processingRunRepository = processingRunRepository;
         this.checkpointService = checkpointService;
+        this.jsonSupport = jsonSupport;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
                     || item.getStatus() == SchemaReprocessingItemStatus.RUNNING
                         && item.getClaimUntil() != null && item.getClaimUntil().isBefore(now)) {
                     if (item.getStatus() == SchemaReprocessingItemStatus.RUNNING) {
-                        SchemaReprocessingItemStatus recovered = completedOverwrite(item)
+                        SchemaReprocessingItemStatus recovered = completedOverwrite(plan, item)
                             ? SchemaReprocessingItemStatus.SUCCEEDED
                             : SchemaReprocessingItemStatus.INTERRUPTED;
                         if (!Long.valueOf(1).equals(itemRepository.complete(
@@ -89,11 +93,29 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
         return checkpointService.repairPlan(plan, List.of());
     }
 
-    private boolean completedOverwrite(SchemaReprocessingItemNode item) {
+    private boolean completedOverwrite(
+        SchemaReprocessingPlanNode plan,
+        SchemaReprocessingItemNode item
+    ) {
+        String expectedChunkerRevision = null;
+        if (plan.getReason() == ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION) {
+            ChunkMigrationSnapshot snapshot = jsonSupport.read(
+                plan.getTargetSnapshotJson(),
+                ChunkMigrationSnapshot.class
+            );
+            ChunkMigrationSnapshot.DocumentTarget target = snapshot.documents().get(item.getDocumentId());
+            if (target == null) {
+                return false;
+            }
+            expectedChunkerRevision = target.effectiveChunkerRevision();
+        }
+        String requiredRevision = expectedChunkerRevision;
         return processingRunRepository.findByDocumentIdOrderByStartedAtAsc(item.getDocumentId()).stream()
             .filter(run -> run.getStatus() == DocumentProcessingRunStatus.COMPLETED)
             .filter(DocumentProcessingRunNode::isActiveCompleted)
             .filter(run -> item.getDocumentSha256().equals(run.getSourceSha256()))
+            .filter(run -> requiredRevision == null
+                || requiredRevision.equals(run.getEffectiveChunkerRevision()))
             .anyMatch(run -> item.getStartedAt() == null || !run.getStartedAt().isBefore(item.getStartedAt()));
     }
 
@@ -107,6 +129,7 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
             + count(items, SchemaReprocessingItemStatus.INTERRUPTED));
         plan.setStaleDocuments(count(items, SchemaReprocessingItemStatus.STALE_SOURCE));
         plan.setBlockedDocuments(count(items, SchemaReprocessingItemStatus.BLOCKED)
+            + count(items, SchemaReprocessingItemStatus.BLOCKED_TARGET_CHANGED)
             + count(items, SchemaReprocessingItemStatus.SKIPPED));
         if (plan.getQueuedDocuments() == 0 && plan.getRunningDocuments() == 0) {
             plan.setStatus(plan.getSucceededDocuments() == items.size()
