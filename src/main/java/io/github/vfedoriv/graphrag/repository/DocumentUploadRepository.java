@@ -11,6 +11,12 @@ public interface DocumentUploadRepository {
     List<DocumentUploadNode> findByKnowledgeBaseIdOrderByUploadedAtDesc(String knowledgeBaseId);
     Optional<DocumentUploadNode> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
     List<DocumentUploadNode> findAllByIdInAndKnowledgeBaseId(List<String> ids, String knowledgeBaseId);
+    List<DocumentUploadNode> findByMetadata(
+        String knowledgeBaseId,
+        String originalFilename,
+        String contentType,
+        int limit
+    );
     long countByKnowledgeBaseId(String knowledgeBaseId);
     Page<DocumentUploadNode> findPageByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
     List<DocumentUploadNode> findAll();

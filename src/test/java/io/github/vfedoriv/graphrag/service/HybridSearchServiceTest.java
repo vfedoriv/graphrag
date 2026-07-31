@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.Neo4jTextChunkRetrievalRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
 import java.nio.file.Path;
@@ -26,13 +27,7 @@ class HybridSearchServiceTest {
 
     @Test
     void rejectsTopKAboveConfiguredLimit() {
-        HybridSearchService service = new HybridSearchService(
-            settings(),
-            provider(texts -> List.of(vector())),
-            org.mockito.Mockito.mock(Neo4jClient.class),
-            knowledgeBaseService(),
-            emptyChunkRepository()
-        );
+        HybridSearchService service = service(provider(texts -> List.of(vector())));
 
         assertThatThrownBy(() -> service.search("kb-1", new HybridSearchRequest("contracts", 51, 1, true)))
             .isInstanceOf(IllegalArgumentException.class)
@@ -41,13 +36,7 @@ class HybridSearchServiceTest {
 
     @Test
     void rejectsGraphDepthAboveConfiguredLimit() {
-        HybridSearchService service = new HybridSearchService(
-            settings(),
-            provider(texts -> List.of(vector())),
-            org.mockito.Mockito.mock(Neo4jClient.class),
-            knowledgeBaseService(),
-            emptyChunkRepository()
-        );
+        HybridSearchService service = service(provider(texts -> List.of(vector())));
 
         assertThatThrownBy(() -> service.search("kb-1", new HybridSearchRequest("contracts", 10, 3, true)))
             .isInstanceOf(IllegalArgumentException.class)
@@ -56,13 +45,7 @@ class HybridSearchServiceTest {
 
     @Test
     void failsClearlyWhenEmbeddingClientIsMissing() {
-        HybridSearchService service = new HybridSearchService(
-            settings(),
-            provider(),
-            org.mockito.Mockito.mock(Neo4jClient.class),
-            knowledgeBaseService(),
-            emptyChunkRepository()
-        );
+        HybridSearchService service = service(provider());
 
         assertThatThrownBy(() -> service.search("kb-1", new HybridSearchRequest("contracts", 10, 1, true)))
             .isInstanceOf(IllegalStateException.class)
@@ -83,10 +66,10 @@ class HybridSearchServiceTest {
             settings(),
             Mockito.mock(ProfileScopedAiClientResolver.class),
             neo4jClient,
-            knowledgeBaseService(),
-            Mockito.mock(EmbeddingSpacePolicy.class),
-            new EmbeddingSpaceIndexService(neo4jClient),
-            documentRepository
+            documentRepository,
+            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
+            new QueryEvidenceAssemblyService(),
+            Mockito.mock(DenseTextRetriever.class)
         );
 
         List<io.github.vfedoriv.graphrag.dto.HybridSearchHit> hits = service.enrichHits(
@@ -120,6 +103,34 @@ class HybridSearchServiceTest {
 
     private RuntimeSettingsService settings() {
         return TestRuntimeSettings.from(props());
+    }
+
+    private HybridSearchService service(ObjectProvider<EmbeddingClient> embeddingClients) {
+        Neo4jClient neo4jClient = Mockito.mock(Neo4jClient.class);
+        KnowledgeBaseService knowledgeBaseService = knowledgeBaseService();
+        EmbeddingSpacePolicy embeddingSpacePolicy = new EmbeddingSpacePolicy(emptyChunkRepository());
+        EmbeddingSpaceIndexService embeddingSpaceIndexService = new EmbeddingSpaceIndexService(neo4jClient);
+        ProfileScopedAiClientResolver resolver = new ProfileScopedAiClientResolver(
+            embeddingClients,
+            new EmptyObjectProvider<>(),
+            new EmptyObjectProvider<>()
+        );
+        DenseTextRetriever denseTextRetriever = new DenseTextRetriever(
+            resolver,
+            knowledgeBaseService,
+            embeddingSpacePolicy,
+            embeddingSpaceIndexService,
+            new Neo4jTextChunkRetrievalRepository(neo4jClient)
+        );
+        return new HybridSearchService(
+            settings(),
+            resolver,
+            neo4jClient,
+            null,
+            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
+            new QueryEvidenceAssemblyService(),
+            denseTextRetriever
+        );
     }
 
     private KnowledgeBaseService knowledgeBaseService() {

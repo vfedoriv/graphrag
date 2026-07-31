@@ -23,6 +23,7 @@ import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
+import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ class DocumentProcessingIntegrationTest {
     private SchemaRegistryService schemaRegistryService;
     @Autowired
     private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    @Autowired
+    private LexicalIndexRepository lexicalIndexRepository;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -134,6 +137,7 @@ class DocumentProcessingIntegrationTest {
             assertThat(child.getEmbedding()).hasSize(1536);
             assertThat(child.getParentChunkId()).isNotBlank();
             assertThat(child.getChildIndex()).isNotNull();
+            assertThat(child.getSourceText()).isEqualTo(child.getText());
         });
         EmbeddingSpace embeddingSpace = EmbeddingSpaceIdentity.derive(
             "https://api.openai.com/v1", "text-embedding-3-small", 1536
@@ -205,6 +209,13 @@ class DocumentProcessingIntegrationTest {
             .bind(vectorOf(0.11)).to("queryVector")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(parentVectorHits).isZero();
+        Long lexicalChildren = neo4jClient.query("""
+            MATCH (chunk:DocumentChunk:%s {knowledgeBaseId: 'kb-1', kind: 'CHILD'})
+            WHERE chunk.sourceText = chunk.text
+            RETURN count(chunk) AS count
+            """.formatted(lexicalIndexRepository.labelName("kb-1")))
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(lexicalChildren).isEqualTo((long) children.size());
 
         Long anyContract = neo4jClient.query("MATCH (n:Contract) RETURN count(n) AS c")
             .fetchAs(Long.class).one().orElse(0L);

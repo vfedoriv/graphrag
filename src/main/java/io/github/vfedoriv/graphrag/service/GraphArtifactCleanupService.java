@@ -3,6 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
 import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,16 @@ public class GraphArtifactCleanupService {
 
     private final Neo4jClient neo4jClient;
     private final ExtractionRunRepository extractionRunRepository;
+    private final LexicalIndexRepository lexicalIndexRepository;
 
     public GraphArtifactCleanupService(
         Neo4jClient neo4jClient,
-        ExtractionRunRepository extractionRunRepository
+        ExtractionRunRepository extractionRunRepository,
+        LexicalIndexRepository lexicalIndexRepository
     ) {
         this.neo4jClient = neo4jClient;
         this.extractionRunRepository = extractionRunRepository;
+        this.lexicalIndexRepository = lexicalIndexRepository;
     }
 
     public DocumentArtifactCleanupResult cleanupDocumentArtifacts(String documentId) {
@@ -63,6 +67,7 @@ public class GraphArtifactCleanupService {
             .one()
             .orElse(Map.of());
         long deletedUnsupportedFacts = deleteUnsupportedCanonicalFacts(canonicalFactIds);
+        lexicalIndexRepository.drop(knowledgeBaseId);
         return new DocumentArtifactCleanupResult(
             GraphExtractionCleanupSupport.toLong(cleanupRow.get("deletedChunks")),
             0L,

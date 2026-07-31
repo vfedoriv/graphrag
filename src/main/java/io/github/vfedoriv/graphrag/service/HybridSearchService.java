@@ -11,8 +11,13 @@ import io.github.vfedoriv.graphrag.dto.HybridSearchRetrievalEvidence;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSourceRange;
 import io.github.vfedoriv.graphrag.dto.HybridSearchCitationKind;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Candidate;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Request;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Subquery;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
@@ -21,9 +26,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
@@ -34,80 +38,27 @@ public class HybridSearchService {
     private final RuntimeSettingsService runtimeSettingsService;
     private final ProfileScopedAiClientResolver aiClientResolver;
     private final Neo4jClient neo4jClient;
-    private final KnowledgeBaseService knowledgeBaseService;
-    private final EmbeddingSpacePolicy embeddingSpacePolicy;
-    private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
     private final DocumentUploadRepository documentUploadRepository;
     private final ParentContextExpansionService parentContextExpansionService;
     private final QueryEvidenceAssemblyService queryEvidenceAssemblyService;
+    private final DenseTextRetriever denseTextRetriever;
 
-    @Autowired
     public HybridSearchService(
         RuntimeSettingsService runtimeSettingsService,
         ProfileScopedAiClientResolver aiClientResolver,
         Neo4jClient neo4jClient,
-        KnowledgeBaseService knowledgeBaseService,
-        EmbeddingSpacePolicy embeddingSpacePolicy,
-        EmbeddingSpaceIndexService embeddingSpaceIndexService,
         DocumentUploadRepository documentUploadRepository,
         ParentContextExpansionService parentContextExpansionService,
-        QueryEvidenceAssemblyService queryEvidenceAssemblyService
+        QueryEvidenceAssemblyService queryEvidenceAssemblyService,
+        DenseTextRetriever denseTextRetriever
     ) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.aiClientResolver = aiClientResolver;
         this.neo4jClient = neo4jClient;
-        this.knowledgeBaseService = knowledgeBaseService;
-        this.embeddingSpacePolicy = embeddingSpacePolicy;
-        this.embeddingSpaceIndexService = embeddingSpaceIndexService;
         this.documentUploadRepository = documentUploadRepository;
         this.parentContextExpansionService = parentContextExpansionService;
         this.queryEvidenceAssemblyService = queryEvidenceAssemblyService;
-    }
-
-    public HybridSearchService(
-        RuntimeSettingsService runtimeSettingsService,
-        ProfileScopedAiClientResolver aiClientResolver,
-        Neo4jClient neo4jClient,
-        KnowledgeBaseService knowledgeBaseService,
-        EmbeddingSpacePolicy embeddingSpacePolicy,
-        EmbeddingSpaceIndexService embeddingSpaceIndexService,
-        DocumentUploadRepository documentUploadRepository
-    ) {
-        this(
-            runtimeSettingsService,
-            aiClientResolver,
-            neo4jClient,
-            knowledgeBaseService,
-            embeddingSpacePolicy,
-            embeddingSpaceIndexService,
-            documentUploadRepository,
-            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
-            new QueryEvidenceAssemblyService()
-        );
-    }
-
-    public HybridSearchService(
-        RuntimeSettingsService runtimeSettingsService,
-        ObjectProvider<EmbeddingClient> embeddingClientProvider,
-        Neo4jClient neo4jClient,
-        KnowledgeBaseService knowledgeBaseService,
-        io.github.vfedoriv.graphrag.repository.DocumentChunkRepository documentChunkRepository
-    ) {
-        this(
-            runtimeSettingsService,
-            new ProfileScopedAiClientResolver(
-                embeddingClientProvider,
-                new EmptyObjectProvider<>(),
-                new EmptyObjectProvider<>()
-            ),
-            neo4jClient,
-            knowledgeBaseService,
-            new EmbeddingSpacePolicy(documentChunkRepository),
-            new EmbeddingSpaceIndexService(neo4jClient),
-            null,
-            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
-            new QueryEvidenceAssemblyService()
-        );
+        this.denseTextRetriever = denseTextRetriever;
     }
 
     public HybridSearchResponse search(String knowledgeBaseId, HybridSearchRequest request) {
@@ -128,28 +79,33 @@ public class HybridSearchService {
             includeChunkText
         );
 
-        AiProfileNode activeProfile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
-        EmbeddingSpace embeddingSpace = embeddingSpacePolicy.spaceFor(activeProfile);
-        embeddingSpacePolicy.requireCompatible(knowledgeBaseId, activeProfile);
         EmbeddingClient embeddingClient = resolveEmbeddingClient();
         if (embeddingClient == null) {
             throw new IllegalStateException("Embedding model is not configured for hybrid search");
         }
-        if (!embeddingSpacePolicy.hasEmbeddedChunks(knowledgeBaseId)) {
+        Result denseResult = denseTextRetriever.retrieve(new Request(
+            knowledgeBaseId,
+            List.of(new Subquery("hybrid-query", request.query())),
+            new MetadataConstraints(null, null),
+            candidateCount,
+            false,
+            Instant.MAX
+        ));
+        if (denseResult.diagnostics().status() != Status.COMPLETED) {
+            throw new IllegalStateException(
+                "Dense retrieval failed for hybrid search: " + denseResult.diagnostics().failureCategory()
+            );
+        }
+        if (denseResult.candidates().isEmpty()) {
             return emptyResponse(request, topK, graphDepth, includeChunkText, startNanos, knowledgeBaseId);
         }
-        List<List<Double>> vectors = AiProfileContext.withProfile(activeProfile.getId(), () -> embeddingClient.embed(List.of(request.query())));
-        if (vectors.size() != 1) {
-            throw new IllegalStateException("Embedding response size mismatch for hybrid search query");
-        }
-        embeddingSpaceIndexService.ensureIndex(knowledgeBaseId, embeddingSpace);
+        List<Map<String, Object>> candidateRows = denseResult.candidates().stream()
+            .map(this::candidateRow)
+            .toList();
 
         List<Map<String, Object>> rows = new ArrayList<>(neo4jClient.query(hybridSearchCypher(graphDepth))
-            .bind(embeddingSpaceIndexService.indexName(knowledgeBaseId, embeddingSpace.id())).to("indexName")
-            .bind(candidateCount).to("candidateCount")
-            .bind(vectors.getFirst()).to("queryVector")
+            .bind(candidateRows).to("candidates")
             .bind(knowledgeBaseId).to("knowledgeBaseId")
-            .bind(embeddingSpace.id()).to("embeddingSpaceId")
             .bind(topK).to("topK")
             .bind(includeChunkText).to("includeChunkText")
             .fetch()
@@ -183,6 +139,14 @@ public class HybridSearchService {
             response.executionTimeMs()
         );
         return response;
+    }
+
+    private Map<String, Object> candidateRow(Candidate candidate) {
+        return Map.of(
+            "chunkId", candidate.source().chunkId(),
+            "score", candidate.rawScore(),
+            "rank", candidate.rank()
+        );
     }
 
     private HybridSearchResponse emptyResponse(
@@ -415,26 +379,25 @@ public class HybridSearchService {
 
     private String hybridSearchCypher(int graphDepth) {
         return """
-            CALL db.index.vector.queryNodes($indexName, $candidateCount, $queryVector) YIELD node AS chunk, score
-            WHERE chunk.knowledgeBaseId = $knowledgeBaseId
-              AND chunk.embeddingSpaceId = $embeddingSpaceId
-              AND (chunk.kind IS NULL OR chunk.kind = 'CHILD')
-            WITH chunk, score
-            ORDER BY score DESC
+            UNWIND $candidates AS candidate
+            MATCH (chunk:DocumentChunk {id: candidate.chunkId, knowledgeBaseId: $knowledgeBaseId})
+            WHERE chunk.kind IS NULL OR chunk.kind = 'CHILD'
+            WITH chunk, candidate.score AS score, candidate.rank AS denseRank
+            ORDER BY denseRank ASC
             LIMIT $topK
             OPTIONAL MATCH (parent:DocumentChunk {id: chunk.parentChunkId, kind: 'PARENT'})-[:HAS_CHILD]->(chunk)
-            WITH chunk, score, coalesce(parent, chunk) AS evidenceChunk
+            WITH chunk, score, denseRank, coalesce(parent, chunk) AS evidenceChunk
             OPTIONAL MATCH (evidenceChunk)-[:HAS_GRAPH_EVIDENCE]->(graphEvidence:GraphExtractionEvidence)
             OPTIONAL MATCH (graphEvidence)-[:ASSERTS_NODE|ASSERTS_FROM|ASSERTS_TO]->(evidenceEntity)
             OPTIONAL MATCH (chunk)-[:MENTIONS]->(legacyMentioned)
-            WITH chunk, score, evidenceChunk, collect(DISTINCT graphEvidence) AS graphEvidenceNodes,
+            WITH chunk, score, denseRank, evidenceChunk, collect(DISTINCT graphEvidence) AS graphEvidenceNodes,
                  collect(DISTINCT evidenceEntity) + collect(DISTINCT legacyMentioned) AS mentionedNodes
             UNWIND CASE WHEN mentionedNodes = [] THEN [null] ELSE mentionedNodes END AS mentioned
             OPTIONAL MATCH path = (mentioned)-[*0..%d]-(neighbor)
-            WITH chunk, score, evidenceChunk, graphEvidenceNodes,
+            WITH chunk, score, denseRank, evidenceChunk, graphEvidenceNodes,
                  collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes,
                  collect(DISTINCT relationships(path)) AS relationshipGroups
-            WITH chunk, score, evidenceChunk, graphEvidenceNodes,
+            WITH chunk, score, denseRank, evidenceChunk, graphEvidenceNodes,
                  [entity IN entityNodes WHERE entity IS NOT NULL | {
                      elementId: elementId(entity),
                      labels: labels(entity),
@@ -479,7 +442,7 @@ public class HybridSearchService {
                     endNodeElementId: elementId(endNode(rel)),
                     properties: properties(rel)
                 }] AS relationships
-            ORDER BY score DESC
+            ORDER BY denseRank ASC
             """.formatted(graphDepth);
     }
 }

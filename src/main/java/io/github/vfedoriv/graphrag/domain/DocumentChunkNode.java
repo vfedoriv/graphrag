@@ -17,6 +17,7 @@ public class DocumentChunkNode {
     private String processingRunId;
     private int chunkIndex;
     private String text;
+    private String sourceText;
     private int tokenEstimate;
     private int embeddingTokenCount;
     private List<Double> embedding;
@@ -95,6 +96,14 @@ public class DocumentChunkNode {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getSourceText() {
+        return sourceText;
+    }
+
+    public void setSourceText(String sourceText) {
+        this.sourceText = sourceText;
     }
 
     public int getTokenEstimate() {

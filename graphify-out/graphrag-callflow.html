@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>graphrag — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 12460 nodes, 22700 edges, 1025 communities. Commit: 31eaef9</p>
+<p class="subtitle">Generated from graphify knowledge graph: 12949 nodes, 23387 edges, 1102 communities. Commit: 9e8c3ae</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>6924 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>7127 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>3058 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>3097 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>211 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -100,11 +100,11 @@ flowchart LR
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>145 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>381 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>623 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>32 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>265 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>270 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     COMMUNITY_272_4F75581B("Community 272<br/><small>25 nodes</small>")
     class COMMUNITY_272_4F75581B module;
@@ -137,7 +137,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>6924</td><td><code>398, 141, 75, 127, 113, 107, 56, 58, 7, 31, 77, 84, 5, 50, 400, 14, 3, 626, 124, 304, 18, 23, 37, 427, 76, 60, 12, 154, 17, 25, 630, 10, 36, 19, 42, 2, 68, 22, 33, 45, 46, 287, 108, 27, 29, 389, 928, 246, 301, 305, 54, 6, 148, 72, 87, 151, 393, 933, 15, 373, 40, 62, 64, 103, 34, 53, 57, 9, 0, 104, 362, 405, 52, 78, 111, 16, 32, 47, 1, 105, 21, 261, 8, 96, 13, 20, 24, 275, 28, 729, 759, 135, 166, 247, 248, 49, 153, 388, 456, 445, 771, 106, 30, 387, 395, 428, 70, 71, 73, 97, 380, 80, 903, 907, 98, 110, 35, 384, 417, 426, 653, 709, 86, 92, 929, 95, 386, 41, 44, 51, 763, 134, 382, 402, 43, 48, 559, 130, 298, 376, 454, 540, 639, 683, 85, 90, 109, 26, 375, 397, 408, 412, 634, 635, 657, 752, 758, 762, 765, 781, 112, 161, 200, 284, 296, 297, 379, 415, 63, 637, 640, 66, 690, 694, 83, 866, 117, 629, 632, 701, 703, 716, 731, 74, 770, 905, 139, 418, 448, 769, 790, 793, 953, 971, 100, 11, 164, 295, 378, 396, 407, 464, 61, 67, 874, 875, 876, 878, 904, 94, 411, 439, 462, 539, 623, 627, 695, 743, 777, 899, 906, 956, 118, 330, 401, 625, 652, 654, 782, 921, 926, 931, 937, 120, 152, 403, 633, 697, 726, 818, 911, 915, 923, 936, 938, 975, 655, 756, 784, 916, 123, 702, 710, 776, 822, 824, 952, 131, 133, 202, 410, 488, 489, 505, 760, 773, 829, 930, 964, 966, 978, 979, 984, 137, 138, 142, 143, 169, 230, 631, 650, 732, 747, 788, 832, 873, 924, 960, 986, 994, 999, 1001, 1002, 146, 182, 197, 211, 216, 364, 585, 601, 725, 910, 917, 972, 992, 1007, 1009, 1010, 1011, 157, 158, 159, 179, 420, 671, 682, 940, 946, 947, 1022, 163, 717, 718, 719, 948, 949, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 881, 882, 883, 884, 885, 993, 1023, 1024, 1025, 1026, 1027, 1032, 1033, 1034, 1035, 165, 167, 168, 170, 171, 172, 173, 174, 175, 176, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 198, 199, 201, 203, 204, 205, 206, 207, 208, 209, 210, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848, 886, 954, 961, 976, 995, 996, 997, 998</code></td></tr><tr><td>Graph Build</td><td>3058</td><td><code>39, 69, 160, 537, 89, 149, 162, 91, 4, 255, 101, 121, 129, 538, 253, 316, 252, 270, 279, 128, 258, 256, 307, 79, 260, 306, 265, 266, 273, 372, 267, 293, 274, 277, 278, 649, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 368, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 377, 59, 116, 245, 254, 327, 331, 333, 334, 335, 38, 833, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 429, 431, 433, 435, 443, 444, 65, 696, 699, 700, 708, 766, 779, 854, 856, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 707, 711, 713, 715, 734, 741, 750, 751, 761, 772, 785, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 867, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 647, 749, 753, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 658, 712, 748, 755, 757, 764, 778, 791, 825, 831, 850, 852, 869, 870, 871, 872, 887, 888, 919, 942, 1018, 1019, 1020, 1021, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 853, 891, 892, 893, 894, 895, 896, 1008, 1031, 693, 737, 880, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>211</td><td><code>251, 325, 440, 299, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 962, 582, 603, 612, 663, 673, 680, 688</code></td></tr><tr><td>Outputs &amp; Docs</td><td>76</td><td><code>288, 432, 436, 628, 566, 567, 609, 614, 909, 980</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>63</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>381</td><td><code>102, 119, 99, 263, 250, 262, 271, 276, 318, 437, 879, 352, 913, 434, 495, 504, 547, 723, 941, 556, 565, 1004, 590, 591, 597, 599, 600, 820, 1028, 1029, 959</code></td></tr><tr><td>Security &amp; Global Graph</td><td>32</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>265</td><td><code>264, 122, 259, 413, 300, 704, 156, 322, 643, 951, 499, 500, 503, 767, 934, 935, 957, 136, 144, 868, 902, 594, 598, 615, 670, 889, 991, 900, 973, 990</code></td></tr><tr><td>Community 272</td><td>25</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>21</td><td><code>269</code></td></tr><tr><td>Community 317</td><td>18</td><td><code>317</code></td></tr><tr><td>Community 268</td><td>17</td><td><code>268</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Other</td><td>1208</td><td><code>438, 735, 286, 451, 849, 155, 315, 636, 645, 651, 313, 324, 365, 425, 449, 570, 624, 865, 920, 925, 927, 329, 392, 424, 897, 914, 340, 342, 344, 345, 347, 349, 406, 363, 414, 644, 646, 754, 416, 648, 419, 421, 442, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 642, 656, 698, 706, 727, 728, 730, 775, 783, 877, 890, 912, 918, 922, 955, 963, 974, 553, 554, 555, 557, 560, 901, 977, 1000, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 684, 705, 724, 733, 736, 787, 821, 826, 830, 908, 932, 981, 982, 983, 1003, 1005, 1017, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 939, 943, 944, 945, 958, 965, 985, 987, 622, 691, 692, 950, 968, 970, 720, 898</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>7127</td><td><code>56, 247, 398, 105, 427, 31, 396, 86, 58, 124, 84, 50, 23, 400, 18, 304, 36, 37, 10, 14, 60, 15, 25, 40, 68, 77, 42, 54, 151, 22, 46, 108, 2, 76, 33, 78, 0, 389, 12, 19, 230, 246, 301, 6, 17, 393, 5, 148, 305, 439, 53, 87, 45, 64, 104, 29, 52, 103, 57, 9, 96, 130, 32, 34, 405, 72, 75, 8, 386, 47, 7, 1, 16, 21, 62, 107, 13, 166, 20, 24, 28, 49, 559, 729, 90, 113, 127, 135, 248, 630, 153, 287, 388, 456, 631, 134, 141, 70, 73, 771, 106, 154, 156, 30, 373, 378, 395, 428, 626, 654, 97, 275, 380, 384, 387, 445, 80, 868, 903, 98, 27, 35, 397, 417, 426, 67, 71, 752, 776, 92, 921, 936, 95, 41, 44, 763, 117, 297, 3, 382, 402, 43, 655, 923, 261, 298, 376, 454, 48, 540, 639, 690, 85, 924, 109, 26, 375, 408, 412, 625, 627, 63, 634, 635, 637, 657, 683, 758, 762, 765, 767, 781, 938, 1030, 1037, 112, 161, 284, 296, 379, 51, 640, 66, 694, 83, 873, 899, 956, 971, 139, 629, 632, 701, 703, 731, 74, 770, 930, 989, 1038, 362, 364, 418, 448, 709, 716, 790, 793, 866, 905, 953, 969, 984, 100, 1039, 1040, 1044, 1047, 11, 407, 464, 61, 769, 875, 876, 878, 94, 1012, 1055, 1058, 295, 411, 462, 539, 623, 695, 743, 777, 904, 906, 929, 1061, 1062, 110, 118, 330, 401, 415, 652, 653, 782, 907, 926, 931, 1042, 1043, 120, 152, 403, 633, 697, 726, 818, 911, 915, 928, 975, 1045, 1046, 1063, 1069, 756, 759, 784, 916, 1071, 123, 702, 710, 822, 824, 874, 933, 952, 1057, 1079, 1081, 1089, 131, 133, 200, 202, 410, 488, 489, 505, 760, 773, 829, 964, 966, 978, 1064, 1068, 1092, 1093, 1094, 137, 138, 142, 143, 169, 650, 732, 747, 788, 832, 917, 960, 979, 986, 999, 1001, 1002, 1070, 1072, 1095, 1096, 1097, 1098, 111, 146, 164, 182, 197, 211, 216, 585, 601, 725, 972, 992, 1007, 1009, 1010, 1011, 1067, 1099, 157, 158, 159, 179, 420, 671, 682, 940, 946, 947, 1022, 1100, 1101, 163, 717, 718, 719, 1090, 792, 795, 796, 797, 798, 799, 800, 801, 802, 803, 817, 819, 823, 837, 838, 839, 840, 841, 842, 851, 855, 857, 860, 863, 864, 881, 882, 883, 884, 885, 993, 1023, 1024, 1025, 1026, 1027, 1032, 1033, 1034, 1035, 165, 167, 168, 170, 171, 172, 173, 174, 175, 176, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 198, 199, 201, 203, 204, 205, 206, 207, 208, 209, 210, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 394, 422, 423, 721, 722, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 843, 844, 845, 846, 847, 848, 886, 954, 961, 976, 995, 996, 997, 998</code></td></tr><tr><td>Graph Build</td><td>3097</td><td><code>39, 69, 160, 537, 89, 162, 149, 91, 4, 255, 101, 121, 129, 538, 253, 316, 252, 270, 279, 128, 258, 256, 307, 79, 260, 306, 265, 266, 273, 372, 267, 293, 274, 277, 278, 649, 282, 283, 82, 115, 289, 290, 292, 314, 55, 302, 368, 948, 140, 308, 309, 310, 311, 312, 409, 768, 774, 780, 789, 280, 294, 319, 320, 321, 323, 346, 377, 59, 116, 245, 254, 327, 331, 333, 334, 335, 38, 833, 1036, 114, 339, 341, 343, 350, 351, 353, 354, 355, 356, 357, 361, 399, 404, 834, 366, 367, 369, 370, 125, 126, 429, 431, 433, 435, 443, 444, 65, 696, 699, 700, 708, 766, 779, 854, 856, 1051, 257, 303, 381, 385, 446, 447, 453, 465, 466, 467, 468, 469, 470, 471, 473, 474, 475, 480, 481, 484, 485, 486, 487, 490, 491, 492, 494, 502, 506, 531, 541, 542, 544, 545, 546, 707, 711, 713, 715, 734, 741, 750, 751, 761, 772, 785, 786, 81, 827, 828, 835, 836, 858, 859, 861, 862, 867, 132, 145, 450, 558, 561, 562, 563, 564, 568, 569, 647, 749, 753, 794, 383, 390, 391, 458, 459, 460, 572, 573, 574, 575, 577, 581, 583, 584, 586, 587, 589, 596, 602, 608, 658, 712, 748, 755, 757, 764, 778, 791, 825, 831, 850, 852, 869, 870, 871, 872, 887, 888, 919, 942, 1018, 1019, 1020, 1021, 1075, 348, 616, 617, 618, 619, 620, 621, 659, 660, 661, 662, 664, 665, 668, 672, 678, 714, 853, 891, 892, 893, 894, 895, 896, 1008, 1082, 693, 737, 880, 1085, 374</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>211</td><td><code>251, 325, 440, 299, 326, 328, 332, 358, 360, 441, 430, 482, 483, 507, 534, 552, 962, 582, 603, 612, 663, 673, 680, 688</code></td></tr><tr><td>Outputs &amp; Docs</td><td>76</td><td><code>288, 432, 436, 628, 566, 567, 609, 614, 909, 980</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>63</td><td><code>249, 281, 337, 687, 740, 739, 742, 744, 745, 746</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>93, 147, 291, 336, 359, 88, 509, 548, 452, 606, 674, 686, 689, 738</code></td></tr><tr><td>Serving API</td><td>623</td><td><code>102, 119, 99, 263, 250, 262, 271, 276, 318, 437, 910, 937, 949, 967, 1006, 1013, 879, 994, 1014, 1015, 1016, 1031, 1041, 352, 913, 434, 1049, 1050, 1052, 1053, 1054, 1056, 495, 504, 547, 723, 941, 1060, 1065, 1066, 556, 565, 1004, 590, 591, 597, 599, 600, 820, 1028, 1029, 1073, 1074, 1076, 1077, 1078, 1080, 959, 1083, 1084, 1086, 1087, 1088, 1091</code></td></tr><tr><td>Security &amp; Global Graph</td><td>32</td><td><code>338, 371, 150</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>270</td><td><code>264, 122, 259, 413, 300, 704, 988, 322, 643, 951, 1048, 499, 500, 503, 934, 935, 957, 1059, 136, 144, 902, 594, 598, 615, 670, 889, 991, 900, 973, 990</code></td></tr><tr><td>Community 272</td><td>25</td><td><code>272</code></td></tr><tr><td>Community 269</td><td>21</td><td><code>269</code></td></tr><tr><td>Community 317</td><td>18</td><td><code>317</code></td></tr><tr><td>Community 268</td><td>17</td><td><code>268</code></td></tr><tr><td>Community 285</td><td>16</td><td><code>285</code></td></tr><tr><td>Other</td><td>1208</td><td><code>438, 735, 286, 451, 849, 155, 315, 636, 645, 651, 313, 324, 365, 425, 449, 570, 624, 865, 920, 925, 927, 329, 392, 424, 897, 914, 340, 342, 344, 345, 347, 349, 406, 363, 414, 644, 646, 754, 416, 648, 419, 421, 442, 472, 476, 477, 478, 479, 493, 496, 497, 498, 501, 508, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 532, 533, 535, 543, 549, 550, 551, 638, 641, 642, 656, 698, 706, 727, 728, 730, 775, 783, 877, 890, 912, 918, 922, 955, 963, 974, 553, 554, 555, 557, 560, 901, 977, 1000, 455, 457, 461, 463, 536, 576, 578, 579, 580, 588, 592, 593, 595, 604, 605, 607, 610, 611, 613, 684, 705, 724, 733, 736, 787, 821, 826, 830, 908, 932, 981, 982, 983, 1003, 1005, 1017, 571, 666, 667, 669, 675, 676, 677, 679, 681, 685, 939, 943, 944, 945, 958, 965, 985, 987, 622, 691, 692, 950, 968, 970, 720, 898</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -149,8 +149,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>12460 nodes · 22700 edges · 1025 communities (952 shown, 73 thin omitted)</li>
-      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 3566 edges (avg confidence: 0.8)</li>
+      <li>12949 nodes · 23387 edges · 1102 communities (1018 shown, 84 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 3627 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `importMap` - 478 edges</li>
       <li>2. `of()` - 460 edges</li>
@@ -161,12 +161,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 6924 nodes and 17675 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around github, vfedoriv, graphrag, service, mostly in graphrag/service/SchemaDraftAnalysisService.java, graphrag/service/SchemaDraftReviewService.java, graphrag/controller/SchemaDraftController.java. This section covers 7127 nodes and 18114 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (6924 nodes, 17675 edges)
+    %% Section: Extraction Pipeline (7127 nodes, 18114 edges)
     subgraph extract_pipeline_application_processing_ChunkHie_f584f9ee["application/processing/ChunkHierarchyBuilder.java"]
         processing_chunkhierarchybuilder_chunkhierarchyb_baf9daf9("ChunkHierarchyBuilder<br/><small>application/processing/ChunkHierarchyBuilder.java</small>")
         processing_chunkhierarchybuilder_chunkhierarchyb_9e4cf07d("build()<br/><small>application/processing/ChunkHierarchyBuilder.java</small>")
@@ -206,7 +206,7 @@ flowchart LR
     processing_chunkhierarchybuilder_chunkhierarchyb_23a0f773 -->|calls| processing_chunkhierarchybuilder_chunkhierarchyb_025e1610
     processing_chunkhierarchybuilder_chunkhierarchyb_23a0f773 -->|calls| processing_chunkhierarchybuilder_chunkhierarchyb_c3e6b5d1
     processing_chunkhierarchybuilder_chunkhierarchyb_aee84bdb -->|calls| processing_chunkhierarchybuilder_chunkhierarchyb_21429a6c
-    %% Omitted for readability: 6906 nodes, 0 edges
+    %% Omitted for readability: 7109 nodes, 0 edges
     class processing_chunkhierarchybuilder_chunkhierarchyb_baf9daf9 klass;
     class processing_chunkhierarchybuilder_chunkhierarchyb_9e4cf07d function;
     class processing_chunkhierarchybuilder_chunkhierarchyb_93d87ca8 function;
@@ -248,243 +248,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>JpaSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br>+4 more</td>
-  <td>RelationalSchemaDraftSourceRepository.java node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br>+2 more</td>
+  <td>RelationalSchemaDraftConflictRepository.java node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>delete()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br><code>existsByDraftIdAndStatus()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br><code>findActiveForDraftIds()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small><br>+8 more</td>
-  <td>RelationalSchemaDraftSourceRepository node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>findByAggregateRevision()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br><code>findByIdAndDraftId()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br><code>findHistory()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br>+4 more</td>
+  <td>RelationalSchemaDraftConflictRepository node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>SchemaDraftSourceRepository</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>SchemaDraftConflictRepository</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><code>SchemaDraftAnalysisRetryEligibilityServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftAnalysisRetryEligibilityServiceTest.java</small><br><code>SchemaDraftLifecycleIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small><br><code>SchemaDraftRelationalRepositoryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftRelationalRepositoryIntegrationTest.java</small><br>+2 more</td>
-  <td>SchemaDraftSourceRepository node in project.</td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
+  <td><code>SchemaDraftConflictServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftConflictServiceTest.java</small><br><code>SchemaDraftLifecycleIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</small></td>
+  <td>SchemaDraftConflictRepository node in project.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.RelationalSchemaDraftSourceRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.RelationalSchemaDraftConflictRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.RelationalSchemaDraftSourceRepository() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>.RelationalSchemaDraftConflictRepository() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>JpaSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>JpaSchemaDraftSourceRepository node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>JpaSchemaDraftConflictRepository node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>.findByDraftIdOrderByCreatedAtAsc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.findByIdAndDraftId()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><code>findByDraftIdOrderByCreatedAtAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftSourceRepository.java</small></td>
-  <td>.findByDraftIdOrderByCreatedAtAsc() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.findByIdAndDraftId() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>String</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>String node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>String node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>List node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>Optional node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>SchemaDraftSourceNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>SchemaDraftConflictNode</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>SchemaDraftSourceNode node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>SchemaDraftConflictNode node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>Override</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>Override</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Override node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>Override node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>.findByDraftIdAndStatusOrderByCreatedAtAsc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.findByAggregateRevision()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><code>findByDraftIdAndStatusOrderByCreatedAtAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftSourceRepository.java</small></td>
-  <td>.findByDraftIdAndStatusOrderByCreatedAtAsc() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
+  <td><code>findByDraftIdAndAggregateRevisionIdOrderByCoordinateAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td>.findByAggregateRevision() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>SchemaDraftSourceStatus</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>SchemaDraftSourceStatus node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>List node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.existsByDraftIdAndStatus()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.findHistory()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.existsByDraftIdAndStatus() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>.findHistory() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>.findByIdAndDraftId()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.findResolvedHistory()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.findByIdAndDraftId() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>.findResolvedHistory() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>Optional</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Optional node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>.save() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.findFirstByDraftIdAndTypeAndSha256AndStatus()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.map()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><code>findFirstByDraftIdAndTypeAndSha256AndStatusOrderByCreatedAtAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftSourceRepository.java</small></td>
-  <td>.findFirstByDraftIdAndTypeAndSha256AndStatus() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>RelationalSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.map() node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>SchemaDraftSourceType</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>SchemaDraftConflictEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>SchemaDraftSourceType node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>SchemaDraftConflictEntity node in persistence/relational/RelationalSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.findActiveForDraftIds()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>of()</code><br><small style="color:var(--muted)">graphrag/domain/SchemaDraftEvaluationContracts.java</small><br><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><code>findByDraftIdInAndStatusOrderByDraftIdAscCreatedAtAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftSourceRepository.java</small></td>
-  <td>.findActiveForDraftIds() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>JpaSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>List</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br><code>Query</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br>+1 more</td>
+  <td>JpaSchemaDraftConflictRepository.java node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>.findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.findById() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>findByDraftIdAndAggregateRevisionIdOrderByCoordinateAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br><code>findByIdAndDraftId()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br><code>findHistory()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small><br>+1 more</td>
+  <td>JpaSchemaDraftConflictRepository node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.save()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>.findByIdAndDraftId()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.save() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>.findByIdAndDraftId() node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.delete()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>String</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.delete() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>String node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.map()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftSourceRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>Optional</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>JpaSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>.map() node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>Optional node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>SchemaDraftSourceEntity</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftSourceRepository.java</small></td>
+  <td><code>SchemaDraftConflictEntity</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>JpaSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>SchemaDraftSourceEntity node in persistence/relational/RelationalSchemaDraftSourceRepository.java.</td>
+  <td>SchemaDraftConflictEntity node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>RelationalSchemaDraftStorageMutationRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Instant</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br><code>JpaSchemaDraftStorageMutationRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br><code>List</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br>+5 more</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>.findByDraftIdAndAggregateRevisionIdOrderByCoordinateAscIdAsc()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>findByAggregateRevision()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftConflictRepository.java</small><br><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.findByDraftIdAndAggregateRevisionIdOrderByCoordinateAscIdAsc() node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>RelationalSchemaDraftStorageMutationRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
+  <td><code>List</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>deleteCompletedBefore()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br><code>findById()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br><code>findByStateOrderByCreatedAtAsc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small><br>+2 more</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>JpaSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>List node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>SchemaDraftStorageMutationRepository</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftStorageMutationRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td><code>SchemaDraftRelationalRepositoryIntegrationTest.java</code><br><small style="color:var(--muted)">vfedoriv/graphrag/SchemaDraftRelationalRepositoryIntegrationTest.java</small><br><code>SchemaDraftStorageReconciliationServiceTest.java</code><br><small style="color:var(--muted)">graphrag/service/SchemaDraftStorageReconciliationServiceTest.java</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>.findHistory()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.findHistory() node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>.RelationalSchemaDraftStorageMutationRepository()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftStorageMutationRep...</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
+  <td><code>Query</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>JpaSchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td>Query node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>JpaSchemaDraftStorageMutationRepository</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftStorageMutationRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
+  <td><code>.findResolvedHistory()</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>JpaSchemaDraftConflictRepository</code><br><small style="color:var(--muted)">relational/repository/JpaSchemaDraftConflictRepository.java</small></td>
   <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td>.findResolvedHistory() node in relational/repository/JpaSchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>.findByStateOrderByCreatedAtAsc()</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RelationalSchemaDraftStorageMutationRep...</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>.findByStateOrderByCreatedAtAsc() node in persistence/relational/RelationalSchemaDraftStorageMutationRepository.java.</td>
+  <td><code>SchemaDraftConflictRepository.java</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>List</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small><br><code>Optional</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small><br><code>SchemaDraftConflictNode</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small></td>
+  <td>SchemaDraftConflictRepository.java node in graphrag/repository/SchemaDraftConflictRepository.java.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>SchemaDraftStorageMutationState</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
+  <td><code>SchemaDraftConflictRepository</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>RelationalSchemaDraftStorageMutationRepository.java</code><br><small style="color:var(--muted)">persistence/relational/RelationalSchemaDraftStorageMutationRepository.java</small></td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>findByAggregateRevision()</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small><br><code>findByIdAndDraftId()</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small><br><code>findHistory()</code><br><small style="color:var(--muted)">graphrag/repository/SchemaDraftConflictRepository.java</small><br>+2 more</td>
+  <td>SchemaDraftConflictRepository node in graphrag/repository/SchemaDraftConflictRepository.java.</td>
 </tr>
 </table>
 
@@ -496,7 +496,7 @@ flowchart LR
       <tr><td><code>graphrag/service/SchemaDraftAnalysisService.java</code></td><td>116 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftReviewService.java</code></td><td>81 nodes</td></tr>
 <tr><td><code>graphrag/controller/SchemaDraftController.java</code></td><td>79 nodes</td></tr>
-<tr><td><code>graphrag/domain/DocumentChunkNode.java</code></td><td>74 nodes</td></tr>
+<tr><td><code>graphrag/domain/DocumentChunkNode.java</code></td><td>76 nodes</td></tr>
 <tr><td><code>vfedoriv/graphrag/SchemaDraftLifecycleIntegrationTest.java</code></td><td>68 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaDraftEvaluationService.java</code></td><td>66 nodes</td></tr>
 <tr><td><code>graphrag/service/SchemaReprocessingPlanService.java</code></td><td>65 nodes</td></tr>
@@ -505,19 +505,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x6345, method x2935, imports x2243, calls x1877. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x6506, method x3018, imports x2303, calls x1929. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 3058 nodes and 2825 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around schema, openspec, specmd, specs, mostly in .understand-anything/intermediate/scan-result.json, specs/schema-draft-analysis/spec.md, specs/schema-draft-evaluation/spec.md. This section covers 3097 nodes and 2859 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (3058 nodes, 2825 edges)
+    %% Section: Graph Build (3097 nodes, 2859 edges)
     subgraph build_graph_codex_settings_local_json_85d38d3c[".codex/settings.local.json"]
         codex_settings_local_9fdd8b31("settings.local.json")
         codex_settings_local_permissions_f495c3bb("permissions<br/><small>.codex/settings.local.json</small>")
@@ -551,7 +551,7 @@ flowchart LR
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_primarybuildtool_136d326c
     codex_settings_local_project_6d5e78bc -->|contains| codex_settings_local_project_testframework_8ab37991
     understand_anything_config_d54d881b -->|contains| understand_anything_config_outputlanguage_5559b7c8
-    %% Omitted for readability: 3040 nodes, 0 edges
+    %% Omitted for readability: 3079 nodes, 0 edges
     class codex_settings_local_9fdd8b31 function;
     class codex_settings_local_permissions_f495c3bb function;
     class codex_settings_local_project_6d5e78bc function;
@@ -845,12 +845,12 @@ flowchart LR
 <tr><td><code>specs/multi-source-schema-discovery/spec.md</code></td><td>43 nodes</td></tr>
 <tr><td><code>specs/schema-draft-review/spec.md</code></td><td>43 nodes</td></tr>
 <tr><td><code>README.md</code></td><td>42 nodes</td></tr>
-<tr><td><code>specs/schema-draft-lifecycle/spec.md</code></td><td>40 nodes</td></tr>
+<tr><td><code>specs/schema-reprocessing-plans/spec.md</code></td><td>41 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x2825. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2859. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2230,70 +2230,59 @@ flowchart LR
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around openspec, specmd, specs, changes, mostly in specs/document-management/spec.md, specs/ai-profile-management/spec.md, specs/ai-observability-monitoring/spec.md. This section covers 381 nodes and 350 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around openspec, search, changes, specmd, mostly in specs/document-management/spec.md, specs/ai-profile-management/spec.md, specs/ai-observability-monitoring/spec.md. This section covers 623 nodes and 559 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (381 nodes, 350 edges)
-    subgraph serve_api_specs_ai_profile_management_spec_md_d0c9820c["specs/ai-profile-management/spec.md"]
-        ai_profile_management_spec_requirements_f0c29c28("Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
-        openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38("ADDED Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
-        openspec_specs_ai_profile_management_spec_md_ai_c4619ebf("Requirement: Incompatible embedding pro...<br/><small>specs/ai-profile-management/spec.md</small>")
-        openspec_specs_ai_profile_management_spec_md_ai_8ab78385("Requirement: Knowledge bases select act...<br/><small>specs/ai-profile-management/spec.md</small>")
-    end
-    subgraph serve_api_specs_document_management_spec_md_37c426b2["specs/document-management/spec.md"]
-        document_management_spec_requirements_b56c3f78("Requirements<br/><small>specs/document-management/spec.md</small>")
-        openspec_specs_document_management_spec_md_docum_7904642b("Requirement: Document can be updated by...<br/><small>specs/document-management/spec.md</small>")
-        openspec_specs_document_management_spec_md_docum_59dbe1b9("Requirement: Document can be deleted<br/><small>specs/document-management/spec.md</small>")
-    end
-    subgraph serve_api_ADVANCED_SEARCH_PLAN_md_bb3e7195["ADVANCED_SEARCH_PLAN.md"]
-        advanced_search_plan_advanced_agentic_search_4d473ebe("Advanced Agentic Search<br/><small>ADVANCED_SEARCH_PLAN.md</small>")
-        advanced_search_plan_retrieval_and_agent_design_d9f55dd2("Retrieval and Agent Design<br/><small>ADVANCED_SEARCH_PLAN.md</small>")
+    %% Section: Serving API (623 nodes, 559 edges)
+    subgraph serve_api_specs_hybrid_search_spec_md_ed761238["specs/hybrid-search/spec.md"]
+        hybrid_search_spec_removed_requirements_e0e33fee("REMOVED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
+        hybrid_search_spec_requirements_6b3873a5("Requirements<br/><small>specs/hybrid-search/spec.md</small>")
+        openspec_changes_archive_2026_06_10_add_hybrid_s_3a59a101("ADDED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
     end
     subgraph serve_api_archive_2026_07_31_expand_search_with_053f6609["archive/2026-07-31-expand-search-with-parent-context/design.md"]
         node_2026_07_31_expand_search_with_parent_contex_85720310("design.md")
         node_2026_07_31_expand_search_with_parent_contex_27edf953("Decisions<br/><small>archive/2026-07-31-expand-search-with-parent-context/design.md</small>")
     end
-    subgraph serve_api_specs_ai_observability_monitoring_spec_e3ed4285["specs/ai-observability-monitoring/spec.md"]
-        openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
-        ai_observability_monitoring_spec_requirement_lan_9a9d55c6("Requirement: Langfuse is available as a...<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    subgraph serve_api_changes_add_advanced_search_fusion_rer_6ae92ce2["changes/add-advanced-search-fusion-reranking/design.md"]
+        add_advanced_search_fusion_reranking_design_deci_3ebe3bde("Decisions<br/><small>changes/add-advanced-search-fusion-reranking/design.md</small>")
+        add_advanced_search_fusion_reranking_design_d53a8ad9("design.md")
     end
-    subgraph serve_api_specs_document_processing_options_spec_6b0a1a74["specs/document-processing-options/spec.md"]
-        document_processing_options_spec_requirements_4d52b960("Requirements<br/><small>specs/document-processing-options/spec.md</small>")
-        openspec_changes_archive_2026_06_30_add_document_8aeac67b("ADDED Requirements<br/><small>specs/document-processing-options/spec.md</small>")
+    subgraph serve_api_specs_ai_profile_management_spec_md_d0c9820c["specs/ai-profile-management/spec.md"]
+        ai_profile_management_spec_requirements_f0c29c28("Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
+        openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38("ADDED Requirements<br/><small>specs/ai-profile-management/spec.md</small>")
     end
-    subgraph serve_api_specs_hybrid_search_spec_md_ed761238["specs/hybrid-search/spec.md"]
-        hybrid_search_spec_requirements_6b3873a5("Requirements<br/><small>specs/hybrid-search/spec.md</small>")
-        openspec_changes_archive_2026_06_10_add_hybrid_s_3a59a101("ADDED Requirements<br/><small>specs/hybrid-search/spec.md</small>")
-    end
-    node_2026_06_30_add_document_processing_options_2f66071f("tasks.md")
-    advanced_search_plan_advanced_agentic_search_4d473ebe -->|contains| advanced_search_plan_retrieval_and_agent_design_d9f55dd2
-    openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 -->|contains| ai_observability_monitoring_spec_requirement_lan_9a9d55c6
+    advanced_search_plan_advanced_agentic_search_4d473ebe("Advanced Agentic Search<br/><small>ADVANCED_SEARCH_PLAN.md</small>")
+    add_adaptive_advanced_search_planning_design_f05090a5("design.md")
+    add_advanced_search_text_retrieval_design_e42effdc("design.md")
+    add_cited_advanced_search_synthesis_design_17660264("design.md")
+    add_durable_advanced_search_runs_design_5d94bf20("design.md")
+    retire_legacy_hybrid_search_design_e7ee3b5b("design.md")
+    advanced_search_runs_spec_added_requirements_275bb02a("ADDED Requirements<br/><small>specs/advanced-search-runs/spec.md</small>")
+    openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7("ADDED Requirements<br/><small>specs/ai-observability-monitoring/spec.md</small>")
+    document_management_spec_requirements_b56c3f78("Requirements<br/><small>specs/document-management/spec.md</small>")
+    add_advanced_search_fusion_reranking_design_d53a8ad9 -->|contains| add_advanced_search_fusion_reranking_design_deci_3ebe3bde
     node_2026_07_31_expand_search_with_parent_contex_85720310 -->|contains| node_2026_07_31_expand_search_with_parent_contex_27edf953
-    ai_profile_management_spec_requirements_f0c29c28 -->|contains| openspec_specs_ai_profile_management_spec_md_ai_c4619ebf
-    ai_profile_management_spec_requirements_f0c29c28 -->|contains| openspec_specs_ai_profile_management_spec_md_ai_8ab78385
-    document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_59dbe1b9
-    document_management_spec_requirements_b56c3f78 -->|contains| openspec_specs_document_management_spec_md_docum_7904642b
-    %% Omitted for readability: 363 nodes, 0 edges
-    class ai_profile_management_spec_requirements_f0c29c28 concept;
-    class openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38 concept;
-    class openspec_specs_ai_profile_management_spec_md_ai_c4619ebf concept;
-    class openspec_specs_ai_profile_management_spec_md_ai_8ab78385 concept;
-    class document_management_spec_requirements_b56c3f78 concept;
-    class openspec_specs_document_management_spec_md_docum_7904642b concept;
-    class openspec_specs_document_management_spec_md_docum_59dbe1b9 concept;
-    class advanced_search_plan_advanced_agentic_search_4d473ebe concept;
-    class advanced_search_plan_retrieval_and_agent_design_d9f55dd2 concept;
-    class node_2026_07_31_expand_search_with_parent_contex_85720310 concept;
-    class node_2026_07_31_expand_search_with_parent_contex_27edf953 concept;
-    class openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 concept;
-    class ai_observability_monitoring_spec_requirement_lan_9a9d55c6 concept;
-    class document_processing_options_spec_requirements_4d52b960 concept;
-    class openspec_changes_archive_2026_06_30_add_document_8aeac67b concept;
+    %% Omitted for readability: 605 nodes, 0 edges
+    class hybrid_search_spec_removed_requirements_e0e33fee concept;
     class hybrid_search_spec_requirements_6b3873a5 concept;
     class openspec_changes_archive_2026_06_10_add_hybrid_s_3a59a101 concept;
-    class node_2026_06_30_add_document_processing_options_2f66071f concept;
+    class node_2026_07_31_expand_search_with_parent_contex_85720310 concept;
+    class node_2026_07_31_expand_search_with_parent_contex_27edf953 concept;
+    class add_advanced_search_fusion_reranking_design_deci_3ebe3bde concept;
+    class add_advanced_search_fusion_reranking_design_d53a8ad9 concept;
+    class ai_profile_management_spec_requirements_f0c29c28 concept;
+    class openspec_changes_archive_2026_06_18_add_runtime_7aaa2a38 concept;
+    class advanced_search_plan_advanced_agentic_search_4d473ebe concept;
+    class add_adaptive_advanced_search_planning_design_f05090a5 concept;
+    class add_advanced_search_text_retrieval_design_e42effdc concept;
+    class add_cited_advanced_search_synthesis_design_17660264 concept;
+    class add_durable_advanced_search_runs_design_5d94bf20 concept;
+    class retire_legacy_hybrid_search_design_e7ee3b5b concept;
+    class advanced_search_runs_spec_added_requirements_275bb02a concept;
+    class openspec_changes_archive_2026_06_04_add_ai_obser_79e0c7f7 concept;
+    class document_management_spec_requirements_b56c3f78 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2574,7 +2563,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x350. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x559. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2921,12 +2910,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, openspec, changes, suite, mostly in specs/test-coverage-governance/spec.md, specs/test-suite-execution-performance/spec.md, specs/service-helper-utilities/spec.md. This section covers 265 nodes and 242 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, openspec, changes, suite, mostly in specs/test-coverage-governance/spec.md, specs/test-suite-execution-performance/spec.md, specs/service-helper-utilities/spec.md. This section covers 270 nodes and 247 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (265 nodes, 242 edges)
+    %% Section: Tests &amp; Fixtures (270 nodes, 247 edges)
     subgraph tests_fixtures_scripts_tests_test_test_suite_per_28124638["scripts/tests/test_test_suite_performance_report.py"]
         tests_test_test_suite_performance_report_perform_f5d5ce1f("PerformanceReportTest<br/><small>scripts/tests/test_test_suite_performance_report.py</small>")
         tests_test_test_suite_performance_report_perform_588a6222("args()<br/><small>scripts/tests/test_test_suite_performance_report.py</small>")
@@ -2966,7 +2955,7 @@ flowchart LR
     tests_test_test_suite_performance_report_perform_ad2385ad -->|calls| tests_test_test_suite_performance_report_perform_5a82c3d8
     tests_test_test_suite_performance_report_perform_ad2385ad -->|calls| tests_test_test_suite_performance_report_perform_6a7c8305
     tests_test_test_suite_performance_report_perform_ad2385ad -->|calls| tests_test_test_suite_performance_report_perform_e3a87823
-    %% Omitted for readability: 247 nodes, 0 edges
+    %% Omitted for readability: 252 nodes, 0 edges
     class tests_test_test_suite_performance_report_perform_f5d5ce1f test;
     class tests_test_test_suite_performance_report_perform_588a6222 test;
     class tests_test_test_suite_performance_report_perform_ad2385ad test;
@@ -3254,18 +3243,18 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>27 nodes</td></tr>
-<tr><td><code>specs/test-suite-execution-performance/spec.md</code></td><td>21 nodes</td></tr>
+<tr><td><code>specs/test-suite-execution-performance/spec.md</code></td><td>26 nodes</td></tr>
 <tr><td><code>specs/service-helper-utilities/spec.md</code></td><td>20 nodes</td></tr>
 <tr><td><code>specs/test-suite-execution-performance/spec.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>specs/test-coverage-governance/spec.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>archive/2026-07-30-speed-up-test-suite/design.md</code></td><td>14 nodes</td></tr>
-<tr><td><code>changes/fix-test-suite-context-isolation/design.md</code></td><td>13 nodes</td></tr>
+<tr><td><code>archive/2026-07-31-fix-test-suite-context-isolation/design.md</code></td><td>13 nodes</td></tr>
 <tr><td><code>specs/architecture-boundary-governance/spec.md</code></td><td>12 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x223, method x7, calls x6, references x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x228, method x7, calls x6, references x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4893,18 +4882,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>12460</td></tr>
-      <tr><td>Edges</td><td>22700</td></tr>
+      <tr><td>Nodes</td><td>12949</td></tr>
+      <tr><td>Edges</td><td>23387</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>1025</td></tr>
+      <tr><td>Communities</td><td>1102</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>19134</td></tr>
-      <tr><td>INFERRED</td><td>3566</td></tr>
+      <tr><td>EXTRACTED</td><td>19760</td></tr>
+      <tr><td>INFERRED</td><td>3627</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4912,7 +4901,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>graphrag — Architecture Documentation</p>
-  <p>Generated: 2026-07-31 08:15 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-31 17:29 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

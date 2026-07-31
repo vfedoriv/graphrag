@@ -5,6 +5,7 @@ import io.github.vfedoriv.graphrag.document.chunking.ChunkKind;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import java.util.ArrayList;
@@ -22,15 +23,18 @@ public class DocumentChunkPersistenceAdapter {
 
     private final DocumentChunkRepository repository;
     private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private final LexicalIndexRepository lexicalIndexRepository;
     private final Neo4jClient neo4jClient;
 
     public DocumentChunkPersistenceAdapter(
         DocumentChunkRepository repository,
         EmbeddingSpaceIndexService embeddingSpaceIndexService,
+        LexicalIndexRepository lexicalIndexRepository,
         Neo4jClient neo4jClient
     ) {
         this.repository = repository;
         this.embeddingSpaceIndexService = embeddingSpaceIndexService;
+        this.lexicalIndexRepository = lexicalIndexRepository;
         this.neo4jClient = neo4jClient;
     }
 
@@ -43,6 +47,7 @@ public class DocumentChunkPersistenceAdapter {
             repository.save(chunk);
             if (isRetrievalChild(chunk)) {
                 embeddingSpaceIndexService.assignChunk(chunk.getId(), knowledgeBaseId, embeddingSpace);
+                lexicalIndexRepository.assignChild(chunk.getId(), knowledgeBaseId);
             }
         }
         createHierarchyRelationships(chunks);

@@ -343,6 +343,7 @@ class DocumentProcessingServiceTest {
         DocumentChunkPersistenceAdapter persistenceAdapter = new DocumentChunkPersistenceAdapter(
             documentChunkRepository,
             new EmbeddingSpaceIndexService(neo4jClient),
+            org.mockito.Mockito.mock(io.github.vfedoriv.graphrag.repository.LexicalIndexRepository.class),
             neo4jClient
         );
         return new DocumentProcessingService(

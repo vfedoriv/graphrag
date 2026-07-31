@@ -49,6 +49,23 @@ public class RelationalDocumentUploadRepository implements DocumentUploadReposit
     }
 
     @Override
+    public List<DocumentUploadNode> findByMetadata(
+        String knowledgeBaseId,
+        String originalFilename,
+        String contentType,
+        int limit
+    ) {
+        String filenameFilter = originalFilename == null || originalFilename.isBlank() ? null : originalFilename.strip();
+        String contentTypeFilter = contentType == null || contentType.isBlank() ? null : contentType.strip();
+        return repository.findByMetadata(
+            knowledgeBaseId,
+            filenameFilter,
+            contentTypeFilter,
+            PageRequest.of(0, limit)
+        ).stream().map(DocumentWorkflowRelationalMapper::toDomain).toList();
+    }
+
+    @Override
     public long countByKnowledgeBaseId(String knowledgeBaseId) {
         return repository.countByKnowledgeBaseId(knowledgeBaseId);
     }

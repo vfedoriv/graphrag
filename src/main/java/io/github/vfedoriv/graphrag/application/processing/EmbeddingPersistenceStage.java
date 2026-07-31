@@ -88,6 +88,7 @@ public final class EmbeddingPersistenceStage {
         chunk.setProcessingRunId(String.valueOf(preparedChunk.metadata().get("processingRunId")));
         chunk.setChunkIndex(index);
         chunk.setText(preparedChunk.sourceText());
+        chunk.setSourceText(preparedChunk.sourceText());
         chunk.setTokenEstimate(preparedChunk.tokenCount());
         chunk.setEmbeddingTokenCount(preparedChunk.embeddingTokenCount());
         if (preparedChunk.slice() != null) {

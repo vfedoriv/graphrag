@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import io.github.vfedoriv.graphrag.document.chunking.ChunkHashes;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import java.util.List;
@@ -17,6 +18,7 @@ class DocumentChunkPersistenceAdapterTest {
     private final DocumentChunkPersistenceAdapter adapter = new DocumentChunkPersistenceAdapter(
         mock(DocumentChunkRepository.class),
         mock(EmbeddingSpaceIndexService.class),
+        mock(LexicalIndexRepository.class),
         mock(Neo4jClient.class)
     );
     private final EmbeddingSpace embeddingSpace = new EmbeddingSpace(
