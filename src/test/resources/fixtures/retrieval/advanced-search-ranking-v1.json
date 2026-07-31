@@ -1,0 +1,45 @@
+{
+  "fixtureVersion": "advanced-search-ranking-v1",
+  "mixedMinimumRecallAt10": 1.0,
+  "semanticMaximumRecallRegression": 0.0,
+  "cases": [
+    {
+      "id": "mixed-contract-query",
+      "kind": "MIXED",
+      "relevantChunkIds": ["mixed-dense", "mixed-lexical", "mixed-metadata"],
+      "candidates": [
+        {"channel": "DENSE", "chunkId": "mixed-dense", "documentId": "doc-1", "subqueryId": "semantic", "rank": 1, "score": 0.99},
+        {"channel": "DENSE", "chunkId": "noise-2", "documentId": "noise-2", "subqueryId": "semantic", "rank": 2, "score": 0.98},
+        {"channel": "DENSE", "chunkId": "noise-3", "documentId": "noise-3", "subqueryId": "semantic", "rank": 3, "score": 0.97},
+        {"channel": "DENSE", "chunkId": "noise-4", "documentId": "noise-4", "subqueryId": "semantic", "rank": 4, "score": 0.96},
+        {"channel": "DENSE", "chunkId": "noise-5", "documentId": "noise-5", "subqueryId": "semantic", "rank": 5, "score": 0.95},
+        {"channel": "DENSE", "chunkId": "noise-6", "documentId": "noise-6", "subqueryId": "semantic", "rank": 6, "score": 0.94},
+        {"channel": "DENSE", "chunkId": "noise-7", "documentId": "noise-7", "subqueryId": "semantic", "rank": 7, "score": 0.93},
+        {"channel": "DENSE", "chunkId": "noise-8", "documentId": "noise-8", "subqueryId": "semantic", "rank": 8, "score": 0.92},
+        {"channel": "DENSE", "chunkId": "noise-9", "documentId": "noise-9", "subqueryId": "semantic", "rank": 9, "score": 0.91},
+        {"channel": "DENSE", "chunkId": "noise-10", "documentId": "noise-10", "subqueryId": "semantic", "rank": 10, "score": 0.90},
+        {"channel": "DENSE", "chunkId": "noise-11", "documentId": "noise-11", "subqueryId": "semantic", "rank": 11, "score": 0.89},
+        {"channel": "DENSE", "chunkId": "mixed-lexical", "documentId": "doc-2", "subqueryId": "semantic", "rank": 12, "score": 0.88},
+        {"channel": "LEXICAL", "chunkId": "mixed-lexical", "documentId": "doc-2", "subqueryId": "literal", "rank": 1, "score": 12.0},
+        {"channel": "METADATA", "chunkId": "mixed-metadata", "documentId": "doc-3", "subqueryId": null, "rank": 1, "score": 1.0}
+      ]
+    },
+    {
+      "id": "semantic-only-query",
+      "kind": "SEMANTIC_ONLY",
+      "relevantChunkIds": ["semantic-1", "semantic-8"],
+      "candidates": [
+        {"channel": "DENSE", "chunkId": "semantic-1", "documentId": "doc-1", "subqueryId": "semantic", "rank": 1, "score": 0.99},
+        {"channel": "DENSE", "chunkId": "semantic-2", "documentId": "doc-2", "subqueryId": "semantic", "rank": 2, "score": 0.98},
+        {"channel": "DENSE", "chunkId": "semantic-3", "documentId": "doc-3", "subqueryId": "semantic", "rank": 3, "score": 0.97},
+        {"channel": "DENSE", "chunkId": "semantic-4", "documentId": "doc-4", "subqueryId": "semantic", "rank": 4, "score": 0.96},
+        {"channel": "DENSE", "chunkId": "semantic-5", "documentId": "doc-5", "subqueryId": "semantic", "rank": 5, "score": 0.95},
+        {"channel": "DENSE", "chunkId": "semantic-6", "documentId": "doc-6", "subqueryId": "semantic", "rank": 6, "score": 0.94},
+        {"channel": "DENSE", "chunkId": "semantic-7", "documentId": "doc-7", "subqueryId": "semantic", "rank": 7, "score": 0.93},
+        {"channel": "DENSE", "chunkId": "semantic-8", "documentId": "doc-8", "subqueryId": "semantic", "rank": 8, "score": 0.92},
+        {"channel": "DENSE", "chunkId": "semantic-9", "documentId": "doc-9", "subqueryId": "semantic", "rank": 9, "score": 0.91},
+        {"channel": "DENSE", "chunkId": "semantic-10", "documentId": "doc-10", "subqueryId": "semantic", "rank": 10, "score": 0.90}
+      ]
+    }
+  ]
+}
