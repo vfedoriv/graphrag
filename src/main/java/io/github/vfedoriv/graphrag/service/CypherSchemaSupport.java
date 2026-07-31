@@ -27,7 +27,10 @@ final class CypherSchemaSupport {
 
     static Set<String> allowedProperties(SchemaDocument schema) {
         Set<String> allowedProperties = new HashSet<>(Set.of(
-            "id", "sourceDocumentId", "sourceChunkIds", "schemaId", "extractionRunId", "confidence", "createdAt"
+            "id", "sourceDocumentId", "sourceChunkId", "sourceChunkIds", "sourceChunkKind", "sourceChunkText",
+            "sourceStart", "sourceEnd", "pageStart", "pageEnd", "structuralPath", "processingRunId",
+            "chunkStrategyRevision", "effectiveChunkerRevision", "sourceHash",
+            "schemaId", "extractionRunId", "confidence", "createdAt"
         ));
         for (SchemaDocument.NodeDefinition node : schema.nodes()) {
             for (SchemaDocument.PropertyDefinition property : node.properties()) {

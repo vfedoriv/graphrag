@@ -6,6 +6,14 @@ public final class ChunkIdentity {
     }
 
     public static String childId(String documentContentRevision, ChunkSlice slice) {
+        return id("chunk_", documentContentRevision, slice);
+    }
+
+    public static String parentId(String documentContentRevision, ChunkSlice slice) {
+        return id("parent_", documentContentRevision, slice);
+    }
+
+    private static String id(String prefix, String documentContentRevision, ChunkSlice slice) {
         if (documentContentRevision == null || documentContentRevision.isBlank()) {
             throw new IllegalArgumentException("Document content revision must not be blank");
         }
@@ -18,6 +26,6 @@ public final class ChunkIdentity {
             String.valueOf(slice.sourceStart()),
             String.valueOf(slice.sourceEnd())
         );
-        return "chunk_" + ChunkHashes.sha256(identity);
+        return prefix + ChunkHashes.sha256(identity);
     }
 }

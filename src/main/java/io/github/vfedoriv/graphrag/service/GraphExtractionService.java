@@ -189,6 +189,10 @@ public class GraphExtractionService {
                 throw new IllegalArgumentException("Chunk scope does not match the source document");
             }
         }
+        boolean hasParents = chunks.stream().anyMatch(chunk -> "PARENT".equals(chunk.getKind()));
+        if (hasParents && chunks.stream().anyMatch(chunk -> !"PARENT".equals(chunk.getKind()))) {
+            throw new IllegalArgumentException("Hierarchical graph extraction must use persisted parents only");
+        }
     }
 
 }

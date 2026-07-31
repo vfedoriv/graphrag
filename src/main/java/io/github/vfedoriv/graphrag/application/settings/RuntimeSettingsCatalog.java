@@ -80,6 +80,30 @@ public final class RuntimeSettingsCatalog {
         );
         addChunkingInt(
             map,
+            "app.chunking.parent-target-tokens",
+            envInt("app.chunking.parent-target-tokens", appProperties.chunking().effectiveTargetTokens() * 2),
+            1,
+            "Maximum token count for a materialized extraction parent."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.parent-hard-character-limit",
+            envInt(
+                "app.chunking.parent-hard-character-limit",
+                appProperties.chunking().effectiveHardCharacterLimit() * 2
+            ),
+            1,
+            "Hard character bound for a materialized extraction parent."
+        );
+        addChunkingInt(
+            map,
+            "app.chunking.parent-max-pages",
+            envInt("app.chunking.parent-max-pages", 2),
+            1,
+            "Maximum PDF pages in one parent; validation restricts this to one or two."
+        );
+        addChunkingInt(
+            map,
             "app.chunking.context-header-max-tokens",
             appProperties.chunking().effectiveContextHeaderMaxTokens(),
             0,

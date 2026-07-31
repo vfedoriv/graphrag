@@ -74,7 +74,7 @@ public record ChunkSlice(
         if (tokenCount < 0) {
             throw new IllegalArgumentException("tokenCount must be non-negative");
         }
-        kind = kind == null || kind.isBlank() ? "CHILD" : kind.strip();
+        kind = ChunkKind.from(kind).name();
         if (sectionIndex < 0 || sectionChunkIndex < 0) {
             throw new IllegalArgumentException("Chunk section indexes must not be negative");
         }

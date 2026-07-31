@@ -13,8 +13,15 @@ public record DocumentChunkResponse(
     String text,
     @Schema(description = "Estimated token count for this chunk.", example = "143")
     int tokenEstimate,
-    @Schema(description = "Flat chunk kind.", example = "CHILD")
+    @Schema(description = "Hierarchy chunk kind.", example = "CHILD")
     String kind,
+    @Schema(description = "Containing parent identifier for child chunks.", example = "parent-01")
+    String parentChunkId,
+    @Schema(description = "Zero-based child order within the parent.", example = "0")
+    Integer childIndex,
+    @Schema(description = "Number of contained children for parent chunks.", example = "4")
+    int childCount,
+    String processingRunId,
     @Schema(description = "Parser section order.", example = "2")
     int sectionIndex,
     @Schema(description = "Chunk order within the parser section.", example = "0")
@@ -25,7 +32,9 @@ public record DocumentChunkResponse(
     Integer pageEnd,
     String structuralPath,
     String blockConfidence,
+    String chunkSettingsHash,
     String chunkStrategyRevision,
+    String effectiveChunkerRevision,
     String tokenizerId,
     String representationRevision,
     String sourceHash,

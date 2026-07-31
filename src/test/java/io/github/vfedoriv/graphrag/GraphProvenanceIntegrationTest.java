@@ -134,6 +134,51 @@ class GraphProvenanceIntegrationTest {
             """)).isZero();
     }
 
+    @Test
+    void crossPageParentIsTheSingleAuthoritativePublicGraphCitation() {
+        neo4jClient.query("""
+            CREATE (:DocumentChunk {
+              id: 'parent-cross-page',
+              kind: 'PARENT',
+              knowledgeBaseId: 'kb-provenance',
+              documentId: 'doc-cross-page',
+              processingRunId: 'processing-cross-page',
+              text: 'continued clause continues here',
+              sourceStart: 0,
+              sourceEnd: 14,
+              pageStart: 4,
+              pageEnd: 5,
+              structuralPath: 'Clause 7',
+              chunkStrategyRevision: 'recursive-token-aware-v1',
+              effectiveChunkerRevision: 'chunker-cross-page',
+              sourceHash: 'parent-hash'
+            })
+            """).run();
+
+        writeSharedFact("doc-cross-page", "run-cross-page", "parent-cross-page", "cross-page");
+
+        Map<String, Object> evidence = neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {
+              sourceDocumentId: 'doc-cross-page',
+              factKind: 'RELATIONSHIP'
+            })
+            RETURN properties(e) AS evidence
+            """)
+            .fetchAs(Map.class)
+            .one()
+            .map(value -> (Map<String, Object>) value)
+            .orElseThrow();
+        assertThat(evidence)
+            .containsEntry("sourceChunkId", "parent-cross-page")
+            .containsEntry("sourceChunkKind", "PARENT")
+            .containsEntry("pageStart", 4L)
+            .containsEntry("pageEnd", 5L)
+            .containsEntry("structuralPath", "Clause 7")
+            .containsEntry("processingRunId", "processing-cross-page")
+            .containsEntry("effectiveChunkerRevision", "chunker-cross-page");
+        assertThat((List<String>) evidence.get("sourceChunkIds")).containsExactly("parent-cross-page");
+    }
+
     private void createDocumentRunChunk(String documentId, String runId, String chunkId, String status) {
         neo4jClient.query("""
             CREATE (:DocumentChunk {

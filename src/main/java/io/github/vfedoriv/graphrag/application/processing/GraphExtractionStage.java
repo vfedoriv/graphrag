@@ -23,10 +23,17 @@ public final class GraphExtractionStage {
         AiProfileNode activeProfile,
         boolean allowOverwrite
     ) {
-        log.info("Starting graph extraction: documentId={}, persistedChunks={}", document.getId(), persistedChunks.size());
+        List<DocumentChunkNode> parents = persistedChunks.stream()
+            .filter(chunk -> "PARENT".equals(chunk.getKind()))
+            .toList();
+        List<DocumentChunkNode> extractionChunks = parents.isEmpty()
+            ? persistedChunks.stream().filter(chunk -> !"PARENT".equals(chunk.getKind())).toList()
+            : parents;
+        log.info("Starting graph extraction: documentId={}, persistedChunks={}, extractionParents={}",
+            document.getId(), persistedChunks.size(), parents.size());
         AiProfileContext.withProfile(
             activeProfile.getId(),
-            () -> graphExtractionService.extract(document, persistedChunks, allowOverwrite)
+            () -> graphExtractionService.extract(document, extractionChunks, allowOverwrite)
         );
     }
 }

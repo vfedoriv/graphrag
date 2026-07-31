@@ -30,4 +30,25 @@ class GraphExtractionStageTest {
 
         verify(graphExtractionService).extract(document, List.of(chunk), true);
     }
+
+    @Test
+    void selectsPersistedParentsAsAuthoritativeExtractionUnits() {
+        DocumentUploadNode document = new DocumentUploadNode();
+        document.setId("doc-1");
+        DocumentChunkNode parent = new DocumentChunkNode();
+        parent.setKind("PARENT");
+        DocumentChunkNode child = new DocumentChunkNode();
+        child.setKind("CHILD");
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId("profile-1");
+
+        new GraphExtractionStage(graphExtractionService).execute(
+            document,
+            List.of(parent, child),
+            profile,
+            false
+        );
+
+        verify(graphExtractionService).extract(document, List.of(parent), false);
+    }
 }

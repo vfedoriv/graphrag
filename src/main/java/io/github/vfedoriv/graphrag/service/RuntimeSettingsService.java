@@ -191,10 +191,16 @@ public class RuntimeSettingsService {
         int overlapTokens = integer("app.chunking.overlap-tokens");
         int contextHeaderMaxTokens = integer("app.chunking.context-header-max-tokens");
         int contextHeaderMaxCharacters = integer("app.chunking.context-header-max-characters");
+        int parentTargetTokens = integer("app.chunking.parent-target-tokens");
+        int parentHardCharacterLimit = integer("app.chunking.parent-hard-character-limit");
+        int parentMaxPages = integer("app.chunking.parent-max-pages");
         validateChunking(
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            parentTargetTokens,
+            parentHardCharacterLimit,
+            parentMaxPages,
             contextHeaderMaxTokens,
             contextHeaderMaxCharacters
         );
@@ -203,6 +209,9 @@ public class RuntimeSettingsService {
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            parentTargetTokens,
+            parentHardCharacterLimit,
+            parentMaxPages,
             contextHeaderMaxTokens,
             contextHeaderMaxCharacters,
             string("app.chunking.representation-revision")
@@ -365,10 +374,17 @@ public class RuntimeSettingsService {
             pending,
             clearedKey
         );
+        int parentTargetTokens = prospectiveInteger("app.chunking.parent-target-tokens", pending, clearedKey);
+        int parentHardCharacterLimit =
+            prospectiveInteger("app.chunking.parent-hard-character-limit", pending, clearedKey);
+        int parentMaxPages = prospectiveInteger("app.chunking.parent-max-pages", pending, clearedKey);
         validateChunking(
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            parentTargetTokens,
+            parentHardCharacterLimit,
+            parentMaxPages,
             contextHeaderMaxTokens,
             contextHeaderMaxCharacters
         );
@@ -411,6 +427,9 @@ public class RuntimeSettingsService {
         int targetTokens,
         int overlapTokens,
         int hardCharacterLimit,
+        int parentTargetTokens,
+        int parentHardCharacterLimit,
+        int parentMaxPages,
         int contextHeaderMaxTokens,
         int contextHeaderMaxCharacters
     ) {
@@ -424,6 +443,19 @@ public class RuntimeSettingsService {
         }
         if (hardCharacterLimit < 1) {
             throw new IllegalArgumentException("app.chunking.hard-character-limit must be greater than zero");
+        }
+        if (parentTargetTokens < targetTokens) {
+            throw new IllegalArgumentException(
+                "app.chunking.parent-target-tokens must not be smaller than the child target"
+            );
+        }
+        if (parentHardCharacterLimit < hardCharacterLimit) {
+            throw new IllegalArgumentException(
+                "app.chunking.parent-hard-character-limit must not be smaller than the child character limit"
+            );
+        }
+        if (parentMaxPages < 1 || parentMaxPages > 2) {
+            throw new IllegalArgumentException("app.chunking.parent-max-pages must be one or two");
         }
         if (contextHeaderMaxTokens < 0 || contextHeaderMaxTokens >= targetTokens) {
             throw new IllegalArgumentException(
@@ -486,6 +518,9 @@ public class RuntimeSettingsService {
         int targetTokens,
         int overlapTokens,
         int hardCharacterLimit,
+        int parentTargetTokens,
+        int parentHardCharacterLimit,
+        int parentMaxPages,
         int contextHeaderMaxTokens,
         int contextHeaderMaxCharacters,
         String representationRevision

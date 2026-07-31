@@ -331,6 +331,7 @@ public class HybridSearchService {
             CALL db.index.vector.queryNodes($indexName, $candidateCount, $queryVector) YIELD node AS chunk, score
             WHERE chunk.knowledgeBaseId = $knowledgeBaseId
               AND chunk.embeddingSpaceId = $embeddingSpaceId
+              AND (chunk.kind IS NULL OR chunk.kind = 'CHILD')
             WITH chunk, score
             ORDER BY score DESC
             LIMIT $topK

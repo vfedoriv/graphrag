@@ -151,3 +151,10 @@ Document chunk reads SHALL return authoritative child source text and queryable 
 #### Scenario: Client lists recursive chunks
 - **WHEN** a client retrieves chunks for an owned recursively processed document
 - **THEN** chunks are in deterministic document order and expose exact source provenance plus revision metadata
+
+### Requirement: Hierarchical chunk reads
+Document chunk reads SHALL distinguish `PARENT` and `CHILD`, expose parent identity and bounded source/page/structural scope, and return chunks in deterministic hierarchy and document order.
+
+#### Scenario: Client reads hierarchy
+- **WHEN** a client lists chunks for a hierarchically processed owned document
+- **THEN** the response makes child-to-parent membership explicit without exposing parent embedding fields

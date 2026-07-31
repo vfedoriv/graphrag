@@ -13,7 +13,7 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
 
     @Query("""
         MATCH (chunk:DocumentChunk {knowledgeBaseId: $knowledgeBaseId})
-        WHERE chunk.embedding IS NOT NULL
+        WHERE (chunk.kind IS NULL OR chunk.kind = 'CHILD') AND chunk.embedding IS NOT NULL
         RETURN chunk
         """)
     List<DocumentChunkNode> findEmbeddedChunksByKnowledgeBaseId(String knowledgeBaseId);

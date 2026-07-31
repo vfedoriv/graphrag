@@ -208,6 +208,7 @@ public class GraphWriteService {
         if (sourceProperties != null) {
             evidenceProps.putAll(sourceProperties);
         }
+        evidenceProps.putAll(authoritativeChunkProperties(chunkId));
         evidenceProps.put("id", evidenceId);
         evidenceProps.put("factKind", factKind);
         evidenceProps.put("canonicalFactId", canonicalFactId);
@@ -220,6 +221,30 @@ public class GraphWriteService {
         evidenceProps.put("confidence", confidence);
         evidenceProps.put("createdAt", Instant.now().toString());
         return evidenceProps;
+    }
+
+    private Map<String, Object> authoritativeChunkProperties(String chunkId) {
+        Map<String, Object> properties = new HashMap<>(neo4jClient.query("""
+            MATCH (chunk:DocumentChunk {id: $chunkId})
+            RETURN
+                chunk.kind AS sourceChunkKind,
+                chunk.text AS sourceChunkText,
+                chunk.sourceStart AS sourceStart,
+                chunk.sourceEnd AS sourceEnd,
+                chunk.pageStart AS pageStart,
+                chunk.pageEnd AS pageEnd,
+                chunk.structuralPath AS structuralPath,
+                chunk.processingRunId AS processingRunId,
+                chunk.chunkStrategyRevision AS chunkStrategyRevision,
+                chunk.effectiveChunkerRevision AS effectiveChunkerRevision,
+                chunk.sourceHash AS sourceHash
+            """)
+            .bind(chunkId).to("chunkId")
+            .fetch()
+            .one()
+            .orElse(Map.of()));
+        properties.values().removeIf(java.util.Objects::isNull);
+        return properties;
     }
 
     private void requireScope(

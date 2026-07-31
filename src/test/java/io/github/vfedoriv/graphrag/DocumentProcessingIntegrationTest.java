@@ -114,13 +114,31 @@ class DocumentProcessingIntegrationTest {
         assertThat(secondAttempt).isInstanceOf(ConflictException.class);
         assertThat(processedAgain.getStatus().name()).isEqualTo("COMPLETED");
         List<DocumentChunkNode> chunks = documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(uploaded.getId());
+        List<DocumentChunkNode> parents = chunks.stream()
+            .filter(chunk -> "PARENT".equals(chunk.getKind()))
+            .toList();
+        List<DocumentChunkNode> children = chunks.stream()
+            .filter(chunk -> "CHILD".equals(chunk.getKind()))
+            .toList();
         assertThat(chunks).isNotEmpty();
         assertThat(chunks).extracting("chunkIndex").isSorted();
-        assertThat(chunks.get(0).getEmbedding()).hasSize(1536);
+        assertThat(parents).isNotEmpty();
+        assertThat(children).isNotEmpty();
+        assertThat(parents).allSatisfy(parent -> {
+            assertThat(parent.getEmbedding()).isNull();
+            assertThat(parent.getEmbeddingSpaceId()).isNull();
+            assertThat(parent.getChildCount()).isPositive();
+            assertThat(parent.getSourceHash()).matches("[0-9a-f]{64}");
+        });
+        assertThat(children).allSatisfy(child -> {
+            assertThat(child.getEmbedding()).hasSize(1536);
+            assertThat(child.getParentChunkId()).isNotBlank();
+            assertThat(child.getChildIndex()).isNotNull();
+        });
         EmbeddingSpace embeddingSpace = EmbeddingSpaceIdentity.derive(
             "https://api.openai.com/v1", "text-embedding-3-small", 1536
         );
-        assertThat(chunks).extracting(DocumentChunkNode::getEmbeddingSpaceId)
+        assertThat(children).extracting(DocumentChunkNode::getEmbeddingSpaceId)
             .containsOnly(embeddingSpace.id());
         assertThat(chunks).extracting(DocumentChunkNode::getChunkStrategy)
             .containsOnly("recursive");
@@ -134,15 +152,25 @@ class DocumentProcessingIntegrationTest {
             .allMatch(position -> position != null && position >= 0);
         assertThat(chunks).extracting(DocumentChunkNode::getId)
             .containsExactlyElementsOf(firstChunkIds);
-        assertThat(chunks).extracting(DocumentChunkNode::getKind).containsOnly("CHILD");
+        assertThat(chunks).extracting(DocumentChunkNode::getKind).contains("PARENT", "CHILD");
         assertThat(chunks).extracting(DocumentChunkNode::getSectionIndex).containsOnly(0);
-        assertThat(chunks).extracting(DocumentChunkNode::getSectionChunkIndex).containsExactly(0);
+        assertThat(children).extracting(DocumentChunkNode::getSectionChunkIndex).containsExactly(0);
         assertThat(chunks).extracting(DocumentChunkNode::getSourceHash)
             .allMatch(hash -> hash != null && hash.matches("[0-9a-f]{64}"));
         assertThat(chunks).extracting(DocumentChunkNode::getRepresentationRevision)
             .containsOnly("context-header-v1");
         assertThat(chunks).extracting(DocumentChunkNode::getText)
             .allMatch(text -> !text.contains("context-header-v1"));
+        Long orphanChildren = neo4jClient.query("""
+            MATCH (child:DocumentChunk {documentId: $documentId, kind: 'CHILD'})
+            WHERE NOT EXISTS {
+                MATCH (:DocumentChunk {id: child.parentChunkId, kind: 'PARENT'})-[:HAS_CHILD]->(child)
+            }
+            RETURN count(child) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(orphanChildren).isZero();
         List<DocumentProcessingRunNode> runHistory =
             processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId());
         assertThat(runHistory).hasSize(2);
@@ -168,6 +196,15 @@ class DocumentProcessingIntegrationTest {
             .bind(vectorOf(0.11)).to("queryVector")
             .fetchAs(Long.class).one().orElse(0L);
         assertThat(hitCount).isGreaterThan(0L);
+        Long parentVectorHits = neo4jClient.query("""
+            CALL db.index.vector.queryNodes($name, 10, $queryVector) YIELD node, score
+            WHERE node.kind = 'PARENT'
+            RETURN count(node) AS c
+            """)
+            .bind(embeddingSpaceIndexService.indexName("kb-1", embeddingSpace.id())).to("name")
+            .bind(vectorOf(0.11)).to("queryVector")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(parentVectorHits).isZero();
 
         Long anyContract = neo4jClient.query("MATCH (n:Contract) RETURN count(n) AS c")
             .fetchAs(Long.class).one().orElse(0L);
@@ -206,6 +243,17 @@ class DocumentProcessingIntegrationTest {
         assertThat(extractionRuns).isEqualTo(2);
         assertThat(processingRuns).isEqualTo(2);
         assertThat(graphRunNodes).isZero();
+        Long parentScopedEvidence = neo4jClient.query("""
+            MATCH (e:GraphExtractionEvidence {sourceDocumentId: $documentId})
+            WHERE e.sourceChunkKind = 'PARENT'
+              AND e.sourceChunkId STARTS WITH 'parent_'
+              AND e.processingRunId IS NOT NULL
+              AND e.effectiveChunkerRevision IS NOT NULL
+            RETURN count(e) AS c
+            """)
+            .bind(uploaded.getId()).to("documentId")
+            .fetchAs(Long.class).one().orElse(0L);
+        assertThat(parentScopedEvidence).isEqualTo(3L);
 
         documentUploadService.replace(
             "kb-1",
@@ -281,7 +329,8 @@ class DocumentProcessingIntegrationTest {
             .anySatisfy(text -> assertThat(text)
                 .contains("PDF contract paragraph")
                 .contains("PDF second line"));
-        assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(pdf.getId()))
+        assertThat(documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(pdf.getId()).stream()
+            .filter(chunk -> "CHILD".equals(chunk.getKind())).toList())
             .allSatisfy(chunk -> {
                 assertThat(chunk.getPageStart()).isNotNull();
                 assertThat(chunk.getPageEnd()).isEqualTo(chunk.getPageStart());

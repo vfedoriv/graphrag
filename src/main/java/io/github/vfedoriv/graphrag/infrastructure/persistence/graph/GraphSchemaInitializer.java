@@ -20,6 +20,8 @@ public class GraphSchemaInitializer implements ApplicationRunner {
             + "FOR (c:DocumentChunk) ON (c.knowledgeBaseId)",
         "CREATE INDEX document_chunk_document IF NOT EXISTS "
             + "FOR (c:DocumentChunk) ON (c.documentId)",
+        "CREATE INDEX document_chunk_hierarchy IF NOT EXISTS "
+            + "FOR (c:DocumentChunk) ON (c.documentId, c.kind, c.parentChunkId)",
         "CREATE INDEX document_chunk_scope_space IF NOT EXISTS "
             + "FOR (c:DocumentChunk) ON (c.knowledgeBaseId, c.embeddingSpaceId)",
         "CREATE INDEX graph_extraction_evidence_knowledge_base IF NOT EXISTS "

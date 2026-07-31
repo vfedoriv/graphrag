@@ -9,6 +9,9 @@ public record ChunkingContext(
     int targetTokens,
     int overlapTokens,
     int hardCharacterLimit,
+    int parentTargetTokens,
+    int parentHardCharacterLimit,
+    int parentMaxPages,
     int contextHeaderMaxTokens,
     int contextHeaderMaxCharacters,
     TokenEstimator tokenEstimator,
@@ -34,6 +37,15 @@ public record ChunkingContext(
         if (hardCharacterLimit < 1) {
             throw new IllegalArgumentException("hardCharacterLimit must be greater than zero");
         }
+        if (parentTargetTokens < targetTokens) {
+            throw new IllegalArgumentException("parentTargetTokens must not be smaller than targetTokens");
+        }
+        if (parentHardCharacterLimit < hardCharacterLimit) {
+            throw new IllegalArgumentException("parentHardCharacterLimit must not be smaller than hardCharacterLimit");
+        }
+        if (parentMaxPages < 1 || parentMaxPages > 2) {
+            throw new IllegalArgumentException("parentMaxPages must be one or two");
+        }
         if (contextHeaderMaxTokens < 0 || contextHeaderMaxCharacters < 0) {
             throw new IllegalArgumentException("Context header limits must not be negative");
         }
@@ -58,6 +70,9 @@ public record ChunkingContext(
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            Math.max(targetTokens, targetTokens * 2),
+            Math.max(hardCharacterLimit, hardCharacterLimit * 2),
+            2,
             0,
             0,
             tokenEstimator,
@@ -78,9 +93,44 @@ public record ChunkingContext(
         String parserRevision,
         String representationRevision
     ) {
+        return create(
+            strategyName,
+            strategyRevision,
+            targetTokens,
+            overlapTokens,
+            hardCharacterLimit,
+            Math.max(targetTokens, targetTokens * 2),
+            Math.max(hardCharacterLimit, hardCharacterLimit * 2),
+            2,
+            contextHeaderMaxTokens,
+            contextHeaderMaxCharacters,
+            tokenEstimator,
+            parserRevision,
+            representationRevision
+        );
+    }
+
+    public static ChunkingContext create(
+        String strategyName,
+        String strategyRevision,
+        int targetTokens,
+        int overlapTokens,
+        int hardCharacterLimit,
+        int parentTargetTokens,
+        int parentHardCharacterLimit,
+        int parentMaxPages,
+        int contextHeaderMaxTokens,
+        int contextHeaderMaxCharacters,
+        TokenEstimator tokenEstimator,
+        String parserRevision,
+        String representationRevision
+    ) {
         ChunkRevisionCalculator calculator = new ChunkRevisionCalculator();
         Map<String, Object> effectiveSettings = new LinkedHashMap<>();
         effectiveSettings.put("hardCharacterLimit", hardCharacterLimit);
+        effectiveSettings.put("parentHardCharacterLimit", parentHardCharacterLimit);
+        effectiveSettings.put("parentMaxPages", parentMaxPages);
+        effectiveSettings.put("parentTargetTokens", parentTargetTokens);
         effectiveSettings.put("contextHeaderMaxCharacters", contextHeaderMaxCharacters);
         effectiveSettings.put("contextHeaderMaxTokens", contextHeaderMaxTokens);
         effectiveSettings.put("overlapTokens", overlapTokens);
@@ -100,6 +150,9 @@ public record ChunkingContext(
             targetTokens,
             overlapTokens,
             hardCharacterLimit,
+            parentTargetTokens,
+            parentHardCharacterLimit,
+            parentMaxPages,
             contextHeaderMaxTokens,
             contextHeaderMaxCharacters,
             tokenEstimator,

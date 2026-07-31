@@ -152,6 +152,106 @@ class EmbeddingPersistenceStageTest {
         });
     }
 
+    @Test
+    void embedsOnlyChildrenAndPersistsParentWithoutRetrievalFields() {
+        AtomicReference<List<String>> embeddedTexts = new AtomicReference<>();
+        when(aiClientResolver.embeddingClient()).thenReturn(texts -> {
+            embeddedTexts.set(texts);
+            return List.of(List.of(0.1, 0.2, 0.3));
+        });
+        EmbeddingSpace space = new EmbeddingSpace("space-1", "https://example.test", "embedding", 3, "utf8-byte-v1");
+        when(embeddingSpacePolicy.spaceFor(org.mockito.ArgumentMatchers.any())).thenReturn(space);
+        when(persistenceAdapter.findByDocumentId("doc-1")).thenReturn(List.of());
+        EmbeddingPersistenceStage stage = new EmbeddingPersistenceStage(
+            aiClientResolver,
+            embeddingSpacePolicy,
+            persistenceAdapter,
+            new ChunkingService(TestRuntimeSettings.from(properties())),
+            new ProcessingJsonCodec(new ObjectMapper())
+        );
+        DocumentUploadNode document = new DocumentUploadNode();
+        document.setId("doc-1");
+        document.setKnowledgeBaseId("kb-1");
+        document.setSha256("document-revision");
+        AiProfileNode profile = new AiProfileNode();
+        profile.setId("profile-1");
+        profile.setEmbeddingModel("embedding");
+        profile.setEmbeddingDimensions(3);
+        ChunkingContext context = ChunkingContext.create(
+            RecursiveTokenAwareChunkingStrategy.NAME,
+            RecursiveTokenAwareChunkingStrategy.REVISION,
+            100,
+            10,
+            200,
+            new Utf8ByteTokenEstimator(),
+            "text-v1",
+            "context-header-v1"
+        );
+        ChunkSlice parentSlice = hierarchySlice(context, "PARENT", "parent text");
+        String parentId = io.github.vfedoriv.graphrag.document.chunking.ChunkIdentity.parentId(
+            "document-revision", parentSlice
+        );
+        ChunkSlice childSlice = hierarchySlice(context, "CHILD", "child text");
+        PreparedChunk parent = new PreparedChunk(
+            "parent text", null, 11, 0, parentSlice, null, null, 1,
+            Map.of("processingRunId", "run-1", "representationRevision", "context-header-v1")
+        );
+        PreparedChunk child = new PreparedChunk(
+            "child text", "context child text", 10, 18, childSlice, parentId, 0, 0,
+            Map.of("processingRunId", "run-1", "representationRevision", "context-header-v1")
+        );
+
+        stage.execute(document, profile, List.of(parent, child));
+
+        assertThat(embeddedTexts.get()).containsExactly("context child text");
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<DocumentChunkNode>> chunksCaptor = ArgumentCaptor.forClass(List.class);
+        verify(persistenceAdapter).replace(
+            org.mockito.ArgumentMatchers.eq("doc-1"),
+            org.mockito.ArgumentMatchers.eq("kb-1"),
+            org.mockito.ArgumentMatchers.eq(space),
+            chunksCaptor.capture()
+        );
+        assertThat(chunksCaptor.getValue()).hasSize(2);
+        assertThat(chunksCaptor.getValue().getFirst()).satisfies(node -> {
+            assertThat(node.getKind()).isEqualTo("PARENT");
+            assertThat(node.getId()).isEqualTo(parentId);
+            assertThat(node.getEmbedding()).isNull();
+            assertThat(node.getEmbeddingSpaceId()).isNull();
+            assertThat(node.getChildCount()).isEqualTo(1);
+        });
+        assertThat(chunksCaptor.getValue().getLast()).satisfies(node -> {
+            assertThat(node.getKind()).isEqualTo("CHILD");
+            assertThat(node.getParentChunkId()).isEqualTo(parentId);
+            assertThat(node.getChildIndex()).isZero();
+            assertThat(node.getEmbedding()).hasSize(3);
+        });
+    }
+
+    private ChunkSlice hierarchySlice(ChunkingContext context, String kind, String text) {
+        return new ChunkSlice(
+            text,
+            0,
+            text.length(),
+            context.tokenEstimator().count(text),
+            context.strategyName(),
+            context.strategyRevision(),
+            context.tokenEstimator().tokenizerId(),
+            context.tokenEstimator().countMode(),
+            context.settingsHash(),
+            context.effectiveRevision(),
+            kind,
+            0,
+            0,
+            1,
+            1,
+            List.of("Section"),
+            "AUTHORITATIVE",
+            io.github.vfedoriv.graphrag.document.chunking.ChunkHashes.sha256(text),
+            Map.of()
+        );
+    }
+
     private AppProperties properties() {
         return new AppProperties(
             new AppProperties.Neo4j("neo4j"),

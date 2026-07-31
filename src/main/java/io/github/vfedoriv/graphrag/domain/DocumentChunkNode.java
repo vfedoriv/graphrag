@@ -14,6 +14,7 @@ public class DocumentChunkNode {
     private Long version;
     private String knowledgeBaseId;
     private String documentId;
+    private String processingRunId;
     private int chunkIndex;
     private String text;
     private int tokenEstimate;
@@ -31,6 +32,9 @@ public class DocumentChunkNode {
     private Integer sourceStart;
     private Integer sourceEnd;
     private String kind;
+    private String parentChunkId;
+    private Integer childIndex;
+    private int childCount;
     private int sectionIndex;
     private int sectionChunkIndex;
     private Integer pageStart;
@@ -67,6 +71,14 @@ public class DocumentChunkNode {
 
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
+    }
+
+    public String getProcessingRunId() {
+        return processingRunId;
+    }
+
+    public void setProcessingRunId(String processingRunId) {
+        this.processingRunId = processingRunId;
     }
 
     public int getChunkIndex() {
@@ -203,6 +215,30 @@ public class DocumentChunkNode {
 
     public void setKind(String kind) {
         this.kind = kind;
+    }
+
+    public String getParentChunkId() {
+        return parentChunkId;
+    }
+
+    public void setParentChunkId(String parentChunkId) {
+        this.parentChunkId = parentChunkId;
+    }
+
+    public Integer getChildIndex() {
+        return childIndex;
+    }
+
+    public void setChildIndex(Integer childIndex) {
+        this.childIndex = childIndex;
+    }
+
+    public int getChildCount() {
+        return childCount;
+    }
+
+    public void setChildCount(int childCount) {
+        this.childCount = childCount;
     }
 
     public int getSectionIndex() {

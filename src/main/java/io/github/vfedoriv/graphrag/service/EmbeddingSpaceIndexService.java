@@ -51,6 +51,7 @@ public class EmbeddingSpaceIndexService {
               knowledgeBaseId: $knowledgeBaseId,
               embeddingSpaceId: $embeddingSpaceId
             })
+            WHERE chunk.kind IS NULL OR chunk.kind = 'CHILD'
             SET chunk:%s
             """.formatted(labelName))
             .bind(chunkId).to("chunkId")

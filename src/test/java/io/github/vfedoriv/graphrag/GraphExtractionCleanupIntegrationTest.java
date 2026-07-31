@@ -33,6 +33,10 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @Import({TestcontainersConfiguration.class, GraphExtractionCleanupIntegrationTest.RetryFailureThenSuccessConfig.class})
 @IntegrationTest
+@TestPropertySource(properties = {
+    "app.chunking.parent-target-tokens=800",
+    "app.chunking.parent-hard-character-limit=4000"
+})
 class GraphExtractionCleanupIntegrationTest {
 
     @Autowired

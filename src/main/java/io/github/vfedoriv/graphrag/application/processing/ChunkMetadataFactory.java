@@ -48,6 +48,10 @@ public final class ChunkMetadataFactory {
         if (section.pageNumber() != null) {
             metadata.put("pageNumber", section.pageNumber());
         }
+        if (slice.pageStart() != null) {
+            metadata.put("pageStart", slice.pageStart());
+            metadata.put("pageEnd", slice.pageEnd());
+        }
         if (section.pageCount() != null) {
             metadata.put("pageCount", section.pageCount());
         }
