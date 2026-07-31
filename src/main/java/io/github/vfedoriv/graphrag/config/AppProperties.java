@@ -92,13 +92,6 @@ public record AppProperties(
         @Min(1) int timeoutSeconds,
         boolean requireLimit,
         @NotEmpty List<@NotBlank String> blockedKeywords,
-        @Min(1) int hybridSearchDefaultTopK,
-        @Min(1) int hybridSearchMaxTopK,
-        @Min(1) int hybridSearchCandidateMultiplier,
-        @Min(1) int hybridSearchMaxCandidates,
-        @Min(0) int hybridSearchDefaultGraphDepth,
-        @Min(0) int hybridSearchMaxGraphDepth,
-        boolean hybridSearchIncludeChunkText,
         Boolean parentContextExpansionEnabled,
         @Min(1) int parentContextMaxTokens,
         @Min(1) int parentContextMaxParents,
@@ -108,21 +101,6 @@ public record AppProperties(
     ) {
         @ConstructorBinding
         public Query {
-            if (hybridSearchDefaultTopK == 0) {
-                hybridSearchDefaultTopK = 10;
-            }
-            if (hybridSearchMaxTopK == 0) {
-                hybridSearchMaxTopK = 50;
-            }
-            if (hybridSearchCandidateMultiplier == 0) {
-                hybridSearchCandidateMultiplier = 4;
-            }
-            if (hybridSearchMaxCandidates == 0) {
-                hybridSearchMaxCandidates = 200;
-            }
-            if (hybridSearchMaxGraphDepth == 0 && hybridSearchDefaultGraphDepth > 0) {
-                hybridSearchMaxGraphDepth = hybridSearchDefaultGraphDepth;
-            }
             if (parentContextExpansionEnabled == null) {
                 parentContextExpansionEnabled = true;
             }
@@ -147,27 +125,13 @@ public record AppProperties(
             int maxRows,
             int timeoutSeconds,
             boolean requireLimit,
-            List<String> blockedKeywords,
-            int hybridSearchDefaultTopK,
-            int hybridSearchMaxTopK,
-            int hybridSearchCandidateMultiplier,
-            int hybridSearchMaxCandidates,
-            int hybridSearchDefaultGraphDepth,
-            int hybridSearchMaxGraphDepth,
-            boolean hybridSearchIncludeChunkText
+            List<String> blockedKeywords
         ) {
             this(
                 maxRows,
                 timeoutSeconds,
                 requireLimit,
                 blockedKeywords,
-                hybridSearchDefaultTopK,
-                hybridSearchMaxTopK,
-                hybridSearchCandidateMultiplier,
-                hybridSearchMaxCandidates,
-                hybridSearchDefaultGraphDepth,
-                hybridSearchMaxGraphDepth,
-                hybridSearchIncludeChunkText,
                 true,
                 4096,
                 8,

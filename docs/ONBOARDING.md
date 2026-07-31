@@ -146,7 +146,7 @@ Start with:
 
 ### Chunking and Embeddings
 
-Processing reads the stored binary, parses text, chunks it with configured max character and overlap settings, embeds each chunk, saves `DocumentChunk` nodes, and creates `DocumentUpload -[:HAS_CHUNK]-> DocumentChunk` relationships. The vector index exists on `DocumentChunk.embedding`, but the current query API does not automatically perform vector retrieval.
+Processing reads the stored binary, parses text, chunks it with configured token/character and overlap settings, embeds each child chunk, saves `DocumentChunk` nodes, and creates `DocumentUpload -[:HAS_CHUNK]-> DocumentChunk` relationships. Advanced search uses knowledge-base-scoped vector and lexical indexes over those child chunks.
 
 Start with:
 
@@ -157,7 +157,7 @@ Start with:
 
 ### Graph Extraction and Provenance
 
-Each persisted chunk is passed to graph extraction. Extracted nodes and relationships carry provenance fields such as source document and source chunk IDs, and chunks are linked to extracted entities through `MENTIONS`.
+Persisted extraction parents are passed to graph extraction. Canonical nodes and relationships resolve through `GraphExtractionEvidence`, which records knowledge-base, source-document, source-chunk, processing-run, revision, and bounded source-range provenance.
 
 Start with:
 
@@ -168,18 +168,22 @@ Start with:
 
 ### Query Flow
 
-The query API has four surfaces:
+The query API has five surfaces:
 
 - Generate Cypher from a prompt.
 - Validate submitted Cypher.
 - Execute validated Cypher.
 - Ask, which combines generate, validate, and execute.
+- Durable advanced search, which supports submission, polling, result retrieval, cancellation, cited answers, and partial branch-failure results.
 
 The service only executes validator-approved Cypher. Generated Cypher is not trusted by default.
 
 Start with:
 
 - `QueryController.java`
+- `AdvancedSearchRunController.java`
+- `AdvancedSearchRunService.java`
+- `DefaultAdvancedSearchRunProcessor.java`
 - `CypherGenerationService.java`
 - `CypherValidationService.java`
 - `CypherExecutionService.java`

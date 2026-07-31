@@ -76,7 +76,7 @@ class LocalFilesystemBinaryStorageServiceTest {
             new AppProperties.Model("http://localhost", "k", "m1", 10, "m2"),
             new AppProperties.Storage(documentsRoot),
             new AppProperties.Chunking(1, 0, 1),
-            new AppProperties.Query(1, 1, true, java.util.List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
+            new AppProperties.Query(1, 1, true, java.util.List.of("CREATE")),
             new AppProperties.Extraction(1, 1, 0)
         );
     }

@@ -107,7 +107,9 @@ public class AdvancedSearchRunService {
                 run.setId(UUID.randomUUID().toString()); run.setKnowledgeBaseId(knowledgeBaseId); run.setQueryText(query);
                 run.setStatus(AdvancedSearchRunStatus.QUEUED); run.setStage(AdvancedSearchRunStage.QUEUED);
                 run.setRequestedEvidence(maximumEvidence);
-                run.setIncludeEvidenceText(Boolean.TRUE.equals(request.includeEvidenceText()));
+                run.setIncludeEvidenceText(request.includeEvidenceText() == null
+                    ? settings.defaultIncludeEvidenceText()
+                    : request.includeEvidenceText());
                 run.setSettingsSnapshotJson(snapshot(settings)); run.setCompletedBranches(0); run.setTotalBranches(3);
                 run.setActiveAiProfileId(knowledgeBase.getActiveAiProfileId());
                 snapshotSchema(run, knowledgeBase);

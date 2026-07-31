@@ -258,7 +258,7 @@ class EmbeddingPersistenceStageTest {
             new AppProperties.Model("https://api.openai.com/v1", "", "embedding", 3, "chat"),
             new AppProperties.Storage(Path.of("var/documents")),
             new AppProperties.Chunking(800, 2, 10),
-            new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
+            new AppProperties.Query(200, 15, true, List.of("CREATE")),
             new AppProperties.Extraction(40, 80, 2)
         );
     }

@@ -29,7 +29,7 @@ class ChunkingServiceTest {
             new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 3, "gpt-5-mini"),
             new AppProperties.Storage(Path.of("var/documents")),
             new AppProperties.Chunking(800, overlap, maxChars),
-            new AppProperties.Query(200, 15, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, true),
+            new AppProperties.Query(200, 15, true, List.of("CREATE")),
             new AppProperties.Extraction(40, 80, 2)
         );
     }

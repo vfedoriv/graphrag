@@ -167,7 +167,6 @@ class DocumentUploadIntegrationTest {
                 sourceDocumentId: $documentId,
                 extractionRunId: $runId
             })
-            CREATE (chunk)-[:MENTIONS]->(contract)
             CREATE (contract)-[:HAS_PARTY {
                 id: 'relationship:' + $contractId + ':' + $partyId,
                 sourceDocumentId: $documentId,

@@ -1,12 +1,9 @@
 package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
-import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.dto.QueryExecuteRequest;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
-import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
-import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
 import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidateRequest;
 import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
@@ -14,7 +11,6 @@ import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.service.CypherValidationService;
-import io.github.vfedoriv.graphrag.service.HybridSearchService;
 import io.github.vfedoriv.graphrag.service.QueryAskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -42,32 +37,17 @@ public class QueryController {
     private final CypherValidationService cypherValidationService;
     private final CypherExecutionService cypherExecutionService;
     private final QueryAskService queryAskService;
-    private final HybridSearchService hybridSearchService;
 
-    @Autowired
     public QueryController(
         CypherGenerationService cypherGenerationService,
         CypherValidationService cypherValidationService,
         CypherExecutionService cypherExecutionService,
-        QueryAskService queryAskService,
-        HybridSearchService hybridSearchService
+        QueryAskService queryAskService
     ) {
         this.cypherGenerationService = cypherGenerationService;
         this.cypherValidationService = cypherValidationService;
         this.cypherExecutionService = cypherExecutionService;
         this.queryAskService = queryAskService;
-        this.hybridSearchService = hybridSearchService;
-    }
-
-    public QueryController(
-        AppProperties ignored,
-        CypherGenerationService cypherGenerationService,
-        CypherValidationService cypherValidationService,
-        CypherExecutionService cypherExecutionService,
-        QueryAskService queryAskService,
-        HybridSearchService hybridSearchService
-    ) {
-        this(cypherGenerationService, cypherValidationService, cypherExecutionService, queryAskService, hybridSearchService);
     }
 
     @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/generate")
@@ -231,50 +211,4 @@ public class QueryController {
         return queryAskService.ask(knowledgeBaseId, request.prompt());
     }
 
-    @PostMapping("/knowledge-bases/{knowledgeBaseId}/queries/hybrid-search")
-    @Operation(summary = "Hybrid search", description = "Embeds a search query, retrieves ranked document chunks, and expands graph context.")
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "Hybrid search results returned",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = HybridSearchResponse.class)
-            )
-        ),
-        @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema()))
-    })
-    public HybridSearchResponse hybridSearch(
-        @Parameter(description = "Knowledge base identifier") @PathVariable String knowledgeBaseId,
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "Natural language search text and retrieval bounds.",
-            required = true,
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = HybridSearchRequest.class),
-                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                    value = "{\"query\":\"Acme renewal terms\",\"topK\":10,\"graphDepth\":1,\"includeChunkText\":true}"
-                )
-            )
-        )
-        @Valid @RequestBody HybridSearchRequest request
-    ) {
-        log.info(
-            "Hybrid search request: knowledgeBaseId={}, queryLength={}, queryFingerprint={}, topK={}, graphDepth={}, includeChunkText={}",
-            knowledgeBaseId,
-            LogMetadata.length(request.query()),
-            LogMetadata.fingerprint(request.query()),
-            request.topK(),
-            request.graphDepth(),
-            request.includeChunkText()
-        );
-        HybridSearchResponse response = hybridSearchService.search(knowledgeBaseId, request);
-        log.info(
-            "Hybrid search completed: knowledgeBaseId={}, hitCount={}, executionTimeMs={}",
-            knowledgeBaseId,
-            response.hitCount(),
-            response.executionTimeMs()
-        );
-        return response;
-    }
 }

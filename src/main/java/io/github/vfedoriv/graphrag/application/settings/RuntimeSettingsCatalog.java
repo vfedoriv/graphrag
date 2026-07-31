@@ -40,13 +40,6 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.query.timeout-seconds", "query", appProperties.query().timeoutSeconds(), 1);
         addBool(map, "app.query.require-limit", "query", appProperties.query().requireLimit());
         addStringList(map, "app.query.blocked-keywords", "query", appProperties.query().blockedKeywords());
-        addInt(map, "app.query.hybrid-search-default-top-k", "query", appProperties.query().hybridSearchDefaultTopK(), 1);
-        addInt(map, "app.query.hybrid-search-max-top-k", "query", appProperties.query().hybridSearchMaxTopK(), 1);
-        addInt(map, "app.query.hybrid-search-candidate-multiplier", "query", appProperties.query().hybridSearchCandidateMultiplier(), 1);
-        addInt(map, "app.query.hybrid-search-max-candidates", "query", appProperties.query().hybridSearchMaxCandidates(), 1);
-        addInt(map, "app.query.hybrid-search-default-graph-depth", "query", appProperties.query().hybridSearchDefaultGraphDepth(), 0);
-        addInt(map, "app.query.hybrid-search-max-graph-depth", "query", appProperties.query().hybridSearchMaxGraphDepth(), 0);
-        addBool(map, "app.query.hybrid-search-include-chunk-text", "query", appProperties.query().hybridSearchIncludeChunkText());
         addBool(map, "app.query.parent-context-expansion-enabled", "query",
             appProperties.query().effectiveParentContextExpansionEnabled());
         addInt(map, "app.query.parent-context-max-tokens", "query",
@@ -166,6 +159,8 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.schema-discovery.request-timeout-seconds", "schema-discovery", envInt("app.schema-discovery.request-timeout-seconds", 180), 1);
         addInt(map, "app.advanced-search.deadline-seconds", "advanced-search", envInt("app.advanced-search.deadline-seconds", 60), 1);
         addInt(map, "app.advanced-search.default-evidence", "advanced-search", envInt("app.advanced-search.default-evidence", 10), 1);
+        addBool(map, "app.advanced-search.default-include-evidence-text", "advanced-search",
+            envBool("app.advanced-search.default-include-evidence-text", false));
         addInt(map, "app.advanced-search.max-evidence", "advanced-search", envInt("app.advanced-search.max-evidence", 20), 1);
         addInt(map, "app.advanced-search.candidate-limit", "advanced-search", envInt("app.advanced-search.candidate-limit", 60), 1);
         addInt(map, "app.advanced-search.max-candidates", "advanced-search", envInt("app.advanced-search.max-candidates", 200), 1);
@@ -355,6 +350,10 @@ public final class RuntimeSettingsCatalog {
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException("Runtime setting " + key + " must be an integer", exception);
         }
+    }
+
+    private boolean envBool(String key, boolean defaultValue) {
+        return Boolean.parseBoolean(envOrDefault(key, Boolean.toString(defaultValue)));
     }
 
     private String label(String key) {

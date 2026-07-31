@@ -34,8 +34,7 @@ class GraphPlanValidationServiceTest {
         activeSchemaResolver = mock(ActiveSchemaResolver.class);
         runtimeSettingsService = mock(RuntimeSettingsService.class);
         RuntimeSettingsService.QuerySettings querySettings = new RuntimeSettingsService.QuerySettings(
-            10, 5, true, List.of("CREATE"), 10, 50, 4, 200, 1, 2, false,
-            true, 4096, 8, 20, 2, 1
+            10, 5, true, List.of("CREATE"), true, 4096, 8, 20, 2, 1
         );
         when(runtimeSettingsService.query()).thenReturn(querySettings);
         when(activeSchemaResolver.resolve("kb-1"))

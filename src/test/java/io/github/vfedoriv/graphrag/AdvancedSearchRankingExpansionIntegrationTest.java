@@ -53,8 +53,6 @@ class AdvancedSearchRankingExpansionIntegrationTest {
             })
             CREATE (parent)-[:HAS_GRAPH_EVIDENCE]->(evidence)
             CREATE (evidence)-[:ASSERTS_NODE]->(fact)
-            CREATE (legacy:LegacyEntity {id: 'legacy-1'})
-            CREATE (child)-[:MENTIONS]->(legacy)
 
             CREATE (missing:DocumentChunk {
               id: 'child-missing-parent', kind: 'CHILD', knowledgeBaseId: 'kb-1', documentId: 'doc-2', chunkIndex: 5,
@@ -87,8 +85,6 @@ class AdvancedSearchRankingExpansionIntegrationTest {
                 assertThat(citation.pageEnd()).isEqualTo(3);
             });
         });
-        assertThat(result.candidates().getFirst().graphFacts())
-            .noneSatisfy(fact -> assertThat(fact.canonicalFactId()).isEqualTo("legacy-1"));
     }
 
     @Test

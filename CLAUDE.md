@@ -66,7 +66,7 @@ REST Controllers → Services → repository ports → PostgreSQL adapters / gra
 
 All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `ProblemDetail`.
 
-### Four Main Controllers
+### Main Controllers
 
 | Controller | Responsibility |
 |---|---|
@@ -74,6 +74,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, list, replace, delete, chunk retrieval, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
+| `AdvancedSearchRunController` | Submit, list, poll, retrieve, and cancel durable advanced-search runs |
 | `RuntimeSettingsController` | List, update, and clear allowlisted runtime setting overrides |
 | `AiProfileController` | CRUD for OpenAI-compatible AI profiles with write-only API keys |
 
@@ -89,6 +90,8 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 - **`CypherGenerationService`** — LLM prompt-to-Cypher using active schema as context.
 - **`CypherValidationService`** — multi-stage safety: blocked keywords → schema label/rel/property check → Neo4j `EXPLAIN` → auto-inject `LIMIT`.
 - **`CypherExecutionService`** — read-only Cypher execution.
+- **`AdvancedSearchRunService`** — durable run admission, ownership, polling, cancellation, retention, and result publication.
+- **`DefaultAdvancedSearchRunProcessor`** — planned multi-branch retrieval, fusion, expansion, reranking, cited answering, and partial-result handling.
 - **`SchemaBootstrapService`** — loads `src/main/resources/schemas/*.json` on startup.
 - **`AiObservationService`** — AI workflow spans, model call metrics, token counters, and privacy-controlled content metadata.
 - **`RuntimeSettingsService`** — persisted allowlisted runtime setting overrides, restart lifecycle metadata, live logging control, expanded configuration catalog, and typed live accessors.
@@ -113,13 +116,16 @@ Upload → SHA-256 dedup → Filesystem storage
 
 ```
 Question → LLM Cypher generation → Multi-stage validation → Read-only execution → Return rows
+
+Advanced query → Durable run → Dense + lexical + metadata + typed graph retrieval
+  → Fusion + expansion + reranking → Citation-validated answer → Completed or partial result
 ```
 
 ### LLM Client Interfaces
 
 `EmbeddingClient`, `CypherGenerationClient`, and `GraphExtractionClient` are interfaces. Real implementations are Spring beans swapped by profile. Tests inject deterministic mock implementations — the full E2E flow runs without any external API calls.
 
-AI profiles are also resolved at runtime per knowledge base. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, and knowledge-base-scoped schema generation use the active knowledge-base profile. Profile API keys are write-only: reads expose configured/masked metadata only. Profiles may declare `cl100k_base`; known OpenAI embedding models resolve to it automatically and unknown models use the versioned conservative `utf8-byte-v1` estimator.
+AI profiles are also resolved at runtime per knowledge base. Document processing, graph extraction, Cypher generation, `/ask`, advanced search, and knowledge-base-scoped schema generation use the active knowledge-base profile. Profile API keys are write-only: reads expose configured/masked metadata only. Profiles may declare `cl100k_base`; known OpenAI embedding models resolve to it automatically and unknown models use the versioned conservative `utf8-byte-v1` estimator.
 
 ## Spring Profiles
 
@@ -130,7 +136,7 @@ AI profiles are also resolved at runtime per knowledge base. Document processing
 | `lm_studio` | OpenAI-compatible; requires `LM_STUDIO_API_KEY=lm-studio` |
 | `langfuse` | Enables AI observability and exports OTLP traces to local Langfuse defaults |
 
-Startup model properties under `app.model.*` seed the PostgreSQL-backed default AI profile when no default profile exists. New knowledge bases are assigned that default profile. Runtime setting overrides are persisted in PostgreSQL and may change allowlisted query, hybrid search, chunking, extraction, AI observability, and root logging behavior without restart. Canonical chunking settings are strategy, target tokens, overlap tokens, and a hard character limit; legacy max-token/max-character aliases remain readable with canonical precedence. Updates affect subsequent processing only, while runs and chunks retain versioned strategy/settings/tokenizer provenance.
+Startup model properties under `app.model.*` seed the PostgreSQL-backed default AI profile when no default profile exists. New knowledge bases are assigned that default profile. Runtime setting overrides are persisted in PostgreSQL and may change allowlisted query, advanced-search, chunking, extraction, AI observability, and root logging behavior without restart. Startup idempotently migrates exact legacy hybrid equivalents (`max-candidates` and the default evidence-text flag), keeps explicit advanced overrides authoritative, and retires every legacy hybrid key. Canonical chunking settings are strategy, target tokens, overlap tokens, and a hard character limit; legacy max-token/max-character aliases remain readable with canonical precedence. Updates affect subsequent processing only, while runs and chunks retain versioned strategy/settings/tokenizer provenance.
 
 Runtime settings use `mutable=true` to mean editable through the settings API; `liveApplied`, `updateMode`, `activeValue`, and `lifecycleState` describe whether the saved value applies immediately or after restart. Supported non-secret restart-required settings such as `app.storage.documents-root` may be persisted as desired values and reported as `pending-restart` until the backend restarts with that value active. The runtime settings list also exposes profile-resolved startup defaults for read-only, restart-required, profile-managed, and sensitive-read-only configuration inventory. Covered groups include application identity, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, PostgreSQL datasource/schema/pool metadata, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Settings consumed before PostgreSQL-backed overrides can load remain deployment-managed unless a safe runtime reassignment path exists; PostgreSQL and Neo4j connectivity, credentials, database/schema selection, and pool metadata stay deployment-managed through environment variables, Docker Compose, or equivalent configuration. AI provider behavior changes go through AI profile management, not raw `app.model.*` or `spring.ai.openai.*` updates. API keys, datasource/Neo4j passwords, and OTLP authorization headers are masked in read responses.
 

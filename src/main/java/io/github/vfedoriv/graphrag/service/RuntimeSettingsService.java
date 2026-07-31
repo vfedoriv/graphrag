@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.Environment;
@@ -40,7 +41,22 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
 @Service
+@Slf4j
 public class RuntimeSettingsService {
+
+    private static final Map<String, String> LEGACY_HYBRID_EQUIVALENTS = Map.of(
+        "app.query.hybrid-search-max-candidates", "app.advanced-search.max-candidates",
+        "app.query.hybrid-search-include-chunk-text", "app.advanced-search.default-include-evidence-text"
+    );
+    private static final Set<String> LEGACY_HYBRID_SETTINGS = Set.of(
+        "app.query.hybrid-search-default-top-k",
+        "app.query.hybrid-search-max-top-k",
+        "app.query.hybrid-search-candidate-multiplier",
+        "app.query.hybrid-search-max-candidates",
+        "app.query.hybrid-search-default-graph-depth",
+        "app.query.hybrid-search-max-graph-depth",
+        "app.query.hybrid-search-include-chunk-text"
+    );
 
     private final RuntimeSettingOverrideStore overrideStore;
     private final Map<String, RuntimeSettingDefinition> definitions;
@@ -172,13 +188,6 @@ public class RuntimeSettingsService {
             integer("app.query.timeout-seconds"),
             bool("app.query.require-limit"),
             stringList("app.query.blocked-keywords"),
-            integer("app.query.hybrid-search-default-top-k"),
-            integer("app.query.hybrid-search-max-top-k"),
-            integer("app.query.hybrid-search-candidate-multiplier"),
-            integer("app.query.hybrid-search-max-candidates"),
-            integer("app.query.hybrid-search-default-graph-depth"),
-            integer("app.query.hybrid-search-max-graph-depth"),
-            bool("app.query.hybrid-search-include-chunk-text"),
             bool("app.query.parent-context-expansion-enabled"),
             integer("app.query.parent-context-max-tokens"),
             integer("app.query.parent-context-max-parents"),
@@ -306,6 +315,7 @@ public class RuntimeSettingsService {
         AdvancedSearchSettings settings = new AdvancedSearchSettings(
             Duration.ofSeconds(integer("app.advanced-search.deadline-seconds")),
             integer("app.advanced-search.default-evidence"),
+            bool("app.advanced-search.default-include-evidence-text"),
             integer("app.advanced-search.max-evidence"),
             integer("app.advanced-search.candidate-limit"),
             integer("app.advanced-search.max-candidates"),
@@ -380,7 +390,36 @@ public class RuntimeSettingsService {
 
     @PostConstruct
     void loadPersistedRestartRequiredOverrides() {
+        migrateLegacyHybridOverrides();
         ensureRestartRequiredOverridesLoaded();
+    }
+
+    void migrateLegacyHybridOverrides() {
+        if (!overrideStore.configured()) {
+            return;
+        }
+        int migrated = 0;
+        int retired = 0;
+        for (String legacyKey : LEGACY_HYBRID_SETTINGS) {
+            RuntimeSettingOverrideNode legacy = overrideStore.find(legacyKey).orElse(null);
+            if (legacy == null) {
+                continue;
+            }
+            String advancedKey = LEGACY_HYBRID_EQUIVALENTS.get(legacyKey);
+            if (advancedKey != null && overrideStore.find(advancedKey).isEmpty()) {
+                RuntimeSettingOverrideNode advanced = overrideStore.getOrCreate(advancedKey);
+                advanced.setValue(legacy.getValue());
+                advanced.setLifecycleState("active");
+                advanced.setUpdatedAt(Instant.now());
+                overrideStore.save(advanced);
+                migrated++;
+            }
+            overrideStore.delete(legacyKey);
+            retired++;
+        }
+        if (retired > 0) {
+            log.info("Legacy hybrid runtime settings retired: retiredCount={}, migratedCount={}", retired, migrated);
+        }
     }
 
     private void ensureRestartRequiredOverridesLoaded() {
@@ -662,13 +701,6 @@ public class RuntimeSettingsService {
         int timeoutSeconds,
         boolean requireLimit,
         List<String> blockedKeywords,
-        int hybridSearchDefaultTopK,
-        int hybridSearchMaxTopK,
-        int hybridSearchCandidateMultiplier,
-        int hybridSearchMaxCandidates,
-        int hybridSearchDefaultGraphDepth,
-        int hybridSearchMaxGraphDepth,
-        boolean hybridSearchIncludeChunkText,
         boolean parentContextExpansionEnabled,
         int parentContextMaxTokens,
         int parentContextMaxParents,
@@ -730,6 +762,7 @@ public class RuntimeSettingsService {
     public record AdvancedSearchSettings(
         Duration deadline,
         int defaultEvidence,
+        boolean defaultIncludeEvidenceText,
         int maxEvidence,
         int candidateLimit,
         int maxCandidates,

@@ -54,8 +54,7 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".graph.GraphWriteService",
             BASE_PACKAGE + ".config.PersistenceConfiguration",
             BASE_PACKAGE + ".service.EmbeddingSpaceIndexService",
-            BASE_PACKAGE + ".service.GraphArtifactCleanupService",
-            BASE_PACKAGE + ".service.HybridSearchService"
+            BASE_PACKAGE + ".service.GraphArtifactCleanupService"
     );
     private static final Set<String> FROZEN_LEGACY_TRANSACTIONAL_SELF_INVOCATION_EXCEPTIONS = Set.of(
             BASE_PACKAGE + ".service.AiProfileService",

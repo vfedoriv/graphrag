@@ -58,11 +58,12 @@ Out of scope (current implementation):
   - read-only and schema-aware Cypher validation (`EXPLAIN`),
   - blocked keyword checks,
   - optional `LIMIT` injection,
-  - embedding-based chunk retrieval with bounded graph context,
+  - durable advanced search with dense, lexical, metadata, and schema-constrained graph retrieval,
+  - fused/reranked evidence, citation-validated answers, partial results, deadlines, and cancellation,
   - execution endpoint,
   - combined `/ask` endpoint.
 - Runtime AI configuration:
-  - PostgreSQL-persisted runtime setting overrides for allowlisted query, hybrid search, chunking, extraction, and AI observability settings,
+  - PostgreSQL-persisted runtime setting overrides for allowlisted query, advanced search, chunking, extraction, and AI observability settings,
   - PostgreSQL-persisted OpenAI-compatible AI profiles with write-only API keys,
   - default AI profile seeding from `app.model.*`,
   - per-knowledge-base active AI profile selection with embedding compatibility checks.
@@ -243,9 +244,9 @@ Domain-specific nodes/relationships are dynamic and schema-driven. Extracted gra
 
 On startup, the application seeds a default AI profile from `app.model.*` when no default exists. New knowledge bases are assigned that default profile. Profile API keys are write-only: create/update requests may supply or clear the secret, but read responses expose only configured/masked metadata. Profiles may also set a non-secret `tokenizerId`; `cl100k_base` is the supported explicit value. If it is omitted, `text-embedding-ada-002`, `text-embedding-3-small`, and `text-embedding-3-large` resolve to `cl100k_base`, while unknown models use the conservative, versioned `utf8-byte-v1` estimator.
 
-Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, hybrid search, knowledge-base-scoped schema generation, and multi-source schema discovery resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
+Runtime profile selection is knowledge-base scoped. Document processing, graph extraction, Cypher generation, `/ask`, advanced search, knowledge-base-scoped schema generation, and multi-source schema discovery resolve the active AI profile and create Spring AI OpenAI-compatible chat/embedding clients at runtime. Runtime clients are cached by profile id and revision, then invalidated after profile changes.
 
-Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, hybrid search bounds, chunking limits, extraction limits/retries, schema-discovery source/size/chunk/concurrency/timeout limits, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Chunking updates are validated atomically and apply only to subsequent processing; existing chunks and in-flight attempts retain their snapshotted revisions. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
+Persisted runtime settings override selected startup properties. `mutable=true` means the settings API accepts validated updates or clears; `liveApplied` and `updateMode` describe when the value affects the running process. Live mutable settings cover query limits and validation, advanced-search bounds, chunking limits, extraction limits/retries, schema-discovery source/size/chunk/concurrency/timeout limits, AI observability privacy/tag settings, and `logging.level.root`, which is applied through Spring Boot logging. Chunking updates are validated atomically and apply only to subsequent processing; existing chunks and in-flight attempts retain their snapshotted revisions. Selected non-secret restart-required settings, such as the document storage root, can be saved as desired values for the next backend restart.
 
 The active default remains `fixed-character`. Each processing attempt snapshots the strategy and strategy revision, canonical settings hash, tokenizer/estimator identity and revision, exact-versus-conservative count mode, and effective chunker revision. New chunks also retain this provenance plus reliable source offsets. Exact `cl100k_base` counting is implemented through a project-owned adapter over JTokkit; LangChain4j provider types do not leak into application or persistence contracts.
 
@@ -305,13 +306,13 @@ Key app properties:
   - `app.query.timeout-seconds=15`
   - `app.query.require-limit=true`
   - `app.query.blocked-keywords=CREATE,MERGE,SET,DELETE,DETACH,REMOVE,DROP,LOAD CSV,CALL`
-  - `app.query.hybrid-search-default-top-k=10`
-  - `app.query.hybrid-search-max-top-k=50`
-  - `app.query.hybrid-search-candidate-multiplier=4`
-  - `app.query.hybrid-search-max-candidates=200`
-  - `app.query.hybrid-search-default-graph-depth=1`
-  - `app.query.hybrid-search-max-graph-depth=2`
-  - `app.query.hybrid-search-include-chunk-text=true`
+- Advanced search:
+  - `app.advanced-search.default-evidence=10`
+  - `app.advanced-search.default-include-evidence-text=false`
+  - `app.advanced-search.max-evidence=20`
+  - `app.advanced-search.candidate-limit=60`
+  - `app.advanced-search.max-candidates=200`
+  - `app.advanced-search.deadline-seconds=60`
 - Extraction:
   - `app.extraction.max-entities-per-chunk=100`
   - `app.extraction.max-relationships-per-chunk=200`
@@ -596,7 +597,10 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/execute`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
-- `POST /knowledge-bases/{knowledgeBaseId}/queries/hybrid-search`
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/result`
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/cancel`
 
 ## Request Contracts (Core)
 
@@ -643,9 +647,15 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - body: `{"cypher":"...", "parameters":{...}}`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
   - body: `{"prompt":"..."}`
-- `POST /knowledge-bases/{knowledgeBaseId}/queries/hybrid-search`
-  - body: `{"query":"pump maintenance","topK":10,"graphDepth":1,"includeChunkText":true}`
-  - returns ranked chunk hits with source document metadata and bounded graph context (`entities`, `relationships`)
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
+  - body: `{"query":"pump maintenance","maximumEvidence":10,"includeEvidenceText":true}`
+  - returns `202 Accepted` with durable status, result, and cancellation links
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}`
+  - poll until `status` is `COMPLETED`, `PARTIAL`, `FAILED`, `CANCELLED`, or `INTERRUPTED`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/result`
+  - returns the structured answer, ranked evidence, context-only parents, graph facts, citations, and per-branch diagnostics
+- `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/cancel`
+  - requests cancellation idempotently
 
 ## Minimal End-to-End Flow
 
@@ -701,6 +711,22 @@ curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/ask" 
   -d '{"prompt":"What obligations does the supplier have?"}'
 ```
 
+7. Submit and manage a durable advanced-search run:
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"When does the agreement renew?","maximumEvidence":10,"includeEvidenceText":true}'
+
+curl "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs/<runId>"
+
+curl "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs/<runId>/result"
+
+curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs/<runId>/cancel"
+```
+
+A completed or partial result keeps citations referentially linked: each answer claim lists `citationIds` such as `E1`, and the matching `evidence` entry contains its document/chunk identity and source range. `PARTIAL` means useful evidence and an answer were retained even though an optional branch failed; inspect `failureCategory`, answer limitations, and `result.diagnostics.attempts` for the degraded branch.
+
 ## Processing Flow
 
 Document ingestion:
@@ -719,8 +745,8 @@ Document ingestion:
 Query flow:
 
 1. `/queries/generate`, `/queries/validate`, `/queries/execute`, and `/queries/ask` use the active schema to generate and validate read-only Cypher before execution.
-2. `/queries/hybrid-search` embeds the query text, searches the existing `document_chunk_embedding` vector index, filters hits to the requested knowledge base, and expands bounded `MENTIONS` graph context.
-3. Hybrid search returns evidence-first results ordered by vector score, with optional chunk text and source document metadata.
+2. `/queries/advanced-search-runs` queues a durable run that performs knowledge-base-scoped dense, lexical, metadata, and typed graph retrieval under a deadline.
+3. The run fuses and reranks evidence, validates answer citations, and publishes a `PARTIAL` result when optional retrieval branches fail after useful evidence is produced.
 
 ## Schema Draft Evaluation, Publication, and Reprocessing
 

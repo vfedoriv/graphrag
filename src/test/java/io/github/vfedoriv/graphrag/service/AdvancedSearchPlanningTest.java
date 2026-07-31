@@ -244,7 +244,7 @@ class AdvancedSearchPlanningTest {
 
     private AdvancedSearchSettings settings() {
         return new AdvancedSearchSettings(
-            Duration.ofSeconds(60), 10, 20, 60, 200, 20, 10, 20, 4000, 8000,
+            Duration.ofSeconds(60), 10, false, 20, 60, 200, 20, 10, 20, 4000, 8000,
             3, 8, 2, 1000, 10, 1200, 2,
             Duration.ofSeconds(5), Duration.ofSeconds(10), Duration.ofHours(24), 100
         );

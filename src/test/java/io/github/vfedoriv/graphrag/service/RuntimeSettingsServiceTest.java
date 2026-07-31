@@ -531,6 +531,7 @@ class RuntimeSettingsServiceTest {
 
         assertThat(settings.deadline()).isEqualTo(java.time.Duration.ofSeconds(30));
         assertThat(settings.defaultEvidence()).isEqualTo(8);
+        assertThat(settings.defaultIncludeEvidenceText()).isFalse();
         assertThat(settings.maxEvidence()).isEqualTo(20);
         assertThat(settings.planningMaxSubqueries()).isEqualTo(3);
         assertThat(settings.followUpMaxQueries()).isEqualTo(2);
@@ -551,6 +552,35 @@ class RuntimeSettingsServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("reserves");
         assertThat(store.get("app.advanced-search.deadline-seconds").getValue()).isEqualTo("30");
+    }
+
+    @Test
+    void legacyHybridOverridesMigrateIdempotentlyWithAdvancedPrecedence() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        store.put("app.query.hybrid-search-max-candidates",
+            override("app.query.hybrid-search-max-candidates", "75"));
+        store.put("app.query.hybrid-search-include-chunk-text",
+            override("app.query.hybrid-search-include-chunk-text", "true"));
+        store.put("app.query.hybrid-search-candidate-multiplier",
+            override("app.query.hybrid-search-candidate-multiplier", "7"));
+        store.put("app.query.hybrid-search-default-graph-depth",
+            override("app.query.hybrid-search-default-graph-depth", "2"));
+        store.put("app.advanced-search.max-candidates",
+            override("app.advanced-search.max-candidates", "90"));
+        RuntimeSettingsService service = service(store);
+
+        service.migrateLegacyHybridOverrides();
+        service.migrateLegacyHybridOverrides();
+
+        assertThat(store).doesNotContainKeys(
+            "app.query.hybrid-search-max-candidates",
+            "app.query.hybrid-search-include-chunk-text",
+            "app.query.hybrid-search-candidate-multiplier",
+            "app.query.hybrid-search-default-graph-depth"
+        );
+        assertThat(store.get("app.advanced-search.max-candidates").getValue()).isEqualTo("90");
+        assertThat(store.get("app.advanced-search.default-include-evidence-text").getValue()).isEqualTo("true");
+        assertThat(service.advancedSearch().defaultIncludeEvidenceText()).isTrue();
     }
 
     private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store) {
@@ -653,7 +683,7 @@ class RuntimeSettingsServiceTest {
             new AppProperties.Model("https://api.openai.com/v1", "secret", "text-embedding-3-small", 1536, "gpt-5-mini"),
             new AppProperties.Storage(Path.of(documentsRoot)),
             new AppProperties.Chunking(800, 80, 4000),
-            new AppProperties.Query(200, 15, true, List.of("CREATE", "DELETE"), 10, 50, 4, 200, 1, 2, true),
+            new AppProperties.Query(200, 15, true, List.of("CREATE", "DELETE")),
             new AppProperties.Extraction(40, 80, 2)
         );
     }

@@ -2,78 +2,65 @@ package io.github.vfedoriv.graphrag.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.dto.HybridSearchCitationKind;
-import io.github.vfedoriv.graphrag.dto.HybridSearchExpandedContext;
-import io.github.vfedoriv.graphrag.dto.HybridSearchGraphContext;
-import io.github.vfedoriv.graphrag.dto.HybridSearchGraphEvidence;
-import io.github.vfedoriv.graphrag.dto.HybridSearchHit;
-import io.github.vfedoriv.graphrag.dto.HybridSearchRetrievalEvidence;
-import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
-import io.github.vfedoriv.graphrag.dto.HybridSearchSourceRange;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphFact;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ParentCitation;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SchemaRepresentation;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.CitationKind;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.ParentContext;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class QueryEvidenceAssemblyServiceTest {
 
     @Test
-    void assemblesChildTextParentContextAndDeduplicatedGraphParentEvidence() {
-        HybridSearchGraphEvidence graphEvidence = new HybridSearchGraphEvidence(
-            "evidence-1",
-            "NODE",
+    void assemblesAdvancedEvidenceWithDeduplicatedFactsAndParentContexts() {
+        SourceBounds bounds = new SourceBounds(0, 100, 4, 5);
+        ParentContext context = new ParentContext(
+            "parent-1", "doc-1", "PARENT", "parent text", bounds,
+            "revision-1", List.of("child-1", "child-2"), 25
+        );
+        GraphFact fact = new GraphFact(
             "entity-1",
-            "doc-1",
-            "parent-1",
-            "parent text",
-            new HybridSearchSourceRange(0, 100, 4, 5),
-            "run-1",
-            "revision-1",
-            HybridSearchCitationKind.GRAPH_PARENT
-        );
-        HybridSearchHit first = hit("child-1", graphEvidence);
-        HybridSearchHit second = hit("child-2", graphEvidence);
-        HybridSearchExpandedContext context = new HybridSearchExpandedContext(
-            "parent-1",
-            "doc-1",
-            "PARENT",
-            "parent text",
-            new HybridSearchSourceRange(0, 100, 4, 5),
-            "revision-1",
-            List.of("child-1", "child-2"),
-            List.of("parent-1"),
-            25,
-            HybridSearchCitationKind.CONTEXT_ONLY
+            new SchemaRepresentation(FactKind.NODE, "Entity", null, null),
+            Map.of("name", "Entity 1"),
+            List.of("evidence-1"),
+            List.of(new ParentCitation(
+                "parent-1", "doc-1", 0, 100, 4, 5, "run-1", "revision-1", "Clause 7"
+            ))
         );
 
-        QueryEvidenceAssemblyService.QueryEvidenceAssembly assembly =
-            new QueryEvidenceAssemblyService().assemble(List.of(first, second), List.of(context));
+        QueryEvidenceAssemblyService.AdvancedQueryEvidenceAssembly assembly =
+            new QueryEvidenceAssemblyService().assembleAdvanced(List.of(
+                candidate("child-1", fact, context),
+                candidate("child-2", fact, context)
+            ));
 
-        assertThat(assembly.hits()).extracting(hit -> hit.retrievalEvidence().citationKind())
-            .containsOnly(HybridSearchCitationKind.TEXT_CHILD);
-        assertThat(assembly.contexts()).singleElement()
-            .satisfies(value -> assertThat(value.citationKind()).isEqualTo(HybridSearchCitationKind.CONTEXT_ONLY));
-        assertThat(assembly.graphEvidence()).containsExactly(graphEvidence);
-        assertThat(assembly.graphEvidence().getFirst().sourceChunkId()).isEqualTo("parent-1");
+        assertThat(assembly.candidates()).extracting(EvidenceCandidate::citationKind)
+            .containsOnly(CitationKind.TEXT_CHILD);
+        assertThat(assembly.contexts()).containsExactly(context);
+        assertThat(assembly.graphFacts()).containsExactly(fact);
+        assertThat(assembly.graphFacts().getFirst().citations().getFirst().chunkId()).isEqualTo("parent-1");
     }
 
-    private HybridSearchHit hit(String childId, HybridSearchGraphEvidence graphEvidence) {
-        return new HybridSearchHit(
-            childId,
-            "doc-1",
-            0,
-            0.9,
-            "child text",
-            new HybridSearchSource("doc-1", "source.txt", "text/plain", 10, "{}"),
-            new HybridSearchGraphContext(List.of(), List.of(), List.of(graphEvidence)),
-            new HybridSearchRetrievalEvidence(
-                childId,
-                "child text",
-                new HybridSearchSourceRange(10, 20, 4, 4),
-                "run-1",
-                "revision-1",
-                "Clause 7",
-                HybridSearchCitationKind.TEXT_CHILD
+    private EvidenceCandidate candidate(String chunkId, GraphFact fact, ParentContext context) {
+        return new EvidenceCandidate(
+            new EvidenceSource(
+                chunkId, "doc-1", 0, new SourceBounds(10, 20, 4, 4),
+                "run-1", "revision-1", "Clause 7"
             ),
-            "parent-1"
+            CitationKind.TEXT_CHILD,
+            "child text",
+            List.of(),
+            List.of(fact),
+            context,
+            0.9,
+            1,
+            null
         );
     }
 }
