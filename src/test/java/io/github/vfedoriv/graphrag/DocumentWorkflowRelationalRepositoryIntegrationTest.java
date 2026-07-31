@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -23,7 +21,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -32,12 +29,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-@SpringBootTest
-@Import({
-    TestcontainersConfiguration.class,
-    DocumentWorkflowRelationalRepositoryIntegrationTest.RollbackConfiguration.class
-})
-@IntegrationTest
+@RelationalIntegrationTest
+@Import(DocumentWorkflowRelationalRepositoryIntegrationTest.RollbackConfiguration.class)
 class DocumentWorkflowRelationalRepositoryIntegrationTest {
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;

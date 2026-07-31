@@ -53,6 +53,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import io.github.vfedoriv.graphrag.application.processing.ProcessingJsonCodec;
@@ -282,7 +283,7 @@ public class SchemaReprocessingPlanService {
         return new StartPlanResponse(saved.getId(), saved.getStatus(), statusLocation(saved));
     }
 
-    @RelationalTransactional
+    @RelationalTransactional(propagation = Propagation.REQUIRES_NEW)
     public void createForActivation(String knowledgeBaseId, String schemaId) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         publicationRepository.findBySchemaId(schemaId)

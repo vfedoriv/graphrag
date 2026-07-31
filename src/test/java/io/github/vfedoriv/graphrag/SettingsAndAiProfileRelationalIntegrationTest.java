@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -31,8 +29,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,13 +36,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@SpringBootTest
-@Import(PostgresTestcontainersConfiguration.class)
+@RelationalIntegrationTest
 @TestPropertySource(properties = {
     "spring.datasource.hikari.pool-name=graphrag-relational-test",
     "spring.datasource.hikari.connection-timeout=30000"
 })
-@IntegrationTest
 class SettingsAndAiProfileRelationalIntegrationTest {
 
     @Autowired

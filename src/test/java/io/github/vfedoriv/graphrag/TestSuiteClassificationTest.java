@@ -24,7 +24,32 @@ class TestSuiteClassificationTest {
         assertThat(integrationTests)
             .allSatisfy(path -> assertThat(Files.readString(path))
                 .as(path.toString())
-                .contains("@IntegrationTest"));
+                .containsAnyOf(
+                    "@IntegrationTest",
+                    "@RelationalIntegrationTest",
+                    "@FullStoreIntegrationTest"
+                ));
+    }
+
+    @Test
+    void relationalRepositoryContextsUseTheRelationalContextFamily() throws IOException {
+        List<Path> relationalTests;
+        try (java.util.stream.Stream<Path> files = Files.walk(Path.of("src/test/java"))) {
+            relationalTests = files
+                .filter(path -> path.getFileName().toString()
+                    .endsWith("RelationalRepositoryIntegrationTest.java"))
+                .toList();
+        }
+
+        assertThat(relationalTests).isNotEmpty();
+        assertThat(relationalTests)
+            .allSatisfy(path -> assertThat(Files.readString(path))
+                .as(path.toString())
+                .contains("@RelationalIntegrationTest")
+                .doesNotContain(
+                    "@Import(TestcontainersConfiguration.class",
+                    "    TestcontainersConfiguration.class,"
+                ));
     }
 
     @Test

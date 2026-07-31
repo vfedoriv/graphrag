@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,20 +35,18 @@ import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.service.SchemaReprocessingRecoveryService;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.graph.GraphSchemaInitializer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-@SpringBootTest
-@Import(TestcontainersConfiguration.class)
-@IntegrationTest
+@RelationalIntegrationTest
 class SchemaWorkflowRelationalRepositoryIntegrationTest {
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
@@ -65,6 +61,7 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
     @Autowired private SchemaReprocessingItemRepository itemRepository;
     @Autowired private DocumentUploadRepository documentRepository;
     @Autowired private SchemaReprocessingRecoveryService recoveryService;
+    @Autowired private ApplicationContext applicationContext;
 
     private String knowledgeBaseId;
     private SchemaDraftNode draft;
@@ -163,11 +160,112 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
         );
         SchemaReprocessingPlanNode schemaPlan = plan(schema);
         planRepository.save(schemaPlan);
+        DocumentUploadNode document = documentRepository.save(document());
+        itemRepository.save(item(schemaPlan, document, "active-plan-item"));
         SchemaReprocessingPlanNode competing = plan(schema);
         competing.setId("plan-competing");
 
         assertThatThrownBy(() -> planRepository.save(competing))
             .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void relationalContextDisablesOnlyGraphStartupInitialization() {
+        assertThat(applicationContext.getBeansOfType(GraphSchemaInitializer.class)).isEmpty();
+        assertThat(applicationContext.getBeansOfType(
+            Neo4jTestcontainersConfiguration.class
+        )).isEmpty();
+        assertThat(applicationContext.getBeanProvider(
+            io.github.vfedoriv.graphrag.service.QueryNeo4jExecutor.class
+        ).getIfAvailable()).isNotNull();
+    }
+
+    @Test
+    void repairsStoredTotalFromAuthoritativeItemCardinality() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-total-repair\",\"version\":1,"
+                + "\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],"
+                + "\"relationships\":[]}",
+            knowledgeBaseId
+        );
+        SchemaReprocessingPlanNode plan = plan(schema);
+        planRepository.save(plan);
+
+        SchemaReprocessingPlanNode repaired = recoveryService.repairCounters(plan.getId());
+
+        assertThat(repaired.getTotalDocuments()).isZero();
+        assertThat(repaired.getQueuedDocuments()).isZero();
+        assertThat(repaired.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.COMPLETED);
+        assertThat(repaired.getCompletedAt()).isNotNull();
+    }
+
+    @Test
+    void malformedPlanDoesNotPreventUnrelatedPlanRecovery() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-recovery-isolation\",\"version\":1,"
+                + "\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],"
+                + "\"relationships\":[]}",
+            knowledgeBaseId
+        );
+        DocumentUploadNode malformedDocument = documentRepository.save(document("document-malformed"));
+        SchemaReprocessingPlanNode malformed = chunkPlan(schema);
+        malformed.setId("malformed-plan");
+        malformed.setTargetSnapshotJson("{invalid");
+        malformed.setStatus(SchemaReprocessingPlanStatus.RUNNING);
+        malformed.setQueuedDocuments(0);
+        malformed.setRunningDocuments(1);
+        malformed.setStartedAt(Instant.now().minus(2, ChronoUnit.HOURS));
+        malformed.setClaimedBy("expired-worker");
+        malformed.setClaimedAt(Instant.now().minus(2, ChronoUnit.HOURS));
+        malformed.setClaimUntil(Instant.now().minus(1, ChronoUnit.HOURS));
+        malformed.setTotalDocuments(1);
+        planRepository.save(malformed);
+        SchemaReprocessingItemNode malformedItem =
+            item(malformed, malformedDocument, "malformed-item");
+        malformedItem.setStatus(SchemaReprocessingItemStatus.RUNNING);
+        malformedItem.setClaimedBy("expired-worker");
+        malformedItem.setClaimedAt(Instant.now().minus(2, ChronoUnit.HOURS));
+        malformedItem.setClaimUntil(Instant.now().minus(1, ChronoUnit.HOURS));
+        malformedItem.setStartedAt(Instant.now().minus(2, ChronoUnit.HOURS));
+        itemRepository.save(malformedItem);
+
+        String otherKnowledgeBaseId = "workflow-recovery-other-" + UUID.randomUUID();
+        knowledgeBaseLifecycleService.provision(otherKnowledgeBaseId, otherKnowledgeBaseId);
+        SchemaDefinitionNode recoverableSchema =
+            schemaRegistryService.createGeneratedInactiveSchema(
+                "{\"name\":\"workflow-recovery-other\",\"version\":1,"
+                    + "\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                    + "\"properties\":[{\"name\":\"id\",\"type\":\"string\","
+                    + "\"required\":true}]}],\"relationships\":[]}",
+                otherKnowledgeBaseId
+            );
+        SchemaDraftNode recoverableDraft = draft();
+        recoverableDraft.setId("recoverable-draft");
+        recoverableDraft.setKnowledgeBaseId(otherKnowledgeBaseId);
+        recoverableDraft.setTargetName("workflow-recovery-other");
+        draftRepository.save(recoverableDraft);
+        DocumentUploadNode recoverableDocument = document("document-recoverable");
+        recoverableDocument.setKnowledgeBaseId(otherKnowledgeBaseId);
+        documentRepository.save(recoverableDocument);
+        SchemaReprocessingPlanNode recoverable = plan(schema);
+        recoverable.setId("recoverable-plan");
+        recoverable.setDraftId(recoverableDraft.getId());
+        recoverable.setKnowledgeBaseId(otherKnowledgeBaseId);
+        recoverable.setSchemaId(recoverableSchema.getId());
+        recoverable.setSchemaContentHash(recoverableSchema.getContentHash());
+        planRepository.save(recoverable);
+        itemRepository.save(item(recoverable, recoverableDocument, "recoverable-item"));
+
+        recoveryService.recover();
+
+        SchemaReprocessingPlanNode recovered =
+            planRepository.findById(recoverable.getId()).orElseThrow();
+        assertThat(recovered.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.INTERRUPTED);
+        assertThat(recovered.getFailedDocuments()).isEqualTo(1);
+        assertThat(planRepository.findById(malformed.getId()).orElseThrow().getStatus())
+            .isEqualTo(SchemaReprocessingPlanStatus.RUNNING);
     }
 
     @Test

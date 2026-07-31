@@ -3,12 +3,18 @@ package io.github.vfedoriv.graphrag.infrastructure.persistence.graph;
 import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(
+    name = "app.neo4j.initialize-schema",
+    havingValue = "true",
+    matchIfMissing = true
+)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GraphSchemaInitializer implements ApplicationRunner {
 

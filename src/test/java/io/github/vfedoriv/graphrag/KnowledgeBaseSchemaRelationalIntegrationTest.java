@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -23,15 +21,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest
-@Import(PostgresTestcontainersConfiguration.class)
-@IntegrationTest
+@RelationalIntegrationTest
 class KnowledgeBaseSchemaRelationalIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
