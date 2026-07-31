@@ -118,7 +118,9 @@ class EndToEndMvpFlowIntegrationTest {
         );
         assertThat(labels)
             .contains("DocumentChunk", "GraphExtractionEvidence", "Contract", "Party")
-            .allMatch(label -> allowedLabels.contains(label) || label.startsWith("EmbeddingSpace_"));
+            .allMatch(label -> allowedLabels.contains(label)
+                || label.startsWith("EmbeddingSpace_")
+                || label.startsWith("KnowledgeBaseText_"));
 
         Set<String> relationshipTypes = Set.copyOf(neo4jClient.query("""
             MATCH ()-[relationship]->()

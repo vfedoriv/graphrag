@@ -6,6 +6,7 @@ final class RelationalMetadataTestCleaner {
     private RelationalMetadataTestCleaner() {}
 
     static void clean(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.update("DELETE FROM app.advanced_search_run");
         jdbcTemplate.update("DELETE FROM app.runtime_setting_override");
         jdbcTemplate.update("UPDATE app.schema_draft SET running_analysis_run_id = NULL, current_aggregate_id = NULL");
         jdbcTemplate.update("UPDATE app.schema_draft_analysis_run SET aggregate_revision_id = NULL");

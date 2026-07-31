@@ -81,6 +81,7 @@ public class RuntimeSettingsService {
         }
         Object parsed = definition.parse(value);
         validateProspectiveChunking(Map.of(key, parsed), null);
+        validateProspectiveAdvancedSearch(Map.of(key, parsed), null);
         RuntimeSettingOverrideNode node = overrideStore.getOrCreate(key);
         node.setValue(definition.toStorage(parsed));
         node.setLifecycleState(lifecycle.state(definition, parsed));
@@ -121,6 +122,7 @@ public class RuntimeSettingsService {
         Map<String, Object> prospectiveValues = new LinkedHashMap<>();
         parsedUpdates.forEach(update -> prospectiveValues.put(update.definition().key(), update.value()));
         validateProspectiveChunking(prospectiveValues, null);
+        validateProspectiveAdvancedSearch(prospectiveValues, null);
 
         Instant updatedAt = Instant.now();
         for (ParsedSettingUpdate update : parsedUpdates) {
@@ -150,6 +152,7 @@ public class RuntimeSettingsService {
             throw new IllegalArgumentException(nonMutableMessage(definition));
         }
         validateProspectiveChunking(Map.of(), key);
+        validateProspectiveAdvancedSearch(Map.of(), key);
         overrideStore.delete(key);
         applyAfterCommit(() -> definition.applyLive(definition.defaultValue()));
         return toResponse(definition, effectiveChunkerRevision());
@@ -298,6 +301,28 @@ public class RuntimeSettingsService {
         );
     }
 
+    @RelationalTransactional(readOnly = true)
+    public AdvancedSearchSettings advancedSearch() {
+        AdvancedSearchSettings settings = new AdvancedSearchSettings(
+            Duration.ofSeconds(integer("app.advanced-search.deadline-seconds")),
+            integer("app.advanced-search.default-evidence"),
+            integer("app.advanced-search.max-evidence"),
+            integer("app.advanced-search.candidate-limit"),
+            integer("app.advanced-search.max-candidates"),
+            integer("app.advanced-search.rerank-pool-size"),
+            integer("app.advanced-search.graph-expansion-seed-limit"),
+            integer("app.advanced-search.graph-expansion-fact-limit"),
+            integer("app.advanced-search.max-query-length"),
+            integer("app.advanced-search.max-evidence-text-characters"),
+            Duration.ofHours(integer("app.advanced-search.retention-hours")),
+            integer("app.advanced-search.cleanup-batch-size")
+        );
+        validateAdvancedSearch(settings.defaultEvidence(), settings.maxEvidence(), settings.candidateLimit(),
+            settings.maxCandidates(), settings.rerankPoolSize(), settings.graphExpansionSeedLimit(),
+            settings.graphExpansionFactLimit(), settings.maxQueryLength());
+        return settings;
+    }
+
     public boolean modelNameTagEnabled() {
         return bool("app.ai.observability.model-name-tag-enabled");
     }
@@ -435,6 +460,48 @@ public class RuntimeSettingsService {
             contextHeaderMaxTokens,
             contextHeaderMaxCharacters
         );
+    }
+
+    private void validateProspectiveAdvancedSearch(Map<String, Object> pending, String clearedKey) {
+        boolean touched = pending.keySet().stream().anyMatch(key -> key.startsWith("app.advanced-search."))
+            || clearedKey != null && clearedKey.startsWith("app.advanced-search.");
+        if (!touched) {
+            return;
+        }
+        validateAdvancedSearch(
+            prospectiveInteger("app.advanced-search.default-evidence", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.max-evidence", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.candidate-limit", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.max-candidates", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.rerank-pool-size", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.graph-expansion-seed-limit", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.graph-expansion-fact-limit", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.max-query-length", pending, clearedKey)
+        );
+    }
+
+    private void validateAdvancedSearch(
+        int defaultEvidence, int maxEvidence, int candidateLimit, int maxCandidates,
+        int rerankPoolSize, int graphSeedLimit, int graphFactLimit, int maxQueryLength
+    ) {
+        if (defaultEvidence > maxEvidence) {
+            throw new IllegalArgumentException("app.advanced-search.default-evidence must not exceed max-evidence");
+        }
+        if (maxEvidence > 20) {
+            throw new IllegalArgumentException("app.advanced-search.max-evidence must not exceed 20");
+        }
+        if (candidateLimit > maxCandidates || maxCandidates > 200) {
+            throw new IllegalArgumentException("Advanced-search candidate pool exceeds its allowed bound");
+        }
+        if (rerankPoolSize > candidateLimit || rerankPoolSize > 20) {
+            throw new IllegalArgumentException("Advanced-search rerank pool exceeds its allowed bound");
+        }
+        if (graphSeedLimit > 10 || graphFactLimit > 20) {
+            throw new IllegalArgumentException("Advanced-search graph expansion pool exceeds its allowed bound");
+        }
+        if (maxQueryLength > 4000) {
+            throw new IllegalArgumentException("app.advanced-search.max-query-length must not exceed 4000");
+        }
     }
 
     private int prospectivePrecedenceInteger(
@@ -614,4 +681,19 @@ public class RuntimeSettingsService {
         boolean schemaNameTagEnabled
     ) {
     }
+
+    public record AdvancedSearchSettings(
+        Duration deadline,
+        int defaultEvidence,
+        int maxEvidence,
+        int candidateLimit,
+        int maxCandidates,
+        int rerankPoolSize,
+        int graphExpansionSeedLimit,
+        int graphExpansionFactLimit,
+        int maxQueryLength,
+        int maxEvidenceTextCharacters,
+        Duration retention,
+        int cleanupBatchSize
+    ) { }
 }

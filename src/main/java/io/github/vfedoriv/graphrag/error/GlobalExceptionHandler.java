@@ -135,6 +135,21 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(AdvancedSearchResultUnavailableException.class)
+    public ProblemDetail handleAdvancedSearchResultUnavailable(
+        AdvancedSearchResultUnavailableException ex, HttpServletRequest request
+    ) {
+        ProblemDetail detail = baseProblem(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+        detail.setProperty("runStatus", ex.getStatus());
+        detail.setProperty("runStage", ex.getStage());
+        return detail;
+    }
+
+    @ExceptionHandler(AdvancedSearchCapacityException.class)
+    public ProblemDetail handleAdvancedSearchCapacity(AdvancedSearchCapacityException ex, HttpServletRequest request) {
+        return baseProblem(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ProblemDetail handleOptimisticLockingFailure(
         OptimisticLockingFailureException ex, HttpServletRequest request

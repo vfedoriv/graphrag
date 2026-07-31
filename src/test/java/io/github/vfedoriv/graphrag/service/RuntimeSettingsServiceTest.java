@@ -520,6 +520,30 @@ class RuntimeSettingsServiceTest {
         assertThat(defaults.requestTimeout()).isEqualTo(java.time.Duration.ofSeconds(180));
     }
 
+    @Test
+    void advancedSearchSettingsAreTypedSnapshottableAndCrossValidatedAtomically() {
+        Map<String, RuntimeSettingOverrideNode> store = new LinkedHashMap<>();
+        RuntimeSettingsService service = service(store);
+
+        service.update("app.advanced-search.deadline-seconds", 30);
+        service.update("app.advanced-search.default-evidence", 8);
+        RuntimeSettingsService.AdvancedSearchSettings settings = service.advancedSearch();
+
+        assertThat(settings.deadline()).isEqualTo(java.time.Duration.ofSeconds(30));
+        assertThat(settings.defaultEvidence()).isEqualTo(8);
+        assertThat(settings.maxEvidence()).isEqualTo(20);
+        assertThat(settingsByKey(service).get("app.advanced-search.concurrency").updateMode())
+            .isEqualTo("restart-required");
+        assertThat(settingsByKey(service).get("app.advanced-search.concurrency").mutable()).isFalse();
+
+        assertThatThrownBy(() -> service.update(List.of(
+            new RuntimeSettingUpdateRequest("app.advanced-search.default-evidence", 15),
+            new RuntimeSettingUpdateRequest("app.advanced-search.max-evidence", 10)
+        ))).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("default-evidence");
+        assertThat(store).doesNotContainKey("app.advanced-search.max-evidence");
+        assertThat(store.get("app.advanced-search.default-evidence").getValue()).isEqualTo("8");
+    }
+
     private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store) {
         return service(store, appProperties());
     }

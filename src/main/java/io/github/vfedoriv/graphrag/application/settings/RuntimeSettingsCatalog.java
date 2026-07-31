@@ -164,6 +164,24 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.schema-discovery.max-concurrency", "schema-discovery", envInt("app.schema-discovery.max-concurrency", 4), 1);
         addInt(map, "app.schema-discovery.source-timeout-seconds", "schema-discovery", envInt("app.schema-discovery.source-timeout-seconds", 60), 1);
         addInt(map, "app.schema-discovery.request-timeout-seconds", "schema-discovery", envInt("app.schema-discovery.request-timeout-seconds", 180), 1);
+        addInt(map, "app.advanced-search.deadline-seconds", "advanced-search", envInt("app.advanced-search.deadline-seconds", 60), 1);
+        addInt(map, "app.advanced-search.default-evidence", "advanced-search", envInt("app.advanced-search.default-evidence", 10), 1);
+        addInt(map, "app.advanced-search.max-evidence", "advanced-search", envInt("app.advanced-search.max-evidence", 20), 1);
+        addInt(map, "app.advanced-search.candidate-limit", "advanced-search", envInt("app.advanced-search.candidate-limit", 60), 1);
+        addInt(map, "app.advanced-search.max-candidates", "advanced-search", envInt("app.advanced-search.max-candidates", 200), 1);
+        addInt(map, "app.advanced-search.rerank-pool-size", "advanced-search", envInt("app.advanced-search.rerank-pool-size", 20), 1);
+        addInt(map, "app.advanced-search.graph-expansion-seed-limit", "advanced-search", envInt("app.advanced-search.graph-expansion-seed-limit", 10), 0);
+        addInt(map, "app.advanced-search.graph-expansion-fact-limit", "advanced-search", envInt("app.advanced-search.graph-expansion-fact-limit", 20), 0);
+        addInt(map, "app.advanced-search.max-query-length", "advanced-search", envInt("app.advanced-search.max-query-length", 4000), 1);
+        addInt(map, "app.advanced-search.max-evidence-text-characters", "advanced-search", envInt("app.advanced-search.max-evidence-text-characters", 8000), 0);
+        addInt(map, "app.advanced-search.retention-hours", "advanced-search", envInt("app.advanced-search.retention-hours", 24), 1);
+        addInt(map, "app.advanced-search.cleanup-batch-size", "advanced-search", envInt("app.advanced-search.cleanup-batch-size", 100), 1);
+        addReadOnlyInt(map, "app.advanced-search.concurrency", "advanced-search", envInt("app.advanced-search.concurrency", 2));
+        addReadOnlyInt(map, "app.advanced-search.queue-capacity", "advanced-search", envInt("app.advanced-search.queue-capacity", 50));
+        addReadOnlyInt(map, "app.advanced-search.branch-concurrency", "advanced-search", envInt("app.advanced-search.branch-concurrency", 4));
+        addReadOnlyString(map, "app.advanced-search.full-text-analyzer", "advanced-search",
+            envOrDefault("app.advanced-search.full-text-analyzer", "standard"), UpdateMode.RESTART_REQUIRED, false,
+            "Full-text analyzer changes require index and executor infrastructure restart.");
         addBool(map, "app.ai.observability.enabled", "ai-observability", observabilityProperties.enabled());
         addBool(map, "app.ai.observability.content-capture-enabled", "ai-observability", observabilityProperties.contentCaptureEnabled());
         addInt(map, "app.ai.observability.max-attribute-length", "ai-observability", observabilityProperties.maxAttributeLength(), 1);
@@ -289,6 +307,12 @@ public final class RuntimeSettingsCatalog {
         put(map, key, category, SettingType.STRING, defaultValue == null ? "" : defaultValue, false, false, sensitive,
             Map.of(), String::valueOf, Objects::toString, sensitive ? codecs::masked : Function.identity(),
             value -> { }, updateMode, reason);
+    }
+
+    private void addReadOnlyInt(Map<String, RuntimeSettingDefinition> map, String key, String category, int defaultValue) {
+        put(map, key, category, SettingType.INTEGER, defaultValue, false, false, false, Map.of("min", 1),
+            value -> codecs.integer(key, value, 1), Objects::toString, Function.identity(), value -> { },
+            UpdateMode.RESTART_REQUIRED, "Executor sizing is deployment-managed and bound at startup.");
     }
 
     private void put(Map<String, RuntimeSettingDefinition> map, String key, String category, SettingType type,
