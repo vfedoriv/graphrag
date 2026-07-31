@@ -184,6 +184,7 @@ regularly verify that the pair can be restored.
 - **Runtime settings with an allowlist:** runtime overrides must go through `RuntimeSettingsService` typed accessors or explicit apply paths, not ad hoc property reads; catalog entries expose editability, update mode, live-apply status, lifecycle state, sensitivity, and rejection or restart reasons without making unsafe startup-bound infrastructure mutable.
 - **Read-only query safety:** `CypherValidationService` enforces blocked mutating keywords and auto-injects `LIMIT` before any query is executed.
 - **No Java `var`:** declare concrete variable types explicitly instead of using the `var` keyword.
+- **Constructor injection:** Prefer constructor injection over field injection for Spring beans. Do not use the @Autowired annotation on fields, setters, or constructors.
 
 ## Documentation Hygiene
 
