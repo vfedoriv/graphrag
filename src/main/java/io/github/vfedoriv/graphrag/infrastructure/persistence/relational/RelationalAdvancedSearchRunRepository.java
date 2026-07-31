@@ -64,6 +64,8 @@ public class RelationalAdvancedSearchRunRepository implements AdvancedSearchRunR
         entity.setQueryText(node.getQueryText()); entity.setStatus(node.getStatus()); entity.setStage(node.getStage());
         entity.setRequestedEvidence(node.getRequestedEvidence()); entity.setIncludeEvidenceText(node.isIncludeEvidenceText());
         entity.setSettingsSnapshotJson(node.getSettingsSnapshotJson()); entity.setCompletedBranches(node.getCompletedBranches());
+        entity.setActiveAiProfileId(node.getActiveAiProfileId()); entity.setSchemaDefinitionId(node.getSchemaDefinitionId());
+        entity.setSchemaContentHash(node.getSchemaContentHash()); entity.setSchemaSnapshotJson(node.getSchemaSnapshotJson());
         entity.setTotalBranches(node.getTotalBranches()); entity.setEvidenceCount(node.getEvidenceCount());
         entity.setCancellationRequestedAt(node.getCancellationRequestedAt()); entity.setFailureCategory(node.getFailureCategory());
         entity.setClaimedBy(node.getClaimedBy()); entity.setClaimedAt(node.getClaimedAt());
@@ -76,6 +78,8 @@ public class RelationalAdvancedSearchRunRepository implements AdvancedSearchRunR
         node.setId(entity.getId()); node.setKnowledgeBaseId(entity.getKnowledgeBaseId()); node.setQueryText(entity.getQueryText());
         node.setStatus(entity.getStatus()); node.setStage(entity.getStage()); node.setRequestedEvidence(entity.getRequestedEvidence());
         node.setIncludeEvidenceText(entity.isIncludeEvidenceText()); node.setSettingsSnapshotJson(entity.getSettingsSnapshotJson());
+        node.setActiveAiProfileId(entity.getActiveAiProfileId()); node.setSchemaDefinitionId(entity.getSchemaDefinitionId());
+        node.setSchemaContentHash(entity.getSchemaContentHash()); node.setSchemaSnapshotJson(entity.getSchemaSnapshotJson());
         node.setCompletedBranches(entity.getCompletedBranches()); node.setTotalBranches(entity.getTotalBranches());
         node.setEvidenceCount(entity.getEvidenceCount()); node.setCancellationRequestedAt(entity.getCancellationRequestedAt());
         node.setFailureCategory(entity.getFailureCategory()); node.setClaimedBy(entity.getClaimedBy()); node.setClaimedAt(entity.getClaimedAt());

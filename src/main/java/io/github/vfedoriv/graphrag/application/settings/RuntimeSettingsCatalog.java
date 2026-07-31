@@ -174,6 +174,15 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.advanced-search.graph-expansion-fact-limit", "advanced-search", envInt("app.advanced-search.graph-expansion-fact-limit", 20), 0);
         addInt(map, "app.advanced-search.max-query-length", "advanced-search", envInt("app.advanced-search.max-query-length", 4000), 1);
         addInt(map, "app.advanced-search.max-evidence-text-characters", "advanced-search", envInt("app.advanced-search.max-evidence-text-characters", 8000), 0);
+        addInt(map, "app.advanced-search.planning-max-subqueries", "advanced-search", envInt("app.advanced-search.planning-max-subqueries", 3), 1);
+        addInt(map, "app.advanced-search.planning-max-exact-terms", "advanced-search", envInt("app.advanced-search.planning-max-exact-terms", 8), 0);
+        addInt(map, "app.advanced-search.planning-max-graph-requests", "advanced-search", envInt("app.advanced-search.planning-max-graph-requests", 2), 0);
+        addInt(map, "app.advanced-search.planning-max-string-characters", "advanced-search", envInt("app.advanced-search.planning-max-string-characters", 1000), 1);
+        addInt(map, "app.advanced-search.planning-evaluation-evidence-limit", "advanced-search", envInt("app.advanced-search.planning-evaluation-evidence-limit", 10), 1);
+        addInt(map, "app.advanced-search.planning-evidence-excerpt-characters", "advanced-search", envInt("app.advanced-search.planning-evidence-excerpt-characters", 1200), 1);
+        addInt(map, "app.advanced-search.follow-up-max-queries", "advanced-search", envInt("app.advanced-search.follow-up-max-queries", 2), 0);
+        addInt(map, "app.advanced-search.follow-up-minimum-remaining-seconds", "advanced-search", envInt("app.advanced-search.follow-up-minimum-remaining-seconds", 5), 0);
+        addInt(map, "app.advanced-search.synthesis-reserve-seconds", "advanced-search", envInt("app.advanced-search.synthesis-reserve-seconds", 10), 0);
         addInt(map, "app.advanced-search.retention-hours", "advanced-search", envInt("app.advanced-search.retention-hours", 24), 1);
         addInt(map, "app.advanced-search.cleanup-batch-size", "advanced-search", envInt("app.advanced-search.cleanup-batch-size", 100), 1);
         addReadOnlyInt(map, "app.advanced-search.concurrency", "advanced-search", envInt("app.advanced-search.concurrency", 2));

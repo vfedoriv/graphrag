@@ -532,6 +532,10 @@ class RuntimeSettingsServiceTest {
         assertThat(settings.deadline()).isEqualTo(java.time.Duration.ofSeconds(30));
         assertThat(settings.defaultEvidence()).isEqualTo(8);
         assertThat(settings.maxEvidence()).isEqualTo(20);
+        assertThat(settings.planningMaxSubqueries()).isEqualTo(3);
+        assertThat(settings.followUpMaxQueries()).isEqualTo(2);
+        assertThat(settings.followUpMinimumRemaining()).isEqualTo(java.time.Duration.ofSeconds(5));
+        assertThat(settings.synthesisReserve()).isEqualTo(java.time.Duration.ofSeconds(10));
         assertThat(settingsByKey(service).get("app.advanced-search.concurrency").updateMode())
             .isEqualTo("restart-required");
         assertThat(settingsByKey(service).get("app.advanced-search.concurrency").mutable()).isFalse();
@@ -542,6 +546,11 @@ class RuntimeSettingsServiceTest {
         ))).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("default-evidence");
         assertThat(store).doesNotContainKey("app.advanced-search.max-evidence");
         assertThat(store.get("app.advanced-search.default-evidence").getValue()).isEqualTo("8");
+
+        assertThatThrownBy(() -> service.update("app.advanced-search.deadline-seconds", 10))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("reserves");
+        assertThat(store.get("app.advanced-search.deadline-seconds").getValue()).isEqualTo("30");
     }
 
     private RuntimeSettingsService service(Map<String, RuntimeSettingOverrideNode> store) {

@@ -4,17 +4,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Diagnostics;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Request;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Row;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Status;
+import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.Refinement;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Request;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Subquery;
+import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchFollowUpPolicy.Decision;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchFusionService.FusionOptions;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchParentContextService.ExpansionOptions;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchPlanValidator.ValidatedPlan;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRankingPipeline.RankingRequest;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRankingPipeline.RankingResult;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchSufficiencyEvaluator.Outcome;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,7 +42,12 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
     private final DenseTextRetriever dense;
     private final LexicalTextRetriever lexical;
     private final DocumentMetadataTextRetriever metadata;
+    private final AdvancedSearchGraphRetriever graphRetriever;
+    private final AdvancedSearchPlanner planner;
+    private final AdvancedSearchSufficiencyEvaluator sufficiencyEvaluator;
+    private final AdvancedSearchFollowUpPolicy followUpPolicy;
     private final AdvancedSearchRankingPipeline ranking;
+    private final SchemaParser schemaParser;
     private final ObjectMapper objectMapper;
     private final ThreadPoolTaskExecutor branchExecutor;
 
@@ -41,29 +55,147 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         DenseTextRetriever dense,
         LexicalTextRetriever lexical,
         DocumentMetadataTextRetriever metadata,
+        AdvancedSearchGraphRetriever graphRetriever,
+        AdvancedSearchPlanner planner,
+        AdvancedSearchSufficiencyEvaluator sufficiencyEvaluator,
+        AdvancedSearchFollowUpPolicy followUpPolicy,
         AdvancedSearchRankingPipeline ranking,
+        SchemaParser schemaParser,
         ObjectMapper objectMapper,
         @Qualifier("advancedSearchBranchExecutor") ThreadPoolTaskExecutor branchExecutor
     ) {
-        this.dense = dense; this.lexical = lexical; this.metadata = metadata; this.ranking = ranking;
-        this.objectMapper = objectMapper; this.branchExecutor = branchExecutor;
+        this.dense = dense;
+        this.lexical = lexical;
+        this.metadata = metadata;
+        this.graphRetriever = graphRetriever;
+        this.planner = planner;
+        this.sufficiencyEvaluator = sufficiencyEvaluator;
+        this.followUpPolicy = followUpPolicy;
+        this.ranking = ranking;
+        this.schemaParser = schemaParser;
+        this.objectMapper = objectMapper;
+        this.branchExecutor = branchExecutor;
     }
 
     @Override
     public ProcessingResult process(Context context) {
+        if (context.activeAiProfileId() == null || context.activeAiProfileId().isBlank()) {
+            return processProfileScoped(context);
+        }
+        return AiProfileContext.withProfile(context.activeAiProfileId(), () -> processProfileScoped(context));
+    }
+
+    private ProcessingResult processProfileScoped(Context context) {
         requireContinue(context);
-        Request request = new Request(
-            context.knowledgeBaseId(), List.of(new Subquery("q1", context.query())),
-            new MetadataConstraints(null, null), context.settings().candidateLimit(),
-            context.includeEvidenceText(), context.deadline()
+        ActiveSchemaContext schemaContext = schemaContext(context);
+        ValidatedPlan plan = planner.plan(context.query(), schemaContext, context.settings(), context.deadline());
+        context.stageChanged().accept(AdvancedSearchRunStage.RETRIEVAL);
+
+        List<Result> textResults = new ArrayList<>();
+        List<Attempt> attempts = new ArrayList<>();
+        int totalBranches = 3 + plan.graphPlans().size();
+        List<Result> initialResults = executeTextRound(
+            plan.subqueries(), plan.metadata(), context, 1, attempts
         );
-        List<Callable<Result>> tasks = List.of(
-            () -> dense.retrieve(request), () -> lexical.retrieve(request), () -> metadata.retrieve(request));
-        List<Result> attempts = executeBranches(tasks, context);
+        textResults.addAll(initialResults);
+        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result graphResult =
+            executeGraphRound(plan.graphPlans(), schemaContext, context, attempts);
+
         requireContinue(context);
         context.stageChanged().accept(AdvancedSearchRunStage.RANKING);
-        RankingResult result = ranking.rank(new RankingRequest(
-            context.knowledgeBaseId(), context.query(), attempts, null,
+        RankingResult ranked = rank(context, textResults, graphResult);
+        requireContinue(context);
+
+        Outcome sufficiency = sufficiencyEvaluator.evaluate(
+            context.query(), plan, ranked.candidates(), context.settings(), context.deadline()
+        );
+        Decision followUp = followUpPolicy.decide(
+            sufficiency.result(), context.deadline(), context.settings(), context.cancelled()
+        );
+        if (followUp.execute()) {
+            totalBranches += 3;
+            requireContinue(context);
+            context.stageChanged().accept(AdvancedSearchRunStage.RETRIEVAL);
+            List<Subquery> refined = followUp.refinements().stream().map(this::subquery).toList();
+            textResults.addAll(executeTextRound(refined, plan.metadata(), context, 2, attempts));
+            requireContinue(context);
+            context.stageChanged().accept(AdvancedSearchRunStage.RANKING);
+            ranked = rank(context, textResults, graphResult);
+        }
+
+        requireContinue(context);
+        ObjectNode payload = payload(context, plan, sufficiency, followUp, ranked, attempts);
+        int successful = (int) attempts.stream().filter(value -> "COMPLETED".equals(value.status())).count();
+        return new ProcessingResult(payload, ranked.candidates().size(), attempts, successful, totalBranches);
+    }
+
+    private List<Result> executeTextRound(
+        List<Subquery> subqueries,
+        MetadataConstraints constraints,
+        Context context,
+        int round,
+        List<Attempt> attempts
+    ) {
+        io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Request request =
+            new io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Request(
+                context.knowledgeBaseId(), subqueries, constraints, context.settings().candidateLimit(),
+                context.includeEvidenceText(), context.deadline()
+            );
+        List<Callable<Result>> tasks = List.of(
+            () -> dense.retrieve(request),
+            () -> lexical.retrieve(request),
+            () -> metadata.retrieve(request)
+        );
+        List<Result> results = executeBranches(tasks, context);
+        results.forEach(value -> attempts.add(textAttempt(round, value)));
+        return results;
+    }
+
+    private io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result executeGraphRound(
+        List<GraphPlan> graphPlans,
+        ActiveSchemaContext schemaContext,
+        Context context,
+        List<Attempt> attempts
+    ) {
+        if (graphPlans.isEmpty() || schemaContext == null) {
+            return null;
+        }
+        List<Row> rows = new ArrayList<>();
+        List<Diagnostics> diagnostics = new ArrayList<>();
+        for (int index = 0; index < graphPlans.size(); index++) {
+            requireContinue(context);
+            GraphPlan plan = graphPlans.get(index);
+            Duration remaining = remaining(context.deadline());
+            io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result result =
+                graphRetriever.retrieve(
+                    new Request(context.knowledgeBaseId(), plan, context.deadline()),
+                    schemaContext,
+                    context.settings().candidateLimit(),
+                    remaining
+                );
+            rows.addAll(result.rows());
+            diagnostics.add(result.diagnostics());
+            attempts.add(graphAttempt("graph-" + (index + 1), result.diagnostics()));
+        }
+        Status status = diagnostics.stream().anyMatch(value -> value.status() == Status.COMPLETED)
+            ? Status.COMPLETED
+            : diagnostics.stream().anyMatch(value -> value.status() == Status.DEADLINE_EXCEEDED)
+                ? Status.DEADLINE_EXCEEDED : Status.FAILED;
+        long latency = diagnostics.stream().mapToLong(Diagnostics::latencyMs).sum();
+        String category = diagnostics.stream().map(Diagnostics::failureCategory)
+            .filter(value -> value != null && !value.isBlank()).findFirst().orElse(null);
+        return new io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result(
+            List.copyOf(rows), new Diagnostics(status, latency, rows.size(), category)
+        );
+    }
+
+    private RankingResult rank(
+        Context context,
+        List<Result> textResults,
+        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result graphResult
+    ) {
+        return ranking.rank(new RankingRequest(
+            context.knowledgeBaseId(), context.query(), textResults, graphResult,
             new FusionOptions(
                 Math.min(AdvancedSearchRankingContracts.MAX_FUSION_POOL, context.settings().candidateLimit()),
                 context.settings().graphExpansionFactLimit(), context.settings().candidateLimit(), Map.of(), Map.of()),
@@ -74,24 +206,79 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
             context.settings().rerankPoolSize(), context.maximumEvidence(),
             AdvancedSearchRankingContracts.DEFAULT_PER_DOCUMENT_CAP, false
         ));
-        requireContinue(context);
+    }
+
+    private ObjectNode payload(
+        Context context,
+        ValidatedPlan plan,
+        Outcome sufficiency,
+        Decision followUp,
+        RankingResult result,
+        List<Attempt> attempts
+    ) {
         ArrayNode evidence = objectMapper.valueToTree(result.candidates());
         trimText(evidence, new int[]{context.settings().maxEvidenceTextCharacters()});
         ObjectNode payload = objectMapper.createObjectNode();
         payload.put("payloadVersion", AdvancedSearchResultCodec.PAYLOAD_VERSION);
         payload.set("evidence", evidence);
         payload.set("diagnostics", objectMapper.valueToTree(Map.of(
-            "branches", attempts.stream().map(Result::diagnostics).toList(),
-            "fusion", result.fusionDiagnostics(), "rerank", result.rerankDiagnostics(),
+            "plan", plan.summary(),
+            "sufficiency", sufficiency.summary(),
+            "followUp", Map.of(
+                "executed", followUp.execute(),
+                "queryCount", followUp.refinements().size(),
+                "skippedCategory", followUp.skippedCategory() == null ? "NONE" : followUp.skippedCategory()
+            ),
+            "attempts", attempts,
+            "fusion", result.fusionDiagnostics(),
+            "rerank", result.rerankDiagnostics(),
             "selection", result.selectionDiagnostics()
         )));
-        int successful = (int) attempts.stream().filter(value -> value.diagnostics().status() == Status.COMPLETED).count();
-        return new ProcessingResult(payload, result.candidates().size(), attempts, successful);
+        return payload;
+    }
+
+    private ActiveSchemaContext schemaContext(Context context) {
+        if (context.schemaSnapshotJson() == null || context.schemaSnapshotJson().isBlank()
+            || context.schemaDefinitionId() == null || context.schemaDefinitionId().isBlank()) {
+            return null;
+        }
+        SchemaDocument schema = schemaParser.parse(context.schemaSnapshotJson());
+        return new ActiveSchemaContext(context.knowledgeBaseId(), context.schemaDefinitionId(), null, schema);
+    }
+
+    private Subquery subquery(Refinement refinement) {
+        return new Subquery(refinement.id(), refinement.query());
+    }
+
+    private Attempt textAttempt(int round, Result result) {
+        return new Attempt(
+            round,
+            null,
+            result.branch().name(),
+            result.diagnostics().status().name(),
+            result.diagnostics().candidateCount(),
+            result.diagnostics().latencyMs(),
+            result.diagnostics().failureCategory()
+        );
+    }
+
+    private Attempt graphAttempt(String id, Diagnostics diagnostics) {
+        String status = diagnostics.status() == Status.VALIDATION_FAILED
+            ? "FAILED" : diagnostics.status().name();
+        return new Attempt(
+            1,
+            id,
+            "GRAPH",
+            status,
+            diagnostics.rowCount(),
+            diagnostics.latencyMs(),
+            diagnostics.failureCategory()
+        );
     }
 
     private List<Result> executeBranches(List<Callable<Result>> tasks, Context context) {
-        Duration remaining = Duration.between(Instant.now(), context.deadline());
-        if (remaining.isNegative() || remaining.isZero()) {
+        Duration remaining = remaining(context.deadline());
+        if (remaining.isZero()) {
             throw new AdvancedSearchStoppedException("DEADLINE_EXCEEDED");
         }
         try {
@@ -99,10 +286,9 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
                 tasks, remaining.toMillis(), TimeUnit.MILLISECONDS);
             List<Result> results = new ArrayList<>();
             for (Future<Result> future : futures) {
-                if (future.isCancelled()) {
-                    continue;
+                if (!future.isCancelled()) {
+                    results.add(future.get());
                 }
-                results.add(future.get());
             }
             return List.copyOf(results);
         } catch (InterruptedException exception) {
@@ -111,6 +297,11 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         } catch (ExecutionException exception) {
             throw new IllegalStateException("Advanced-search retrieval branch failed", exception.getCause());
         }
+    }
+
+    private Duration remaining(Instant deadline) {
+        Duration remaining = Duration.between(Instant.now(), deadline);
+        return remaining.isNegative() ? Duration.ZERO : remaining;
     }
 
     private void requireContinue(Context context) {

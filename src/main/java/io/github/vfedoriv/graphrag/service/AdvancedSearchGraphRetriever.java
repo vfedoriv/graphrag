@@ -42,23 +42,34 @@ public class AdvancedSearchGraphRetriever {
     }
 
     public Result retrieve(Request request) {
+        return retrieve(request, null, 0, null);
+    }
+
+    public Result retrieve(
+        Request request,
+        ActiveSchemaContext schemaContext,
+        int maxRows,
+        Duration timeout
+    ) {
         long startNanos = System.nanoTime();
         if (request.expired()) {
             return failed(Status.DEADLINE_EXCEEDED, startNanos, "deadline.expired");
         }
-        ValidationResult validation = validationService.validate(request.knowledgeBaseId(), request.plan());
+        ValidationResult validation = schemaContext == null
+            ? validationService.validate(request.knowledgeBaseId(), request.plan())
+            : validationService.validate(schemaContext, request.plan(), maxRows, timeout);
         if (!validation.valid()) {
             String category = validation.errors().isEmpty() ? "plan.invalid" : validation.errors().getFirst();
             return failed(Status.VALIDATION_FAILED, startNanos, category);
         }
         try {
             ValidatedGraphPlan validatedPlan = validation.validatedPlan();
-            Duration timeout = shorter(request.remaining(), validatedPlan.timeout());
-            if (timeout.isZero()) {
+            Duration effectiveTimeout = shorter(request.remaining(), validatedPlan.timeout());
+            if (effectiveTimeout.isZero()) {
                 return failed(Status.DEADLINE_EXCEEDED, startNanos, "deadline.expired");
             }
             Query query = renderer.render(validatedPlan);
-            List<Row> rows = repository.execute(query, timeout).stream()
+            List<Row> rows = repository.execute(query, effectiveTimeout).stream()
                 .map(this::toRow)
                 .filter(row -> !row.facts().isEmpty())
                 .limit(request.plan().limit())

@@ -314,12 +314,27 @@ public class RuntimeSettingsService {
             integer("app.advanced-search.graph-expansion-fact-limit"),
             integer("app.advanced-search.max-query-length"),
             integer("app.advanced-search.max-evidence-text-characters"),
+            integer("app.advanced-search.planning-max-subqueries"),
+            integer("app.advanced-search.planning-max-exact-terms"),
+            integer("app.advanced-search.planning-max-graph-requests"),
+            integer("app.advanced-search.planning-max-string-characters"),
+            integer("app.advanced-search.planning-evaluation-evidence-limit"),
+            integer("app.advanced-search.planning-evidence-excerpt-characters"),
+            integer("app.advanced-search.follow-up-max-queries"),
+            Duration.ofSeconds(integer("app.advanced-search.follow-up-minimum-remaining-seconds")),
+            Duration.ofSeconds(integer("app.advanced-search.synthesis-reserve-seconds")),
             Duration.ofHours(integer("app.advanced-search.retention-hours")),
             integer("app.advanced-search.cleanup-batch-size")
         );
-        validateAdvancedSearch(settings.defaultEvidence(), settings.maxEvidence(), settings.candidateLimit(),
+        validateAdvancedSearch(Math.toIntExact(settings.deadline().toSeconds()),
+            settings.defaultEvidence(), settings.maxEvidence(), settings.candidateLimit(),
             settings.maxCandidates(), settings.rerankPoolSize(), settings.graphExpansionSeedLimit(),
-            settings.graphExpansionFactLimit(), settings.maxQueryLength());
+            settings.graphExpansionFactLimit(), settings.maxQueryLength(), settings.planningMaxSubqueries(),
+            settings.planningMaxExactTerms(), settings.planningMaxGraphRequests(),
+            settings.planningMaxStringCharacters(), settings.planningEvaluationEvidenceLimit(),
+            settings.planningEvidenceExcerptCharacters(), settings.followUpMaxQueries(),
+            Math.toIntExact(settings.followUpMinimumRemaining().toSeconds()),
+            Math.toIntExact(settings.synthesisReserve().toSeconds()));
         return settings;
     }
 
@@ -469,6 +484,7 @@ public class RuntimeSettingsService {
             return;
         }
         validateAdvancedSearch(
+            prospectiveInteger("app.advanced-search.deadline-seconds", pending, clearedKey),
             prospectiveInteger("app.advanced-search.default-evidence", pending, clearedKey),
             prospectiveInteger("app.advanced-search.max-evidence", pending, clearedKey),
             prospectiveInteger("app.advanced-search.candidate-limit", pending, clearedKey),
@@ -476,13 +492,26 @@ public class RuntimeSettingsService {
             prospectiveInteger("app.advanced-search.rerank-pool-size", pending, clearedKey),
             prospectiveInteger("app.advanced-search.graph-expansion-seed-limit", pending, clearedKey),
             prospectiveInteger("app.advanced-search.graph-expansion-fact-limit", pending, clearedKey),
-            prospectiveInteger("app.advanced-search.max-query-length", pending, clearedKey)
+            prospectiveInteger("app.advanced-search.max-query-length", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-max-subqueries", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-max-exact-terms", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-max-graph-requests", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-max-string-characters", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-evaluation-evidence-limit", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.planning-evidence-excerpt-characters", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.follow-up-max-queries", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.follow-up-minimum-remaining-seconds", pending, clearedKey),
+            prospectiveInteger("app.advanced-search.synthesis-reserve-seconds", pending, clearedKey)
         );
     }
 
     private void validateAdvancedSearch(
-        int defaultEvidence, int maxEvidence, int candidateLimit, int maxCandidates,
-        int rerankPoolSize, int graphSeedLimit, int graphFactLimit, int maxQueryLength
+        int deadlineSeconds, int defaultEvidence, int maxEvidence, int candidateLimit, int maxCandidates,
+        int rerankPoolSize, int graphSeedLimit, int graphFactLimit, int maxQueryLength,
+        int planningMaxSubqueries, int planningMaxExactTerms, int planningMaxGraphRequests,
+        int planningMaxStringCharacters, int planningEvaluationEvidenceLimit,
+        int planningEvidenceExcerptCharacters, int followUpMaxQueries,
+        int followUpMinimumRemainingSeconds, int synthesisReserveSeconds
     ) {
         if (defaultEvidence > maxEvidence) {
             throw new IllegalArgumentException("app.advanced-search.default-evidence must not exceed max-evidence");
@@ -501,6 +530,22 @@ public class RuntimeSettingsService {
         }
         if (maxQueryLength > 4000) {
             throw new IllegalArgumentException("app.advanced-search.max-query-length must not exceed 4000");
+        }
+        if (planningMaxSubqueries > 3 || planningMaxExactTerms > 16 || planningMaxGraphRequests > 2) {
+            throw new IllegalArgumentException("Advanced-search planning counts exceed their allowed bounds");
+        }
+        if (planningMaxStringCharacters > maxQueryLength || planningMaxStringCharacters > 2000) {
+            throw new IllegalArgumentException("Advanced-search planning string bound exceeds its allowed limit");
+        }
+        if (planningEvaluationEvidenceLimit > maxEvidence || planningEvaluationEvidenceLimit > 20
+            || planningEvidenceExcerptCharacters > 4000) {
+            throw new IllegalArgumentException("Advanced-search planning evidence bounds exceed their allowed limits");
+        }
+        if (followUpMaxQueries > 2) {
+            throw new IllegalArgumentException("Advanced-search follow-up query count exceeds 2");
+        }
+        if (followUpMinimumRemainingSeconds + synthesisReserveSeconds >= deadlineSeconds) {
+            throw new IllegalArgumentException("Advanced-search follow-up and synthesis reserves must fit within the deadline");
         }
     }
 
@@ -693,6 +738,15 @@ public class RuntimeSettingsService {
         int graphExpansionFactLimit,
         int maxQueryLength,
         int maxEvidenceTextCharacters,
+        int planningMaxSubqueries,
+        int planningMaxExactTerms,
+        int planningMaxGraphRequests,
+        int planningMaxStringCharacters,
+        int planningEvaluationEvidenceLimit,
+        int planningEvidenceExcerptCharacters,
+        int followUpMaxQueries,
+        Duration followUpMinimumRemaining,
+        Duration synthesisReserve,
         Duration retention,
         int cleanupBatchSize
     ) { }

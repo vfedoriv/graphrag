@@ -7,7 +7,8 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchResultNode;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunNode;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
+import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.CreateRequest;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.ResultResponse;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.RunResponse;
@@ -19,6 +20,8 @@ import io.github.vfedoriv.graphrag.repository.AdvancedSearchAttemptRepository;
 import io.github.vfedoriv.graphrag.repository.AdvancedSearchResultRepository;
 import io.github.vfedoriv.graphrag.repository.AdvancedSearchRunRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Attempt;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Context;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.ProcessingResult;
 import io.github.vfedoriv.graphrag.service.DefaultAdvancedSearchRunProcessor.AdvancedSearchStoppedException;
@@ -42,6 +45,7 @@ public class AdvancedSearchRunService {
     private final AdvancedSearchAttemptRepository attemptRepository;
     private final AdvancedSearchResultRepository resultRepository;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
+    private final SchemaDefinitionRepository schemaDefinitionRepository;
     private final RuntimeSettingsService settingsService;
     private final AdvancedSearchRunProcessor processor;
     private final AdvancedSearchRunLifecycle lifecycle;
@@ -59,6 +63,7 @@ public class AdvancedSearchRunService {
         AdvancedSearchAttemptRepository attemptRepository,
         AdvancedSearchResultRepository resultRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
+        SchemaDefinitionRepository schemaDefinitionRepository,
         RuntimeSettingsService settingsService,
         AdvancedSearchRunProcessor processor,
         AdvancedSearchRunLifecycle lifecycle,
@@ -70,6 +75,7 @@ public class AdvancedSearchRunService {
     ) {
         this.runRepository = runRepository; this.attemptRepository = attemptRepository;
         this.resultRepository = resultRepository; this.knowledgeBaseRepository = knowledgeBaseRepository;
+        this.schemaDefinitionRepository = schemaDefinitionRepository;
         this.settingsService = settingsService; this.processor = processor; this.lifecycle = lifecycle;
         this.resultCodec = resultCodec; this.objectMapper = objectMapper; this.executor = executor;
         this.transactions = new TransactionTemplate(transactionManager);
@@ -90,9 +96,8 @@ public class AdvancedSearchRunService {
             .orElseThrow(AdvancedSearchCapacityException::new);
         try {
             AdvancedSearchRunNode saved = transactions.execute(status -> {
-                if (!knowledgeBaseRepository.existsById(knowledgeBaseId)) {
-                    throw new NotFoundException("Knowledge base not found: " + knowledgeBaseId);
-                }
+                KnowledgeBaseNode knowledgeBase = knowledgeBaseRepository.findById(knowledgeBaseId)
+                    .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
                 Instant now = Instant.now();
                 AdvancedSearchRunNode run = new AdvancedSearchRunNode();
                 run.setId(UUID.randomUUID().toString()); run.setKnowledgeBaseId(knowledgeBaseId); run.setQueryText(query);
@@ -100,6 +105,8 @@ public class AdvancedSearchRunService {
                 run.setRequestedEvidence(maximumEvidence);
                 run.setIncludeEvidenceText(Boolean.TRUE.equals(request.includeEvidenceText()));
                 run.setSettingsSnapshotJson(snapshot(settings)); run.setCompletedBranches(0); run.setTotalBranches(3);
+                run.setActiveAiProfileId(knowledgeBase.getActiveAiProfileId());
+                snapshotSchema(run, knowledgeBase);
                 run.setEvidenceCount(0); run.setDeadlineAt(now.plus(settings.deadline())); run.setCreatedAt(now);
                 return runRepository.save(run);
             });
@@ -177,7 +184,9 @@ public class AdvancedSearchRunService {
             }
             AdvancedSearchRunNode claimedRun = runRepository.findById(runId).orElseThrow();
             ProcessingResult processed = processor.process(new Context(
-                claimedRun.getKnowledgeBaseId(), claimedRun.getQueryText(), claimedRun.getRequestedEvidence(),
+                claimedRun.getKnowledgeBaseId(), claimedRun.getQueryText(), claimedRun.getActiveAiProfileId(),
+                claimedRun.getSchemaDefinitionId(), claimedRun.getSchemaContentHash(), claimedRun.getSchemaSnapshotJson(),
+                claimedRun.getRequestedEvidence(),
                 claimedRun.isIncludeEvidenceText(), claimedRun.getDeadlineAt(), settings,
                 () -> stopped(runId), stage -> updateStage(runId, stage)
             ));
@@ -204,7 +213,8 @@ public class AdvancedSearchRunService {
         result.setPayloadVersion(AdvancedSearchResultCodec.PAYLOAD_VERSION); result.setResultJson(json);
         result.setEvidenceCount(processed.evidenceCount()); result.setCreatedAt(Instant.now()); resultRepository.save(result);
         run.setCompletedBranches(processed.attempts().size());
-        AdvancedSearchRunStatus terminal = processed.successfulBranches() == run.getTotalBranches()
+        run.setTotalBranches(Math.max(1, processed.totalBranches()));
+        AdvancedSearchRunStatus terminal = processed.successfulBranches() == processed.totalBranches()
             ? AdvancedSearchRunStatus.COMPLETED : AdvancedSearchRunStatus.PARTIAL;
         lifecycle.terminal(run, terminal, terminal == AdvancedSearchRunStatus.PARTIAL ? "BRANCH_FAILURE" : null,
             processed.evidenceCount(), Instant.now(), settings.retention());
@@ -213,11 +223,12 @@ public class AdvancedSearchRunService {
 
     private void saveAttempts(String runId, ProcessingResult processed) {
         Instant now = Instant.now();
-        for (Result value : processed.attempts()) {
+        for (Attempt value : processed.attempts()) {
             AdvancedSearchAttemptNode attempt = new AdvancedSearchAttemptNode(); attempt.setId(UUID.randomUUID().toString());
-            attempt.setRunId(runId); attempt.setRoundNumber(1); attempt.setRetriever(value.branch().name());
-            attempt.setStatus(value.diagnostics().status().name()); attempt.setCandidateCount(value.diagnostics().candidateCount());
-            attempt.setLatencyMs(value.diagnostics().latencyMs()); attempt.setFailureCategory(value.diagnostics().failureCategory());
+            attempt.setRunId(runId); attempt.setRoundNumber(value.roundNumber()); attempt.setSubqueryId(value.subqueryId());
+            attempt.setRetriever(value.retriever()); attempt.setStatus(value.status());
+            attempt.setCandidateCount(value.candidateCount()); attempt.setLatencyMs(value.latencyMs());
+            attempt.setFailureCategory(value.failureCategory());
             attempt.setCreatedAt(now); attempt.setCompletedAt(now); attemptRepository.save(attempt);
         }
     }
@@ -261,6 +272,16 @@ public class AdvancedSearchRunService {
     private String snapshot(AdvancedSearchSettings settings) {
         try { return objectMapper.writeValueAsString(settings); }
         catch (JsonProcessingException exception) { throw new IllegalStateException("Cannot snapshot advanced-search settings", exception); }
+    }
+    private void snapshotSchema(AdvancedSearchRunNode run, KnowledgeBaseNode knowledgeBase) {
+        if (knowledgeBase.getActiveSchemaId() == null || knowledgeBase.getActiveSchemaId().isBlank()) {
+            return;
+        }
+        SchemaDefinitionNode schema = schemaDefinitionRepository.findById(knowledgeBase.getActiveSchemaId())
+            .orElseThrow(() -> new NotFoundException("Schema not found: " + knowledgeBase.getActiveSchemaId()));
+        run.setSchemaDefinitionId(schema.getId());
+        run.setSchemaContentHash(schema.getContentHash());
+        run.setSchemaSnapshotJson(schema.getContent());
     }
     private void requirePage(int page, int size) {
         if (page < 0 || size < 1 || size > 100) { throw new IllegalArgumentException("page must be non-negative and size must be between 1 and 100"); }

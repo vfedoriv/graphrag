@@ -29,6 +29,11 @@ public class AdvancedSearchRunEntity {
     @Column(name = "include_evidence_text", nullable = false) private boolean includeEvidenceText;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "settings_snapshot_json", nullable = false, columnDefinition = "jsonb") private String settingsSnapshotJson;
+    @Column(name = "active_ai_profile_id") private String activeAiProfileId;
+    @Column(name = "schema_definition_id") private String schemaDefinitionId;
+    @Column(name = "schema_content_hash", length = 64) private String schemaContentHash;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "schema_snapshot_json", columnDefinition = "jsonb") private String schemaSnapshotJson;
     @Column(name = "completed_branches", nullable = false) private int completedBranches;
     @Column(name = "total_branches", nullable = false) private int totalBranches;
     @Column(name = "evidence_count", nullable = false) private int evidenceCount;

@@ -13,14 +13,12 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunNode;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Branch;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Diagnostics;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.AdvancedSearchRunRepository;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchResultCodec;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRunMaintenance;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Attempt;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,13 +186,13 @@ class AdvancedSearchRunIntegrationTest {
                 }
                 ObjectNode payload = objectMapper.createObjectNode();
                 payload.put("payloadVersion", AdvancedSearchResultCodec.PAYLOAD_VERSION); payload.putArray("evidence");
-                List<Result> attempts = List.of(
+                List<Attempt> attempts = List.of(
                     result(Branch.DENSE), result(Branch.LEXICAL), result(Branch.METADATA));
-                return new AdvancedSearchRunProcessor.ProcessingResult(payload, 0, attempts, 3);
+                return new AdvancedSearchRunProcessor.ProcessingResult(payload, 0, attempts, 3, 3);
             };
         }
-        private Result result(Branch branch) {
-            return new Result(branch, List.of(), new Diagnostics(Status.COMPLETED, 1, 0, null));
+        private Attempt result(Branch branch) {
+            return new Attempt(1, null, branch.name(), "COMPLETED", 0, 1, null);
         }
     }
 }

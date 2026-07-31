@@ -2,7 +2,6 @@ package io.github.vfedoriv.graphrag.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
 import java.time.Instant;
 import java.util.List;
@@ -15,6 +14,10 @@ public interface AdvancedSearchRunProcessor {
     record Context(
         String knowledgeBaseId,
         String query,
+        String activeAiProfileId,
+        String schemaDefinitionId,
+        String schemaContentHash,
+        String schemaSnapshotJson,
         int maximumEvidence,
         boolean includeEvidenceText,
         Instant deadline,
@@ -23,7 +26,23 @@ public interface AdvancedSearchRunProcessor {
         Consumer<AdvancedSearchRunStage> stageChanged
     ) { }
 
-    record ProcessingResult(JsonNode payload, int evidenceCount, List<Result> attempts, int successfulBranches) {
+    record Attempt(
+        int roundNumber,
+        String subqueryId,
+        String retriever,
+        String status,
+        int candidateCount,
+        long latencyMs,
+        String failureCategory
+    ) { }
+
+    record ProcessingResult(
+        JsonNode payload,
+        int evidenceCount,
+        List<Attempt> attempts,
+        int successfulBranches,
+        int totalBranches
+    ) {
         public ProcessingResult { attempts = attempts == null ? List.of() : List.copyOf(attempts); }
     }
 }

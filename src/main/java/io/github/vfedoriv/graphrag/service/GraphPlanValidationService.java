@@ -60,7 +60,7 @@ public class GraphPlanValidationService {
         } catch (RuntimeException exception) {
             return new ValidationResult(false, List.of("scope.active-schema-unavailable"), null);
         }
-        validatePlan(plan, context.schema(), settings, errors);
+        validatePlan(plan, context.schema(), settings.maxRows(), errors);
         if (!errors.isEmpty()) {
             return new ValidationResult(false, List.copyOf(errors), null);
         }
@@ -71,10 +71,33 @@ public class GraphPlanValidationService {
         );
     }
 
+    public ValidationResult validate(
+        ActiveSchemaContext context,
+        GraphPlan plan,
+        int maxRows,
+        Duration timeout
+    ) {
+        if (context == null || context.schema() == null) {
+            return new ValidationResult(false, List.of("scope.schema-snapshot-unavailable"), null);
+        }
+        if (maxRows < 1 || timeout == null || timeout.isNegative() || timeout.isZero()) {
+            return new ValidationResult(false, List.of("scope.policy-invalid"), null);
+        }
+        List<String> errors = new ArrayList<>();
+        if (plan == null) {
+            return new ValidationResult(false, List.of("plan.required"), null);
+        }
+        validatePlan(plan, context.schema(), maxRows, errors);
+        if (!errors.isEmpty()) {
+            return new ValidationResult(false, List.copyOf(errors), null);
+        }
+        return new ValidationResult(true, List.of(), new ValidatedGraphPlan(plan, context, maxRows, timeout));
+    }
+
     private void validatePlan(
         GraphPlan plan,
         SchemaDocument schema,
-        RuntimeSettingsService.QuerySettings settings,
+        int maxRows,
         List<String> errors
     ) {
         List<String> labels = new ArrayList<>();
@@ -94,7 +117,7 @@ public class GraphPlanValidationService {
         validateProjections(plan.projections(), plan.hops().size(), labels, schema, errors);
         validateAggregation(plan.aggregation(), labels, schema, errors);
         validateOrdering(plan.ordering(), plan.projections(), plan.aggregation(), errors);
-        if (plan.limit() < 1 || plan.limit() > settings.maxRows()) {
+        if (plan.limit() < 1 || plan.limit() > maxRows) {
             errors.add("limit.out-of-range");
         }
     }
