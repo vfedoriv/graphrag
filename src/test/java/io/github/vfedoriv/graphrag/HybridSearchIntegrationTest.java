@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
+import io.github.vfedoriv.graphrag.dto.HybridSearchCitationKind;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
@@ -15,6 +16,7 @@ import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.service.HybridSearchService;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.Comparator;
 import java.time.Instant;
 import java.util.List;
@@ -55,6 +57,8 @@ class HybridSearchIntegrationTest {
     private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     @Autowired
     private DocumentUploadRepository documentUploadRepository;
+    @Autowired
+    private RuntimeSettingsService runtimeSettingsService;
 
     @BeforeEach
     void setUpGraph() {
@@ -75,9 +79,65 @@ class HybridSearchIntegrationTest {
             CREATE (noise:DocumentChunk {id: 'chunk-noise', knowledgeBaseId: 'kb-1', documentId: 'doc-3', chunkIndex: 1, text: 'Safety inspection checklist', metadata: '{"source":"maintenance.txt","section":"safety"}', embedding: [0.0, 1.0, 0.0]})
             CREATE (otherKbBest:DocumentChunk {id: 'chunk-other-kb-best', knowledgeBaseId: 'kb-2', documentId: 'doc-4', chunkIndex: 0, text: 'Other KB renewal exact match', metadata: '{"source":"other-kb.txt","section":"renewal"}', embedding: [1.0, 0.0, 0.0]})
             CREATE (otherKbNear:DocumentChunk {id: 'chunk-other-kb-near', knowledgeBaseId: 'kb-2', documentId: 'doc-4', chunkIndex: 1, text: 'Other KB renewal near match', metadata: '{"source":"other-kb.txt","section":"notice"}', embedding: [0.9, 0.1, 0.0]})
+            CREATE (parent:DocumentChunk {
+              id: 'parent-renewal',
+              kind: 'PARENT',
+              knowledgeBaseId: 'kb-1',
+              documentId: 'doc-1',
+              processingRunId: 'processing-renewal',
+              effectiveChunkerRevision: 'chunker-renewal-v1',
+              text: 'Acme renewal terms exact match. Acme renewal notice and extension terms.',
+              tokenEstimate: 18,
+              sourceStart: 0,
+              sourceEnd: 44,
+              pageStart: 4,
+              pageEnd: 5,
+              structuralPath: 'Renewal',
+              childCount: 2
+            })
+            SET exact.kind = 'CHILD',
+                exact.parentChunkId = parent.id,
+                exact.childIndex = 0,
+                exact.processingRunId = parent.processingRunId,
+                exact.effectiveChunkerRevision = parent.effectiveChunkerRevision,
+                exact.sourceStart = 0,
+                exact.sourceEnd = 28,
+                exact.pageStart = 4,
+                exact.pageEnd = 4,
+                exact.structuralPath = parent.structuralPath
+            SET near.kind = 'CHILD',
+                near.parentChunkId = parent.id,
+                near.childIndex = 1,
+                near.processingRunId = parent.processingRunId,
+                near.effectiveChunkerRevision = parent.effectiveChunkerRevision,
+                near.sourceStart = 0,
+                near.sourceEnd = 44,
+                near.pageStart = 5,
+                near.pageEnd = 5,
+                near.structuralPath = parent.structuralPath
             CREATE (contract:Contract {id: 'contract-1', contractId: 'C-1', title: 'Master Agreement'})
             CREATE (party:Party {id: 'party-1', name: 'Acme'})
             CREATE (obligation:Obligation {id: 'obligation-1', summary: 'Renewal notice must be sent 30 days before expiry'})
+            CREATE (evidence:GraphExtractionEvidence:NodeExtractionEvidence {
+              id: 'evidence-parent-contract',
+              factKind: 'NODE',
+              canonicalFactId: 'contract-1',
+              knowledgeBaseId: 'kb-1',
+              sourceDocumentId: 'doc-1',
+              sourceChunkId: parent.id,
+              sourceChunkKind: 'PARENT',
+              sourceChunkText: parent.text,
+              sourceStart: parent.sourceStart,
+              sourceEnd: parent.sourceEnd,
+              pageStart: parent.pageStart,
+              pageEnd: parent.pageEnd,
+              processingRunId: parent.processingRunId,
+              effectiveChunkerRevision: parent.effectiveChunkerRevision
+            })
+            CREATE (parent)-[:HAS_CHILD {ordinal: 0}]->(exact)
+            CREATE (parent)-[:HAS_CHILD {ordinal: 1}]->(near)
+            CREATE (parent)-[:HAS_GRAPH_EVIDENCE]->(evidence)
+            CREATE (evidence)-[:ASSERTS_NODE]->(contract)
             CREATE (exact)-[:MENTIONS]->(contract)
             CREATE (near)-[:MENTIONS]->(obligation)
             CREATE (related)-[:MENTIONS]->(party)
@@ -172,6 +232,63 @@ class HybridSearchIntegrationTest {
         assertThat(response.hits())
             .extracting(hit -> hit.text())
             .containsOnlyNulls();
+    }
+
+    @Test
+    void assemblesSiblingEvidenceCrossPageParentContextAndGraphParentCitation() {
+        HybridSearchResponse response = hybridSearchService.search(
+            "kb-1",
+            new HybridSearchRequest("renewal terms", 2, 1, true)
+        );
+
+        assertThat(response.hits()).extracting(hit -> hit.chunkId())
+            .containsExactly("chunk-renewal-exact", "chunk-renewal-near");
+        assertThat(response.hits()).extracting(hit -> hit.retrievalEvidence().citationKind())
+            .containsOnly(HybridSearchCitationKind.TEXT_CHILD);
+        assertThat(response.hits()).extracting(hit -> hit.retrievalEvidence().sourceSpan().pageStart())
+            .containsExactly(4, 5);
+        assertThat(response.expandedContexts()).singleElement().satisfies(context -> {
+            assertThat(context.contextChunkId()).isEqualTo("parent-renewal");
+            assertThat(context.contextRange().pageStart()).isEqualTo(4);
+            assertThat(context.contextRange().pageEnd()).isEqualTo(5);
+            assertThat(context.evidenceChunkIds())
+                .containsExactly("chunk-renewal-exact", "chunk-renewal-near");
+            assertThat(context.citationKind()).isEqualTo(HybridSearchCitationKind.CONTEXT_ONLY);
+        });
+        assertThat(response.graphEvidence()).singleElement().satisfies(evidence -> {
+            assertThat(evidence.sourceChunkId()).isEqualTo("parent-renewal");
+            assertThat(evidence.sourceRange().pageStart()).isEqualTo(4);
+            assertThat(evidence.sourceRange().pageEnd()).isEqualTo(5);
+            assertThat(evidence.citationKind()).isEqualTo(HybridSearchCitationKind.GRAPH_PARENT);
+        });
+    }
+
+    @Test
+    void expansionMeasurementPreservesFlatRetrievalAndReportsBoundedContext() {
+        runtimeSettingsService.update("app.query.parent-context-expansion-enabled", false);
+        HybridSearchResponse flat = hybridSearchService.search(
+            "kb-1",
+            new HybridSearchRequest("renewal terms", 2, 1, true)
+        );
+        runtimeSettingsService.update("app.query.parent-context-expansion-enabled", true);
+
+        HybridSearchResponse expanded = hybridSearchService.search(
+            "kb-1",
+            new HybridSearchRequest("renewal terms", 2, 1, true)
+        );
+
+        assertThat(expanded.hits()).extracting(hit -> hit.chunkId())
+            .containsExactlyElementsOf(flat.hits().stream().map(hit -> hit.chunkId()).toList());
+        assertThat(expanded.hits()).extracting(hit -> hit.score())
+            .containsExactlyElementsOf(flat.hits().stream().map(hit -> hit.score()).toList());
+        assertThat(flat.expandedContexts()).isEmpty();
+        assertThat(expanded.expandedContexts()).hasSize(1);
+        assertThat(expanded.expansion().contextTokenEstimate()).isEqualTo(18);
+        assertThat(expanded.expansion().executionTimeMs()).isGreaterThanOrEqualTo(0);
+        assertThat(expanded.expansion().outcomes()).containsEntry("DEDUPLICATED", 1);
+        assertThat(expanded.graphEvidence()).allSatisfy(evidence ->
+            assertThat(evidence.citationKind()).isEqualTo(HybridSearchCitationKind.GRAPH_PARENT)
+        );
     }
 
     @Test

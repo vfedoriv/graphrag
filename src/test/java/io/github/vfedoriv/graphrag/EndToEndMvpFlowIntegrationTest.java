@@ -125,8 +125,9 @@ class EndToEndMvpFlowIntegrationTest {
             RETURN DISTINCT type(relationship)
             """).fetchAs(String.class).all());
         assertThat(relationshipTypes)
-            .contains("HAS_GRAPH_EVIDENCE", "ASSERTS_NODE", "ASSERTS_FROM", "ASSERTS_TO", "HAS_PARTY")
+            .contains("HAS_CHILD", "HAS_GRAPH_EVIDENCE", "ASSERTS_NODE", "ASSERTS_FROM", "ASSERTS_TO", "HAS_PARTY")
             .allMatch(Set.of(
+                "HAS_CHILD",
                 "HAS_GRAPH_EVIDENCE",
                 "ASSERTS_NODE",
                 "ASSERTS_FROM",

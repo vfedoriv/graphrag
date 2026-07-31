@@ -49,3 +49,9 @@ The system SHALL make source-model failures operationally diagnosable using boun
 - **THEN** normal application logs remain metadata-only
 - **AND** any captured prompt or response content continues to flow only through `AiObservationService` according to its runtime privacy and length controls
 
+### Requirement: Content-free expansion diagnostics
+Operational logs SHALL record expansion counts, budget decisions, strategy revisions, validation outcomes, and timings without logging child or parent text, embeddings, prompts, queries, or model responses.
+
+#### Scenario: Parent rejected during expansion
+- **WHEN** a candidate parent fails scope validation
+- **THEN** logs contain safe identifiers or fingerprints and the rejection reason but no source content

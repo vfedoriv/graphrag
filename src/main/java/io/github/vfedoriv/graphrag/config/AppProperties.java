@@ -98,8 +98,15 @@ public record AppProperties(
         @Min(1) int hybridSearchMaxCandidates,
         @Min(0) int hybridSearchDefaultGraphDepth,
         @Min(0) int hybridSearchMaxGraphDepth,
-        boolean hybridSearchIncludeChunkText
+        boolean hybridSearchIncludeChunkText,
+        Boolean parentContextExpansionEnabled,
+        @Min(1) int parentContextMaxTokens,
+        @Min(1) int parentContextMaxParents,
+        @Min(1) int parentContextMaxEvidence,
+        @Min(1) int parentContextMaxPerDocument,
+        @Min(0) int parentContextAdjacentChunks
     ) {
+        @ConstructorBinding
         public Query {
             if (hybridSearchDefaultTopK == 0) {
                 hybridSearchDefaultTopK = 10;
@@ -116,6 +123,62 @@ public record AppProperties(
             if (hybridSearchMaxGraphDepth == 0 && hybridSearchDefaultGraphDepth > 0) {
                 hybridSearchMaxGraphDepth = hybridSearchDefaultGraphDepth;
             }
+            if (parentContextExpansionEnabled == null) {
+                parentContextExpansionEnabled = true;
+            }
+            if (parentContextMaxTokens == 0) {
+                parentContextMaxTokens = 4096;
+            }
+            if (parentContextMaxParents == 0) {
+                parentContextMaxParents = 8;
+            }
+            if (parentContextMaxEvidence == 0) {
+                parentContextMaxEvidence = 20;
+            }
+            if (parentContextMaxPerDocument == 0) {
+                parentContextMaxPerDocument = 2;
+            }
+            if (parentContextAdjacentChunks == 0) {
+                parentContextAdjacentChunks = 1;
+            }
+        }
+
+        public Query(
+            int maxRows,
+            int timeoutSeconds,
+            boolean requireLimit,
+            List<String> blockedKeywords,
+            int hybridSearchDefaultTopK,
+            int hybridSearchMaxTopK,
+            int hybridSearchCandidateMultiplier,
+            int hybridSearchMaxCandidates,
+            int hybridSearchDefaultGraphDepth,
+            int hybridSearchMaxGraphDepth,
+            boolean hybridSearchIncludeChunkText
+        ) {
+            this(
+                maxRows,
+                timeoutSeconds,
+                requireLimit,
+                blockedKeywords,
+                hybridSearchDefaultTopK,
+                hybridSearchMaxTopK,
+                hybridSearchCandidateMultiplier,
+                hybridSearchMaxCandidates,
+                hybridSearchDefaultGraphDepth,
+                hybridSearchMaxGraphDepth,
+                hybridSearchIncludeChunkText,
+                true,
+                4096,
+                8,
+                20,
+                2,
+                1
+            );
+        }
+
+        public boolean effectiveParentContextExpansionEnabled() {
+            return Boolean.TRUE.equals(parentContextExpansionEnabled);
         }
     }
 

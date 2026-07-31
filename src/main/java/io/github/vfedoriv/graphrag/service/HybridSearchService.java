@@ -1,12 +1,16 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphContext;
+import io.github.vfedoriv.graphrag.dto.HybridSearchGraphEvidence;
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphEntity;
 import io.github.vfedoriv.graphrag.dto.HybridSearchGraphRelationship;
 import io.github.vfedoriv.graphrag.dto.HybridSearchHit;
 import io.github.vfedoriv.graphrag.dto.HybridSearchRequest;
 import io.github.vfedoriv.graphrag.dto.HybridSearchResponse;
+import io.github.vfedoriv.graphrag.dto.HybridSearchRetrievalEvidence;
 import io.github.vfedoriv.graphrag.dto.HybridSearchSource;
+import io.github.vfedoriv.graphrag.dto.HybridSearchSourceRange;
+import io.github.vfedoriv.graphrag.dto.HybridSearchCitationKind;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
@@ -34,6 +38,8 @@ public class HybridSearchService {
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
     private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
     private final DocumentUploadRepository documentUploadRepository;
+    private final ParentContextExpansionService parentContextExpansionService;
+    private final QueryEvidenceAssemblyService queryEvidenceAssemblyService;
 
     @Autowired
     public HybridSearchService(
@@ -43,7 +49,9 @@ public class HybridSearchService {
         KnowledgeBaseService knowledgeBaseService,
         EmbeddingSpacePolicy embeddingSpacePolicy,
         EmbeddingSpaceIndexService embeddingSpaceIndexService,
-        DocumentUploadRepository documentUploadRepository
+        DocumentUploadRepository documentUploadRepository,
+        ParentContextExpansionService parentContextExpansionService,
+        QueryEvidenceAssemblyService queryEvidenceAssemblyService
     ) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.aiClientResolver = aiClientResolver;
@@ -52,6 +60,30 @@ public class HybridSearchService {
         this.embeddingSpacePolicy = embeddingSpacePolicy;
         this.embeddingSpaceIndexService = embeddingSpaceIndexService;
         this.documentUploadRepository = documentUploadRepository;
+        this.parentContextExpansionService = parentContextExpansionService;
+        this.queryEvidenceAssemblyService = queryEvidenceAssemblyService;
+    }
+
+    public HybridSearchService(
+        RuntimeSettingsService runtimeSettingsService,
+        ProfileScopedAiClientResolver aiClientResolver,
+        Neo4jClient neo4jClient,
+        KnowledgeBaseService knowledgeBaseService,
+        EmbeddingSpacePolicy embeddingSpacePolicy,
+        EmbeddingSpaceIndexService embeddingSpaceIndexService,
+        DocumentUploadRepository documentUploadRepository
+    ) {
+        this(
+            runtimeSettingsService,
+            aiClientResolver,
+            neo4jClient,
+            knowledgeBaseService,
+            embeddingSpacePolicy,
+            embeddingSpaceIndexService,
+            documentUploadRepository,
+            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
+            new QueryEvidenceAssemblyService()
+        );
     }
 
     public HybridSearchService(
@@ -72,7 +104,9 @@ public class HybridSearchService {
             knowledgeBaseService,
             new EmbeddingSpacePolicy(documentChunkRepository),
             new EmbeddingSpaceIndexService(neo4jClient),
-            null
+            null,
+            new ParentContextExpansionService((knowledgeBaseId, candidates, adjacentChunks) -> List.of()),
+            new QueryEvidenceAssemblyService()
         );
     }
 
@@ -117,9 +151,19 @@ public class HybridSearchService {
             .bind(knowledgeBaseId).to("knowledgeBaseId")
             .bind(embeddingSpace.id()).to("embeddingSpaceId")
             .bind(topK).to("topK")
+            .bind(includeChunkText).to("includeChunkText")
             .fetch()
             .all());
-        List<HybridSearchHit> hits = enrichHits(knowledgeBaseId, rows, includeChunkText);
+        List<HybridSearchHit> baseHits = enrichHits(knowledgeBaseId, rows, includeChunkText);
+        ParentContextExpansionService.ExpansionResult expansion = parentContextExpansionService.expand(
+            knowledgeBaseId,
+            baseHits,
+            runtimeSettingsService.query(),
+            includeChunkText
+        );
+        QueryEvidenceAssemblyService.QueryEvidenceAssembly evidenceAssembly =
+            queryEvidenceAssemblyService.assemble(expansion.hits(), expansion.contexts());
+        List<HybridSearchHit> hits = evidenceAssembly.hits();
         HybridSearchResponse response = new HybridSearchResponse(
             request.query(),
             topK,
@@ -127,7 +171,10 @@ public class HybridSearchService {
             includeChunkText,
             hits,
             hits.size(),
-            LogMetadata.elapsedMillis(startNanos)
+            LogMetadata.elapsedMillis(startNanos),
+            evidenceAssembly.contexts(),
+            evidenceAssembly.graphEvidence(),
+            expansion.diagnostics()
         );
         log.info(
             "Hybrid search completed: knowledgeBaseId={}, hitCount={}, executionTimeMs={}",
@@ -236,8 +283,24 @@ public class HybridSearchService {
             source,
             new HybridSearchGraphContext(
                 toEntities(row.get("entities")),
-                toRelationships(row.get("relationships"))
-            )
+                toRelationships(row.get("relationships")),
+                toGraphEvidence(row.get("graphEvidence"))
+            ),
+            new HybridSearchRetrievalEvidence(
+                chunkId,
+                text,
+                new HybridSearchSourceRange(
+                    nullableIntValue(row.get("sourceStart")),
+                    nullableIntValue(row.get("sourceEnd")),
+                    nullableIntValue(row.get("pageStart")),
+                    nullableIntValue(row.get("pageEnd"))
+                ),
+                stringValue(row.get("processingRunId")),
+                stringValue(row.get("effectiveChunkerRevision")),
+                stringValue(row.get("structuralPath")),
+                HybridSearchCitationKind.TEXT_CHILD
+            ),
+            null
         );
     }
 
@@ -265,6 +328,30 @@ public class HybridSearchService {
             ));
         }
         return relationships;
+    }
+
+    private List<HybridSearchGraphEvidence> toGraphEvidence(Object value) {
+        List<HybridSearchGraphEvidence> evidence = new ArrayList<>();
+        for (Map<String, Object> item : mapList(value)) {
+            evidence.add(new HybridSearchGraphEvidence(
+                stringValue(item.get("evidenceId")),
+                stringValue(item.get("factKind")),
+                stringValue(item.get("canonicalFactId")),
+                stringValue(item.get("sourceDocumentId")),
+                stringValue(item.get("sourceChunkId")),
+                stringValue(item.get("sourceText")),
+                new HybridSearchSourceRange(
+                    nullableIntValue(item.get("sourceStart")),
+                    nullableIntValue(item.get("sourceEnd")),
+                    nullableIntValue(item.get("pageStart")),
+                    nullableIntValue(item.get("pageEnd"))
+                ),
+                stringValue(item.get("processingRunId")),
+                stringValue(item.get("effectiveChunkerRevision")),
+                HybridSearchCitationKind.GRAPH_PARENT
+            ));
+        }
+        return evidence;
     }
 
     private List<Map<String, Object>> mapList(Object value) {
@@ -314,8 +401,8 @@ public class HybridSearchService {
         return value instanceof Number number ? number.intValue() : 0;
     }
 
-    private long longValue(Object value) {
-        return value instanceof Number number ? number.longValue() : 0L;
+    private Integer nullableIntValue(Object value) {
+        return value instanceof Number number ? number.intValue() : null;
     }
 
     private double doubleValue(Object value) {
@@ -335,10 +422,19 @@ public class HybridSearchService {
             WITH chunk, score
             ORDER BY score DESC
             LIMIT $topK
-            OPTIONAL MATCH (chunk)-[:MENTIONS]->(mentioned)
+            OPTIONAL MATCH (parent:DocumentChunk {id: chunk.parentChunkId, kind: 'PARENT'})-[:HAS_CHILD]->(chunk)
+            WITH chunk, score, coalesce(parent, chunk) AS evidenceChunk
+            OPTIONAL MATCH (evidenceChunk)-[:HAS_GRAPH_EVIDENCE]->(graphEvidence:GraphExtractionEvidence)
+            OPTIONAL MATCH (graphEvidence)-[:ASSERTS_NODE|ASSERTS_FROM|ASSERTS_TO]->(evidenceEntity)
+            OPTIONAL MATCH (chunk)-[:MENTIONS]->(legacyMentioned)
+            WITH chunk, score, evidenceChunk, collect(DISTINCT graphEvidence) AS graphEvidenceNodes,
+                 collect(DISTINCT evidenceEntity) + collect(DISTINCT legacyMentioned) AS mentionedNodes
+            UNWIND CASE WHEN mentionedNodes = [] THEN [null] ELSE mentionedNodes END AS mentioned
             OPTIONAL MATCH path = (mentioned)-[*0..%d]-(neighbor)
-            WITH chunk, score, collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes, collect(DISTINCT relationships(path)) AS relationshipGroups
-            WITH chunk, score,
+            WITH chunk, score, evidenceChunk, graphEvidenceNodes,
+                 collect(DISTINCT mentioned) + collect(DISTINCT neighbor) AS entityNodes,
+                 collect(DISTINCT relationships(path)) AS relationshipGroups
+            WITH chunk, score, evidenceChunk, graphEvidenceNodes,
                  [entity IN entityNodes WHERE entity IS NOT NULL | {
                      elementId: elementId(entity),
                      labels: labels(entity),
@@ -351,8 +447,31 @@ public class HybridSearchService {
                 chunk.chunkIndex AS chunkIndex,
                 chunk.text AS text,
                 chunk.metadata AS chunkMetadata,
+                chunk.processingRunId AS processingRunId,
+                chunk.effectiveChunkerRevision AS effectiveChunkerRevision,
+                chunk.sourceStart AS sourceStart,
+                chunk.sourceEnd AS sourceEnd,
+                chunk.pageStart AS pageStart,
+                chunk.pageEnd AS pageEnd,
+                chunk.structuralPath AS structuralPath,
                 score AS score,
                 entities AS entities,
+                [evidence IN graphEvidenceNodes WHERE evidence IS NOT NULL
+                  AND evidence.sourceChunkId = evidenceChunk.id
+                  AND evidence.sourceChunkKind = 'PARENT' | {
+                    evidenceId: evidence.id,
+                    factKind: evidence.factKind,
+                    canonicalFactId: evidence.canonicalFactId,
+                    sourceDocumentId: evidence.sourceDocumentId,
+                    sourceChunkId: evidence.sourceChunkId,
+                    sourceText: CASE WHEN $includeChunkText THEN evidence.sourceChunkText ELSE null END,
+                    sourceStart: evidence.sourceStart,
+                    sourceEnd: evidence.sourceEnd,
+                    pageStart: evidence.pageStart,
+                    pageEnd: evidence.pageEnd,
+                    processingRunId: evidence.processingRunId,
+                    effectiveChunkerRevision: evidence.effectiveChunkerRevision
+                  }] AS graphEvidence,
                 [rel IN flatRelationships WHERE rel IS NOT NULL | {
                     elementId: elementId(rel),
                     type: type(rel),

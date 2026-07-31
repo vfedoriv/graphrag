@@ -47,6 +47,18 @@ public final class RuntimeSettingsCatalog {
         addInt(map, "app.query.hybrid-search-default-graph-depth", "query", appProperties.query().hybridSearchDefaultGraphDepth(), 0);
         addInt(map, "app.query.hybrid-search-max-graph-depth", "query", appProperties.query().hybridSearchMaxGraphDepth(), 0);
         addBool(map, "app.query.hybrid-search-include-chunk-text", "query", appProperties.query().hybridSearchIncludeChunkText());
+        addBool(map, "app.query.parent-context-expansion-enabled", "query",
+            appProperties.query().effectiveParentContextExpansionEnabled());
+        addInt(map, "app.query.parent-context-max-tokens", "query",
+            appProperties.query().parentContextMaxTokens(), 1);
+        addInt(map, "app.query.parent-context-max-parents", "query",
+            appProperties.query().parentContextMaxParents(), 1);
+        addInt(map, "app.query.parent-context-max-evidence", "query",
+            appProperties.query().parentContextMaxEvidence(), 1);
+        addInt(map, "app.query.parent-context-max-per-document", "query",
+            appProperties.query().parentContextMaxPerDocument(), 1);
+        addInt(map, "app.query.parent-context-adjacent-chunks", "query",
+            appProperties.query().parentContextAdjacentChunks(), 0);
         addLiveString(
             map,
             "app.chunking.strategy",

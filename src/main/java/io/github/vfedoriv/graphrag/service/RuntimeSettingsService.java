@@ -168,7 +168,13 @@ public class RuntimeSettingsService {
             integer("app.query.hybrid-search-max-candidates"),
             integer("app.query.hybrid-search-default-graph-depth"),
             integer("app.query.hybrid-search-max-graph-depth"),
-            bool("app.query.hybrid-search-include-chunk-text")
+            bool("app.query.hybrid-search-include-chunk-text"),
+            bool("app.query.parent-context-expansion-enabled"),
+            integer("app.query.parent-context-max-tokens"),
+            integer("app.query.parent-context-max-parents"),
+            integer("app.query.parent-context-max-evidence"),
+            integer("app.query.parent-context-max-per-document"),
+            integer("app.query.parent-context-adjacent-chunks")
         );
     }
 
@@ -509,7 +515,13 @@ public class RuntimeSettingsService {
         int hybridSearchMaxCandidates,
         int hybridSearchDefaultGraphDepth,
         int hybridSearchMaxGraphDepth,
-        boolean hybridSearchIncludeChunkText
+        boolean hybridSearchIncludeChunkText,
+        boolean parentContextExpansionEnabled,
+        int parentContextMaxTokens,
+        int parentContextMaxParents,
+        int parentContextMaxEvidence,
+        int parentContextMaxPerDocument,
+        int parentContextAdjacentChunks
     ) {
     }
 
