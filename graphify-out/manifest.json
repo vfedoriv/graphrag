@@ -365,8 +365,8 @@
     "semantic_hash": "b1f7efceeb4a286073cf8388b1a587af"
   },
   "src/main/java/io/github/vfedoriv/graphrag/observability/AiModelCallObservation.java": {
-    "mtime": 1785061889.2769392,
-    "ast_hash": "cddd0812480880cc55b29f6e0c20762d",
+    "mtime": 1785526273.7686443,
+    "ast_hash": "70d87bd5cf8f6b53a4f2f17fb35aa9ab",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationAttributes.java": {
@@ -380,8 +380,8 @@
     "semantic_hash": "0757efea95f426ea5cc2e37c76aa714c"
   },
   "src/main/java/io/github/vfedoriv/graphrag/observability/AiObservationService.java": {
-    "mtime": 1784098429.8172407,
-    "ast_hash": "5a3f09563f6251ff8a64956b4525dbea",
+    "mtime": 1785526053.1750805,
+    "ast_hash": "e9ad38e37463b37ecc9259c976e7776f",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/observability/AiTokenUsage.java": {
@@ -6074,36 +6074,6 @@
     "ast_hash": "daaac4f5fd6ecf542f5f70489d657127",
     "semantic_hash": ""
   },
-  "openspec/changes/add-adaptive-advanced-search-planning/.openspec.yaml": {
-    "mtime": 1785517010.0587666,
-    "ast_hash": "ddf60b86140b78924976483066c7bf40",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-adaptive-advanced-search-planning/README.md": {
-    "mtime": 1785517010.0607672,
-    "ast_hash": "43bfb21436e5379e08e2874b08c808af",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-adaptive-advanced-search-planning/design.md": {
-    "mtime": 1785517230.565912,
-    "ast_hash": "81bd367e3109bd8426c1ecf2c1130dc3",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-adaptive-advanced-search-planning/proposal.md": {
-    "mtime": 1785517230.409922,
-    "ast_hash": "b0bf3c511ab17a9b5f6788d90fcabafa",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-adaptive-advanced-search-planning/specs/advanced-search-planning/spec.md": {
-    "mtime": 1785517230.7539,
-    "ast_hash": "545d4c63c212adf5fd6fc9cf23a26101",
-    "semantic_hash": ""
-  },
-  "openspec/changes/add-adaptive-advanced-search-planning/tasks.md": {
-    "mtime": 1785525186.9145656,
-    "ast_hash": "896dafc83288cfeddbe6b151e1823bea",
-    "semantic_hash": ""
-  },
   "openspec/changes/add-cited-advanced-search-synthesis/.openspec.yaml": {
     "mtime": 1785517010.3578517,
     "ast_hash": "ddf60b86140b78924976483066c7bf40",
@@ -6135,8 +6105,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/add-cited-advanced-search-synthesis/tasks.md": {
-    "mtime": 1785517312.708139,
-    "ast_hash": "3b438f23d6dd2a87e6bb3308b7c77415",
+    "mtime": 1785526587.6339664,
+    "ast_hash": "37cfc6153c611d6e942c94292969b8d2",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-31-fix-test-suite-context-isolation/.openspec.yaml": {
@@ -6325,8 +6295,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchRankingPipeline.java": {
-    "mtime": 1785521627.5541005,
-    "ast_hash": "ad4c41a094f2cd251fb5ae25b0ce451a",
+    "mtime": 1785526366.250334,
+    "ast_hash": "d761ad85b798dd58844072bbe1fe73d0",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchReranker.java": {
@@ -6430,8 +6400,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/AdvancedSearchRunStage.java": {
-    "mtime": 1785523010.9503574,
-    "ast_hash": "ab160e013be70cce0b42d446695d58b4",
+    "mtime": 1785526116.7552161,
+    "ast_hash": "1043598ff372952d82b32d143176e8af",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/AdvancedSearchRunStatus.java": {
@@ -6520,8 +6490,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchResultCodec.java": {
-    "mtime": 1785523210.1298485,
-    "ast_hash": "2d437b976ca88879d2946d82bb07ae6a",
+    "mtime": 1785526135.9158719,
+    "ast_hash": "e9aa794e0606d0c21bf8104689d18813",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchRunLifecycle.java": {
@@ -6535,18 +6505,18 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchRunProcessor.java": {
-    "mtime": 1785525152.5067644,
-    "ast_hash": "3667c765e203b6709150424816f9d58c",
+    "mtime": 1785526117.1121905,
+    "ast_hash": "a1734328efe27079e337c58231ab29c5",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchRunService.java": {
-    "mtime": 1785525145.750608,
-    "ast_hash": "d8ec20c40ed13e973415f9c12733be71",
+    "mtime": 1785526380.0377622,
+    "ast_hash": "a811fea4b1864df7d914d30efa0194e4",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/DefaultAdvancedSearchRunProcessor.java": {
-    "mtime": 1785525145.5396032,
-    "ast_hash": "b6e5f68b22f8dfeb0bbf576061ca87cc",
+    "mtime": 1785526379.8117714,
+    "ast_hash": "628dc4e0671591158f2de7a2d2358e4e",
     "semantic_hash": ""
   },
   "src/main/resources/db/migration/V9__add_durable_advanced_search_runs.sql": {
@@ -6565,8 +6535,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/AdvancedSearchResultCodecTest.java": {
-    "mtime": 1785523426.267887,
-    "ast_hash": "4f863c4ca5461f5df6aea48b1b4738a4",
+    "mtime": 1785526235.3826997,
+    "ast_hash": "5db333769589879ca6748bb3bc07f8e1",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/AdvancedSearchRunLifecycleTest.java": {
@@ -6682,6 +6652,76 @@
   "openspec/specs/advanced-search-runs/spec.md": {
     "mtime": 1785524211.6763124,
     "ast_hash": "6d27d1b731d270d543a3490f9d7d3b08",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/domain/AdvancedSearchAnswerContracts.java": {
+    "mtime": 1785526552.9118934,
+    "ast_hash": "9bb4a570bfb94749244debcd96bccdbd",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/observability/AdvancedSearchMetrics.java": {
+    "mtime": 1785526366.4853241,
+    "ast_hash": "45d4015352cdfd48e28d863429232163",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchAnswerSynthesizer.java": {
+    "mtime": 1785526053.3820636,
+    "ast_hash": "3b698f127ca567de7e04590deffa72ab",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchAnswerValidator.java": {
+    "mtime": 1785525971.630333,
+    "ast_hash": "4d3f20c9423e7fe47de0c3391ab11460",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/AdvancedSearchCitationCatalog.java": {
+    "mtime": 1785526553.0958881,
+    "ast_hash": "995d4d6ef1cfd8cf518fc127de79c20d",
+    "semantic_hash": ""
+  },
+  "src/main/resources/db/migration/V11__add_advanced_search_synthesis_stage.sql": {
+    "mtime": 1785526116.9142046,
+    "ast_hash": "b385b1d518bf7acd421f7df899da200b",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/service/AdvancedSearchAnsweringTest.java": {
+    "mtime": 1785526444.7232983,
+    "ast_hash": "ccbdb139e067b9266da3eaf65c9bb5de",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/.openspec.yaml": {
+    "mtime": 1785517010.0587666,
+    "ast_hash": "ddf60b86140b78924976483066c7bf40",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/README.md": {
+    "mtime": 1785517010.0607672,
+    "ast_hash": "43bfb21436e5379e08e2874b08c808af",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/design.md": {
+    "mtime": 1785517230.565912,
+    "ast_hash": "81bd367e3109bd8426c1ecf2c1130dc3",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/proposal.md": {
+    "mtime": 1785517230.409922,
+    "ast_hash": "b0bf3c511ab17a9b5f6788d90fcabafa",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/specs/advanced-search-planning/spec.md": {
+    "mtime": 1785517230.7539,
+    "ast_hash": "545d4c63c212adf5fd6fc9cf23a26101",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-31-add-adaptive-advanced-search-planning/tasks.md": {
+    "mtime": 1785525343.6123056,
+    "ast_hash": "9f24c2d5a7e2c33af17a2a991f264f4f",
+    "semantic_hash": ""
+  },
+  "openspec/specs/advanced-search-planning/spec.md": {
+    "mtime": 1785525502.1782117,
+    "ast_hash": "026cfd824361c6160838f76f53ce62f8",
     "semantic_hash": ""
   }
 }

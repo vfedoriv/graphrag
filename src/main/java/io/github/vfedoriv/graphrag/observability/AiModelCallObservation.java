@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.observability;
 import io.micrometer.observation.Observation;
 import io.opentelemetry.api.trace.Span;
 
-public final class AiModelCallObservation extends AiObservationScope {
+public class AiModelCallObservation extends AiObservationScope {
 
     private final AiObservationService service;
     private final AiModelCallContext context;

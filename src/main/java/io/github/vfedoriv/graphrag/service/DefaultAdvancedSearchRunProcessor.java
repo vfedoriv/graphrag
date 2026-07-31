@@ -24,6 +24,13 @@ import io.github.vfedoriv.graphrag.service.AdvancedSearchPlanValidator.Validated
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRankingPipeline.RankingRequest;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRankingPipeline.RankingResult;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchSufficiencyEvaluator.Outcome;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchAnswerSynthesizer;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchCitationCatalog;
+import io.github.vfedoriv.graphrag.service.AdvancedSearchCitationCatalog.Catalog;
+import io.github.vfedoriv.graphrag.observability.AiObservationScope;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
+import io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,6 +57,10 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
     private final SchemaParser schemaParser;
     private final ObjectMapper objectMapper;
     private final ThreadPoolTaskExecutor branchExecutor;
+    private final AdvancedSearchCitationCatalog citationCatalog;
+    private final AdvancedSearchAnswerSynthesizer answerSynthesizer;
+    private final AiObservationService observations;
+    private final AdvancedSearchMetrics metrics;
 
     public DefaultAdvancedSearchRunProcessor(
         DenseTextRetriever dense,
@@ -62,6 +73,10 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         AdvancedSearchRankingPipeline ranking,
         SchemaParser schemaParser,
         ObjectMapper objectMapper,
+        AdvancedSearchCitationCatalog citationCatalog,
+        AdvancedSearchAnswerSynthesizer answerSynthesizer,
+        AiObservationService observations,
+        AdvancedSearchMetrics metrics,
         @Qualifier("advancedSearchBranchExecutor") ThreadPoolTaskExecutor branchExecutor
     ) {
         this.dense = dense;
@@ -74,6 +89,10 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         this.ranking = ranking;
         this.schemaParser = schemaParser;
         this.objectMapper = objectMapper;
+        this.citationCatalog = citationCatalog;
+        this.answerSynthesizer = answerSynthesizer;
+        this.observations = observations;
+        this.metrics = metrics;
         this.branchExecutor = branchExecutor;
     }
 
@@ -86,9 +105,27 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
     }
 
     private ProcessingResult processProfileScoped(Context context) {
+        try (AiObservationScope workflow = observations.startWorkflow(new AiWorkflowContext(
+            AiObservationService.WORKFLOW_ADVANCED_SEARCH,
+            null,
+            Map.of("advanced_search.knowledge_base_id", context.knowledgeBaseId())
+        ))) {
+            try {
+                ProcessingResult result = processPipeline(context, workflow);
+                workflow.success();
+                return result;
+            } catch (RuntimeException exception) {
+                workflow.error(exception);
+                throw exception;
+            }
+        }
+    }
+
+    private ProcessingResult processPipeline(Context context, AiObservationScope workflow) {
         requireContinue(context);
         ActiveSchemaContext schemaContext = schemaContext(context);
-        ValidatedPlan plan = planner.plan(context.query(), schemaContext, context.settings(), context.deadline());
+        ValidatedPlan plan = observe("advanced-search.planning", () ->
+            planner.plan(context.query(), schemaContext, context.settings(), context.deadline()));
         context.stageChanged().accept(AdvancedSearchRunStage.RETRIEVAL);
 
         List<Result> textResults = new ArrayList<>();
@@ -106,12 +143,11 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         RankingResult ranked = rank(context, textResults, graphResult);
         requireContinue(context);
 
-        Outcome sufficiency = sufficiencyEvaluator.evaluate(
-            context.query(), plan, ranked.candidates(), context.settings(), context.deadline()
-        );
-        Decision followUp = followUpPolicy.decide(
-            sufficiency.result(), context.deadline(), context.settings(), context.cancelled()
-        );
+        RankingResult initialRanking = ranked;
+        Outcome sufficiency = observe("advanced-search.evaluation", () -> sufficiencyEvaluator.evaluate(
+            context.query(), plan, initialRanking.candidates(), context.settings(), context.deadline()));
+        Decision followUp = observe("advanced-search.follow-up", () -> followUpPolicy.decide(
+            sufficiency.result(), context.deadline(), context.settings(), context.cancelled()));
         if (followUp.execute()) {
             totalBranches += 3;
             requireContinue(context);
@@ -124,9 +160,25 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         }
 
         requireContinue(context);
-        ObjectNode payload = payload(context, plan, sufficiency, followUp, ranked, attempts);
+        context.stageChanged().accept(AdvancedSearchRunStage.SYNTHESIS);
+        Catalog catalog = citationCatalog.build(ranked.evidence(), true);
+        AdvancedSearchAnswerSynthesizer.Outcome answer = answerSynthesizer.synthesize(
+            context.query(), catalog, context.deadline());
+        metrics.retrieval(attempts);
+        metrics.answer(answer, followUp.execute(), ranked.candidates().size());
+        ObjectNode payload = payload(context, plan, sufficiency, followUp, ranked, attempts, catalog, answer);
         int successful = (int) attempts.stream().filter(value -> "COMPLETED".equals(value.status())).count();
-        return new ProcessingResult(payload, ranked.candidates().size(), attempts, successful, totalBranches);
+        workflow.highCardinalityAttributes(Map.of(
+            "advanced_search.retrieval.attempts", String.valueOf(attempts.size()),
+            "advanced_search.evidence.count", String.valueOf(ranked.candidates().size()),
+            "advanced_search.citation.count", String.valueOf(catalog.evidence().size()),
+            "advanced_search.claim.count", String.valueOf(answer.answer().claims().size()),
+            "advanced_search.repair.used", String.valueOf(answer.diagnostics().repairAttempted()),
+            "advanced_search.abstained", String.valueOf(!answer.answered())
+        ));
+        return new ProcessingResult(
+            payload, ranked.candidates().size(), attempts, successful, totalBranches,
+            answer.answered(), answer.answered() ? null : answer.diagnostics().outcomeCategory());
     }
 
     private List<Result> executeTextRound(
@@ -142,9 +194,9 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
                 context.includeEvidenceText(), context.deadline()
             );
         List<Callable<Result>> tasks = List.of(
-            () -> dense.retrieve(request),
-            () -> lexical.retrieve(request),
-            () -> metadata.retrieve(request)
+            () -> observe("advanced-search.retriever.dense", () -> dense.retrieve(request)),
+            () -> observe("advanced-search.retriever.lexical", () -> lexical.retrieve(request)),
+            () -> observe("advanced-search.retriever.metadata", () -> metadata.retrieve(request))
         );
         List<Result> results = executeBranches(tasks, context);
         results.forEach(value -> attempts.add(textAttempt(round, value)));
@@ -167,12 +219,12 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
             GraphPlan plan = graphPlans.get(index);
             Duration remaining = remaining(context.deadline());
             io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result result =
-                graphRetriever.retrieve(
+                observe("advanced-search.retriever.graph", () -> graphRetriever.retrieve(
                     new Request(context.knowledgeBaseId(), plan, context.deadline()),
                     schemaContext,
                     context.settings().candidateLimit(),
                     remaining
-                );
+                ));
             rows.addAll(result.rows());
             diagnostics.add(result.diagnostics());
             attempts.add(graphAttempt("graph-" + (index + 1), result.diagnostics()));
@@ -194,7 +246,7 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         List<Result> textResults,
         io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result graphResult
     ) {
-        return ranking.rank(new RankingRequest(
+        return observe("advanced-search.ranking", () -> ranking.rank(new RankingRequest(
             context.knowledgeBaseId(), context.query(), textResults, graphResult,
             new FusionOptions(
                 Math.min(AdvancedSearchRankingContracts.MAX_FUSION_POOL, context.settings().candidateLimit()),
@@ -205,7 +257,7 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
                 AdvancedSearchRankingContracts.DEFAULT_PER_DOCUMENT_CAP, 4096, 1, context.includeEvidenceText()),
             context.settings().rerankPoolSize(), context.maximumEvidence(),
             AdvancedSearchRankingContracts.DEFAULT_PER_DOCUMENT_CAP, false
-        ));
+        )));
     }
 
     private ObjectNode payload(
@@ -214,13 +266,19 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         Outcome sufficiency,
         Decision followUp,
         RankingResult result,
-        List<Attempt> attempts
+        List<Attempt> attempts,
+        Catalog catalog,
+        AdvancedSearchAnswerSynthesizer.Outcome answer
     ) {
-        ArrayNode evidence = objectMapper.valueToTree(result.candidates());
-        trimText(evidence, new int[]{context.settings().maxEvidenceTextCharacters()});
+        Catalog publicCatalog = context.includeEvidenceText() ? catalog : catalog.withoutText();
+        ArrayNode evidence = objectMapper.valueToTree(publicCatalog.evidence());
         ObjectNode payload = objectMapper.createObjectNode();
         payload.put("payloadVersion", AdvancedSearchResultCodec.PAYLOAD_VERSION);
+        payload.set("answer", objectMapper.valueToTree(answer.answer()));
         payload.set("evidence", evidence);
+        payload.set("contexts", objectMapper.valueToTree(publicCatalog.contexts()));
+        payload.set("graphFacts", objectMapper.valueToTree(publicCatalog.graphFacts()));
+        payload.set("answerDiagnostics", objectMapper.valueToTree(answer.diagnostics()));
         payload.set("diagnostics", objectMapper.valueToTree(Map.of(
             "plan", plan.summary(),
             "sufficiency", sufficiency.summary(),
@@ -234,7 +292,25 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
             "rerank", result.rerankDiagnostics(),
             "selection", result.selectionDiagnostics()
         )));
+        trimText(payload, new int[]{context.settings().maxEvidenceTextCharacters()});
         return payload;
+    }
+
+    private <T> T observe(String workflowName, Callable<T> operation) {
+        try (AiObservationScope scope = observations.startWorkflow(
+            new AiWorkflowContext(workflowName, null, Map.of()))) {
+            try {
+                T result = operation.call();
+                scope.success();
+                return result;
+            } catch (RuntimeException exception) {
+                scope.error(exception);
+                throw exception;
+            } catch (Exception exception) {
+                scope.error(exception);
+                throw new IllegalStateException(workflowName + " failed", exception);
+            }
+        }
     }
 
     private ActiveSchemaContext schemaContext(Context context) {

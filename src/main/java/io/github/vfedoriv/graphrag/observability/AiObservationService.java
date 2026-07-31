@@ -42,6 +42,7 @@ public class AiObservationService {
     public static final String WORKFLOW_SCHEMA_REPROCESSING = "schema-reprocessing";
     public static final String WORKFLOW_CYPHER_GENERATION = "cypher-generation";
     public static final String WORKFLOW_QUERY = "query";
+    public static final String WORKFLOW_ADVANCED_SEARCH = "advanced-search";
 
     private static final String MODEL_CALLS_METRIC = "graphrag.ai.model.calls";
     private static final String MODEL_FAILURES_METRIC = "graphrag.ai.model.failures";

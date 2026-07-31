@@ -10,6 +10,11 @@ import io.github.vfedoriv.graphrag.service.AdvancedSearchParentContextService.Ex
 import io.github.vfedoriv.graphrag.service.AdvancedSearchReranker.RerankResult;
 import io.github.vfedoriv.graphrag.service.QueryEvidenceAssemblyService.AdvancedQueryEvidenceAssembly;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import io.github.vfedoriv.graphrag.observability.AiObservationScope;
+import io.github.vfedoriv.graphrag.observability.AiObservationService;
+import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +26,7 @@ public class AdvancedSearchRankingPipeline {
     private final AdvancedSearchReranker reranker;
     private final AdvancedSearchDiversitySelector diversitySelector;
     private final QueryEvidenceAssemblyService evidenceAssemblyService;
+    private final AiObservationService observations;
 
     public AdvancedSearchRankingPipeline(
         AdvancedSearchFusionService fusionService,
@@ -28,7 +34,8 @@ public class AdvancedSearchRankingPipeline {
         AdvancedSearchParentContextService parentContextService,
         AdvancedSearchReranker reranker,
         AdvancedSearchDiversitySelector diversitySelector,
-        QueryEvidenceAssemblyService evidenceAssemblyService
+        QueryEvidenceAssemblyService evidenceAssemblyService,
+        AiObservationService observations
     ) {
         this.fusionService = fusionService;
         this.graphExpansionService = graphExpansionService;
@@ -36,26 +43,29 @@ public class AdvancedSearchRankingPipeline {
         this.reranker = reranker;
         this.diversitySelector = diversitySelector;
         this.evidenceAssemblyService = evidenceAssemblyService;
+        this.observations = observations;
     }
 
     public RankingResult rank(RankingRequest request) {
-        FusionResult fusion = fusionService.fuse(request.textResults(), request.graphResult(), request.fusionOptions());
-        ExpansionResult graphExpansion = graphExpansionService.expand(
+        FusionResult fusion = observe("advanced-search.fusion", () ->
+            fusionService.fuse(request.textResults(), request.graphResult(), request.fusionOptions()));
+        ExpansionResult graphExpansion = observe("advanced-search.expansion.graph", () -> graphExpansionService.expand(
             request.knowledgeBaseId(),
             fusion.candidates(),
             request.graphExpansionSeedLimit(),
             request.graphExpansionFactLimit()
-        );
-        AdvancedSearchParentContextService.ExpansionResult parentExpansion = parentContextService.expand(
+        ));
+        AdvancedSearchParentContextService.ExpansionResult parentExpansion = observe(
+            "advanced-search.expansion.parent", () -> parentContextService.expand(
             request.knowledgeBaseId(),
             graphExpansion.candidates(),
             request.parentContextOptions()
-        );
-        RerankResult reranked = reranker.rerank(
+        ));
+        RerankResult reranked = observe("advanced-search.reranking", () -> reranker.rerank(
             request.query(),
             parentExpansion.candidates(),
             request.rerankPoolSize()
-        );
+        ));
         SelectionResult selected = diversitySelector.select(
             reranked.candidates(),
             request.maximumEvidence(),
@@ -72,6 +82,20 @@ public class AdvancedSearchRankingPipeline {
             reranked.diagnostics(),
             selected.diagnostics()
         );
+    }
+
+    private <T> T observe(String workflow, Supplier<T> operation) {
+        try (AiObservationScope scope = observations.startWorkflow(
+            new AiWorkflowContext(workflow, null, Map.of()))) {
+            try {
+                T result = operation.get();
+                scope.success();
+                return result;
+            } catch (RuntimeException exception) {
+                scope.error(exception);
+                throw exception;
+            }
+        }
     }
 
     public record RankingRequest(

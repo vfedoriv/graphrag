@@ -41,8 +41,20 @@ public interface AdvancedSearchRunProcessor {
         int evidenceCount,
         List<Attempt> attempts,
         int successfulBranches,
-        int totalBranches
+        int totalBranches,
+        boolean answered,
+        String answerFailureCategory
     ) {
         public ProcessingResult { attempts = attempts == null ? List.of() : List.copyOf(attempts); }
+
+        public ProcessingResult(
+            JsonNode payload,
+            int evidenceCount,
+            List<Attempt> attempts,
+            int successfulBranches,
+            int totalBranches
+        ) {
+            this(payload, evidenceCount, attempts, successfulBranches, totalBranches, true, null);
+        }
     }
 }

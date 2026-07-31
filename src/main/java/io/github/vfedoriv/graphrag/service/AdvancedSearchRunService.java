@@ -26,6 +26,7 @@ import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Context;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.ProcessingResult;
 import io.github.vfedoriv.graphrag.service.DefaultAdvancedSearchRunProcessor.AdvancedSearchStoppedException;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -54,6 +55,7 @@ public class AdvancedSearchRunService {
     private final ThreadPoolTaskExecutor executor;
     private final TransactionTemplate transactions;
     private final AdvancedSearchAdmission admission;
+    private final AdvancedSearchMetrics metrics;
     private final Map<String, FutureTask<Void>> futures = new ConcurrentHashMap<>();
     private final Map<String, AdvancedSearchAdmission.Reservation> permits = new ConcurrentHashMap<>();
     private final String workerId = UUID.randomUUID().toString();
@@ -70,6 +72,7 @@ public class AdvancedSearchRunService {
         AdvancedSearchResultCodec resultCodec,
         ObjectMapper objectMapper,
         AdvancedSearchAdmission admission,
+        AdvancedSearchMetrics metrics,
         @Qualifier("advancedSearchRunExecutor") ThreadPoolTaskExecutor executor,
         @Qualifier("transactionManager") PlatformTransactionManager transactionManager
     ) {
@@ -80,6 +83,7 @@ public class AdvancedSearchRunService {
         this.resultCodec = resultCodec; this.objectMapper = objectMapper; this.executor = executor;
         this.transactions = new TransactionTemplate(transactionManager);
         this.admission = admission;
+        this.metrics = metrics;
     }
 
     public RunResponse create(String knowledgeBaseId, CreateRequest request) {
@@ -214,11 +218,16 @@ public class AdvancedSearchRunService {
         result.setEvidenceCount(processed.evidenceCount()); result.setCreatedAt(Instant.now()); resultRepository.save(result);
         run.setCompletedBranches(processed.attempts().size());
         run.setTotalBranches(Math.max(1, processed.totalBranches()));
-        AdvancedSearchRunStatus terminal = processed.successfulBranches() == processed.totalBranches()
+        AdvancedSearchRunStatus terminal = processed.answered()
+            && processed.successfulBranches() == processed.totalBranches()
             ? AdvancedSearchRunStatus.COMPLETED : AdvancedSearchRunStatus.PARTIAL;
-        lifecycle.terminal(run, terminal, terminal == AdvancedSearchRunStatus.PARTIAL ? "BRANCH_FAILURE" : null,
+        String failureCategory = processed.answerFailureCategory() != null
+            ? processed.answerFailureCategory()
+            : terminal == AdvancedSearchRunStatus.PARTIAL ? "BRANCH_FAILURE" : null;
+        lifecycle.terminal(run, terminal, failureCategory,
             processed.evidenceCount(), Instant.now(), settings.retention());
         runRepository.save(run);
+        metrics.terminal(terminal, failureCategory);
     }
 
     private void saveAttempts(String runId, ProcessingResult processed) {
@@ -255,12 +264,14 @@ public class AdvancedSearchRunService {
         AdvancedSearchRunStatus status = "CANCELLED".equals(category)
             ? AdvancedSearchRunStatus.CANCELLED : AdvancedSearchRunStatus.FAILED;
         lifecycle.terminal(run, status, category, 0, Instant.now(), settings.retention()); runRepository.save(run);
+        metrics.terminal(status, category);
     }
     private void fail(String runId, String category, AdvancedSearchSettings settings) {
         runRepository.findById(runId).ifPresent(run -> {
             if (!run.getStatus().terminal()) {
                 lifecycle.terminal(run, AdvancedSearchRunStatus.FAILED, category, 0, Instant.now(), settings.retention());
                 runRepository.save(run);
+                metrics.terminal(AdvancedSearchRunStatus.FAILED, category);
             }
         });
     }
