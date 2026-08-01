@@ -595,8 +595,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentControllerIntegrationTest.java": {
-    "mtime": 1785614971.7619789,
-    "ast_hash": "0382371bc3d6f763caf29b7d7cfbd576",
+    "mtime": 1785614371.239305,
+    "ast_hash": "e5dc5872ebed49d105a2cddcb51ced9d",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentProcessingIntegrationTest.java": {
@@ -6780,8 +6780,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/DocumentChunkRepositoryIntegrationTest.java": {
-    "mtime": 1785614971.5899749,
-    "ast_hash": "edc90805830f6a0f05c46402475356b3",
+    "mtime": 1785614218.5538502,
+    "ast_hash": "b8c71d463ac1796e23656e16bae37cac",
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/dto/DocumentChunkOpenApiContractTest.java": {

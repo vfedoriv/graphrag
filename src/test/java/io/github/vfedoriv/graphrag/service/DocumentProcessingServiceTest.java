@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +22,9 @@ import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkHierarchyResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkPageResponse;
+import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkPersistenceAdapter;
@@ -43,6 +47,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -320,6 +326,107 @@ class DocumentProcessingServiceTest {
             .contains("\"sectionIndex\":1")
             .contains("\"pageNumber\":2")
             .contains("\"pageCount\":2");
+    }
+
+    @Test
+    void pagesOwnedChunksWithValidatedFiltersAndDeterministicPageMetadata() {
+        DocumentUploadNode document = document("doc-1");
+        DocumentChunkNode chunk = chunk("chunk-1", "doc-1", "CHILD", "parent-1", "chunk text");
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document));
+        when(documentChunkRepository.findPageByDocumentId(
+            "doc-1", "CHILD", "parent-1", 2, PageRequest.of(1, 2)
+        )).thenReturn(new PageImpl<>(List.of(chunk), PageRequest.of(1, 2), 3));
+
+        DocumentChunkPageResponse response = service(new ChunkingService(TestRuntimeSettings.from(props())))
+            .getDocumentChunkPage("doc-1", 1, 2, "child", " parent-1 ", 2);
+
+        assertThat(response.getPage()).isEqualTo(1);
+        assertThat(response.getSize()).isEqualTo(2);
+        assertThat(response.getTotalElements()).isEqualTo(3);
+        assertThat(response.getContent()).extracting("id").containsExactly("chunk-1");
+        verify(documentChunkRepository).findPageByDocumentId(
+            "doc-1", "CHILD", "parent-1", 2, PageRequest.of(1, 2)
+        );
+    }
+
+    @Test
+    void rejectsInvalidChunkPageFiltersBeforeGraphAccess() {
+        DocumentProcessingService service = service(new ChunkingService(TestRuntimeSettings.from(props())));
+
+        assertThatThrownBy(() -> service.getDocumentChunkPage("doc-1", 0, 101, null, null, null))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("size");
+        assertThatThrownBy(() -> service.getDocumentChunkPage("doc-1", 0, 20, "PARENT", "parent-1", null))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("parentChunkId");
+        assertThatThrownBy(() -> service.getDocumentChunkPage("doc-1", 0, 20, "unknown", null, null))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("kind");
+        verify(documentUploadRepository, never()).findById(any());
+        verifyNoGraphPageRead();
+    }
+
+    @Test
+    void directChunkLookupRequiresRelationalOwnershipAndReturnsUniformNotFound() {
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document("doc-1")));
+        when(documentChunkRepository.findByIdAndDocumentId("chunk-foreign", "doc-1"))
+            .thenReturn(Optional.empty());
+
+        DocumentProcessingService service = service(new ChunkingService(TestRuntimeSettings.from(props())));
+
+        assertThatThrownBy(() -> service.getDocumentChunk("doc-1", "chunk-foreign"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessageContaining("chunk-foreign");
+        verify(documentChunkRepository).findByIdAndDocumentId("chunk-foreign", "doc-1");
+
+        when(documentUploadRepository.findById("missing")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.getDocumentChunk("missing", "chunk-foreign"))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessageContaining("Document not found");
+        verify(documentChunkRepository, never()).findByIdAndDocumentId("chunk-foreign", "missing");
+    }
+
+    @Test
+    void hierarchyPageReturnsMetadataOnlySummariesAndFlatCount() throws Exception {
+        DocumentUploadNode document = document("doc-1");
+        DocumentChunkNode parent = chunk("parent-1", "doc-1", "PARENT", null, "secret parent text");
+        parent.setChildCount(2);
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document));
+        when(documentChunkRepository.findParentPageByDocumentId("doc-1", PageRequest.of(0, 20)))
+            .thenReturn(new PageImpl<>(List.of(parent), PageRequest.of(0, 20), 1));
+        when(documentChunkRepository.countFlatChunksByDocumentId("doc-1")).thenReturn(0L);
+
+        DocumentChunkHierarchyResponse response = service(new ChunkingService(TestRuntimeSettings.from(props())))
+            .getDocumentChunkHierarchy("doc-1", 0, 20);
+
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getFlatChunkCount()).isZero();
+        assertThat(response.getContent().getFirst().childCount()).isEqualTo(2);
+        assertThat(new ObjectMapper().writeValueAsString(response)).doesNotContain("secret parent text");
+    }
+
+    private DocumentUploadNode document(String id) {
+        DocumentUploadNode document = new DocumentUploadNode();
+        document.setId(id);
+        document.setKnowledgeBaseId("kb-1");
+        return document;
+    }
+
+    private DocumentChunkNode chunk(String id, String documentId, String kind, String parentId, String text) {
+        DocumentChunkNode chunk = new DocumentChunkNode();
+        chunk.setId(id);
+        chunk.setDocumentId(documentId);
+        chunk.setKind(kind);
+        chunk.setParentChunkId(parentId);
+        chunk.setText(text);
+        chunk.setChunkIndex(0);
+        return chunk;
+    }
+
+    private void verifyNoGraphPageRead() {
+        verify(documentChunkRepository, never()).findPageByDocumentId(
+            any(), any(), any(), any(), any()
+        );
     }
 
     private AppProperties props() {

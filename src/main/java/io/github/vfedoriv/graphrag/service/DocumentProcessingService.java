@@ -14,11 +14,16 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.DocumentParsingService;
 import io.github.vfedoriv.graphrag.document.ParsedDocument;
+import io.github.vfedoriv.graphrag.document.chunking.ChunkKind;
 import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkHierarchyResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkPageResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkSummaryResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionConstraintResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessingOptionsResponse;
@@ -36,9 +41,12 @@ import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -254,6 +262,57 @@ public class DocumentProcessingService {
         return chunks;
     }
 
+    public DocumentChunkPageResponse getDocumentChunkPage(
+        String documentId,
+        int page,
+        int size,
+        String kind,
+        String parentChunkId,
+        Integer sectionIndex
+    ) {
+        requireChunkReadPage(page, size, kind, parentChunkId, sectionIndex);
+        requireDocument(documentId);
+        String normalizedKind = normalizeKind(kind);
+        String normalizedParentChunkId = normalizeOptionalFilter(parentChunkId, "parentChunkId");
+        Page<DocumentChunkNode> result = documentChunkRepository.findPageByDocumentId(
+            documentId,
+            normalizedKind,
+            normalizedParentChunkId,
+            sectionIndex,
+            PageRequest.of(page, size)
+        );
+        return new DocumentChunkPageResponse(
+            page,
+            size,
+            result.getTotalElements(),
+            result.getContent().stream().map(this::toChunkResponse).toList()
+        );
+    }
+
+    public DocumentChunkHierarchyResponse getDocumentChunkHierarchy(String documentId, int page, int size) {
+        requirePage(page, size);
+        requireDocument(documentId);
+        Page<DocumentChunkNode> parents = documentChunkRepository.findParentPageByDocumentId(
+            documentId,
+            PageRequest.of(page, size)
+        );
+        long flatChunkCount = documentChunkRepository.countFlatChunksByDocumentId(documentId);
+        return new DocumentChunkHierarchyResponse(
+            page,
+            size,
+            parents.getTotalElements(),
+            parents.getContent().stream().map(this::toChunkSummaryResponse).toList(),
+            flatChunkCount
+        );
+    }
+
+    public DocumentChunkResponse getDocumentChunk(String documentId, String chunkId) {
+        requireDocument(documentId);
+        DocumentChunkNode chunk = documentChunkRepository.findByIdAndDocumentId(chunkId, documentId)
+            .orElseThrow(() -> new NotFoundException("Document chunk not found: " + chunkId));
+        return toChunkResponse(chunk);
+    }
+
     private DocumentProcessingOptionsResponse toProcessingOptionsResponse(DocumentUploadNode document) {
         DocumentFormatDetection detection = processingOptionsRegistry.detect(document.getOriginalFilename(), document.getContentType());
         Map<String, Object> savedDefaults = processingOptionResolver.savedDefaults(document, detection);
@@ -282,6 +341,121 @@ public class DocumentProcessingService {
             savedDefaults,
             document.getProcessingDefaultsUpdatedAt(),
             optionResponses
+        );
+    }
+
+    private void requireDocument(String documentId) {
+        documentUploadRepository.findById(documentId)
+            .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+    }
+
+    private void requireChunkReadPage(
+        int page,
+        int size,
+        String kind,
+        String parentChunkId,
+        Integer sectionIndex
+    ) {
+        requirePage(page, size);
+        String normalizedKind = normalizeKind(kind);
+        boolean hasParentFilter = parentChunkId != null && !parentChunkId.isBlank();
+        if (hasParentFilter && ChunkKind.PARENT.name().equals(normalizedKind)) {
+            throw new IllegalArgumentException("parentChunkId can only be used with kind=CHILD");
+        }
+        if (sectionIndex != null && sectionIndex < 0) {
+            throw new IllegalArgumentException("sectionIndex must be non-negative");
+        }
+        if (parentChunkId != null && parentChunkId.isBlank()) {
+            throw new IllegalArgumentException("parentChunkId must not be blank");
+        }
+    }
+
+    private void requirePage(int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new IllegalArgumentException("page must be non-negative and size must be between 1 and 100");
+        }
+    }
+
+    private String normalizeKind(String kind) {
+        if (kind == null) {
+            return null;
+        }
+        if (kind.isBlank()) {
+            throw new IllegalArgumentException("kind must be PARENT or CHILD");
+        }
+        String normalized = kind.strip().toUpperCase(Locale.ROOT);
+        if (!ChunkKind.PARENT.name().equals(normalized) && !ChunkKind.CHILD.name().equals(normalized)) {
+            throw new IllegalArgumentException("kind must be PARENT or CHILD");
+        }
+        return normalized;
+    }
+
+    private String normalizeOptionalFilter(String value, String name) {
+        if (value == null) {
+            return null;
+        }
+        if (value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
+        return value.strip();
+    }
+
+    private DocumentChunkResponse toChunkResponse(DocumentChunkNode chunk) {
+        return new DocumentChunkResponse(
+            chunk.getId(),
+            chunk.getDocumentId(),
+            chunk.getChunkIndex(),
+            chunk.getText(),
+            chunk.getTokenEstimate(),
+            chunk.getKind(),
+            chunk.getParentChunkId(),
+            chunk.getChildIndex(),
+            chunk.getChildCount(),
+            chunk.getProcessingRunId(),
+            chunk.getSectionIndex(),
+            chunk.getSectionChunkIndex(),
+            chunk.getSourceStart(),
+            chunk.getSourceEnd(),
+            chunk.getPageStart(),
+            chunk.getPageEnd(),
+            chunk.getStructuralPath(),
+            chunk.getBlockConfidence(),
+            chunk.getChunkSettingsHash(),
+            chunk.getChunkStrategyRevision(),
+            chunk.getEffectiveChunkerRevision(),
+            chunk.getTokenizerId(),
+            chunk.getRepresentationRevision(),
+            chunk.getSourceHash(),
+            chunk.getMetadata()
+        );
+    }
+
+    private DocumentChunkSummaryResponse toChunkSummaryResponse(DocumentChunkNode chunk) {
+        return new DocumentChunkSummaryResponse(
+            chunk.getId(),
+            chunk.getDocumentId(),
+            chunk.getChunkIndex(),
+            chunk.getTokenEstimate(),
+            chunk.getKind(),
+            chunk.getParentChunkId(),
+            chunk.getChildIndex(),
+            chunk.getChildCount(),
+            chunk.getProcessingRunId(),
+            chunk.getSectionIndex(),
+            chunk.getSectionChunkIndex(),
+            chunk.getSourceStart(),
+            chunk.getSourceEnd(),
+            chunk.getPageStart(),
+            chunk.getPageEnd(),
+            chunk.getStructuralPath(),
+            chunk.getBlockConfidence(),
+            chunk.getChunkSettingsHash(),
+            chunk.getChunkStrategyRevision(),
+            chunk.getEffectiveChunkerRevision(),
+            chunk.getTokenizerId(),
+            chunk.getRepresentationRevision(),
+            chunk.getSourceHash(),
+            chunk.getMetadata()
         );
     }
 

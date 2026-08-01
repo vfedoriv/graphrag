@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.controller;
 
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkHierarchyResponse;
+import io.github.vfedoriv.graphrag.dto.DocumentChunkPageResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentChunkResponse;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessRequest;
 import io.github.vfedoriv.graphrag.dto.DocumentProcessingDefaultsRequest;
@@ -11,6 +13,7 @@ import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -223,8 +226,101 @@ public class DocumentController {
         return documentProcessingService.clearProcessingDefaults(documentId);
     }
 
+    @GetMapping("/documents/{documentId}/chunks/page")
+    @Operation(
+        summary = "Page document chunks",
+        description = "Returns a bounded, filtered page of chunks ordered by chunk index and identifier."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Chunk page retrieved",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = DocumentChunkPageResponse.class),
+                examples = @ExampleObject(
+                    value = "{\"page\":0,\"size\":20,\"totalElements\":2,\"content\":[{\"id\":\"chunk-01\",\"documentId\":\"doc-01\",\"chunkIndex\":0,\"text\":\"This agreement is made between...\",\"tokenEstimate\":143,\"kind\":\"CHILD\",\"parentChunkId\":\"parent-01\",\"childIndex\":0,\"childCount\":0,\"processingRunId\":\"run-01\",\"sectionIndex\":0,\"sectionChunkIndex\":0,\"sourceStart\":0,\"sourceEnd\":512,\"pageStart\":2,\"pageEnd\":2,\"structuralPath\":\"/body/0\",\"blockConfidence\":\"HIGH\",\"chunkSettingsHash\":\"settings-01\",\"chunkStrategyRevision\":\"recursive-v2\",\"effectiveChunkerRevision\":\"chunker-v2\",\"tokenizerId\":\"cl100k_base\",\"representationRevision\":\"context-header-v1\",\"sourceHash\":\"abc123\",\"metadata\":\"{\\\"source\\\":\\\"contract.pdf\\\"}\"}]}"
+                )
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid page or filter", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentChunkPageResponse getDocumentChunkPage(
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @Parameter(description = "Zero-based page number", example = "0")
+        @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "Page size from 1 through 100", example = "20")
+        @RequestParam(defaultValue = "20") int size,
+        @Parameter(description = "Optional chunk kind filter: PARENT or CHILD", example = "CHILD")
+        @RequestParam(required = false) String kind,
+        @Parameter(description = "Optional containing parent chunk identifier", example = "parent-01")
+        @RequestParam(required = false) String parentChunkId,
+        @Parameter(description = "Optional zero-based parser section filter", example = "2")
+        @RequestParam(required = false) Integer sectionIndex
+    ) {
+        log.info(
+            "Get document chunk page request: documentId={}, page={}, size={}, kind={}, parentChunkId={}, sectionIndex={}",
+            documentId, page, size, kind, parentChunkId, sectionIndex
+        );
+        return documentProcessingService.getDocumentChunkPage(
+            documentId, page, size, kind, parentChunkId, sectionIndex
+        );
+    }
+
+    @GetMapping("/documents/{documentId}/chunks/hierarchy")
+    @Operation(
+        summary = "Summarize document chunk hierarchy",
+        description = "Returns bounded parent metadata and child counts without parent or child text."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Hierarchy summary retrieved",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = DocumentChunkHierarchyResponse.class),
+                examples = @ExampleObject(
+                    value = "{\"page\":0,\"size\":20,\"totalElements\":1,\"content\":[{\"id\":\"parent-01\",\"documentId\":\"doc-01\",\"chunkIndex\":0,\"tokenEstimate\":143,\"kind\":\"PARENT\",\"parentChunkId\":null,\"childIndex\":null,\"childCount\":4,\"processingRunId\":\"run-01\",\"sectionIndex\":0,\"sectionChunkIndex\":0,\"sourceStart\":0,\"sourceEnd\":2048,\"pageStart\":2,\"pageEnd\":3,\"structuralPath\":\"/body/0\",\"blockConfidence\":\"HIGH\",\"chunkSettingsHash\":\"settings-01\",\"chunkStrategyRevision\":\"recursive-v2\",\"effectiveChunkerRevision\":\"chunker-v2\",\"tokenizerId\":\"cl100k_base\",\"representationRevision\":\"context-header-v1\",\"sourceHash\":\"abc123\",\"metadata\":\"{\\\"source\\\":\\\"contract.pdf\\\"}\"}],\"flatChunkCount\":0}"
+                )
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid page", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentChunkHierarchyResponse getDocumentChunkHierarchy(
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @Parameter(description = "Zero-based page number", example = "0")
+        @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "Page size from 1 through 100", example = "20")
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        log.info("Get document chunk hierarchy request: documentId={}, page={}, size={}", documentId, page, size);
+        return documentProcessingService.getDocumentChunkHierarchy(documentId, page, size);
+    }
+
+    @GetMapping("/documents/{documentId}/chunks/{chunkId}")
+    @Operation(
+        summary = "Get document chunk",
+        description = "Returns one chunk owned by the document without loading the complete chunk hierarchy."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Chunk retrieved", content = @Content(schema = @Schema(implementation = DocumentChunkResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Document or chunk not found", content = @Content(schema = @Schema()))
+    })
+    public DocumentChunkResponse getDocumentChunk(
+        @Parameter(description = "Document identifier") @PathVariable String documentId,
+        @Parameter(description = "Chunk identifier") @PathVariable String chunkId
+    ) {
+        log.info("Get document chunk request: documentId={}, chunkId={}", documentId, chunkId);
+        return documentProcessingService.getDocumentChunk(documentId, chunkId);
+    }
+
     @GetMapping("/documents/{documentId}/chunks")
-    @Operation(summary = "List document chunks", description = "Returns chunks generated during processing, ordered by chunk index.")
+    @Operation(
+        summary = "List document chunks (compatibility)",
+        description = "Compatibility-only complete-list route. Prefer the bounded page, hierarchy, and direct chunk routes for new clients."
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Chunks retrieved"),
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))

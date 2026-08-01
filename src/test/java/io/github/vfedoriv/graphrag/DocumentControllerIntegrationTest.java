@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -232,6 +234,187 @@ class DocumentControllerIntegrationTest {
     }
 
     @Test
+    void readsBoundedChunksHierarchySummariesDirectChunksAndLegacyList() throws Exception {
+        String firstDocumentId = uploadDocument("kb-1", "hierarchy.txt", "first document");
+        String secondDocumentId = uploadDocument("kb-2", "flat.txt", "second document");
+
+        createChunk("kb-1", firstDocumentId, "parent-1", 2, "PARENT", null, 1, 2, "parent secret text");
+        createChunk("kb-1", firstDocumentId, "a-child", 0, "CHILD", "parent-1", 1, 0, "first child");
+        createChunk("kb-1", firstDocumentId, "z-child", 0, "CHILD", "parent-1", 1, 0, "second child");
+        createChunk("kb-1", firstDocumentId, "last-child", 1, "CHILD", "parent-1", 1, 0, "last child");
+        createChunk("kb-2", secondDocumentId, "flat-2", 2, "CHILD", null, 0, 0, "flat second");
+        createChunk("kb-2", secondDocumentId, "flat-1", 1, "CHILD", null, 0, 0, "flat first");
+        createChunk("kb-2", secondDocumentId, "foreign-child", 0, "CHILD", null, 0, 0, "foreign child");
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", firstDocumentId)
+                .param("page", "0")
+                .param("size", "2")
+                .param("kind", "child")
+                .param("parentChunkId", "parent-1")
+                .param("sectionIndex", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.page").value(0))
+            .andExpect(jsonPath("$.size").value(2))
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.content[0].id").value("a-child"))
+            .andExpect(jsonPath("$.content[1].id").value("z-child"));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", firstDocumentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value("parent-1"))
+            .andExpect(jsonPath("$.content[0].childCount").value(2))
+            .andExpect(jsonPath("$.content[0].text").doesNotExist())
+            .andExpect(jsonPath("$.flatChunkCount").value(0));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", secondDocumentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(0))
+            .andExpect(jsonPath("$.content").isEmpty())
+            .andExpect(jsonPath("$.flatChunkCount").value(3));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/{chunkId}", firstDocumentId, "a-child"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value("a-child"))
+            .andExpect(jsonPath("$.text").value("first child"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/{chunkId}", firstDocumentId, "foreign-child"))
+            .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks", firstDocumentId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(4))
+            .andExpect(jsonPath("$[?(@.id == 'parent-1')].text").value("parent secret text"));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", firstDocumentId)
+                .param("size", "101"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("page must be non-negative and size must be between 1 and 100"));
+    }
+
+    @Test
+    void rejectsInvalidChunkReadInputsAndUsesUniformNotFoundResponses() throws Exception {
+        String documentId = uploadDocument("kb-1", "validation.txt", "validation document");
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("page", "-1"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.type").value("about:blank"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("size", "0"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("page must be non-negative and size must be between 1 and 100"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("kind", "UNKNOWN"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("kind must be PARENT or CHILD"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("kind", "PARENT")
+                .param("parentChunkId", "parent-1"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("parentChunkId can only be used with kind=CHILD"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("sectionIndex", "-1"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("sectionIndex must be non-negative"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("parentChunkId", " "))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("parentChunkId must not be blank"));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", "missing"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.detail").value("Document not found: missing"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", "missing"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.detail").value("Document not found: missing"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/{chunkId}", "missing", "chunk-1"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.detail").value("Document not found: missing"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/{chunkId}", documentId, "missing-chunk"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.detail").value("Document chunk not found: missing-chunk"));
+    }
+
+    @Test
+    void exposesEmptyPagesOutOfRangePagesAndParentChildNavigation() throws Exception {
+        String hierarchicalDocumentId = uploadDocument("kb-1", "navigation.txt", "hierarchical document");
+        String flatDocumentId = uploadDocument("kb-2", "flat-navigation.txt", "flat document");
+        String foreignDocumentId = uploadDocument("kb-2", "foreign-navigation.txt", "foreign document");
+
+        createChunk("kb-1", hierarchicalDocumentId, "parent-1", 0, "PARENT", null, 1, 2, "parent one");
+        createChunk("kb-1", hierarchicalDocumentId, "a-child", 1, "CHILD", "parent-1", 1, 0, "child a");
+        createChunk("kb-1", hierarchicalDocumentId, "z-child", 2, "CHILD", "parent-1", 1, 0, "child z");
+        createChunk("kb-1", hierarchicalDocumentId, "parent-2", 5, "PARENT", null, 2, 1, "parent two");
+        createChunk("kb-1", hierarchicalDocumentId, "parent-2-child", 6, "CHILD", "parent-2", 2, 0, "child two");
+        createChunk("kb-2", foreignDocumentId, "other-document-parent-child", 1, "CHILD", "parent-1", 1, 0, "not visible");
+        createChunk("kb-2", flatDocumentId, "flat-z", 0, "CHILD", null, 0, 0, "flat z");
+        createChunk("kb-2", flatDocumentId, "flat-a", 0, "CHILD", null, 0, 0, "flat a");
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", hierarchicalDocumentId)
+                .param("page", "0").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.page").value(0))
+            .andExpect(jsonPath("$.size").value(1))
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content[0].id").value("parent-1"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", hierarchicalDocumentId)
+                .param("page", "1").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].id").value("parent-2"))
+            .andExpect(jsonPath("$.content[0].childCount").value(1));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", hierarchicalDocumentId)
+                .param("page", "2").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.page").value(2))
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content").isEmpty());
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "CHILD").param("parentChunkId", "parent-1")
+                .param("page", "0").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content[0].id").value("a-child"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "CHILD").param("parentChunkId", "parent-1")
+                .param("page", "1").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].id").value("z-child"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "CHILD").param("parentChunkId", "parent-1")
+                .param("page", "2").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content").isEmpty());
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "CHILD").param("parentChunkId", "missing-parent"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(0))
+            .andExpect(jsonPath("$.content").isEmpty());
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "CHILD").param("sectionIndex", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value("parent-2-child"));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", flatDocumentId)
+                .param("kind", "CHILD").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content[0].id").value("flat-a"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", flatDocumentId)
+                .param("kind", "CHILD").param("page", "1").param("size", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].id").value("flat-z"));
+    }
+
+    @Test
+    void exposesChunkReadRoutesInOpenApi() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get").exists())
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/hierarchy'].get").exists())
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/{chunkId}'].get").exists())
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.responses['200']").exists());
+    }
+
+    @Test
     void deletesDocumentAndRejectsMissingMismatchedAndStorageFailureDeletes() throws Exception {
         String firstBody = mockMvc.perform(multipart("/api/v1/knowledge-bases/{knowledgeBaseId}/documents", "kb-1")
                 .file(new MockMultipartFile("file", "delete.txt", "text/plain", "delete".getBytes())))
@@ -277,5 +460,46 @@ class DocumentControllerIntegrationTest {
 
     private void assertStoredFileContains(String localPath, String expectedContent) throws Exception {
         org.assertj.core.api.Assertions.assertThat(Files.readString(Path.of(localPath))).isEqualTo(expectedContent);
+    }
+
+    private String uploadDocument(String knowledgeBaseId, String filename, String content) throws Exception {
+        String body = mockMvc.perform(multipart("/api/v1/knowledge-bases/{knowledgeBaseId}/documents", knowledgeBaseId)
+                .file(new MockMultipartFile("file", filename, "text/plain", content.getBytes())))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        return objectMapper.readTree(body).get("id").asText();
+    }
+
+    private void createChunk(
+        String knowledgeBaseId,
+        String documentId,
+        String id,
+        int chunkIndex,
+        String kind,
+        String parentChunkId,
+        int sectionIndex,
+        int childCount,
+        String text
+    ) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("id", id);
+        properties.put("documentId", documentId);
+        properties.put("knowledgeBaseId", knowledgeBaseId);
+        properties.put("processingRunId", "run-1");
+        properties.put("chunkIndex", chunkIndex);
+        properties.put("kind", kind);
+        properties.put("sectionIndex", sectionIndex);
+        properties.put("sectionChunkIndex", chunkIndex);
+        properties.put("childCount", childCount);
+        properties.put("text", text);
+        properties.put("tokenEstimate", 2);
+        if (parentChunkId != null) {
+            properties.put("parentChunkId", parentChunkId);
+        }
+        neo4jClient.query("CREATE (:DocumentChunk $properties)")
+            .bind(properties).to("properties")
+            .run();
     }
 }
