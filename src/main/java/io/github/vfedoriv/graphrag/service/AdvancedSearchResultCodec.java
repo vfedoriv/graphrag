@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.vfedoriv.graphrag.dto.AdvancedSearchResultDtos.AdvancedSearchResultV1;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Answer;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Evidence;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.GraphFact;
@@ -31,7 +32,8 @@ public class AdvancedSearchResultCodec {
         if (evidenceCount < 0 || evidenceCount > maximumEvidence || evidenceCount > 20) {
             throw new IllegalArgumentException("Advanced-search result exceeds its bounded evidence envelope");
         }
-        validate(result, evidenceCount);
+        AdvancedSearchResultV1 typed = decode(result);
+        validate(result, typed, evidenceCount);
         try {
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException exception) {
@@ -39,21 +41,42 @@ public class AdvancedSearchResultCodec {
         }
     }
 
-    public JsonNode read(String json) {
+    public AdvancedSearchResultV1 read(String json) {
         try {
             JsonNode value = objectMapper.readTree(json);
-            if (!value.isObject() || value.path("payloadVersion").asInt(-1) != PAYLOAD_VERSION) {
+            if (!value.isObject()) {
                 throw new IllegalArgumentException("Stored advanced-search result is invalid");
             }
-            validate(value, value.path("evidence").size());
-            return value;
+            if (value.path("payloadVersion").asInt(-1) != PAYLOAD_VERSION) {
+                throw new IllegalArgumentException("Unsupported advanced-search result payload version");
+            }
+            AdvancedSearchResultV1 typed = decode(value);
+            validate(value, typed, value.path("evidence").size());
+            return typed;
         } catch (JsonProcessingException exception) {
             throw new IllegalArgumentException("Stored advanced-search result is invalid", exception);
         }
     }
 
-    private void validate(JsonNode result, int evidenceCount) {
+    private AdvancedSearchResultV1 decode(JsonNode result) {
         try {
+            return objectMapper.treeToValue(result, AdvancedSearchResultV1.class);
+        } catch (JsonProcessingException exception) {
+            throw new IllegalArgumentException("Advanced-search result structure is invalid", exception);
+        }
+    }
+
+    private void validate(JsonNode result, AdvancedSearchResultV1 typed, int evidenceCount) {
+        try {
+            if (typed.payloadVersion() != PAYLOAD_VERSION || typed.answer() == null
+                || typed.answerDiagnostics() == null || typed.diagnostics() == null
+                || !result.path("evidence").isArray() || !result.path("contexts").isArray()
+                || !result.path("graphFacts").isArray()) {
+                throw new IllegalArgumentException("Advanced-search result structure is invalid");
+            }
+            if (evidenceCount < 0 || evidenceCount > 20) {
+                throw new IllegalArgumentException("Advanced-search result exceeds its bounded evidence envelope");
+            }
             List<Evidence> evidence = objectMapper.convertValue(
                 result.path("evidence"), new TypeReference<List<Evidence>>() { });
             List<Evidence> contexts = objectMapper.convertValue(

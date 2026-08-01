@@ -35,6 +35,15 @@ class DocumentationAlignmentTest {
         assertThat(claude).contains("Spring Boot " + springBootVersion, "Spring AI " + springAiVersion, "LangChain4j " + langchainVersion);
     }
 
+    @Test
+    void advancedSearchDocumentationUsesTheCurrentAsyncContract() throws IOException {
+        String readme = Files.readString(Path.of("README.md"));
+
+        assertThat(readme)
+            .contains("/queries/advanced-search-runs/readiness", "\"maximumEvidence\":10", "queryPreview")
+            .doesNotContain("/queries/hybrid-search", "Hybrid Search");
+    }
+
     private String property(String pom, String name) {
         Matcher matcher = PROPERTY.matcher(pom);
         while (matcher.find()) {

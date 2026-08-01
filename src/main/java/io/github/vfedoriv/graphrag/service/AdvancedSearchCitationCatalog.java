@@ -90,8 +90,18 @@ public class AdvancedSearchCitationCatalog {
         List<Evidence> evidence,
         List<Evidence> contexts,
         List<GraphFact> graphFacts,
-        Map<String, Set<String>> factCitations
+        Map<String, Set<String>> factCitations,
+        List<String> metadataWarnings
     ) {
+        public Catalog(
+            List<Evidence> evidence,
+            List<Evidence> contexts,
+            List<GraphFact> graphFacts,
+            Map<String, Set<String>> factCitations
+        ) {
+            this(evidence, contexts, graphFacts, factCitations, List.of());
+        }
+
         public Catalog {
             evidence = List.copyOf(evidence);
             contexts = List.copyOf(contexts);
@@ -99,6 +109,7 @@ public class AdvancedSearchCitationCatalog {
             Map<String, Set<String>> copied = new LinkedHashMap<>();
             factCitations.forEach((key, value) -> copied.put(key, Set.copyOf(value)));
             factCitations = Map.copyOf(copied);
+            metadataWarnings = metadataWarnings == null ? List.of() : List.copyOf(metadataWarnings);
         }
 
         public Set<String> citableIds() {
@@ -118,8 +129,13 @@ public class AdvancedSearchCitationCatalog {
                 evidence.stream().map(AdvancedSearchCitationCatalog::withoutText).toList(),
                 contexts.stream().map(AdvancedSearchCitationCatalog::withoutText).toList(),
                 graphFacts,
-                factCitations
+                factCitations,
+                metadataWarnings
             );
+        }
+
+        public Catalog withEvidence(List<Evidence> enrichedEvidence, List<Evidence> enrichedContexts, List<String> warnings) {
+            return new Catalog(enrichedEvidence, enrichedContexts, graphFacts, factCitations, warnings);
         }
     }
 
@@ -127,7 +143,7 @@ public class AdvancedSearchCitationCatalog {
         return new Evidence(
             value.citationId(), value.type(), value.chunkId(), value.documentId(), value.range(),
             value.processingRunId(), value.effectiveChunkerRevision(), value.structuralPath(), null,
-            value.rank(), value.score()
+            value.rank(), value.score(), value.sourceFilename(), value.sourceContentType(), value.sourceDisplayLabel()
         );
     }
 }

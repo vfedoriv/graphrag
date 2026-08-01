@@ -16,6 +16,7 @@ public class AdvancedSearchRunNode {
     private boolean includeEvidenceText;
     private String settingsSnapshotJson;
     private String activeAiProfileId;
+    private Long activeAiProfileRevision;
     private String schemaDefinitionId;
     private String schemaContentHash;
     private String schemaSnapshotJson;

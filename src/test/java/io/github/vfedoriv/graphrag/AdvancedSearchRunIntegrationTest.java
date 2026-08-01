@@ -6,6 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -33,6 +36,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.slf4j.LoggerFactory;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -87,6 +91,80 @@ class AdvancedSearchRunIntegrationTest {
         cancel(second).andExpect(status().isOk()).andExpect(jsonPath("$.cancellationRequested").value(true));
         awaitStatus(first, AdvancedSearchRunStatus.CANCELLED);
         awaitStatus(second, AdvancedSearchRunStatus.CANCELLED);
+    }
+
+    @Test
+    void runHistoryExposesBoundedPreviewAndOwnedDetailQueryWithAppliedDefaults() throws Exception {
+        String query = "😀".repeat(200) + "  retained full query";
+        String body = mockMvc.perform(post("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs", "kb-runs")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(java.util.Map.of(
+                    "query", query, "maximumEvidence", 7, "includeEvidenceText", true))))
+            .andExpect(status().isAccepted())
+            .andExpect(jsonPath("$.query").value(query))
+            .andExpect(jsonPath("$.maximumEvidence").value(7))
+            .andExpect(jsonPath("$.includeEvidenceText").value(true))
+            .andReturn().getResponse().getContentAsString();
+        String id = objectMapper.readTree(body).path("id").asText();
+
+        String listBody = mockMvc.perform(get("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs", "kb-runs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].query").doesNotExist())
+            .andExpect(jsonPath("$.content[0].maximumEvidence").value(7))
+            .andExpect(jsonPath("$.content[0].includeEvidenceText").value(true))
+            .andReturn().getResponse().getContentAsString();
+        String preview = objectMapper.readTree(listBody).path("content").get(0).path("queryPreview").asText();
+        assertThat(preview.codePointCount(0, preview.length())).isEqualTo(160);
+        assertThat(preview).doesNotContain("retained full query");
+
+        mockMvc.perform(get("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs/{id}", "kb-runs", id))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.query").value(query));
+        cancel(id).andExpect(status().isOk()).andExpect(jsonPath("$.query").doesNotExist());
+        awaitStatus(id, AdvancedSearchRunStatus.CANCELLED);
+    }
+
+    @Test
+    void readinessIsOwnedAndAdmissionRejectsTheSameProviderBlockerBeforeCreatingARun() throws Exception {
+        mockMvc.perform(get("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs/readiness", "kb-runs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.ready").value(true))
+            .andExpect(jsonPath("$.informational[*].code").value(
+                org.hamcrest.Matchers.containsInAnyOrder("SCHEMA_UNAVAILABLE", "EMPTY_CORPUS")));
+
+        jdbcTemplate.update("UPDATE app.ai_profile SET chat_model = '' WHERE id = 'default'");
+
+        mockMvc.perform(get("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs/readiness", "kb-runs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.ready").value(false))
+            .andExpect(jsonPath("$.blockers[0].code").value("CHAT_CONFIGURATION_UNAVAILABLE"));
+        mockMvc.perform(post("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs", "kb-runs")
+                .contentType("application/json").content("{\"query\":\"rejected\"}"))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.blockers[0].code").value("CHAT_CONFIGURATION_UNAVAILABLE"));
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.advanced_search_run WHERE knowledge_base_id = 'kb-runs'", Integer.class))
+            .isZero();
+    }
+
+    @Test
+    void runOperationsDoNotWriteQueryContentToOperationalLogs() throws Exception {
+        String querySecret = "RUN-QUERY-SECRET-5f9a";
+        Logger root = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        root.addAppender(appender);
+        try {
+            String id = submit("kb-runs", querySecret);
+            cancel(id).andExpect(status().isOk());
+            awaitStatus(id, AdvancedSearchRunStatus.CANCELLED);
+        } finally {
+            root.detachAppender(appender);
+            appender.stop();
+        }
+        String logged = appender.list.stream().map(ILoggingEvent::getFormattedMessage)
+            .reduce("", (left, right) -> left + "\n" + right);
+        assertThat(logged).doesNotContain(querySecret);
     }
 
     @Test

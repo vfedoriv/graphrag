@@ -74,7 +74,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 | `KnowledgeBaseController` | Knowledge base lifecycle |
 | `DocumentController` | Upload, dedup, list, replace, delete, chunk retrieval, and trigger processing |
 | `QueryController` | Cypher generation, validation, execution, and `/ask` Q&A |
-| `AdvancedSearchRunController` | Submit, list, poll, retrieve, and cancel durable advanced-search runs |
+| `AdvancedSearchRunController` | Readiness, submit, list, poll, retrieve, and cancel durable advanced-search runs |
 | `RuntimeSettingsController` | List, update, and clear allowlisted runtime setting overrides |
 | `AiProfileController` | CRUD for OpenAI-compatible AI profiles with write-only API keys |
 

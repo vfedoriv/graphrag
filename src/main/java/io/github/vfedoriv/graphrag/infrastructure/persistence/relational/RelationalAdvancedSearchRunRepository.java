@@ -65,6 +65,7 @@ public class RelationalAdvancedSearchRunRepository implements AdvancedSearchRunR
         entity.setRequestedEvidence(node.getRequestedEvidence()); entity.setIncludeEvidenceText(node.isIncludeEvidenceText());
         entity.setSettingsSnapshotJson(node.getSettingsSnapshotJson()); entity.setCompletedBranches(node.getCompletedBranches());
         entity.setActiveAiProfileId(node.getActiveAiProfileId()); entity.setSchemaDefinitionId(node.getSchemaDefinitionId());
+        entity.setActiveAiProfileRevision(node.getActiveAiProfileRevision());
         entity.setSchemaContentHash(node.getSchemaContentHash()); entity.setSchemaSnapshotJson(node.getSchemaSnapshotJson());
         entity.setTotalBranches(node.getTotalBranches()); entity.setEvidenceCount(node.getEvidenceCount());
         entity.setCancellationRequestedAt(node.getCancellationRequestedAt()); entity.setFailureCategory(node.getFailureCategory());
@@ -79,6 +80,7 @@ public class RelationalAdvancedSearchRunRepository implements AdvancedSearchRunR
         node.setStatus(entity.getStatus()); node.setStage(entity.getStage()); node.setRequestedEvidence(entity.getRequestedEvidence());
         node.setIncludeEvidenceText(entity.isIncludeEvidenceText()); node.setSettingsSnapshotJson(entity.getSettingsSnapshotJson());
         node.setActiveAiProfileId(entity.getActiveAiProfileId()); node.setSchemaDefinitionId(entity.getSchemaDefinitionId());
+        node.setActiveAiProfileRevision(entity.getActiveAiProfileRevision());
         node.setSchemaContentHash(entity.getSchemaContentHash()); node.setSchemaSnapshotJson(entity.getSchemaSnapshotJson());
         node.setCompletedBranches(entity.getCompletedBranches()); node.setTotalBranches(entity.getTotalBranches());
         node.setEvidenceCount(entity.getEvidenceCount()); node.setCancellationRequestedAt(entity.getCancellationRequestedAt());

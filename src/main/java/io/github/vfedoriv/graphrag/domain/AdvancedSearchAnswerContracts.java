@@ -84,7 +84,10 @@ public final class AdvancedSearchAnswerContracts {
         String structuralPath,
         String text,
         int rank,
-        Double score
+        Double score,
+        String sourceFilename,
+        String sourceContentType,
+        String sourceDisplayLabel
     ) {
         public Evidence(
             String citationId,
@@ -98,7 +101,24 @@ public final class AdvancedSearchAnswerContracts {
             String text
         ) {
             this(citationId, type, chunkId, documentId, range, processingRunId,
-                effectiveChunkerRevision, structuralPath, text, 0, null);
+                effectiveChunkerRevision, structuralPath, text, 0, null, null, null, null);
+        }
+
+        public Evidence(
+            String citationId,
+            CitationType type,
+            String chunkId,
+            String documentId,
+            SourceRange range,
+            String processingRunId,
+            String effectiveChunkerRevision,
+            String structuralPath,
+            String text,
+            int rank,
+            Double score
+        ) {
+            this(citationId, type, chunkId, documentId, range, processingRunId,
+                effectiveChunkerRevision, structuralPath, text, rank, score, null, null, null);
         }
     }
 

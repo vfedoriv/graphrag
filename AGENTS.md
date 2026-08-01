@@ -60,7 +60,7 @@ Main controllers:
 - `KnowledgeBaseController`
 - `DocumentController` (upload/list/replace/delete/process/chunks)
 - `QueryController`
-- `AdvancedSearchRunController` (submit/list/poll/result/cancel durable advanced-search runs)
+- `AdvancedSearchRunController` (readiness, submit/list/poll/result/cancel durable advanced-search runs)
 
 Key services:
 - `SchemaRegistryService` (schema parse/validate/versioning + guarded inactive-schema update/delete)

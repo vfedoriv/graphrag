@@ -597,7 +597,9 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/validate`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/execute`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/readiness`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
 - `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}`
 - `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/result`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/cancel`
@@ -647,13 +649,18 @@ When you call `POST /knowledge-bases/{knowledgeBaseId}/schemas/{schemaId}/activa
   - body: `{"cypher":"...", "parameters":{...}}`
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/ask`
   - body: `{"prompt":"..."}`
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/readiness`
+  - returns deterministic `ready`, profile, corpus, graph-branch, blocker, and informational status without contacting a provider
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
   - body: `{"query":"pump maintenance","maximumEvidence":10,"includeEvidenceText":true}`
-  - returns `202 Accepted` with durable status, result, and cancellation links
+  - returns `202 Accepted` with the full query, applied evidence options, durable status, result, and cancellation links
+- `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs`
+  - returns owned run summaries with a whitespace-normalized `queryPreview` bounded to 160 Unicode code points; full queries are omitted
 - `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}`
-  - poll until `status` is `COMPLETED`, `PARTIAL`, `FAILED`, `CANCELLED`, or `INTERRUPTED`
+  - returns the owned run detail, including the full query and applied evidence options; poll until `status` is `COMPLETED`, `PARTIAL`, `FAILED`, `CANCELLED`, or `INTERRUPTED`
 - `GET /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/result`
-  - returns the structured answer, ranked evidence, context-only parents, graph facts, citations, and per-branch diagnostics
+  - returns the typed version-1 structured answer, ranked evidence with snapshotted source metadata, context-only parents, graph facts, citations, and per-branch diagnostics
+- readiness blockers are returned as RFC 7807 `409 Conflict` responses before queue capacity or durable run state is created
 - `POST /knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/{runId}/cancel`
   - requests cancellation idempotently
 
@@ -714,6 +721,8 @@ curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/ask" 
 7. Submit and manage a durable advanced-search run:
 
 ```bash
+curl "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs/readiness"
+
 curl -X POST "http://localhost:8080/api/v1/knowledge-bases/kb-demo/queries/advanced-search-runs" \
   -H "Content-Type: application/json" \
   -d '{"query":"When does the agreement renew?","maximumEvidence":10,"includeEvidenceText":true}'

@@ -11,7 +11,9 @@ import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.CreateRequest;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.ResultResponse;
-import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.RunResponse;
+import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.RunDetailResponse;
+import io.github.vfedoriv.graphrag.dto.AdvancedSearchRunDtos.RunSummaryResponse;
+import io.github.vfedoriv.graphrag.dto.AdvancedSearchReadinessDtos.ReadinessResponse;
 import io.github.vfedoriv.graphrag.dto.PageResponse;
 import io.github.vfedoriv.graphrag.error.AdvancedSearchCapacityException;
 import io.github.vfedoriv.graphrag.error.AdvancedSearchResultUnavailableException;
@@ -55,6 +57,7 @@ public class AdvancedSearchRunService {
     private final ThreadPoolTaskExecutor executor;
     private final TransactionTemplate transactions;
     private final AdvancedSearchAdmission admission;
+    private final AdvancedSearchReadinessService readinessService;
     private final AdvancedSearchMetrics metrics;
     private final Map<String, FutureTask<Void>> futures = new ConcurrentHashMap<>();
     private final Map<String, AdvancedSearchAdmission.Reservation> permits = new ConcurrentHashMap<>();
@@ -72,6 +75,7 @@ public class AdvancedSearchRunService {
         AdvancedSearchResultCodec resultCodec,
         ObjectMapper objectMapper,
         AdvancedSearchAdmission admission,
+        AdvancedSearchReadinessService readinessService,
         AdvancedSearchMetrics metrics,
         @Qualifier("advancedSearchRunExecutor") ThreadPoolTaskExecutor executor,
         @Qualifier("transactionManager") PlatformTransactionManager transactionManager
@@ -83,10 +87,11 @@ public class AdvancedSearchRunService {
         this.resultCodec = resultCodec; this.objectMapper = objectMapper; this.executor = executor;
         this.transactions = new TransactionTemplate(transactionManager);
         this.admission = admission;
+        this.readinessService = readinessService;
         this.metrics = metrics;
     }
 
-    public RunResponse create(String knowledgeBaseId, CreateRequest request) {
+    public RunDetailResponse create(String knowledgeBaseId, CreateRequest request) {
         AdvancedSearchSettings settings = settingsService.advancedSearch();
         String query = request.query().strip();
         if (query.length() > settings.maxQueryLength()) {
@@ -96,12 +101,17 @@ public class AdvancedSearchRunService {
         if (maximumEvidence > settings.maxEvidence()) {
             throw new IllegalArgumentException("maximumEvidence exceeds the configured advanced-search bound");
         }
+        ReadinessResponse initialReadiness = readinessService.evaluate(knowledgeBaseId);
+        readinessService.requireReady(initialReadiness);
         AdvancedSearchAdmission.Reservation reservation = admission.tryReserve()
             .orElseThrow(AdvancedSearchCapacityException::new);
         try {
             AdvancedSearchRunNode saved = transactions.execute(status -> {
                 KnowledgeBaseNode knowledgeBase = knowledgeBaseRepository.findById(knowledgeBaseId)
                     .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
+                ReadinessResponse currentReadiness = readinessService.evaluate(knowledgeBaseId);
+                readinessService.requireReady(currentReadiness);
+                readinessService.requireSameProfile(initialReadiness, currentReadiness);
                 Instant now = Instant.now();
                 AdvancedSearchRunNode run = new AdvancedSearchRunNode();
                 run.setId(UUID.randomUUID().toString()); run.setKnowledgeBaseId(knowledgeBaseId); run.setQueryText(query);
@@ -111,21 +121,22 @@ public class AdvancedSearchRunService {
                     ? settings.defaultIncludeEvidenceText()
                     : request.includeEvidenceText());
                 run.setSettingsSnapshotJson(snapshot(settings)); run.setCompletedBranches(0); run.setTotalBranches(3);
-                run.setActiveAiProfileId(knowledgeBase.getActiveAiProfileId());
+                run.setActiveAiProfileId(currentReadiness.profileId());
+                run.setActiveAiProfileRevision(currentReadiness.profileRevision());
                 snapshotSchema(run, knowledgeBase);
                 run.setEvidenceCount(0); run.setDeadlineAt(now.plus(settings.deadline())); run.setCreatedAt(now);
                 return runRepository.save(run);
             });
             permits.put(saved.getId(), reservation);
             dispatch(saved.getId(), settings);
-            return toResponse(saved);
+            return toDetailResponse(saved);
         } catch (RuntimeException exception) {
             reservation.release();
             throw exception;
         }
     }
 
-    public PageResponse<RunResponse> list(
+    public PageResponse<RunSummaryResponse> list(
         String knowledgeBaseId, AdvancedSearchRunStatus status, int page, int size
     ) {
         requirePage(page, size);
@@ -135,11 +146,11 @@ public class AdvancedSearchRunService {
         Page<AdvancedSearchRunNode> result = runRepository.findOwnedPage(
             knowledgeBaseId, status, PageRequest.of(page, size));
         return new PageResponse<>(page, size, result.getTotalElements(), result.getContent().stream()
-            .map(this::toResponse).toList());
+            .map(this::toSummaryResponse).toList());
     }
 
-    public RunResponse get(String knowledgeBaseId, String runId) {
-        return toResponse(requireOwned(knowledgeBaseId, runId));
+    public RunDetailResponse get(String knowledgeBaseId, String runId) {
+        return toDetailResponse(requireOwned(knowledgeBaseId, runId));
     }
 
     public ResultResponse result(String knowledgeBaseId, String runId) {
@@ -149,7 +160,7 @@ public class AdvancedSearchRunService {
         return new ResultResponse(runId, result.getPayloadVersion(), resultCodec.read(result.getResultJson()), result.getCreatedAt());
     }
 
-    public RunResponse cancel(String knowledgeBaseId, String runId) {
+    public RunSummaryResponse cancel(String knowledgeBaseId, String runId) {
         CancellationOutcome outcome = transactions.execute(status -> {
             AdvancedSearchRunNode before = requireOwned(knowledgeBaseId, runId);
             if (before.getStatus().terminal()) { return new CancellationOutcome(before, false); }
@@ -167,7 +178,7 @@ public class AdvancedSearchRunService {
             futures.remove(runId);
             release(runId);
         }
-        return toResponse(outcome.run());
+        return toSummaryResponse(outcome.run());
     }
 
     private void dispatch(String runId, AdvancedSearchSettings settings) {
@@ -299,12 +310,32 @@ public class AdvancedSearchRunService {
     private void requirePage(int page, int size) {
         if (page < 0 || size < 1 || size > 100) { throw new IllegalArgumentException("page must be non-negative and size must be between 1 and 100"); }
     }
-    private RunResponse toResponse(AdvancedSearchRunNode run) {
+    private RunDetailResponse toDetailResponse(AdvancedSearchRunNode run) {
         String base = "/api/v1/knowledge-bases/" + run.getKnowledgeBaseId() + "/queries/advanced-search-runs/" + run.getId();
-        return new RunResponse(run.getId(), run.getKnowledgeBaseId(), run.getStatus(), run.getStage(),
+        return new RunDetailResponse(run.getId(), run.getKnowledgeBaseId(), run.getQueryText(),
+            run.getRequestedEvidence(), run.isIncludeEvidenceText(), run.getStatus(), run.getStage(),
             run.getCompletedBranches(), run.getTotalBranches(), run.getEvidenceCount(),
             run.getCancellationRequestedAt() != null, run.getFailureCategory(), run.getDeadlineAt(), run.getCreatedAt(),
             run.getStartedAt(), run.getCompletedAt(), Map.of("self", base, "result", base + "/result", "cancel", base + "/cancel"));
+    }
+
+    private RunSummaryResponse toSummaryResponse(AdvancedSearchRunNode run) {
+        String base = "/api/v1/knowledge-bases/" + run.getKnowledgeBaseId() + "/queries/advanced-search-runs/" + run.getId();
+        return new RunSummaryResponse(run.getId(), run.getKnowledgeBaseId(), queryPreview(run.getQueryText()),
+            run.getRequestedEvidence(), run.isIncludeEvidenceText(), run.getStatus(), run.getStage(),
+            run.getCompletedBranches(), run.getTotalBranches(), run.getEvidenceCount(),
+            run.getCancellationRequestedAt() != null, run.getFailureCategory(), run.getDeadlineAt(), run.getCreatedAt(),
+            run.getStartedAt(), run.getCompletedAt(), Map.of("self", base, "result", base + "/result", "cancel", base + "/cancel"));
+    }
+
+    private String queryPreview(String query) {
+        String normalized = query == null ? "" : query.strip().replaceAll("\\s+", " ");
+        int maximumCodePoints = 160;
+        if (normalized.codePointCount(0, normalized.length()) <= maximumCodePoints) {
+            return normalized;
+        }
+        int end = normalized.offsetByCodePoints(0, maximumCodePoints);
+        return normalized.substring(0, end);
     }
 
     private void release(String runId) {

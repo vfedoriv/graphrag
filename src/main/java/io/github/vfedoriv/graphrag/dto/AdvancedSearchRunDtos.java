@@ -1,6 +1,5 @@
 package io.github.vfedoriv.graphrag.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
 import jakarta.validation.constraints.Max;
@@ -19,9 +18,12 @@ public final class AdvancedSearchRunDtos {
         Boolean includeEvidenceText
     ) { }
 
-    public record RunResponse(
+    public record RunSummaryResponse(
         String id,
         String knowledgeBaseId,
+        String queryPreview,
+        int maximumEvidence,
+        boolean includeEvidenceText,
         AdvancedSearchRunStatus status,
         AdvancedSearchRunStage stage,
         int completedBranches,
@@ -36,5 +38,30 @@ public final class AdvancedSearchRunDtos {
         Map<String, String> links
     ) { }
 
-    public record ResultResponse(String runId, int payloadVersion, JsonNode result, Instant createdAt) { }
+    public record RunDetailResponse(
+        String id,
+        String knowledgeBaseId,
+        String query,
+        int maximumEvidence,
+        boolean includeEvidenceText,
+        AdvancedSearchRunStatus status,
+        AdvancedSearchRunStage stage,
+        int completedBranches,
+        int totalBranches,
+        int evidenceCount,
+        boolean cancellationRequested,
+        String failureCategory,
+        Instant deadlineAt,
+        Instant createdAt,
+        Instant startedAt,
+        Instant completedAt,
+        Map<String, String> links
+    ) { }
+
+    public record ResultResponse(
+        String runId,
+        int payloadVersion,
+        AdvancedSearchResultDtos.AdvancedSearchResultV1 result,
+        Instant createdAt
+    ) { }
 }

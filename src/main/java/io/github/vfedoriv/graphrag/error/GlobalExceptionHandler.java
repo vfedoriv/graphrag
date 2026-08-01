@@ -150,6 +150,18 @@ public class GlobalExceptionHandler {
         return baseProblem(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(AdvancedSearchReadinessConflictException.class)
+    public ProblemDetail handleAdvancedSearchReadinessConflict(
+        AdvancedSearchReadinessConflictException ex,
+        HttpServletRequest request
+    ) {
+        ProblemDetail detail = baseProblem(
+            HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+        detail.setType(URI.create("https://graphrag.invalid/problems/advanced-search-readiness"));
+        detail.setProperty("blockers", ex.getBlockers());
+        return detail;
+    }
+
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ProblemDetail handleOptimisticLockingFailure(
         OptimisticLockingFailureException ex, HttpServletRequest request

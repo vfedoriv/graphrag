@@ -58,6 +58,7 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
     private final ObjectMapper objectMapper;
     private final ThreadPoolTaskExecutor branchExecutor;
     private final AdvancedSearchCitationCatalog citationCatalog;
+    private final AdvancedSearchCitationMetadataService citationMetadataService;
     private final AdvancedSearchAnswerSynthesizer answerSynthesizer;
     private final AiObservationService observations;
     private final AdvancedSearchMetrics metrics;
@@ -74,6 +75,7 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         SchemaParser schemaParser,
         ObjectMapper objectMapper,
         AdvancedSearchCitationCatalog citationCatalog,
+        AdvancedSearchCitationMetadataService citationMetadataService,
         AdvancedSearchAnswerSynthesizer answerSynthesizer,
         AiObservationService observations,
         AdvancedSearchMetrics metrics,
@@ -90,6 +92,7 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         this.schemaParser = schemaParser;
         this.objectMapper = objectMapper;
         this.citationCatalog = citationCatalog;
+        this.citationMetadataService = citationMetadataService;
         this.answerSynthesizer = answerSynthesizer;
         this.observations = observations;
         this.metrics = metrics;
@@ -161,7 +164,8 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
 
         requireContinue(context);
         context.stageChanged().accept(AdvancedSearchRunStage.SYNTHESIS);
-        Catalog catalog = citationCatalog.build(ranked.evidence(), true);
+        Catalog catalog = citationMetadataService.enrich(
+            context.knowledgeBaseId(), citationCatalog.build(ranked.evidence(), true));
         AdvancedSearchAnswerSynthesizer.Outcome answer = answerSynthesizer.synthesize(
             context.query(), catalog, context.deadline());
         metrics.retrieval(attempts);
@@ -279,19 +283,22 @@ public class DefaultAdvancedSearchRunProcessor implements AdvancedSearchRunProce
         payload.set("contexts", objectMapper.valueToTree(publicCatalog.contexts()));
         payload.set("graphFacts", objectMapper.valueToTree(publicCatalog.graphFacts()));
         payload.set("answerDiagnostics", objectMapper.valueToTree(answer.diagnostics()));
-        payload.set("diagnostics", objectMapper.valueToTree(Map.of(
-            "plan", plan.summary(),
-            "sufficiency", sufficiency.summary(),
-            "followUp", Map.of(
-                "executed", followUp.execute(),
-                "queryCount", followUp.refinements().size(),
-                "skippedCategory", followUp.skippedCategory() == null ? "NONE" : followUp.skippedCategory()
-            ),
-            "attempts", attempts,
-            "fusion", result.fusionDiagnostics(),
-            "rerank", result.rerankDiagnostics(),
-            "selection", result.selectionDiagnostics()
-        )));
+        Map<String, Object> diagnostics = new java.util.LinkedHashMap<>();
+        diagnostics.put("plan", plan.summary());
+        diagnostics.put("sufficiency", sufficiency.summary());
+        diagnostics.put("followUp", Map.of(
+            "executed", followUp.execute(),
+            "queryCount", followUp.refinements().size(),
+            "skippedCategory", followUp.skippedCategory() == null ? "NONE" : followUp.skippedCategory()
+        ));
+        diagnostics.put("attempts", attempts);
+        diagnostics.put("fusion", result.fusionDiagnostics());
+        diagnostics.put("graphExpansion", result.graphExpansionDiagnostics());
+        diagnostics.put("parentContext", result.parentContextDiagnostics());
+        diagnostics.put("rerank", result.rerankDiagnostics());
+        diagnostics.put("selection", result.selectionDiagnostics());
+        diagnostics.put("sourceMetadata", Map.of("warnings", catalog.metadataWarnings()));
+        payload.set("diagnostics", objectMapper.valueToTree(diagnostics));
         trimText(payload, new int[]{context.settings().maxEvidenceTextCharacters()});
         return payload;
     }

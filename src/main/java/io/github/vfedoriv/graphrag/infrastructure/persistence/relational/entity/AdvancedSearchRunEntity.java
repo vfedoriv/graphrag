@@ -30,6 +30,7 @@ public class AdvancedSearchRunEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "settings_snapshot_json", nullable = false, columnDefinition = "jsonb") private String settingsSnapshotJson;
     @Column(name = "active_ai_profile_id") private String activeAiProfileId;
+    @Column(name = "active_ai_profile_revision") private Long activeAiProfileRevision;
     @Column(name = "schema_definition_id") private String schemaDefinitionId;
     @Column(name = "schema_content_hash", length = 64) private String schemaContentHash;
     @JdbcTypeCode(SqlTypes.JSON)

@@ -3,6 +3,8 @@ package io.github.vfedoriv.graphrag.error;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
+import io.github.vfedoriv.graphrag.dto.AdvancedSearchReadinessDtos.ReadinessIssue;
+import java.util.List;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -59,5 +61,19 @@ class GlobalExceptionHandlerTest {
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(problem.getTitle()).isEqualTo("Unexpected error");
         assertThat(problem.getDetail()).isEqualTo("Unexpected error");
+    }
+
+    @Test
+    void mapsAdvancedSearchReadinessBlockersToAStableConflictProblem() {
+        MockHttpServletRequest request = new MockHttpServletRequest(
+            "POST", "/api/v1/knowledge-bases/kb-1/queries/advanced-search-runs");
+        AdvancedSearchReadinessConflictException exception = new AdvancedSearchReadinessConflictException(
+            List.of(new ReadinessIssue("CHAT_CONFIGURATION_UNAVAILABLE", "Configuration is incomplete.")));
+
+        ProblemDetail problem = handler.handleAdvancedSearchReadinessConflict(exception, request);
+
+        assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(problem.getType().toString()).endsWith("/problems/advanced-search-readiness");
+        assertThat(problem.getProperties()).containsKey("blockers");
     }
 }
