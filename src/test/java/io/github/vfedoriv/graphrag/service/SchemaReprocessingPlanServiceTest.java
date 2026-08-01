@@ -26,6 +26,9 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryMode;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryPlanRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
@@ -71,6 +74,82 @@ class SchemaReprocessingPlanServiceTest {
         assertThat(itemCaptor.getValue()).singleElement()
             .extracting(SchemaReprocessingItemNode::getDocumentSha256)
             .isEqualTo("a".repeat(64));
+    }
+
+    @Test
+    void previewsClassificationCountsWithoutCreatingAPlan() {
+        Fixture fixture = fixture();
+
+        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
+            "kb-1",
+            new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.OUTDATED_STRATEGY, List.of(), Map.of()),
+            0,
+            20
+        );
+
+        assertThat(response.ready()).isTrue();
+        assertThat(response.classificationCounts().noChunks()).isEqualTo(1);
+        assertThat(response.classificationCounts().outdated()).isEqualTo(0);
+        assertThat(response.selectedCount()).isEqualTo(1);
+        assertThat(response.selectedDocuments().getContent()).singleElement()
+            .extracting(value -> value.id()).isEqualTo("doc-1");
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void previewReportsActivePlanBlockerWithoutCreatingWork() {
+        Fixture fixture = fixture();
+        when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
+
+        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
+            "kb-1",
+            new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.ALL, List.of(), Map.of()),
+            0,
+            20
+        );
+
+        assertThat(response.ready()).isFalse();
+        assertThat(response.blockers()).extracting(value -> value.code())
+            .contains("ACTIVE_DESTRUCTIVE_PLAN");
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void previewPreservesOwnershipSafetyAndBoundedEmptyPages() {
+        Fixture fixture = fixture();
+        when(fixture.documents.findByIdAndKnowledgeBaseId("foreign", "kb-1"))
+            .thenReturn(java.util.Optional.empty());
+
+        assertThatThrownBy(() -> fixture.service.preview(
+            "kb-1",
+            new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.DOCUMENT_IDS, List.of("foreign"), Map.of()),
+            0,
+            20
+        )).isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
+
+        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response =
+            fixture.service.preview(
+                "kb-1",
+                new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.ALL, List.of(), Map.of()),
+                1,
+                1
+            );
+        assertThat(response.selectedCount()).isEqualTo(1);
+        assertThat(response.selectedDocuments().getContent()).isEmpty();
+        assertThat(response.selectedDocuments().getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void retryRejectsConflictingModeAndLegacyBoolean() {
+        Fixture fixture = fixture();
+
+        assertThatThrownBy(() -> fixture.service.retry(
+            "kb-1", "plan-1", new RetryPlanRequest(RetryMode.RESNAPSHOT_UNRESOLVED, true)
+        )).isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("conflicts");
+        assertThatThrownBy(() -> fixture.service.retry("kb-1", "plan-1", false))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("explicit unresolved-document");
     }
 
     @Test

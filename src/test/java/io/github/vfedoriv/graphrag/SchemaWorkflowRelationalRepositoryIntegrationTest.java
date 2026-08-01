@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
 
 @RelationalIntegrationTest
 class SchemaWorkflowRelationalRepositoryIntegrationTest {
@@ -306,6 +307,46 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
         assertThat(repaired.getSucceededDocuments()).isEqualTo(1);
         assertThat(repaired.getStaleDocuments()).isEqualTo(1);
         assertThat(repaired.getBlockedDocuments()).isEqualTo(1);
+    }
+
+    @Test
+    void filtersReprocessingHistoryBeforePagingAndPreservesNullSelectionSemantics() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-filters\",\"version\":1,\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],"
+                + "\"relationships\":[]}",
+            knowledgeBaseId
+        );
+        SchemaReprocessingPlanNode schemaPlan = plan(schema);
+        schemaPlan.setId("history-schema");
+        schemaPlan.setStatus(SchemaReprocessingPlanStatus.COMPLETED);
+        schemaPlan.setTotalDocuments(0);
+        schemaPlan.setQueuedDocuments(0);
+        schemaPlan.setCompletedAt(Instant.now().minus(2, ChronoUnit.MINUTES));
+        schemaPlan.setCreatedAt(Instant.now().minus(2, ChronoUnit.MINUTES));
+        planRepository.save(schemaPlan);
+        SchemaReprocessingPlanNode chunkPlan = chunkPlan(schema);
+        chunkPlan.setId("history-chunk");
+        chunkPlan.setStatus(SchemaReprocessingPlanStatus.COMPLETED);
+        chunkPlan.setTotalDocuments(0);
+        chunkPlan.setQueuedDocuments(0);
+        chunkPlan.setCompletedAt(Instant.now());
+        chunkPlan.setCreatedAt(Instant.now());
+        planRepository.save(chunkPlan);
+
+        assertThat(planRepository.findPageByFilters(
+            knowledgeBaseId, null, ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION,
+            ChunkReprocessingSelection.ALL, SchemaReprocessingPlanStatus.COMPLETED, PageRequest.of(0, 1)
+        ).getTotalElements()).isEqualTo(1);
+        assertThat(planRepository.findPageByFilters(
+            knowledgeBaseId, null, ReprocessingPlanReason.SCHEMA_ACTIVATION,
+            null, SchemaReprocessingPlanStatus.COMPLETED, PageRequest.of(0, 10)
+        ).getContent()).singleElement().extracting(SchemaReprocessingPlanNode::getSelection)
+            .isNull();
+        assertThat(planRepository.findPageByFilters(
+            knowledgeBaseId, null, null, null, null, PageRequest.of(0, 10)
+        ).getContent()).extracting(SchemaReprocessingPlanNode::getId)
+            .containsExactly("history-chunk", "history-schema");
     }
 
     private SchemaDraftNode draft() {

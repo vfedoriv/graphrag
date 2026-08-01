@@ -2,6 +2,8 @@ package io.github.vfedoriv.graphrag.infrastructure.persistence.relational;
 
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingPlanEntity;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaSchemaReprocessingPlanRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
@@ -47,6 +49,18 @@ public class RelationalSchemaReprocessingPlanRepository implements SchemaReproce
     ) {
         return repository.findByKnowledgeBaseIdAndDraftId(knowledgeBaseId, draftId, deterministic(pageable))
             .map(SchemaDraftRelationalMapper::toDomain);
+    }
+    @Override public Page<SchemaReprocessingPlanNode> findPageByFilters(
+        String knowledgeBaseId,
+        String draftId,
+        ReprocessingPlanReason reason,
+        ChunkReprocessingSelection selection,
+        SchemaReprocessingPlanStatus status,
+        Pageable pageable
+    ) {
+        return repository.findPageByFilters(
+            knowledgeBaseId, draftId, reason, selection, status, deterministic(pageable)
+        ).map(SchemaDraftRelationalMapper::toDomain);
     }
     @Override public List<SchemaReprocessingPlanNode> findLatestForDraftIds(List<String> draftIds) {
         return draftIds.isEmpty() ? List.of() : map(repository.findLatestForDraftIds(draftIds));

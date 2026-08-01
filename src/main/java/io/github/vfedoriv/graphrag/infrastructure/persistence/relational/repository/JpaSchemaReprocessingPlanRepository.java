@@ -1,6 +1,8 @@
 package io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository;
 
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingPlanEntity;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import java.time.Instant;
@@ -23,6 +25,32 @@ public interface JpaSchemaReprocessingPlanRepository extends JpaRepository<Schem
     Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
     Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseIdAndDraftId(
         String knowledgeBaseId, String draftId, Pageable pageable);
+
+    @Query(value = """
+        select plan from SchemaReprocessingPlanEntity plan
+        where plan.knowledgeBaseId = :knowledgeBaseId
+          and (:draftId is null or plan.draftId = :draftId)
+          and (:reason is null or plan.reason = :reason)
+          and (:selection is null or plan.selection = :selection)
+          and (:status is null or plan.status = :status)
+        order by plan.createdAt desc, plan.id desc
+        """,
+        countQuery = """
+        select count(plan) from SchemaReprocessingPlanEntity plan
+        where plan.knowledgeBaseId = :knowledgeBaseId
+          and (:draftId is null or plan.draftId = :draftId)
+          and (:reason is null or plan.reason = :reason)
+          and (:selection is null or plan.selection = :selection)
+          and (:status is null or plan.status = :status)
+        """)
+    Page<SchemaReprocessingPlanEntity> findPageByFilters(
+        @Param("knowledgeBaseId") String knowledgeBaseId,
+        @Param("draftId") String draftId,
+        @Param("reason") ReprocessingPlanReason reason,
+        @Param("selection") ChunkReprocessingSelection selection,
+        @Param("status") SchemaReprocessingPlanStatus status,
+        Pageable pageable
+    );
 
     @Query("""
         select plan from SchemaReprocessingPlanEntity plan

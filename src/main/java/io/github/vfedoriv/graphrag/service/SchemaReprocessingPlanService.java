@@ -17,12 +17,21 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationBlocker;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationClassificationCounts;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationDocumentPreview;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationDocumentPreviewPage;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationTarget;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanSummaryResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryMode;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryPlanRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
@@ -148,6 +157,49 @@ public class SchemaReprocessingPlanService {
         return createSchemaPlan(knowledgeBaseId, request, null, Map.of());
     }
 
+    @RelationalTransactional(readOnly = true)
+    public ChunkMigrationPreviewResponse preview(
+        String knowledgeBaseId, ChunkMigrationPreviewRequest request, int page, int size
+    ) {
+        knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
+        if (request == null || request.selection() == null) {
+            throw new IllegalArgumentException("Chunk migration preview requires selection");
+        }
+        ChunkMigrationEvaluation evaluation = evaluateChunkMigration(
+            knowledgeBaseId,
+            request.selection(),
+            request.documentIds(),
+            request.processingOptions()
+        );
+        int boundedPage = Math.max(0, page);
+        int boundedSize = Math.max(1, Math.min(100, size));
+        List<ChunkMigrationDocumentPreview> selected = evaluation.selectedDocuments().stream()
+            .map(document -> new ChunkMigrationDocumentPreview(
+                document.getId(), document.getOriginalFilename(), document.getSha256(), document.getUploadedAt(),
+                evaluation.classifications().get(document.getId()).classification(),
+                evaluation.documentTargets().get(document.getId()).effectiveChunkerRevision(),
+                evaluation.documentTargets().get(document.getId()).parserRevision()
+            ))
+            .toList();
+        int from = Math.min(selected.size(), boundedPage * boundedSize);
+        int to = Math.min(selected.size(), from + boundedSize);
+        ChunkMigrationDocumentPreviewPage pageResponse = new ChunkMigrationDocumentPreviewPage(
+            boundedPage, boundedSize, selected.size(), selected.subList(from, to)
+        );
+        ChunkMigrationTarget target = evaluation.target() == null ? null : new ChunkMigrationTarget(
+            evaluation.target().schemaId(), evaluation.target().schemaContentHash(),
+            evaluation.target().aiProfileId(), evaluation.target().aiProfileRevision(),
+            evaluation.target().embeddingSpaceId(), evaluation.target().expectedChunkerRevision()
+        );
+        return new ChunkMigrationPreviewResponse(
+            knowledgeBaseId, request.selection(), evaluation.ready(), evaluation.blockers(), target,
+            new ChunkMigrationClassificationCounts(
+                evaluation.noChunks(), evaluation.outdated(), evaluation.current()
+            ),
+            selected.size(), pageResponse
+        );
+    }
+
     private StartPlanResponse createSchemaPlan(
         String knowledgeBaseId,
         CreatePlanRequest request,
@@ -206,38 +258,25 @@ public class SchemaReprocessingPlanService {
                 "Expected chunker revision is stale; current revision is " + targetRevision
             );
         }
-        KnowledgeBaseNode knowledgeBase = knowledgeBaseRepository.findById(knowledgeBaseId)
-            .orElseThrow(() -> new NotFoundException("Knowledge base not found: " + knowledgeBaseId));
-        if (knowledgeBase.getActiveSchemaId() == null || knowledgeBase.getActiveSchemaId().isBlank()) {
-            throw new ConflictException("Chunk strategy migration requires an active schema");
+        ChunkMigrationEvaluation evaluation = evaluateChunkMigration(
+            knowledgeBaseId, selection, request.documentIds(), request.processingOptions()
+        );
+        if (!evaluation.ready()) {
+            throw new ConflictException(evaluation.blockers().get(0).message());
         }
-        SchemaDefinitionNode schema = requireActiveTarget(knowledgeBaseId, knowledgeBase.getActiveSchemaId());
-        EmbeddingSpace embeddingSpace = embeddingSpacePolicy.spaceFor(profile);
-        ChunkMigrationSnapshot.ChunkTarget chunkTarget = chunkingService.snapshotTarget(profile);
-        List<DocumentUploadNode> candidates = chunkCandidates(knowledgeBaseId, request, selection);
-        Map<String, ChunkMigrationSnapshot.DocumentTarget> documentTargets = new LinkedHashMap<>();
-        List<DocumentUploadNode> documents = new ArrayList<>();
-        for (DocumentUploadNode document : candidates) {
-            DocumentProcessingOptionSet options = processingOptionResolver.resolve(
-                document,
-                request.processingOptions() == null ? Map.of() : request.processingOptions()
+        if (evaluation.target() == null
+            || !targetRevision.equals(evaluation.target().expectedChunkerRevision())) {
+            throw new ConflictException(
+                "Expected chunker revision is stale; current revision is "
+                    + (evaluation.target() == null ? "unavailable" : evaluation.target().expectedChunkerRevision())
             );
-            ChunkingContext context = chunkingService.snapshot(profile, options.detection().parserId());
-            ChunkMigrationSnapshot.DocumentTarget documentTarget =
-                new ChunkMigrationSnapshot.DocumentTarget(
-                    document.getSha256(),
-                    options.detection().parserId(),
-                    context.parserRevision(),
-                    options.detection().fileFormat(),
-                    context.effectiveRevision().value(),
-                    options.effectiveOptions()
-                );
-            if (selection != ChunkReprocessingSelection.OUTDATED_STRATEGY
-                || isOutdated(document, documentTarget.effectiveChunkerRevision())) {
-                documents.add(document);
-                documentTargets.put(document.getId(), documentTarget);
-            }
         }
+        KnowledgeBaseNode knowledgeBase = evaluation.knowledgeBase();
+        SchemaDefinitionNode schema = evaluation.schema();
+        EmbeddingSpace embeddingSpace = evaluation.embeddingSpace();
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget = evaluation.chunkTarget();
+        Map<String, ChunkMigrationSnapshot.DocumentTarget> documentTargets = evaluation.documentTargets();
+        List<DocumentUploadNode> documents = evaluation.selectedDocuments();
         ChunkMigrationSnapshot snapshot = new ChunkMigrationSnapshot(
             targetRevision,
             selection,
@@ -299,6 +338,19 @@ public class SchemaReprocessingPlanService {
     @RelationalTransactional
     public StartPlanResponse retry(String knowledgeBaseId, String planId, boolean resnapshot) {
         if (!resnapshot) throw new IllegalArgumentException("Retry requires explicit unresolved-document resnapshot");
+        return retryInternal(knowledgeBaseId, planId, RetryMode.RESNAPSHOT_UNRESOLVED);
+    }
+
+    @RelationalTransactional
+    public StartPlanResponse retry(String knowledgeBaseId, String planId, RetryPlanRequest request) {
+        RetryMode mode = resolveRetryMode(request);
+        return retryInternal(knowledgeBaseId, planId, mode);
+    }
+
+    private StartPlanResponse retryInternal(String knowledgeBaseId, String planId, RetryMode mode) {
+        if (mode != RetryMode.RESNAPSHOT_UNRESOLVED) {
+            throw new IllegalArgumentException("Unsupported retry mode: " + mode);
+        }
         SchemaReprocessingPlanNode prior = requirePlan(knowledgeBaseId, planId);
         if (prior.getStatus() == SchemaReprocessingPlanStatus.QUEUED || prior.getStatus() == SchemaReprocessingPlanStatus.RUNNING) {
             throw new ConflictException("Reprocessing plan is still running: " + planId);
@@ -346,6 +398,22 @@ public class SchemaReprocessingPlanService {
         );
     }
 
+    private RetryMode resolveRetryMode(RetryPlanRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Retry request must not be null");
+        }
+        if (request.mode() != null && request.resnapshotUnresolvedDocuments() != null) {
+            throw new IllegalArgumentException("Retry mode conflicts with deprecated resnapshot boolean");
+        }
+        if (request.mode() != null) {
+            return request.mode();
+        }
+        if (Boolean.TRUE.equals(request.resnapshotUnresolvedDocuments())) {
+            return RetryMode.RESNAPSHOT_UNRESOLVED;
+        }
+        throw new IllegalArgumentException("Retry requires mode=RESNAPSHOT_UNRESOLVED");
+    }
+
     @RelationalTransactional(readOnly = true)
     public PlanResponse get(String knowledgeBaseId, String planId, int page, int size) {
         SchemaReprocessingPlanNode plan = requirePlan(knowledgeBaseId, planId);
@@ -356,18 +424,29 @@ public class SchemaReprocessingPlanService {
         return toResponse(plan, boundedPage, boundedSize, items.getContent(), items.getTotalElements());
     }
 
-    @RelationalTransactional(readOnly = true)
-    public PlanPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
+    private PlanPageResponse listInternal(
+        String knowledgeBaseId,
+        String draftId,
+        ReprocessingPlanReason reason,
+        ChunkReprocessingSelection selection,
+        SchemaReprocessingPlanStatus status,
+        int page,
+        int size
+    ) {
         knowledgeBaseLifecycleService.requireManaged(knowledgeBaseId);
         if (draftId != null && !draftId.isBlank()) {
             draftLifecycleService.requireOwned(knowledgeBaseId, draftId);
         }
         int boundedPage = Math.max(0, page);
         int boundedSize = Math.max(1, Math.min(100, size));
-        Page<SchemaReprocessingPlanNode> plans = draftId == null || draftId.isBlank()
-            ? planRepository.findPageByKnowledgeBaseId(knowledgeBaseId, PageRequest.of(boundedPage, boundedSize))
-            : planRepository.findPageByKnowledgeBaseIdAndDraftId(
-                knowledgeBaseId, draftId, PageRequest.of(boundedPage, boundedSize));
+        Page<SchemaReprocessingPlanNode> plans = planRepository.findPageByFilters(
+            knowledgeBaseId,
+            draftId == null || draftId.isBlank() ? null : draftId,
+            reason,
+            selection,
+            status,
+            PageRequest.of(boundedPage, boundedSize)
+        );
         List<String> draftIds = plans.getContent().stream()
             .map(SchemaReprocessingPlanNode::getDraftId)
             .filter(java.util.Objects::nonNull)
@@ -385,6 +464,24 @@ public class SchemaReprocessingPlanService {
             .map(plan -> toSummary(
                 plan, latestIds.contains(plan.getId()), targetCurrent.getOrDefault(plan.getId(), false))).toList();
         return new PlanPageResponse(boundedPage, boundedSize, plans.getTotalElements(), content);
+    }
+
+    @RelationalTransactional(readOnly = true)
+    public PlanPageResponse list(
+        String knowledgeBaseId,
+        String draftId,
+        ReprocessingPlanReason reason,
+        ChunkReprocessingSelection selection,
+        SchemaReprocessingPlanStatus status,
+        int page,
+        int size
+    ) {
+        return listInternal(knowledgeBaseId, draftId, reason, selection, status, page, size);
+    }
+
+    @RelationalTransactional(readOnly = true)
+    public PlanPageResponse list(String knowledgeBaseId, String draftId, int page, int size) {
+        return listInternal(knowledgeBaseId, draftId, null, null, null, page, size);
     }
 
     void execute(String planId) {
@@ -580,6 +677,124 @@ public class SchemaReprocessingPlanService {
         return List.copyOf(documents);
     }
 
+    private ChunkMigrationEvaluation evaluateChunkMigration(
+        String knowledgeBaseId,
+        ChunkReprocessingSelection selection,
+        List<String> documentIds,
+        Map<String, Object> processingOptions
+    ) {
+        Map<String, Object> options = processingOptions == null ? Map.of() : processingOptions;
+        CreatePlanRequest request = new CreatePlanRequest(
+            null, null, false, documentIds, options,
+            ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION, selection, null
+        );
+        List<DocumentUploadNode> candidates = chunkCandidates(knowledgeBaseId, request, selection);
+        List<DocumentUploadNode> allDocuments = documentRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
+        KnowledgeBaseNode knowledgeBase = knowledgeBaseRepository.findById(knowledgeBaseId).orElse(null);
+        List<ChunkMigrationBlocker> blockers = new ArrayList<>();
+        if (knowledgeBase == null) {
+            throw new NotFoundException("Knowledge base not found: " + knowledgeBaseId);
+        }
+        String activeSchemaId = knowledgeBase.getActiveSchemaId();
+        SchemaDefinitionNode schema = null;
+        if (activeSchemaId == null || activeSchemaId.isBlank()) {
+            blockers.add(new ChunkMigrationBlocker(
+                "ACTIVE_SCHEMA_MISSING", "Chunk strategy migration requires an active schema"
+            ));
+        } else {
+            schema = schemaRepository.findById(activeSchemaId).orElse(null);
+            if (schema == null) {
+                blockers.add(new ChunkMigrationBlocker(
+                    "ACTIVE_SCHEMA_MISSING", "The active schema could not be resolved"
+                ));
+            }
+        }
+
+        AiProfileNode profile = null;
+        try {
+            profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        } catch (RuntimeException exception) {
+            blockers.add(new ChunkMigrationBlocker(
+                "AI_PROFILE_UNRESOLVABLE", "The active AI profile could not be resolved"
+            ));
+        }
+        String targetRevision = null;
+        EmbeddingSpace embeddingSpace = null;
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget = null;
+        if (profile != null) {
+            try {
+                targetRevision = chunkingService.migrationTargetRevision(profile);
+                embeddingSpace = embeddingSpacePolicy.spaceFor(profile);
+                embeddingSpacePolicy.requireCompatible(knowledgeBaseId, profile);
+                chunkTarget = chunkingService.snapshotTarget(profile);
+            } catch (RuntimeException exception) {
+                blockers.add(new ChunkMigrationBlocker(
+                    exception instanceof io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException
+                        ? "EMBEDDING_SPACE_INCOMPATIBLE" : "INVALID_MIGRATION_TARGET",
+                    exception.getMessage() == null ? "The migration target is not usable" : exception.getMessage()
+                ));
+            }
+        }
+        if (planRepository.existsActiveByKnowledgeBaseId(knowledgeBaseId)) {
+            blockers.add(new ChunkMigrationBlocker(
+                "ACTIVE_DESTRUCTIVE_PLAN", "Another destructive reprocessing plan is active"
+            ));
+        }
+
+        MigrationTarget target = schema == null || profile == null || embeddingSpace == null || targetRevision == null
+            ? null
+            : new MigrationTarget(
+                schema.getId(), schema.getContentHash(), profile.getId(), profile.getRevision(),
+                embeddingSpace.id(), targetRevision
+            );
+        boolean canClassify = target != null && chunkTarget != null
+            && blockers.stream().noneMatch(value -> value.code().equals("INVALID_MIGRATION_TARGET")
+                || value.code().equals("EMBEDDING_SPACE_INCOMPATIBLE"));
+        Map<String, ChunkMigrationDocumentClassification> classifications = new LinkedHashMap<>();
+        Map<String, ChunkMigrationSnapshot.DocumentTarget> documentTargets = new LinkedHashMap<>();
+        List<DocumentUploadNode> selected = new ArrayList<>();
+        long noChunks = 0;
+        long outdated = 0;
+        long current = 0;
+        if (canClassify) {
+            for (DocumentUploadNode document : allDocuments) {
+                DocumentProcessingOptionSet resolved = processingOptionResolver.resolve(document, options);
+                ChunkingContext context = chunkingService.snapshot(profile, resolved.detection().parserId());
+                ChunkMigrationSnapshot.DocumentTarget documentTarget = new ChunkMigrationSnapshot.DocumentTarget(
+                    document.getSha256(), resolved.detection().parserId(), context.parserRevision(),
+                    resolved.detection().fileFormat(), context.effectiveRevision().value(), resolved.effectiveOptions()
+                );
+                boolean hasChunks = !documentChunkRepository.findByDocumentIdOrderByChunkIndexAsc(document.getId()).isEmpty();
+                boolean isOutdated = !hasChunks || isOutdated(document, documentTarget.effectiveChunkerRevision());
+                String classification = !hasChunks ? "NO_CHUNKS" : isOutdated ? "OUTDATED" : "CURRENT";
+                classifications.put(document.getId(), new ChunkMigrationDocumentClassification(
+                    classification, documentTarget
+                ));
+                if (!hasChunks) {
+                    noChunks++;
+                } else if (isOutdated) {
+                    outdated++;
+                } else {
+                    current++;
+                }
+            }
+            for (DocumentUploadNode candidate : candidates) {
+                ChunkMigrationDocumentClassification classification = classifications.get(candidate.getId());
+                boolean include = selection != ChunkReprocessingSelection.OUTDATED_STRATEGY
+                    || "OUTDATED".equals(classification.classification())
+                    || "NO_CHUNKS".equals(classification.classification());
+                if (include) {
+                    selected.add(candidate);
+                    documentTargets.put(candidate.getId(), classification.target());
+                }
+            }
+        }
+        return new ChunkMigrationEvaluation(
+            knowledgeBase, schema, profile, embeddingSpace, chunkTarget, target, List.copyOf(blockers),
+            selected, documentTargets, classifications, noChunks, outdated, current
+        );
+    }
+
     private List<DocumentUploadNode> chunkCandidates(
         String knowledgeBaseId,
         CreatePlanRequest request,
@@ -708,5 +923,39 @@ public class SchemaReprocessingPlanService {
             plan.getSucceededDocuments(), plan.getFailedDocuments(), plan.getStaleDocuments(),
             plan.getBlockedDocuments(), latest, targetCurrent, terminal && targetCurrent && unresolved > 0,
             plan.getCreatedAt(), plan.getStartedAt(), plan.getCompletedAt(), statusLocation(plan));
+    }
+
+    private record MigrationTarget(
+        String schemaId,
+        String schemaContentHash,
+        String aiProfileId,
+        long aiProfileRevision,
+        String embeddingSpaceId,
+        String expectedChunkerRevision
+    ) { }
+
+    private record ChunkMigrationDocumentClassification(
+        String classification,
+        ChunkMigrationSnapshot.DocumentTarget target
+    ) { }
+
+    private record ChunkMigrationEvaluation(
+        KnowledgeBaseNode knowledgeBase,
+        SchemaDefinitionNode schema,
+        AiProfileNode profile,
+        EmbeddingSpace embeddingSpace,
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget,
+        MigrationTarget target,
+        List<ChunkMigrationBlocker> blockers,
+        List<DocumentUploadNode> selectedDocuments,
+        Map<String, ChunkMigrationSnapshot.DocumentTarget> documentTargets,
+        Map<String, ChunkMigrationDocumentClassification> classifications,
+        long noChunks,
+        long outdated,
+        long current
+    ) {
+        private boolean ready() {
+            return blockers.isEmpty();
+        }
     }
 }

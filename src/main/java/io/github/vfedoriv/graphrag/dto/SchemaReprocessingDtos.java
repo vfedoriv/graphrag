@@ -38,7 +38,67 @@ public final class SchemaReprocessingDtos {
             );
         }
     }
-    public record RetryPlanRequest(boolean resnapshotUnresolvedDocuments) { }
+    public record ChunkMigrationPreviewRequest(
+        @Schema(example = "OUTDATED_STRATEGY")
+        ChunkReprocessingSelection selection,
+        @Schema(example = "[]")
+        List<@NotBlank String> documentIds,
+        Map<String, Object> processingOptions
+    ) { }
+    public record ChunkMigrationBlocker(String code, String message) { }
+    public record ChunkMigrationTarget(
+        String schemaId,
+        String schemaContentHash,
+        String aiProfileId,
+        long aiProfileRevision,
+        String embeddingSpaceId,
+        String expectedChunkerRevision
+    ) { }
+    public record ChunkMigrationClassificationCounts(long noChunks, long outdated, long current) { }
+    public record ChunkMigrationDocumentPreview(
+        String id,
+        String originalFilename,
+        String sha256,
+        Instant uploadedAt,
+        String classification,
+        String effectiveChunkerRevision,
+        String parserRevision
+    ) { }
+    @Schema(name = "ChunkMigrationDocumentPreviewPage")
+    public static final class ChunkMigrationDocumentPreviewPage
+        extends PageResponse<ChunkMigrationDocumentPreview> {
+        public ChunkMigrationDocumentPreviewPage(
+            int page, int size, long totalElements, List<ChunkMigrationDocumentPreview> content
+        ) {
+            super(page, size, totalElements, content);
+        }
+    }
+    @Schema(name = "ChunkMigrationPreview")
+    public record ChunkMigrationPreviewResponse(
+        String knowledgeBaseId,
+        ChunkReprocessingSelection selection,
+        boolean ready,
+        List<ChunkMigrationBlocker> blockers,
+        ChunkMigrationTarget target,
+        ChunkMigrationClassificationCounts classificationCounts,
+        long selectedCount,
+        ChunkMigrationDocumentPreviewPage selectedDocuments
+    ) { }
+
+    public enum RetryMode {
+        RESNAPSHOT_UNRESOLVED
+    }
+
+    public record RetryPlanRequest(
+        @Schema(example = "RESNAPSHOT_UNRESOLVED")
+        RetryMode mode,
+        @Schema(deprecated = true, description = "Temporary compatibility field; use mode instead.")
+        Boolean resnapshotUnresolvedDocuments
+    ) {
+        public RetryPlanRequest(boolean resnapshotUnresolvedDocuments) {
+            this(null, resnapshotUnresolvedDocuments);
+        }
+    }
     public record StartPlanResponse(String planId, SchemaReprocessingPlanStatus status, String statusLocation) { }
     public record PlanItemResponse(
         String id, String documentId, String documentSha256, SchemaReprocessingItemStatus status,

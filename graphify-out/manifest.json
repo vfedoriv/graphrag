@@ -1770,8 +1770,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/documentation-alignment/spec.md": {
-    "mtime": 1785312076.5842535,
-    "ast_hash": "e1d4cc55bae51dcfbeabf57d7650334b",
+    "mtime": 1785611261.753033,
+    "ast_hash": "9338a2a008e51f1a1c9fc0d4e2817884",
     "semantic_hash": ""
   },
   "openspec/specs/extraction-run-cleanup/spec.md": {
@@ -3510,8 +3510,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/controller/SchemaReprocessingPlanController.java": {
-    "mtime": 1784104662.913027,
-    "ast_hash": "34a002fd6113f03f1580af46f86019ce",
+    "mtime": 1785612313.2460735,
+    "ast_hash": "d9a71ed5cf63ef98d74eb462b821a977",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/SchemaDraftEvaluationContracts.java": {
@@ -3565,8 +3565,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/SchemaReprocessingDtos.java": {
-    "mtime": 1785481182.1600807,
-    "ast_hash": "f7e9f64b0cd1c224172ddd5983122585",
+    "mtime": 1785612302.2189744,
+    "ast_hash": "d33c052254b89b67d0d714a48884218c",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaDraftEvaluationOutcomeRepository.java": {
@@ -3590,8 +3590,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/repository/SchemaReprocessingPlanRepository.java": {
-    "mtime": 1785480989.2165875,
-    "ast_hash": "d94e1e084c5ae618c58e013975b4904f",
+    "mtime": 1785611989.3408847,
+    "ast_hash": "40dad165f41e6e4bc182e9313441483a",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaDraftEvaluationMetricsCalculator.java": {
@@ -3615,8 +3615,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaReprocessingPlanService.java": {
-    "mtime": 1785485368.4831486,
-    "ast_hash": "d2a413ddec314526e2bacddfc4ca9e9a",
+    "mtime": 1785612357.0324981,
+    "ast_hash": "d64a0a8e6609b0a0171273bb6e7f3e8b",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaReprocessingRecoveryService.java": {
@@ -4885,8 +4885,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/RelationalSchemaReprocessingPlanRepository.java": {
-    "mtime": 1785480989.559592,
-    "ast_hash": "ce36a987616e9527ca29b2b228c18fc8",
+    "mtime": 1785611989.6768837,
+    "ast_hash": "7416b63417cc8c173db80187be67a6ed",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/entity/SchemaDraftEvaluationOutcomeEntity.java": {
@@ -4935,8 +4935,8 @@
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/infrastructure/persistence/relational/repository/JpaSchemaReprocessingPlanRepository.java": {
-    "mtime": 1785480989.41959,
-    "ast_hash": "b9faadb706ac0a80b9ae78b59ff12a64",
+    "mtime": 1785611989.530884,
+    "ast_hash": "0ed8c3d39080e1acb1001ea3f18f4812",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/service/SchemaDraftWorkflowCheckpointService.java": {
@@ -4950,8 +4950,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/SchemaWorkflowRelationalRepositoryIntegrationTest.java": {
-    "mtime": 1785485117.3451362,
-    "ast_hash": "d2e4ff47dd7cac7f12556501ed6b5e0b",
+    "mtime": 1785612598.3915932,
+    "ast_hash": "0a5b477859d544d15986b5c90c29d379",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-29-migrate-schema-draft-analysis-to-postgresql/.openspec.yaml": {
@@ -5770,8 +5770,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/SchemaReprocessingPlanServiceTest.java": {
-    "mtime": 1785481677.1784773,
-    "ast_hash": "f40549f9bc30b9e7656fdecb1e4cfbac",
+    "mtime": 1785612411.044087,
+    "ast_hash": "124b49263b4ef95d10fc10083939b9c0",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-31-expand-search-with-parent-context/.openspec.yaml": {
@@ -6470,8 +6470,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/advanced-search-runs/spec.md": {
-    "mtime": 1785524211.6763124,
-    "ast_hash": "6d27d1b731d270d543a3490f9d7d3b08",
+    "mtime": 1785611261.6270435,
+    "ast_hash": "73ca6329b2ee3aee3f10b86a8d133e95",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/domain/AdvancedSearchAnswerContracts.java": {
@@ -6580,8 +6580,8 @@
     "semantic_hash": ""
   },
   "openspec/specs/advanced-search-answering/spec.md": {
-    "mtime": 1785526757.4073822,
-    "ast_hash": "179b4e96b91174061c259f7fe25d9310",
+    "mtime": 1785611261.4410594,
+    "ast_hash": "b542e00f1c8f8a689501f5726e934f70",
     "semantic_hash": ""
   },
   "src/main/java/io/github/vfedoriv/graphrag/dto/AdvancedSearchReadinessDtos.java": {
@@ -6630,7 +6630,7 @@
     "semantic_hash": ""
   },
   "BACKEND_IMPROVE_PROPOSAL.md": {
-    "mtime": 1785607781.0931087,
+    "mtime": 1785611117.5206807,
     "ast_hash": "b4d634d373b773bc60673a16d4b64cc9",
     "semantic_hash": ""
   },
@@ -6730,48 +6730,78 @@
     "semantic_hash": ""
   },
   "openspec/changes/expose-chunking-operations-state/tasks.md": {
-    "mtime": 1785609105.7126105,
-    "ast_hash": "0ee53a6e6248019d76b67dbce4ba89fc",
+    "mtime": 1785612419.0701802,
+    "ast_hash": "084a91b7715da2f5cec196f98557878a",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/.openspec.yaml": {
+  "src/main/java/io/github/vfedoriv/graphrag/controller/ChunkMigrationController.java": {
+    "mtime": 1785612302.6649785,
+    "ast_hash": "a76f574eff195d9531ff05ac1badd9a5",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/controller/ChunkingStateController.java": {
+    "mtime": 1785612302.4639766,
+    "ast_hash": "6bce2703d8dd661a22c2f122b4143a99",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/dto/ChunkingStateDtos.java": {
+    "mtime": 1785611682.810767,
+    "ast_hash": "a65c694b1cdbf69bd11ee8ac2b8be678",
+    "semantic_hash": ""
+  },
+  "src/main/java/io/github/vfedoriv/graphrag/service/ChunkingStateService.java": {
+    "mtime": 1785612100.3358362,
+    "ast_hash": "de9f7575a50e65dcf0237a4db04a88f7",
+    "semantic_hash": ""
+  },
+  "src/test/java/io/github/vfedoriv/graphrag/service/ChunkingStateServiceTest.java": {
+    "mtime": 1785612188.6121638,
+    "ast_hash": "19fa9cd2f05c335ba328a0a7f796442e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/.openspec.yaml": {
     "mtime": 1785608709.992697,
     "ast_hash": "77c897de8023b0c6df09fea94ab57c52",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/design.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/design.md": {
     "mtime": 1785609046.826088,
     "ast_hash": "c7543d29d512f2aac6b50e7365c54863",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/proposal.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/proposal.md": {
     "mtime": 1785608783.736625,
     "ast_hash": "909e30427fb62789d7a156e1bf97d3da",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/specs/advanced-search-answering/spec.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/specs/advanced-search-answering/spec.md": {
     "mtime": 1785609047.2560833,
     "ast_hash": "34b86c3252323e6f9476b313bba430e1",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/specs/advanced-search-readiness/spec.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/specs/advanced-search-readiness/spec.md": {
     "mtime": 1785609046.9390867,
     "ast_hash": "2f240d4a09ab737cbfbc4060fbbd5ae4",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/specs/advanced-search-runs/spec.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/specs/advanced-search-runs/spec.md": {
     "mtime": 1785609047.0650854,
     "ast_hash": "eb215dc877fb0ffa793220698e734945",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/specs/documentation-alignment/spec.md": {
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/specs/documentation-alignment/spec.md": {
     "mtime": 1785609047.4270813,
     "ast_hash": "92b8f64e37c35c64f712e4c32778e039",
     "semantic_hash": ""
   },
-  "openspec/changes/improve-advanced-search-public-contracts/tasks.md": {
-    "mtime": 1785610792.2053702,
-    "ast_hash": "d56d4d54acf6bbdd65fb9092dedf8f62",
+  "openspec/changes/archive/2026-08-01-improve-advanced-search-public-contracts/tasks.md": {
+    "mtime": 1785610835.0303075,
+    "ast_hash": "22b786265d46d445986d2e2ea836cc2d",
+    "semantic_hash": ""
+  },
+  "openspec/specs/advanced-search-readiness/spec.md": {
+    "mtime": 1785611261.976014,
+    "ast_hash": "ce95de97e66534339b0aa1a26d3c21fe",
     "semantic_hash": ""
   }
 }
