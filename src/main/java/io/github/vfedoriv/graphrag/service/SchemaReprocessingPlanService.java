@@ -665,10 +665,12 @@ public class SchemaReprocessingPlanService {
     }
 
     private List<DocumentUploadNode> selectedDocuments(String knowledgeBaseId, CreatePlanRequest request) {
-        if (request.allDocuments() == (request.documentIds() != null && !request.documentIds().isEmpty())) {
+        boolean allDocuments = Boolean.TRUE.equals(request.allDocuments());
+        boolean hasExplicitDocuments = request.documentIds() != null && !request.documentIds().isEmpty();
+        if (allDocuments == hasExplicitDocuments) {
             throw new IllegalArgumentException("Select either allDocuments or an explicit non-empty documentIds list");
         }
-        if (request.allDocuments()) return documentRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
+        if (allDocuments) return documentRepository.findByKnowledgeBaseIdOrderByUploadedAtDesc(knowledgeBaseId);
         List<DocumentUploadNode> documents = new ArrayList<>();
         for (String id : request.documentIds().stream().distinct().toList()) {
             documents.add(documentRepository.findByIdAndKnowledgeBaseId(id, knowledgeBaseId)

@@ -21,6 +21,8 @@ import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
+import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
@@ -74,6 +76,59 @@ class SchemaReprocessingPlanServiceTest {
         assertThat(itemCaptor.getValue()).singleElement()
             .extracting(SchemaReprocessingItemNode::getDocumentSha256)
             .isEqualTo("a".repeat(64));
+    }
+
+    @Test
+    void selectsAllDocumentsOnlyWhenSchemaActivationRequestsIt() {
+        Fixture fixture = schemaFixture();
+
+        fixture.service.create("kb-1", schemaRequest(true, List.of()));
+
+        verify(fixture.documents).findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1");
+    }
+
+    @Test
+    void selectsExplicitDocumentsWhenSchemaActivationAllDocumentsIsOmittedNullOrFalse() {
+        for (Boolean allDocuments : new Boolean[] {null, false}) {
+            Fixture fixture = schemaFixture();
+
+            fixture.service.create("kb-1", schemaRequest(allDocuments, List.of("doc-1")));
+
+            verify(fixture.documents).findByIdAndKnowledgeBaseId("doc-1", "kb-1");
+        }
+    }
+
+    @Test
+    void rejectsSchemaActivationWithoutOrWithCombinedDocumentChoices() {
+        Fixture withoutChoice = schemaFixture();
+        assertThatThrownBy(() -> withoutChoice.service.create("kb-1", schemaRequest(false, List.of())))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("either allDocuments");
+
+        Fixture combinedChoices = schemaFixture();
+        assertThatThrownBy(() -> combinedChoices.service.create(
+            "kb-1", schemaRequest(true, List.of("doc-1"))
+        )).isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("either allDocuments");
+    }
+
+    @Test
+    void chunkMigrationUsesSelectionInsteadOfSchemaAllDocumentsFlag() {
+        for (Boolean allDocuments : new Boolean[] {null, false, true}) {
+            Fixture fixture = fixture();
+
+            fixture.service.create(
+                "kb-1",
+                chunkRequest(allDocuments, ChunkReprocessingSelection.DOCUMENT_IDS, List.of("doc-1"))
+            );
+
+            ArgumentCaptor<List<SchemaReprocessingItemNode>> itemCaptor = ArgumentCaptor.forClass(List.class);
+            verify(fixture.checkpoint).createPlan(any(), itemCaptor.capture());
+            assertThat(itemCaptor.getValue()).singleElement()
+                .extracting(SchemaReprocessingItemNode::getDocumentId)
+                .isEqualTo("doc-1");
+            verify(fixture.documents).findByIdAndKnowledgeBaseId("doc-1", "kb-1");
+        }
     }
 
     @Test
@@ -286,16 +341,48 @@ class SchemaReprocessingPlanServiceTest {
         ChunkReprocessingSelection selection,
         List<String> documentIds
     ) {
+        return chunkRequest(false, selection, documentIds);
+    }
+
+    private CreatePlanRequest chunkRequest(
+        Boolean allDocuments,
+        ChunkReprocessingSelection selection,
+        List<String> documentIds
+    ) {
         return new CreatePlanRequest(
             null,
             null,
-            false,
+            allDocuments,
             documentIds,
             Map.of(),
             ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION,
             selection,
             "chunker-current"
         );
+    }
+
+    private CreatePlanRequest schemaRequest(Boolean allDocuments, List<String> documentIds) {
+        return new CreatePlanRequest(
+            "draft-1",
+            "schema-1",
+            allDocuments,
+            documentIds,
+            Map.of(),
+            ReprocessingPlanReason.SCHEMA_ACTIVATION,
+            null,
+            null
+        );
+    }
+
+    private Fixture schemaFixture() {
+        Fixture fixture = fixture();
+        SchemaDraftPublicationNode publication = new SchemaDraftPublicationNode();
+        publication.setDraftId("draft-1");
+        publication.setKnowledgeBaseId("kb-1");
+        publication.setSchemaId("schema-1");
+        publication.setStatus(SchemaDraftPublicationStatus.COMPLETED);
+        when(fixture.publications.findByDraftId("draft-1")).thenReturn(Optional.of(publication));
+        return fixture;
     }
 
     private SchemaReprocessingItemNode item(String id, String documentId) {
@@ -378,6 +465,7 @@ class SchemaReprocessingPlanServiceTest {
             new EmbeddingSpace("es-1", "https://example.test", "embedding", 3, "utf8-byte-v1")
         );
         when(documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1")).thenReturn(List.of(document));
+        when(documents.findByIdAndKnowledgeBaseId("doc-1", "kb-1")).thenReturn(Optional.of(document));
         when(chunks.findByDocumentIdOrderByChunkIndexAsc("doc-1")).thenReturn(List.of());
         when(runs.findByDocumentIdOrderByStartedAtAsc(anyString())).thenReturn(List.of());
         when(checkpoint.createPlan(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -410,6 +498,7 @@ class SchemaReprocessingPlanServiceTest {
             plans,
             items,
             documents,
+            publications,
             knowledgeBaseService,
             processing,
             checkpoint,
@@ -455,6 +544,7 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingPlanRepository plans,
         SchemaReprocessingItemRepository items,
         DocumentUploadRepository documents,
+        SchemaDraftPublicationRepository publications,
         KnowledgeBaseService knowledgeBaseService,
         DocumentProcessingService processing,
         SchemaDraftWorkflowCheckpointService checkpoint,

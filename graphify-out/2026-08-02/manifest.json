@@ -5770,8 +5770,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/service/SchemaReprocessingPlanServiceTest.java": {
-    "mtime": 1785665528.2614193,
-    "ast_hash": "01c3dbfa22f54b683dc368dfbe6b2077",
+    "mtime": 1785665409.7883844,
+    "ast_hash": "9a3c08c5efb18ae5224d80cc589cd181",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-07-31-expand-search-with-parent-context/.openspec.yaml": {
@@ -6810,8 +6810,8 @@
     "semantic_hash": ""
   },
   "src/test/java/io/github/vfedoriv/graphrag/controller/SchemaReprocessingPlanControllerTest.java": {
-    "mtime": 1785665620.4530616,
-    "ast_hash": "e6d2f5958af224a58eacf9e06148bc8d",
+    "mtime": 1785665353.2504492,
+    "ast_hash": "0e41ac33d05dd044d30b44b4742ca738",
     "semantic_hash": ""
   },
   "openspec/changes/archive/2026-08-01-add-scalable-document-chunk-reads/.openspec.yaml": {
@@ -6865,8 +6865,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/fix-chunk-migration-request-contract/tasks.md": {
-    "mtime": 1785665585.5114336,
-    "ast_hash": "8e45f511b9ec2a8a266efacdcd2c1196",
+    "mtime": 1785665435.564819,
+    "ast_hash": "01dcf0da5f78f0d2bb40c44c7002b182",
     "semantic_hash": ""
   }
 }

@@ -14,7 +14,7 @@ public final class SchemaReprocessingDtos {
     private SchemaReprocessingDtos() { }
 
     public record CreatePlanRequest(
-        String draftId, String schemaId, boolean allDocuments,
+        String draftId, String schemaId, Boolean allDocuments,
         List<@NotBlank String> documentIds, Map<String, Object> processingOptions,
         ReprocessingPlanReason reason, ChunkReprocessingSelection selection,
         String expectedChunkerRevision
