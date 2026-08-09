@@ -25,6 +25,7 @@ public class DocumentChunkPersistenceAdapter {
     private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
     private final LexicalIndexRepository lexicalIndexRepository;
     private final Neo4jClient neo4jClient;
+    private final DocumentChunkTopologyClassifier topologyClassifier;
 
     public DocumentChunkPersistenceAdapter(
         DocumentChunkRepository repository,
@@ -36,11 +37,13 @@ public class DocumentChunkPersistenceAdapter {
         this.embeddingSpaceIndexService = embeddingSpaceIndexService;
         this.lexicalIndexRepository = lexicalIndexRepository;
         this.neo4jClient = neo4jClient;
+        this.topologyClassifier = new DocumentChunkTopologyClassifier(neo4jClient);
     }
 
     @GraphTransactional
     public void replace(String documentId, String knowledgeBaseId, EmbeddingSpace embeddingSpace, List<DocumentChunkNode> chunks) {
         requireScope(documentId, knowledgeBaseId, chunks);
+        topologyClassifier.requireValidInput(chunks);
         requireHierarchy(chunks);
         repository.deleteByDocumentId(documentId);
         for (DocumentChunkNode chunk : chunks) {
@@ -60,6 +63,14 @@ public class DocumentChunkPersistenceAdapter {
 
     public List<DocumentChunkNode> findByDocumentId(String documentId) {
         return repository.findByDocumentIdOrderByChunkIndexAsc(documentId);
+    }
+
+    public DocumentChunkTopology classifyDocumentTopology(String documentId) {
+        return topologyClassifier.classifyDocument(documentId);
+    }
+
+    public List<DocumentChunkTopologyAuditRow> auditDocumentTopologies() {
+        return topologyClassifier.audit();
     }
 
     private void requireScope(String documentId, String knowledgeBaseId, List<DocumentChunkNode> chunks) {
@@ -177,24 +188,8 @@ public class DocumentChunkPersistenceAdapter {
     }
 
     private void requirePersistedIntegrity(String documentId) {
-        Long invalid = neo4jClient.query("""
-            MATCH (child:DocumentChunk {documentId: $documentId, kind: 'CHILD'})
-            WHERE child.parentChunkId IS NOT NULL
-              AND NOT EXISTS {
-                MATCH (parent:DocumentChunk {id: child.parentChunkId, kind: 'PARENT'})-[:HAS_CHILD]->(child)
-                WHERE parent.knowledgeBaseId = child.knowledgeBaseId
-                  AND parent.documentId = child.documentId
-                  AND parent.processingRunId = child.processingRunId
-                  AND parent.effectiveChunkerRevision = child.effectiveChunkerRevision
-              }
-            RETURN count(child) AS invalid
-            """)
-            .bind(documentId).to("documentId")
-            .fetchAs(Long.class)
-            .one()
-            .orElse(0L);
-        if (invalid > 0L) {
-            throw new IllegalStateException("Persisted hierarchy contains orphan or mixed-revision children");
+        if (topologyClassifier.classifyDocument(documentId) == DocumentChunkTopology.INVALID) {
+            throw new IllegalStateException("Persisted document chunk topology is invalid");
         }
     }
 

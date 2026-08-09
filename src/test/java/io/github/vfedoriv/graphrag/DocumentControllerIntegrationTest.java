@@ -238,7 +238,7 @@ class DocumentControllerIntegrationTest {
         String firstDocumentId = uploadDocument("kb-1", "hierarchy.txt", "first document");
         String secondDocumentId = uploadDocument("kb-2", "flat.txt", "second document");
 
-        createChunk("kb-1", firstDocumentId, "parent-1", 2, "PARENT", null, 1, 2, "parent secret text");
+        createChunk("kb-1", firstDocumentId, "parent-1", 2, "PARENT", null, 1, 3, "parent secret text");
         createChunk("kb-1", firstDocumentId, "a-child", 0, "CHILD", "parent-1", 1, 0, "first child");
         createChunk("kb-1", firstDocumentId, "z-child", 0, "CHILD", "parent-1", 1, 0, "second child");
         createChunk("kb-1", firstDocumentId, "last-child", 1, "CHILD", "parent-1", 1, 0, "last child");
@@ -263,7 +263,7 @@ class DocumentControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.totalElements").value(1))
             .andExpect(jsonPath("$.content[0].id").value("parent-1"))
-            .andExpect(jsonPath("$.content[0].childCount").value(2))
+            .andExpect(jsonPath("$.content[0].childCount").value(3))
             .andExpect(jsonPath("$.content[0].text").doesNotExist())
             .andExpect(jsonPath("$.flatChunkCount").value(0));
 
@@ -339,21 +339,17 @@ class DocumentControllerIntegrationTest {
     void exposesEmptyPagesOutOfRangePagesAndParentChildNavigation() throws Exception {
         String hierarchicalDocumentId = uploadDocument("kb-1", "navigation.txt", "hierarchical document");
         String flatDocumentId = uploadDocument("kb-2", "flat-navigation.txt", "flat document");
-        String foreignDocumentId = uploadDocument("kb-2", "foreign-navigation.txt", "foreign document");
+        String invalidDocumentId = uploadDocument("kb-1", "invalid-navigation.txt", "invalid document");
 
         createChunk("kb-1", hierarchicalDocumentId, "parent-1", 0, "PARENT", null, 1, 2, "parent one");
         createChunk("kb-1", hierarchicalDocumentId, "a-child", 1, "CHILD", "parent-1", 1, 0, "child a");
         createChunk("kb-1", hierarchicalDocumentId, "z-child", 2, "CHILD", "parent-1", 1, 0, "child z");
         createChunk("kb-1", hierarchicalDocumentId, "parent-2", 5, "PARENT", null, 2, 1, "parent two");
         createChunk("kb-1", hierarchicalDocumentId, "parent-2-child", 6, "CHILD", "parent-2", 2, 0, "child two");
-        createChunk("kb-1", hierarchicalDocumentId, "hier-flat-a", 3, "CHILD", null, 2, 0, "flat a");
-        createChunk("kb-1", hierarchicalDocumentId, "flat-root", 3, "CHILD", null, 2, 0, "flat root");
-        createChunk("kb-1", hierarchicalDocumentId, "flat-later", 7, "CHILD", null, 2, 0, "flat later");
-        createChunk("kb-1", hierarchicalDocumentId, "legacy-unsupported", 4, "LEGACY", null, 2, 0, "legacy unsupported");
-        createChunk("kb-1", hierarchicalDocumentId, "null-kind", 8, null, null, 2, 0, "null kind");
-        createChunk("kb-2", foreignDocumentId, "other-document-parent-child", 1, "CHILD", "parent-1", 1, 0, "not visible");
         createChunk("kb-2", flatDocumentId, "flat-z", 0, "CHILD", null, 0, 0, "flat z");
         createChunk("kb-2", flatDocumentId, "flat-a", 0, "CHILD", null, 0, 0, "flat a");
+        createChunk("kb-1", invalidDocumentId, "invalid-parent", 0, "PARENT", null, 0, 0, "invalid parent");
+        createChunk("kb-1", invalidDocumentId, "invalid-flat-child", 1, "CHILD", null, 0, 0, "invalid flat child");
 
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", hierarchicalDocumentId)
                 .param("page", "0").param("size", "1"))
@@ -399,26 +395,31 @@ class DocumentControllerIntegrationTest {
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
                 .param("kind", "CHILD").param("sectionIndex", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(4))
-            .andExpect(jsonPath("$.content[0].id").value("flat-root"));
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value("parent-2-child"));
 
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
                 .param("kind", " flat ").param("size", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(3))
-            .andExpect(jsonPath("$.content[0].id").value("flat-root"))
-            .andExpect(jsonPath("$.content[1].id").value("hier-flat-a"))
-            .andExpect(jsonPath("$.content[0].kind").value("CHILD"));
+            .andExpect(jsonPath("$.totalElements").value(0))
+            .andExpect(jsonPath("$.content").isEmpty());
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
                 .param("kind", "FLAT").param("page", "1").param("size", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(3))
-            .andExpect(jsonPath("$.content[0].id").value("flat-later"));
+            .andExpect(jsonPath("$.totalElements").value(0))
+            .andExpect(jsonPath("$.content").isEmpty());
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
                 .param("kind", "FLAT").param("sectionIndex", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.totalElements").value(0))
             .andExpect(jsonPath("$.content").isArray());
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/hierarchy", invalidDocumentId))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.detail").value("Document chunk topology is invalid"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", invalidDocumentId))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.detail").value("Document chunk topology is invalid"));
 
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", flatDocumentId)
                 .param("kind", "CHILD").param("size", "1"))
@@ -525,6 +526,7 @@ class DocumentControllerIntegrationTest {
         properties.put("documentId", documentId);
         properties.put("knowledgeBaseId", knowledgeBaseId);
         properties.put("processingRunId", "run-1");
+        properties.put("effectiveChunkerRevision", "chunker-test-v1");
         properties.put("chunkIndex", chunkIndex);
         if (kind != null) {
             properties.put("kind", kind);
@@ -540,5 +542,16 @@ class DocumentControllerIntegrationTest {
         neo4jClient.query("CREATE (:DocumentChunk $properties)")
             .bind(properties).to("properties")
             .run();
+        if (parentChunkId != null) {
+            neo4jClient.query("""
+                MATCH (parent:DocumentChunk {id: $parentChunkId, documentId: $documentId})
+                MATCH (child:DocumentChunk {id: $childId, documentId: $documentId})
+                MERGE (parent)-[:HAS_CHILD]->(child)
+                """)
+                .bind(parentChunkId).to("parentChunkId")
+                .bind(documentId).to("documentId")
+                .bind(id).to("childId")
+                .run();
+        }
     }
 }

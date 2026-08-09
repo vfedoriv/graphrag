@@ -32,6 +32,7 @@ import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkPersistenceAdapter;
+import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkTopology;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -68,6 +69,7 @@ public class DocumentProcessingService {
     private final ProcessingRunLifecycle processingRunLifecycle;
     private final EmbeddingPersistenceStage embeddingPersistenceStage;
     private final GraphExtractionStage graphExtractionStage;
+    private final DocumentChunkPersistenceAdapter chunkPersistenceAdapter;
 
     @Autowired
     public DocumentProcessingService(
@@ -101,6 +103,7 @@ public class DocumentProcessingService {
         this.sourceParsingStage = new SourceParsingStage(documentUploadService, documentParsingService);
         this.chunkPreparationStage = new ChunkPreparationStage(chunkingService, new ChunkMetadataFactory());
         this.processingRunLifecycle = processingRunLifecycle;
+        this.chunkPersistenceAdapter = chunkPersistenceAdapter;
         this.embeddingPersistenceStage = new EmbeddingPersistenceStage(
             aiClientResolver, embeddingSpacePolicy, chunkPersistenceAdapter, chunkingService, processingJsonCodec
         );
@@ -272,6 +275,7 @@ public class DocumentProcessingService {
     ) {
         ChunkReadFilter readFilter = requireChunkReadPage(page, size, kind, parentChunkId, sectionIndex);
         requireDocument(documentId);
+        requireValidDocumentChunkTopology(documentId);
         Page<DocumentChunkNode> result;
         if (readFilter.flat()) {
             result = documentChunkRepository.findFlatPageByDocumentId(
@@ -299,6 +303,7 @@ public class DocumentProcessingService {
     public DocumentChunkHierarchyResponse getDocumentChunkHierarchy(String documentId, int page, int size) {
         requirePage(page, size);
         requireDocument(documentId);
+        requireValidDocumentChunkTopology(documentId);
         Page<DocumentChunkNode> parents = documentChunkRepository.findParentPageByDocumentId(
             documentId,
             PageRequest.of(page, size)
@@ -354,6 +359,12 @@ public class DocumentProcessingService {
     private void requireDocument(String documentId) {
         documentUploadRepository.findById(documentId)
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+    }
+
+    private void requireValidDocumentChunkTopology(String documentId) {
+        if (chunkPersistenceAdapter.classifyDocumentTopology(documentId) == DocumentChunkTopology.INVALID) {
+            throw new ConflictException("Document chunk topology is invalid");
+        }
     }
 
     private ChunkReadFilter requireChunkReadPage(

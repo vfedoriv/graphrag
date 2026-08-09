@@ -246,6 +246,7 @@ public class DocumentController {
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid page or filter", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "409", description = "Document chunk topology is invalid", content = @Content(schema = @Schema())),
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
     public DocumentChunkPageResponse getDocumentChunkPage(
@@ -296,6 +297,7 @@ public class DocumentController {
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid page", content = @Content(schema = @Schema())),
+        @ApiResponse(responseCode = "409", description = "Document chunk topology is invalid", content = @Content(schema = @Schema())),
         @ApiResponse(responseCode = "404", description = "Document not found", content = @Content(schema = @Schema()))
     })
     public DocumentChunkHierarchyResponse getDocumentChunkHierarchy(
