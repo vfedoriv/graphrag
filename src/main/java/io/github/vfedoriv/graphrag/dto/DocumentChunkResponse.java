@@ -13,7 +13,10 @@ public record DocumentChunkResponse(
     String text,
     @Schema(description = "Estimated token count for this chunk.", example = "143")
     int tokenEstimate,
-    @Schema(description = "Hierarchy chunk kind.", example = "CHILD")
+    @Schema(
+        description = "Persisted chunk kind (PARENT or CHILD); virtual FLAT page requests still return CHILD.",
+        example = "CHILD"
+    )
     String kind,
     @Schema(description = "Containing parent identifier for child chunks.", example = "parent-01")
     String parentChunkId,

@@ -82,6 +82,11 @@ class DocumentChunkRepositoryIntegrationTest {
         createChunk("hierarchical", "parent-1", 1, "PARENT", null, 0, 1);
         createChunk("hierarchical", "child-1", 2, "CHILD", "parent-1", 0, 0);
         createChunk("hierarchical", "child-2", 5, "CHILD", "parent-2", 0, 0);
+        createChunk("hierarchical", "flat-root", 3, "CHILD", null, 1, 0);
+        createChunk("hierarchical", "flat-a", 3, "CHILD", null, 1, 0);
+        createChunk("hierarchical", "flat-later", 7, "CHILD", null, 1, 0);
+        createChunk("hierarchical", "legacy-root", 6, "LEGACY", null, 1, 0);
+        createChunk("hierarchical", "null-kind-root", 8, null, null, 1, 0);
         createChunk("flat", "flat-2", 2, "CHILD", null, 0, 0);
         createChunk("flat", "flat-1", 1, "CHILD", null, 0, 0);
 
@@ -107,7 +112,7 @@ class DocumentChunkRepositoryIntegrationTest {
         assertThat(secondParentPage.getContent()).extracting(DocumentChunkNode::getId)
             .containsExactly("parent-2");
         assertThat(emptyParentPage.getContent()).isEmpty();
-        assertThat(repository.countFlatChunksByDocumentId("hierarchical")).isZero();
+        assertThat(repository.countFlatChunksByDocumentId("hierarchical")).isEqualTo(3);
         assertThat(repository.countFlatChunksByDocumentId("flat")).isEqualTo(2);
         assertThat(repository.findParentPageByDocumentId("empty", PageRequest.of(0, 20)).getTotalElements())
             .isZero();
@@ -117,6 +122,40 @@ class DocumentChunkRepositoryIntegrationTest {
         assertThat(flatPage.getTotalElements()).isEqualTo(2);
         assertThat(flatPage.getContent()).extracting(DocumentChunkNode::getId)
             .containsExactly("flat-2");
+
+        Page<DocumentChunkNode> hierarchicalFlatPage = repository.findFlatPageByDocumentId(
+            "hierarchical", null, PageRequest.of(0, 2)
+        );
+        assertThat(hierarchicalFlatPage.getTotalElements()).isEqualTo(3);
+        assertThat(hierarchicalFlatPage.getContent()).extracting(DocumentChunkNode::getId)
+            .containsExactly("flat-a", "flat-root");
+        Page<DocumentChunkNode> hierarchicalFlatSecondPage = repository.findFlatPageByDocumentId(
+            "hierarchical", null, PageRequest.of(1, 2)
+        );
+        assertThat(hierarchicalFlatSecondPage.getTotalElements())
+            .isEqualTo(repository.countFlatChunksByDocumentId("hierarchical"));
+        assertThat(hierarchicalFlatSecondPage.getContent()).extracting(DocumentChunkNode::getId)
+            .containsExactly("flat-later");
+        Page<DocumentChunkNode> hierarchicalFlatEmptyPage = repository.findFlatPageByDocumentId(
+            "hierarchical", null, PageRequest.of(2, 2)
+        );
+        assertThat(hierarchicalFlatEmptyPage.getTotalElements()).isEqualTo(3);
+        assertThat(hierarchicalFlatEmptyPage.getContent()).isEmpty();
+        Page<DocumentChunkNode> hierarchicalFlatSection = repository.findFlatPageByDocumentId(
+            "hierarchical", 1, PageRequest.of(0, 20)
+        );
+        assertThat(hierarchicalFlatSection.getTotalElements()).isEqualTo(3);
+        assertThat(hierarchicalFlatSection.getContent()).extracting(DocumentChunkNode::getId)
+            .containsExactly("flat-a", "flat-root", "flat-later");
+        Page<DocumentChunkNode> hierarchicalFlatEmptySection = repository.findFlatPageByDocumentId(
+            "hierarchical", 0, PageRequest.of(0, 20)
+        );
+        assertThat(hierarchicalFlatEmptySection.getTotalElements()).isZero();
+        assertThat(hierarchicalFlatEmptySection.getContent()).isEmpty();
+        Page<DocumentChunkNode> allChildren = repository.findPageByDocumentId(
+            "hierarchical", "CHILD", null, null, PageRequest.of(0, 20)
+        );
+        assertThat(allChildren.getTotalElements()).isEqualTo(5);
     }
 
     @Test
@@ -163,7 +202,9 @@ class DocumentChunkRepositoryIntegrationTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put("id", id);
         properties.put("documentId", documentId);
-        properties.put("kind", kind);
+        if (kind != null) {
+            properties.put("kind", kind);
+        }
         properties.put("chunkIndex", chunkIndex);
         properties.put("sectionIndex", sectionIndex);
         properties.put("childCount", childCount);

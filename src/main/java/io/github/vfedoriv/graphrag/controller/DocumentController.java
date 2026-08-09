@@ -229,7 +229,9 @@ public class DocumentController {
     @GetMapping("/documents/{documentId}/chunks/page")
     @Operation(
         summary = "Page document chunks",
-        description = "Returns a bounded, filtered page of chunks ordered by chunk index and identifier."
+        description = "Returns a bounded, filtered page of chunks ordered by chunk index and identifier. "
+            + "Persisted chunk kinds are PARENT and CHILD; virtual FLAT selects persisted CHILD chunks with null parentChunkId. "
+            + "When kind=FLAT, parentChunkId is invalid and returns RFC 7807 400 with detail 'parentChunkId cannot be used with kind=FLAT'."
     )
     @ApiResponses({
         @ApiResponse(
@@ -252,9 +254,17 @@ public class DocumentController {
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "Page size from 1 through 100", example = "20")
         @RequestParam(defaultValue = "20") int size,
-        @Parameter(description = "Optional chunk kind filter: PARENT or CHILD", example = "CHILD")
+        @Parameter(
+            description = "Optional chunk kind filter: persisted PARENT, persisted CHILD, or virtual FLAT "
+                + "(persisted CHILD with null parentChunkId)",
+            example = "FLAT"
+        )
         @RequestParam(required = false) String kind,
-        @Parameter(description = "Optional containing parent chunk identifier", example = "parent-01")
+        @Parameter(
+            description = "Optional containing parent chunk identifier. Allowed with kind=CHILD or omitted; "
+                + "must be omitted when kind=FLAT.",
+            example = "parent-01"
+        )
         @RequestParam(required = false) String parentChunkId,
         @Parameter(description = "Optional zero-based parser section filter", example = "2")
         @RequestParam(required = false) Integer sectionIndex

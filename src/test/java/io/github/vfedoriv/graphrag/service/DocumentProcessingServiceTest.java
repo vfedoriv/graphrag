@@ -350,6 +350,38 @@ class DocumentProcessingServiceTest {
     }
 
     @Test
+    void pagesFlatChunksWithCaseInsensitiveKindAndSectionFilter() {
+        DocumentUploadNode document = document("doc-1");
+        DocumentChunkNode firstFlatChild = chunk("chunk-1", "doc-1", "CHILD", null, "first chunk text");
+        DocumentChunkNode secondFlatChild = chunk("chunk-2", "doc-1", "CHILD", null, "second chunk text");
+        when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document));
+        when(documentChunkRepository.findFlatPageByDocumentId(
+            "doc-1", 3, PageRequest.of(0, 1)
+        )).thenReturn(new PageImpl<>(List.of(firstFlatChild), PageRequest.of(0, 1), 2));
+        when(documentChunkRepository.findFlatPageByDocumentId(
+            "doc-1", 3, PageRequest.of(1, 1)
+        )).thenReturn(new PageImpl<>(List.of(secondFlatChild), PageRequest.of(1, 1), 2));
+
+        DocumentChunkPageResponse response = service(new ChunkingService(TestRuntimeSettings.from(props())))
+            .getDocumentChunkPage("doc-1", 0, 1, " flat ", null, 3);
+
+        assertThat(response.getPage()).isZero();
+        assertThat(response.getSize()).isEqualTo(1);
+        assertThat(response.getTotalElements()).isEqualTo(2);
+        assertThat(response.getContent()).extracting("id").containsExactly("chunk-1");
+        assertThat(response.getContent()).extracting("kind").containsExactly("CHILD");
+        DocumentChunkPageResponse secondPage = service(new ChunkingService(TestRuntimeSettings.from(props())))
+            .getDocumentChunkPage("doc-1", 1, 1, "FLAT", null, 3);
+
+        assertThat(secondPage.getPage()).isEqualTo(1);
+        assertThat(secondPage.getTotalElements()).isEqualTo(2);
+        assertThat(secondPage.getContent()).extracting("id").containsExactly("chunk-2");
+        verify(documentChunkRepository).findFlatPageByDocumentId("doc-1", 3, PageRequest.of(0, 1));
+        verify(documentChunkRepository).findFlatPageByDocumentId("doc-1", 3, PageRequest.of(1, 1));
+        verify(documentChunkRepository, never()).findPageByDocumentId(any(), any(), any(), any(), any());
+    }
+
+    @Test
     void rejectsInvalidChunkPageFiltersBeforeGraphAccess() {
         DocumentProcessingService service = service(new ChunkingService(TestRuntimeSettings.from(props())));
 
@@ -362,6 +394,9 @@ class DocumentProcessingServiceTest {
         assertThatThrownBy(() -> service.getDocumentChunkPage("doc-1", 0, 20, "unknown", null, null))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("kind");
+        assertThatThrownBy(() -> service.getDocumentChunkPage("doc-1", 0, 20, "FLAT", "parent-1", null))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("parentChunkId cannot be used with kind=FLAT");
         verify(documentUploadRepository, never()).findById(any());
         verifyNoGraphPageRead();
     }

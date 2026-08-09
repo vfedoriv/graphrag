@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-08-07
+goal: Make the Chunk Explorer FLAT page request a valid, bounded, hierarchy-safe
+  backend contract.

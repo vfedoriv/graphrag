@@ -47,6 +47,32 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
         value = """
             MATCH (chunk:DocumentChunk)
             WHERE chunk.documentId = $documentId
+              AND chunk.kind = 'CHILD'
+              AND chunk.parentChunkId IS NULL
+              AND ($sectionIndex IS NULL OR chunk.sectionIndex = $sectionIndex)
+            RETURN chunk
+            ORDER BY chunk.chunkIndex ASC, chunk.id ASC
+            SKIP $skip LIMIT $limit
+            """,
+        countQuery = """
+            MATCH (chunk:DocumentChunk)
+            WHERE chunk.documentId = $documentId
+              AND chunk.kind = 'CHILD'
+              AND chunk.parentChunkId IS NULL
+              AND ($sectionIndex IS NULL OR chunk.sectionIndex = $sectionIndex)
+            RETURN count(chunk)
+            """
+    )
+    Page<DocumentChunkNode> findFlatPageByDocumentId(
+        @Param("documentId") String documentId,
+        @Param("sectionIndex") Integer sectionIndex,
+        Pageable pageable
+    );
+
+    @Query(
+        value = """
+            MATCH (chunk:DocumentChunk)
+            WHERE chunk.documentId = $documentId
               AND chunk.kind = 'PARENT'
             RETURN chunk
             ORDER BY chunk.chunkIndex ASC, chunk.id ASC
@@ -67,8 +93,8 @@ public interface DocumentChunkRepository extends Neo4jRepository<DocumentChunkNo
     @Query("""
         MATCH (chunk:DocumentChunk)
         WHERE chunk.documentId = $documentId
+          AND chunk.kind = 'CHILD'
           AND chunk.parentChunkId IS NULL
-          AND (chunk.kind IS NULL OR chunk.kind <> 'PARENT')
         RETURN count(chunk)
         """)
     long countFlatChunksByDocumentId(@Param("documentId") String documentId);

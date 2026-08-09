@@ -270,17 +270,24 @@ public class DocumentProcessingService {
         String parentChunkId,
         Integer sectionIndex
     ) {
-        requireChunkReadPage(page, size, kind, parentChunkId, sectionIndex);
+        ChunkReadFilter readFilter = requireChunkReadPage(page, size, kind, parentChunkId, sectionIndex);
         requireDocument(documentId);
-        String normalizedKind = normalizeKind(kind);
-        String normalizedParentChunkId = normalizeOptionalFilter(parentChunkId, "parentChunkId");
-        Page<DocumentChunkNode> result = documentChunkRepository.findPageByDocumentId(
-            documentId,
-            normalizedKind,
-            normalizedParentChunkId,
-            sectionIndex,
-            PageRequest.of(page, size)
-        );
+        Page<DocumentChunkNode> result;
+        if (readFilter.flat()) {
+            result = documentChunkRepository.findFlatPageByDocumentId(
+                documentId,
+                sectionIndex,
+                PageRequest.of(page, size)
+            );
+        } else {
+            result = documentChunkRepository.findPageByDocumentId(
+                documentId,
+                readFilter.persistedKind(),
+                readFilter.parentChunkId(),
+                sectionIndex,
+                PageRequest.of(page, size)
+            );
+        }
         return new DocumentChunkPageResponse(
             page,
             size,
@@ -349,7 +356,7 @@ public class DocumentProcessingService {
             .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
     }
 
-    private void requireChunkReadPage(
+    private ChunkReadFilter requireChunkReadPage(
         int page,
         int size,
         String kind,
@@ -357,17 +364,10 @@ public class DocumentProcessingService {
         Integer sectionIndex
     ) {
         requirePage(page, size);
-        String normalizedKind = normalizeKind(kind);
-        boolean hasParentFilter = parentChunkId != null && !parentChunkId.isBlank();
-        if (hasParentFilter && ChunkKind.PARENT.name().equals(normalizedKind)) {
-            throw new IllegalArgumentException("parentChunkId can only be used with kind=CHILD");
-        }
         if (sectionIndex != null && sectionIndex < 0) {
             throw new IllegalArgumentException("sectionIndex must be non-negative");
         }
-        if (parentChunkId != null && parentChunkId.isBlank()) {
-            throw new IllegalArgumentException("parentChunkId must not be blank");
-        }
+        return resolveChunkReadFilter(kind, parentChunkId);
     }
 
     private void requirePage(int page, int size) {
@@ -381,13 +381,31 @@ public class DocumentProcessingService {
             return null;
         }
         if (kind.isBlank()) {
-            throw new IllegalArgumentException("kind must be PARENT or CHILD");
+            throw new IllegalArgumentException("kind must be PARENT, CHILD, or FLAT");
         }
         String normalized = kind.strip().toUpperCase(Locale.ROOT);
-        if (!ChunkKind.PARENT.name().equals(normalized) && !ChunkKind.CHILD.name().equals(normalized)) {
-            throw new IllegalArgumentException("kind must be PARENT or CHILD");
+        if (!ChunkKind.PARENT.name().equals(normalized)
+            && !ChunkKind.CHILD.name().equals(normalized)
+            && !"FLAT".equals(normalized)) {
+            throw new IllegalArgumentException("kind must be PARENT, CHILD, or FLAT");
         }
         return normalized;
+    }
+
+    private ChunkReadFilter resolveChunkReadFilter(String kind, String parentChunkId) {
+        String normalizedKind = normalizeKind(kind);
+        String normalizedParentChunkId = normalizeOptionalFilter(parentChunkId, "parentChunkId");
+        boolean hasParentFilter = normalizedParentChunkId != null;
+        if (hasParentFilter && "FLAT".equals(normalizedKind)) {
+            throw new IllegalArgumentException("parentChunkId cannot be used with kind=FLAT");
+        }
+        if (hasParentFilter && ChunkKind.PARENT.name().equals(normalizedKind)) {
+            throw new IllegalArgumentException("parentChunkId can only be used with kind=CHILD");
+        }
+        if ("FLAT".equals(normalizedKind)) {
+            return new ChunkReadFilter(null, null, true);
+        }
+        return new ChunkReadFilter(normalizedKind, normalizedParentChunkId, false);
     }
 
     private String normalizeOptionalFilter(String value, String name) {
@@ -457,6 +475,9 @@ public class DocumentProcessingService {
             chunk.getSourceHash(),
             chunk.getMetadata()
         );
+    }
+
+    private record ChunkReadFilter(String persistedKind, String parentChunkId, boolean flat) {
     }
 
     private DocumentUploadNode setStatus(DocumentUploadNode document, DocumentStatus status, String errorMessage) {

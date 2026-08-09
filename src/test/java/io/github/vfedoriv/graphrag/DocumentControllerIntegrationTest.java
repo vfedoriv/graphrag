@@ -304,11 +304,15 @@ class DocumentControllerIntegrationTest {
             .andExpect(jsonPath("$.detail").value("page must be non-negative and size must be between 1 and 100"));
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("kind", "UNKNOWN"))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("kind must be PARENT or CHILD"));
+            .andExpect(jsonPath("$.detail").value("kind must be PARENT, CHILD, or FLAT"));
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("kind", "PARENT")
                 .param("parentChunkId", "parent-1"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.detail").value("parentChunkId can only be used with kind=CHILD"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("kind", "FLAT")
+                .param("parentChunkId", "parent-1"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("parentChunkId cannot be used with kind=FLAT"));
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", documentId).param("sectionIndex", "-1"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.detail").value("sectionIndex must be non-negative"));
@@ -342,6 +346,11 @@ class DocumentControllerIntegrationTest {
         createChunk("kb-1", hierarchicalDocumentId, "z-child", 2, "CHILD", "parent-1", 1, 0, "child z");
         createChunk("kb-1", hierarchicalDocumentId, "parent-2", 5, "PARENT", null, 2, 1, "parent two");
         createChunk("kb-1", hierarchicalDocumentId, "parent-2-child", 6, "CHILD", "parent-2", 2, 0, "child two");
+        createChunk("kb-1", hierarchicalDocumentId, "hier-flat-a", 3, "CHILD", null, 2, 0, "flat a");
+        createChunk("kb-1", hierarchicalDocumentId, "flat-root", 3, "CHILD", null, 2, 0, "flat root");
+        createChunk("kb-1", hierarchicalDocumentId, "flat-later", 7, "CHILD", null, 2, 0, "flat later");
+        createChunk("kb-1", hierarchicalDocumentId, "legacy-unsupported", 4, "LEGACY", null, 2, 0, "legacy unsupported");
+        createChunk("kb-1", hierarchicalDocumentId, "null-kind", 8, null, null, 2, 0, "null kind");
         createChunk("kb-2", foreignDocumentId, "other-document-parent-child", 1, "CHILD", "parent-1", 1, 0, "not visible");
         createChunk("kb-2", flatDocumentId, "flat-z", 0, "CHILD", null, 0, 0, "flat z");
         createChunk("kb-2", flatDocumentId, "flat-a", 0, "CHILD", null, 0, 0, "flat a");
@@ -390,8 +399,26 @@ class DocumentControllerIntegrationTest {
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
                 .param("kind", "CHILD").param("sectionIndex", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(1))
-            .andExpect(jsonPath("$.content[0].id").value("parent-2-child"));
+            .andExpect(jsonPath("$.totalElements").value(4))
+            .andExpect(jsonPath("$.content[0].id").value("flat-root"));
+
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", " flat ").param("size", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.content[0].id").value("flat-root"))
+            .andExpect(jsonPath("$.content[1].id").value("hier-flat-a"))
+            .andExpect(jsonPath("$.content[0].kind").value("CHILD"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "FLAT").param("page", "1").param("size", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.content[0].id").value("flat-later"));
+        mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", hierarchicalDocumentId)
+                .param("kind", "FLAT").param("sectionIndex", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.content").isArray());
 
         mockMvc.perform(get("/api/v1/documents/{documentId}/chunks/page", flatDocumentId)
                 .param("kind", "CHILD").param("size", "1"))
@@ -411,7 +438,17 @@ class DocumentControllerIntegrationTest {
             .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get").exists())
             .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/hierarchy'].get").exists())
             .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/{chunkId}'].get").exists())
-            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.responses['200']").exists());
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.responses['200']").exists())
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.parameters[?(@.name == 'kind')].description")
+                .value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("virtual FLAT"))))
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.parameters[?(@.name == 'parentChunkId')].description")
+                .value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("must be omitted when kind=FLAT"))))
+            .andExpect(jsonPath("$.paths['/api/v1/documents/{documentId}/chunks/page'].get.responses['200'].content['application/json'].schema.$ref")
+                .value("#/components/schemas/DocumentChunkPage"))
+            .andExpect(jsonPath("$.components.schemas.DocumentChunkPage.properties.content.items.$ref")
+                .value("#/components/schemas/DocumentChunkResponse"))
+            .andExpect(jsonPath("$.components.schemas.DocumentChunkResponse.properties.kind.description")
+                .value(org.hamcrest.Matchers.containsString("virtual FLAT page requests still return CHILD")));
     }
 
     @Test
@@ -489,7 +526,9 @@ class DocumentControllerIntegrationTest {
         properties.put("knowledgeBaseId", knowledgeBaseId);
         properties.put("processingRunId", "run-1");
         properties.put("chunkIndex", chunkIndex);
-        properties.put("kind", kind);
+        if (kind != null) {
+            properties.put("kind", kind);
+        }
         properties.put("sectionIndex", sectionIndex);
         properties.put("sectionChunkIndex", chunkIndex);
         properties.put("childCount", childCount);
