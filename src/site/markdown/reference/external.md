@@ -2,11 +2,11 @@
 
 ## Project repositories
 
-- [GraphRAG backend repository](https://github.com/vfedoriv/graphrag) — canonical runtime behavior and this portal. Current detailed work is maintained on the `dev` branch.
-- [GraphRAG UI repository](https://github.com/vfedoriv/graphrag-ui) — frontend controls, screenshots, and browser behavior; current detailed work is maintained on `dev`.
-- [Advanced Search UI guide](https://github.com/vfedoriv/graphrag-ui/blob/dev/docs/ADVANCED_SEARCH.md)
-- [Chunking UI guide](https://github.com/vfedoriv/graphrag-ui/blob/dev/docs/CHUNKING.md)
-- [Coordinated frontend documentation proposal](https://github.com/vfedoriv/graphrag-ui/tree/dev/openspec/changes/add-multipage-documentation-portal)
+- [GraphRAG backend repository](https://github.com/vfedoriv/graphrag) — canonical runtime behavior and this portal. Current detailed work is maintained on the `main` branch.
+- [GraphRAG UI repository](https://github.com/vfedoriv/graphrag-ui) — frontend controls, screenshots, and browser behavior; current detailed work is maintained on `main`.
+- [Advanced Search UI guide](https://github.com/vfedoriv/graphrag-ui/blob/main/docs/ADVANCED_SEARCH.md)
+- [Chunking UI guide](https://github.com/vfedoriv/graphrag-ui/blob/main/docs/CHUNKING.md)
+- [Coordinated frontend documentation proposal](https://github.com/vfedoriv/graphrag-ui/tree/main/openspec/changes/add-multipage-documentation-portal)
 
 ## Runtime and libraries
 

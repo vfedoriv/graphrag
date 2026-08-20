@@ -29,6 +29,6 @@ For a final review, open the portal overview, architecture, one workflow with JS
 
 - Backend source and canonical documentation: [vfedoriv/graphrag](https://github.com/vfedoriv/graphrag)
 - Frontend source and UI documentation: [vfedoriv/graphrag-ui](https://github.com/vfedoriv/graphrag-ui)
-- Coordinated frontend proposal: [add reciprocal canonical documentation links](https://github.com/vfedoriv/graphrag-ui/tree/dev/openspec/changes/add-multipage-documentation-portal)
+- Coordinated frontend proposal: [add reciprocal canonical documentation links](https://github.com/vfedoriv/graphrag-ui/tree/main/openspec/changes/add-multipage-documentation-portal)
 
 Backend behavior changes should update this portal in the same change. Frontend-only interaction changes stay in the UI repository; update reciprocal links when ownership or paths change.

@@ -168,12 +168,12 @@ class DocumentationAlignmentTest {
         String pom = Files.readString(Path.of("pom.xml"));
 
         assertThat(readme).contains(
-            "https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md",
+            "https://github.com/vfedoriv/graphrag/blob/main/src/site/markdown/index.md",
             "https://github.com/vfedoriv/graphrag-ui"
         );
-        assertThat(agents).contains("graphrag/blob/dev/src/site/markdown/index.md", "graphrag-ui/tree/dev");
-        assertThat(claude).contains("graphrag/blob/dev/src/site/markdown/index.md", "graphrag-ui/tree/dev");
-        assertThat(maintenance).contains("graphrag-ui/tree/dev/openspec/changes/add-multipage-documentation-portal");
+        assertThat(agents).contains("graphrag/blob/main/src/site/markdown/index.md", "graphrag-ui/tree/main");
+        assertThat(claude).contains("graphrag/blob/main/src/site/markdown/index.md", "graphrag-ui/tree/main");
+        assertThat(maintenance).contains("graphrag-ui/tree/main/openspec/changes/add-multipage-documentation-portal");
         assertThat(chunking).contains("graphrag-ui/blob/main/docs/chunking/README.md");
         assertThat(advanced).contains("graphrag-ui/blob/main/docs/advanced-search/README.md");
         assertThat(site).contains(

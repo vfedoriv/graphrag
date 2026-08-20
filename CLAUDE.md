@@ -201,9 +201,9 @@ regularly verify that the pair can be restored.
 The canonical detailed documentation is the Markdown portal under
 `src/site/markdown`, with navigation in `src/site/site.xml`. Build it into
 `target/site` with `./mvnw site` and preview it with `./mvnw site:run`; no Node
-or Python toolchain is required. Current branch-specific links use `dev`:
-`https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md` for the
-backend-owned canonical portal and `https://github.com/vfedoriv/graphrag-ui/tree/dev`
+or Python toolchain is required. Current branch-specific links use `main`:
+`https://github.com/vfedoriv/graphrag/blob/main/src/site/markdown/index.md` for the
+backend-owned canonical portal and `https://github.com/vfedoriv/graphrag-ui/tree/main`
 for frontend controls, screenshots, and browser behavior.
 
 When updating implementation behavior, public workflows, configuration defaults,

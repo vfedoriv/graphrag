@@ -114,10 +114,10 @@ The canonical detailed documentation is the Markdown portal under
 `src/site/markdown`, with navigation in `src/site/site.xml`. Build it with
 `./mvnw site` into `target/site` and preview it with `./mvnw site:run`; no Node
 or Python toolchain is required. Current branch-specific repository links use
-`dev`: the backend portal is
-`https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md`, while
+`main`: the backend portal is
+`https://github.com/vfedoriv/graphrag/blob/main/src/site/markdown/index.md`, while
 frontend controls and screenshots belong to
-`https://github.com/vfedoriv/graphrag-ui/tree/dev`.
+`https://github.com/vfedoriv/graphrag-ui/tree/main`.
 
 When implementation behavior, public workflows, configuration defaults, or
 shared contributor facts change, update the matching portal page and keep

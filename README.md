@@ -2,7 +2,7 @@
 
 GraphRAG is a schema-managed knowledge-base API that ingests documents, creates embeddings and schema-constrained graph facts, executes validated read-only Cypher, and provides durable cited advanced search.
 
-The [multipage documentation portal](src/site/markdown/index.md) is the canonical detailed guide for users, operators, integrators, and contributors. On GitHub, use the current [`dev` portal](https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md). The [graphrag-ui repository](https://github.com/vfedoriv/graphrag-ui) owns frontend controls, screenshots, and browser behavior.
+The [multipage documentation portal](src/site/markdown/index.md) is the canonical detailed guide for users, operators, integrators, and contributors. On GitHub, use the current [`main` portal](https://github.com/vfedoriv/graphrag/blob/main/src/site/markdown/index.md). The [graphrag-ui repository](https://github.com/vfedoriv/graphrag-ui) owns frontend controls, screenshots, and browser behavior.
 
 ## Stack
 
