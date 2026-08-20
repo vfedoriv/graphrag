@@ -1,0 +1,15 @@
+.mermaid {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    text-align: center;
+}
+
+table code,
+p code,
+li code {
+    white-space: normal;
+}
+
+.source-map td:first-child {
+    white-space: nowrap;
+}

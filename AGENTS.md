@@ -36,6 +36,10 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 ./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest
 ./scripts/measure-test-suite.sh
 
+# Documentation portal
+./mvnw site
+./mvnw site:run
+
 # Required persistence services
 docker compose up -d langfuse-postgres neo4j
 docker compose exec -T langfuse-postgres bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
@@ -104,6 +108,23 @@ Runtime setting overrides are persisted in PostgreSQL. `mutable=true` means edit
 - `src/main/resources/schemas/*.json`
 - `compose.yaml`
 
+## Documentation Portal
+
+The canonical detailed documentation is the Markdown portal under
+`src/site/markdown`, with navigation in `src/site/site.xml`. Build it with
+`./mvnw site` into `target/site` and preview it with `./mvnw site:run`; no Node
+or Python toolchain is required. Current branch-specific repository links use
+`dev`: the backend portal is
+`https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md`, while
+frontend controls and screenshots belong to
+`https://github.com/vfedoriv/graphrag-ui/tree/dev`.
+
+When implementation behavior, public workflows, configuration defaults, or
+shared contributor facts change, update the matching portal page and keep
+`README.md`, `AGENTS.md`, and `CLAUDE.md` synchronized. Add every portal page to
+`src/site/site.xml` and run `./mvnw test -Pfast -Dtest=DocumentationAlignmentTest`
+plus `./mvnw site`.
+
 ## Testing
 
 - `./mvnw test -Pfast` runs deterministic non-container tests; `./mvnw test` remains the complete credential-free suite
@@ -150,7 +171,7 @@ example: `./mvnw test -Dtest=EndToEndMvpFlowIntegrationTest`.
 
 OpenSpec artifacts are the source of historical product decisions. Archived changes under `openspec/changes/archive` document completed implementation work. For new behavior or contract changes, add or update OpenSpec specs before implementation when the change is non-trivial.
 
-When changing shared contributor guidance in `README.md`, `AGENTS.md`, or `CLAUDE.md`, keep overlapping implementation facts synchronized in the same change.
+When changing shared contributor guidance in `README.md`, `AGENTS.md`, or `CLAUDE.md`, keep overlapping implementation facts and the canonical portal synchronized in the same change.
 
 ## Commit & Pull Request Guidelines
 

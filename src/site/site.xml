@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns="http://maven.apache.org/SITE/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+         name="GraphRAG Documentation">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.1.0</version>
+    </skin>
+
+    <body>
+        <head><![CDATA[
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <script type="text/javascript">
+                (() => {
+                    const fluidoStylesheet = document.querySelector('link[href*="apache-maven-fluido-"]');
+                    const script = document.createElement("script");
+                    script.src = new URL("../js/mermaid-init.js", fluidoStylesheet.href).href;
+                    document.head.appendChild(script);
+                })();
+            </script>
+        ]]></head>
+
+        <links>
+            <item name="Backend repository" href="https://github.com/vfedoriv/graphrag"/>
+            <item name="Frontend repository" href="https://github.com/vfedoriv/graphrag-ui"/>
+            <item name="Swagger UI" href="http://localhost:8080/swagger-ui/index.html"/>
+        </links>
+
+        <menu name="Getting Started">
+            <item name="Portal overview" href="index.html"/>
+            <item name="Prerequisites and local setup" href="getting-started/local-setup.html"/>
+            <item name="First end-to-end run" href="getting-started/first-run.html"/>
+        </menu>
+        <menu name="Concepts">
+            <item name="System architecture" href="concepts/architecture.html"/>
+            <item name="Persistence ownership" href="concepts/persistence.html"/>
+            <item name="Domain model" href="concepts/domain-model.html"/>
+        </menu>
+        <menu name="Workflows">
+            <item name="Knowledge bases and AI profiles" href="workflows/knowledge-bases-profiles.html"/>
+            <item name="Schema registry" href="workflows/schemas.html"/>
+            <item name="Schema drafts" href="workflows/schema-drafts.html"/>
+            <item name="Document processing" href="workflows/document-processing.html"/>
+            <item name="Chunking and reprocessing" href="workflows/chunking-reprocessing.html"/>
+            <item name="Cypher queries" href="workflows/cypher-queries.html"/>
+            <item name="Advanced search" href="workflows/advanced-search.html"/>
+        </menu>
+        <menu name="Operations">
+            <item name="Configuration and runtime settings" href="operations/configuration.html"/>
+            <item name="Observability and privacy" href="operations/observability.html"/>
+            <item name="Deployment and troubleshooting" href="operations/deployment-troubleshooting.html"/>
+        </menu>
+        <menu name="Reference">
+            <item name="API map" href="reference/api.html"/>
+            <item name="Error model" href="reference/errors.html"/>
+            <item name="Schema format" href="reference/schema-format.html"/>
+            <item name="Glossary" href="reference/glossary.html"/>
+            <item name="External references" href="reference/external.html"/>
+        </menu>
+        <menu name="Contributing">
+            <item name="Codebase tour" href="contributing/codebase-tour.html"/>
+            <item name="Testing" href="contributing/testing.html"/>
+            <item name="Documentation maintenance" href="contributing/documentation.html"/>
+        </menu>
+    </body>
+</site>

@@ -43,6 +43,10 @@ LM_STUDIO_API_KEY=lm-studio ./mvnw spring-boot:run -Dspring-boot.run.profiles=lm
 # Preserve a full-suite performance report
 ./scripts/measure-test-suite.sh
 
+# Build and preview the documentation portal
+./mvnw site
+./mvnw site:run
+
 # Start required persistence services
 docker compose up -d langfuse-postgres neo4j
 docker compose exec -T langfuse-postgres bash /docker-entrypoint-initdb.d/20-init-graphrag.sh
@@ -194,4 +198,16 @@ regularly verify that the pair can be restored.
 
 ## Documentation Hygiene
 
-When updating shared implementation facts in `README.md`, `AGENTS.md`, or `CLAUDE.md`, keep the overlapping guidance aligned in the same change so contributors do not receive conflicting instructions.
+The canonical detailed documentation is the Markdown portal under
+`src/site/markdown`, with navigation in `src/site/site.xml`. Build it into
+`target/site` with `./mvnw site` and preview it with `./mvnw site:run`; no Node
+or Python toolchain is required. Current branch-specific links use `dev`:
+`https://github.com/vfedoriv/graphrag/blob/dev/src/site/markdown/index.md` for the
+backend-owned canonical portal and `https://github.com/vfedoriv/graphrag-ui/tree/dev`
+for frontend controls, screenshots, and browser behavior.
+
+When updating implementation behavior, public workflows, configuration defaults,
+or shared facts in `README.md`, `AGENTS.md`, or `CLAUDE.md`, update the matching
+portal page and keep all overlapping guidance aligned in the same change. Add
+every portal page to `src/site/site.xml`, then run
+`./mvnw test -Pfast -Dtest=DocumentationAlignmentTest` and `./mvnw site`.
