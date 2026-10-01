@@ -6,7 +6,6 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
-import io.github.vfedoriv.graphrag.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
@@ -69,6 +68,8 @@ import io.github.vfedoriv.graphrag.application.processing.ProcessingJsonCodec;
 import io.github.vfedoriv.graphrag.application.processing.ProcessingOptionResolver;
 import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingItemExecution;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingDocumentExecutor;
 
 @Service
 @Slf4j
@@ -84,7 +85,7 @@ public class SchemaReprocessingPlanService {
     private final SchemaReprocessingPlanRepository planRepository;
     private final SchemaReprocessingItemRepository itemRepository;
     private final KnowledgeBaseService knowledgeBaseService;
-    private final DocumentProcessingService processingService;
+    private final ReprocessingItemExecution itemExecution;
     private final ProcessingOptionResolver processingOptionResolver;
     private final ChunkingService chunkingService;
     private final EmbeddingSpacePolicy embeddingSpacePolicy;
@@ -107,7 +108,7 @@ public class SchemaReprocessingPlanService {
         SchemaReprocessingPlanRepository planRepository,
         SchemaReprocessingItemRepository itemRepository,
         KnowledgeBaseService knowledgeBaseService,
-        DocumentProcessingService processingService,
+        ReprocessingItemExecution itemExecution,
         DocumentProcessingOptionsRegistry processingOptionsRegistry,
         ChunkingService chunkingService,
         EmbeddingSpacePolicy embeddingSpacePolicy,
@@ -129,7 +130,7 @@ public class SchemaReprocessingPlanService {
         this.planRepository = planRepository;
         this.itemRepository = itemRepository;
         this.knowledgeBaseService = knowledgeBaseService;
-        this.processingService = processingService;
+        this.itemExecution = itemExecution;
         this.processingOptionResolver = new ProcessingOptionResolver(
             processingOptionsRegistry,
             new ProcessingJsonCodec(objectMapper)
@@ -526,63 +527,27 @@ public class SchemaReprocessingPlanService {
             return;
         }
         SchemaReprocessingItemNode claimedItem = itemRepository.findById(item.getId()).orElseThrow();
-        DocumentUploadNode current = documentRepository.findByIdAndKnowledgeBaseId(
-            claimedItem.getDocumentId(), plan.getKnowledgeBaseId()).orElse(null);
-        if (current == null || !claimedItem.getDocumentSha256().equals(current.getSha256())) {
-            completeItem(
-                claimedItem, workerId, SchemaReprocessingItemStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
+        if (!itemExecution.sourceMatches(new ReprocessingDocumentExecutor.Source(
+            plan.getKnowledgeBaseId(), claimedItem.getDocumentId(), claimedItem.getDocumentSha256()))) {
+            completeItem(claimedItem, workerId, SchemaReprocessingItemStatus.STALE_SOURCE, "SOURCE_CHANGED", false);
             return;
         }
         try {
-            DocumentUploadNode processed;
-            if (plan.getReason() == ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION) {
-                ChunkMigrationSnapshot snapshot = jsonSupport.read(
-                    plan.getTargetSnapshotJson(),
-                    ChunkMigrationSnapshot.class
-                );
-                ChunkMigrationSnapshot.DocumentTarget documentTarget =
-                    snapshot.documents().get(claimedItem.getDocumentId());
-                if (documentTarget == null) {
-                    throw new IllegalStateException("Migration snapshot is missing a selected document");
-                }
-                AiProfileNode profile = knowledgeBaseService.aiProfile(snapshot.aiProfileId());
-                ChunkingContext chunkingContext =
-                    chunkingService.restore(profile, snapshot.chunkTarget(), documentTarget);
-                DocumentProcessingOptionSet optionSet = new DocumentProcessingOptionSet(
-                    new DocumentFormatDetection(documentTarget.parserId(), documentTarget.fileFormat()),
-                    documentTarget.effectiveProcessingOptions(),
-                    Map.of(),
-                    documentTarget.effectiveProcessingOptions()
-                );
-                ImmutableDocumentProcessingInput input = new ImmutableDocumentProcessingInput(
-                    snapshot.aiProfileId(),
-                    snapshot.aiProfileRevision(),
-                    snapshot.embeddingSpaceId(),
-                    snapshot.schemaId(),
-                    snapshot.schemaContentHash(),
-                    optionSet,
-                    chunkingContext
-                );
-                processed = AiProfileContext.withProfile(
-                    plan.getAiProfileId(),
-                    () -> processingService.process(claimedItem.getDocumentId(), true, input)
-                );
-            } else {
-                Map<String, Object> options = objectMapper.readValue(
-                    plan.getProcessingOptionsJson(),
-                    new TypeReference<Map<String, Object>>() { }
-                );
-                processed = AiProfileContext.withProfile(
-                    plan.getAiProfileId(),
-                    () -> processingService.process(claimedItem.getDocumentId(), true, options)
-                );
-            }
-            if (processed.getStatus() == DocumentStatus.COMPLETED) {
-                completeItem(claimedItem, workerId, SchemaReprocessingItemStatus.SUCCEEDED, null, false);
-            } else {
-                completeItem(
-                    claimedItem, workerId, SchemaReprocessingItemStatus.FAILED,
-                    "DOCUMENT_PROCESSING_FAILED", true);
+            ReprocessingDocumentExecutor.Result result = itemExecution.execute(
+                new ReprocessingDocumentExecutor.Request(
+                    plan.getKnowledgeBaseId(), claimedItem.getDocumentId(), claimedItem.getDocumentSha256(),
+                    plan.getAiProfileId(), executionTarget(plan, claimedItem)));
+            SchemaReprocessingItemStatus status = switch (result.status()) {
+                case STALE_SOURCE -> SchemaReprocessingItemStatus.STALE_SOURCE;
+                case SUCCEEDED -> SchemaReprocessingItemStatus.SUCCEEDED;
+                case FAILED -> SchemaReprocessingItemStatus.FAILED;
+            };
+            completeItem(claimedItem, workerId, status, result.failureCategory(),
+                result.status() == ReprocessingDocumentExecutor.Status.FAILED);
+            if (result.status() == ReprocessingDocumentExecutor.Status.FAILED
+                && !"DOCUMENT_PROCESSING_FAILED".equals(result.failureCategory())) {
+                log.warn("Schema reprocessing item failed: planId={}, documentId={}, exceptionType={}",
+                    plan.getId(), claimedItem.getDocumentId(), result.failureCategory());
             }
         } catch (Exception exception) {
             completeItem(
@@ -591,6 +556,34 @@ public class SchemaReprocessingPlanService {
             log.warn("Schema reprocessing item failed: planId={}, documentId={}, exceptionType={}",
                 plan.getId(), claimedItem.getDocumentId(), LogMetadata.exceptionType(exception));
         }
+    }
+
+    private ReprocessingDocumentExecutor.Target executionTarget(
+        SchemaReprocessingPlanNode plan, SchemaReprocessingItemNode item
+    ) throws java.io.IOException {
+        if (plan.getReason() != ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION) {
+            Map<String, Object> options = objectMapper.readValue(
+                plan.getProcessingOptionsJson(), new TypeReference<Map<String, Object>>() { });
+            return new ReprocessingDocumentExecutor.Activation(options);
+        }
+        ChunkMigrationSnapshot snapshot = jsonSupport.read(plan.getTargetSnapshotJson(), ChunkMigrationSnapshot.class);
+        ChunkMigrationSnapshot.DocumentTarget document = snapshot.documents().get(item.getDocumentId());
+        if (document == null) {
+            throw new IllegalStateException("Migration snapshot is missing a selected document");
+        }
+        ChunkMigrationSnapshot.ChunkTarget chunk = snapshot.chunkTarget();
+        return new ReprocessingDocumentExecutor.Migration(
+            snapshot.aiProfileId(), snapshot.aiProfileRevision(), snapshot.embeddingSpaceId(),
+            snapshot.schemaId(), snapshot.schemaContentHash(),
+            new ReprocessingDocumentExecutor.ChunkTarget(
+                chunk.strategyName(), chunk.strategyRevision(), chunk.targetTokens(), chunk.overlapTokens(),
+                chunk.hardCharacterLimit(), chunk.parentTargetTokens(), chunk.parentHardCharacterLimit(),
+                chunk.parentMaxPages(), chunk.contextHeaderMaxTokens(), chunk.contextHeaderMaxCharacters(),
+                chunk.tokenizerId(), chunk.tokenizerRevision(), chunk.tokenCountMode(),
+                chunk.representationRevision(), chunk.settingsHash()),
+            new ReprocessingDocumentExecutor.DocumentTarget(
+                document.sourceSha256(), document.parserId(), document.parserRevision(), document.fileFormat(),
+                document.effectiveChunkerRevision(), document.effectiveProcessingOptions()));
     }
 
     private void aggregate(SchemaReprocessingPlanNode plan) {

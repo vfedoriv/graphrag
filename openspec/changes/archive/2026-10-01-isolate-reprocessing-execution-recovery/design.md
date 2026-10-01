@@ -1,7 +1,7 @@
 ## Context
 
 See [proposal.md](proposal.md) for motivation and
-[the roadmap](../../../docs/MODULARIZATION_DESIGN.md) for the target architecture.
+[the roadmap](../../../../docs/MODULARIZATION_DESIGN.md) for the target architecture.
 This is the first implementation slice; package names below are selected for new
 boundary code, not a requirement to relocate every legacy class.
 
@@ -47,6 +47,15 @@ bootstrap. Keep the bridge free of repository calls, plan state, classification,
 chunk reconstruction, and model invocation. New document facades may delegate
 to existing legacy services until document consolidation.
 
+The execution port and document capability expose a separate `sourceMatches`
+operation with an immutable knowledge-base/document/hash scope. The schema caller
+invokes it after claiming the item and before decoding the target, outside the
+item processing failure handler. Only a matching source proceeds to target
+assembly and execution. This staged capability preserves stale-source precedence
+over malformed target data and leaves source-lookup failures as interrupted
+claims for recovery. Execution does not repeat the source lookup, preserving the
+existing check-to-processing race without adding locks or transactions.
+
 Alternative: schemas directly imports the documents API. Rejected here because
 documents already needs schema resolution and later build-module separation
 would inherit that cycle. A global contracts module is unnecessary for this slice.
@@ -90,7 +99,9 @@ existing execution-input assembly, not the plan-creation snapshot algorithm.
 ### 4. Keep outcomes and failure semantics explicit
 
 The document facade performs the existing source lookup/hash comparison before
-processing. Missing/replaced sources return `STALE_SOURCE` without processing.
+target decoding through `sourceMatches`. Missing/replaced sources cause schema
+orchestration to complete `STALE_SOURCE` without processing. Source-lookup
+exceptions propagate outside the item processing failure handler, as before.
 Completed processing maps to `SUCCEEDED`; non-completed processing maps to the
 existing failed outcome. Exceptions preserve the originating exception class
 for the existing schema-side privacy-safe failure mapping. Do not convert every
@@ -119,6 +130,8 @@ orchestrator. The new execution collaborator, schema ports, recovery path, and
 integration adapters receive strict rules immediately. New documents facades are
 named transitional bridges to legacy processing implementation; broad feature
 relocation belongs to roadmap change 4.
+The orchestrator's `processItem` and `executionTarget` also receive method-origin
+checks so preparation exceptions cannot be reused by execution in the same class.
 
 ## Risks / Trade-offs
 

@@ -3,11 +3,13 @@ package io.github.vfedoriv.graphrag.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingDocumentExecutor;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingItemExecution;
 import org.mockito.ArgumentCaptor;
 import org.springframework.core.task.TaskExecutor;
 
@@ -270,15 +274,13 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingItemNode item = item("item-1", "doc-1");
         item.setPlanId(plan.getId());
         item.setStatus(SchemaReprocessingItemStatus.QUEUED);
-        DocumentUploadNode replacement = document();
-        replacement.setSha256("f".repeat(64));
+        setExecutionSnapshot(fixture, plan);
+        when(fixture.processing.sourceMatches(any())).thenReturn(false);
         when(fixture.plans.claim(eq(plan.getId()), anyString(), any(), any())).thenReturn(1L);
         when(fixture.plans.findById(plan.getId())).thenReturn(Optional.of(plan));
         when(fixture.items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
         when(fixture.items.claim(eq(item.getId()), anyString(), any(), any())).thenReturn(1L);
         when(fixture.items.findById(item.getId())).thenReturn(Optional.of(item));
-        when(fixture.documents.findByIdAndKnowledgeBaseId("doc-1", "kb-1"))
-            .thenReturn(Optional.of(replacement));
         when(fixture.items.complete(
             eq(item.getId()),
             anyString(),
@@ -294,11 +296,7 @@ class SchemaReprocessingPlanServiceTest {
 
         fixture.service.execute(plan.getId());
 
-        verify(fixture.processing, never()).process(
-            eq("doc-1"),
-            eq(true),
-            any(ImmutableDocumentProcessingInput.class)
-        );
+        verify(fixture.processing, never()).execute(any());
         verify(fixture.items).complete(
             eq(item.getId()),
             anyString(),
@@ -330,11 +328,109 @@ class SchemaReprocessingPlanServiceTest {
         assertThat(item.getStatus()).isEqualTo(SchemaReprocessingItemStatus.BLOCKED_TARGET_CHANGED);
         assertThat(item.getFailureCategory()).isEqualTo("TARGET_CHANGED");
         assertThat(plan.getBlockedDocuments()).isEqualTo(1);
-        verify(fixture.processing, never()).process(
-            eq("doc-1"),
-            eq(true),
-            any(ImmutableDocumentProcessingInput.class)
-        );
+        verifyNoInteractions(fixture.processing);
+    }
+
+    @Test
+    void bothReasonsPreserveItemOutcomesAndRetryabilityThroughThePort() {
+        for (ReprocessingPlanReason reason : ReprocessingPlanReason.values()) {
+            for (ReprocessingDocumentExecutor.Status outcome : ReprocessingDocumentExecutor.Status.values()) {
+                Fixture fixture = fixture();
+                SchemaReprocessingPlanNode plan = queuedChunkPlan();
+                plan.setReason(reason);
+                plan.setProcessingOptionsJson("{\"requested\":7}");
+                setExecutionSnapshot(fixture, plan);
+                SchemaReprocessingItemNode item = item("item-1", "doc-1");
+                item.setStatus(SchemaReprocessingItemStatus.QUEUED);
+                when(fixture.plans.claim(eq(plan.getId()), anyString(), any(), any())).thenReturn(1L);
+                when(fixture.plans.findById(plan.getId())).thenReturn(Optional.of(plan));
+                when(fixture.items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
+                when(fixture.items.claim(eq(item.getId()), anyString(), any(), any())).thenReturn(1L);
+                when(fixture.items.findById(item.getId())).thenReturn(Optional.of(item));
+                String category = outcome == ReprocessingDocumentExecutor.Status.FAILED ? "DOCUMENT_PROCESSING_FAILED"
+                    : outcome == ReprocessingDocumentExecutor.Status.STALE_SOURCE ? "SOURCE_CHANGED" : null;
+                when(fixture.processing.execute(any())).thenReturn(new ReprocessingDocumentExecutor.Result(outcome, category));
+                when(fixture.items.complete(eq(item.getId()), anyString(), any(), any(), anyBoolean(), any()))
+                    .thenAnswer(call -> { item.setStatus(call.getArgument(2)); return 1L; });
+                fixture.service.execute(plan.getId());
+                SchemaReprocessingItemStatus expected = switch (outcome) {
+                    case SUCCEEDED -> SchemaReprocessingItemStatus.SUCCEEDED;
+                    case STALE_SOURCE -> SchemaReprocessingItemStatus.STALE_SOURCE;
+                    case FAILED -> SchemaReprocessingItemStatus.FAILED;
+                };
+                assertThat(item.getStatus()).isEqualTo(expected);
+                verify(fixture.items).complete(eq(item.getId()), anyString(), eq(expected), eq(category),
+                    eq(outcome == ReprocessingDocumentExecutor.Status.FAILED), any());
+                ArgumentCaptor<ReprocessingDocumentExecutor.Request> request = ArgumentCaptor.forClass(ReprocessingDocumentExecutor.Request.class);
+                verify(fixture.processing).execute(request.capture());
+                assertThat(request.getValue().knowledgeBaseId()).isEqualTo("kb-1");
+                assertThat(request.getValue().documentId()).isEqualTo("doc-1");
+                assertThat(request.getValue().expectedSourceSha256()).isEqualTo("old");
+                assertThat(request.getValue().profileScopeId()).isEqualTo("profile-1");
+                if (reason == ReprocessingPlanReason.SCHEMA_ACTIVATION) {
+                    assertThat(request.getValue().target()).isEqualTo(new ReprocessingDocumentExecutor.Activation(Map.of("requested", 7)));
+                } else {
+                    ReprocessingDocumentExecutor.Migration migration = (ReprocessingDocumentExecutor.Migration) request.getValue().target();
+                    assertThat(migration.aiProfileRevision()).isEqualTo(3);
+                    assertThat(migration.documentTarget().effectiveProcessingOptions()).containsEntry("saved", 8);
+                }
+            }
+        }
+    }
+
+    private void setExecutionSnapshot(Fixture fixture, SchemaReprocessingPlanNode plan) {
+        plan.setTargetSnapshotJson(fixture.jsonSupport.canonical(new ChunkMigrationSnapshot(
+            "chunker-current", ChunkReprocessingSelection.ALL, fixture.chunkTarget,
+            "profile-1", 3, "es-1", "schema-1", "b".repeat(64), Map.of("doc-1",
+                new ChunkMigrationSnapshot.DocumentTarget("old", "text", "text-v1", "TXT", "effective", Map.of("saved", 8))))));
+    }
+
+    @Test
+    void staleSourceTakesPrecedenceOverMalformedTargetsForBothReasons() {
+        for (ReprocessingPlanReason reason : ReprocessingPlanReason.values()) {
+            Fixture fixture = fixture();
+            SchemaReprocessingPlanNode plan = queuedChunkPlan();
+            plan.setReason(reason);
+            plan.setProcessingOptionsJson("{invalid");
+            plan.setTargetSnapshotJson("{invalid");
+            when(fixture.processing.sourceMatches(any())).thenReturn(false);
+            SchemaReprocessingItemNode item = item("item-1", "doc-1");
+            item.setStatus(SchemaReprocessingItemStatus.QUEUED);
+            when(fixture.plans.claim(eq(plan.getId()), anyString(), any(), any())).thenReturn(1L);
+            when(fixture.plans.findById(plan.getId())).thenReturn(Optional.of(plan));
+            when(fixture.items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
+            when(fixture.items.claim(eq(item.getId()), anyString(), any(), any())).thenReturn(1L);
+            when(fixture.items.findById(item.getId())).thenReturn(Optional.of(item));
+            when(fixture.items.complete(eq(item.getId()), anyString(), any(), any(), anyBoolean(), any()))
+                .thenAnswer(call -> { item.setStatus(call.getArgument(2)); return 1L; });
+            fixture.service.execute(plan.getId());
+            assertThat(item.getStatus()).isEqualTo(SchemaReprocessingItemStatus.STALE_SOURCE);
+            verify(fixture.items).complete(eq(item.getId()), anyString(), eq(SchemaReprocessingItemStatus.STALE_SOURCE),
+                eq("SOURCE_CHANGED"), eq(false), any());
+            verify(fixture.processing, never()).execute(any());
+        }
+    }
+
+    @Test
+    void sourceLookupFailureLeavesTheClaimForRecoveryForBothReasons() {
+        for (ReprocessingPlanReason reason : ReprocessingPlanReason.values()) {
+            Fixture fixture = fixture();
+            SchemaReprocessingPlanNode plan = queuedChunkPlan();
+            plan.setReason(reason);
+            SchemaReprocessingItemNode item = item("item-1", "doc-1");
+            item.setStatus(SchemaReprocessingItemStatus.RUNNING);
+            when(fixture.plans.claim(eq(plan.getId()), anyString(), any(), any())).thenReturn(1L);
+            when(fixture.plans.findById(plan.getId())).thenReturn(Optional.of(plan));
+            when(fixture.items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
+            when(fixture.items.claim(eq(item.getId()), anyString(), any(), any())).thenReturn(1L);
+            when(fixture.items.findById(item.getId())).thenReturn(Optional.of(item));
+            IllegalStateException failure = new IllegalStateException("source store unavailable");
+            when(fixture.processing.sourceMatches(any())).thenThrow(failure);
+            assertThatThrownBy(() -> fixture.service.execute(plan.getId())).isSameAs(failure);
+            assertThat(item.getStatus()).isEqualTo(SchemaReprocessingItemStatus.RUNNING);
+            verify(fixture.items, never()).complete(any(), any(), any(), any(), anyBoolean(), any());
+            verify(fixture.processing, never()).execute(any());
+        }
     }
 
     private CreatePlanRequest chunkRequest(
@@ -422,7 +518,8 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingPlanRepository plans = mock(SchemaReprocessingPlanRepository.class);
         SchemaReprocessingItemRepository items = mock(SchemaReprocessingItemRepository.class);
         KnowledgeBaseService knowledgeBaseService = mock(KnowledgeBaseService.class);
-        DocumentProcessingService processing = mock(DocumentProcessingService.class);
+        ReprocessingDocumentExecutor processing = mock(ReprocessingDocumentExecutor.class);
+        when(processing.sourceMatches(any())).thenReturn(true);
         ChunkingService chunking = mock(ChunkingService.class);
         EmbeddingSpacePolicy embeddingPolicy = mock(EmbeddingSpacePolicy.class);
         SchemaDraftWorkflowCheckpointService checkpoint = mock(SchemaDraftWorkflowCheckpointService.class);
@@ -469,6 +566,7 @@ class SchemaReprocessingPlanServiceTest {
         when(chunks.findByDocumentIdOrderByChunkIndexAsc("doc-1")).thenReturn(List.of());
         when(runs.findByDocumentIdOrderByStartedAtAsc(anyString())).thenReturn(List.of());
         when(checkpoint.createPlan(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(plans.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(observation.startWorkflow(any())).thenReturn(observationScope);
         SchemaReprocessingPlanService service = new SchemaReprocessingPlanService(
             lifecycle,
@@ -481,7 +579,7 @@ class SchemaReprocessingPlanServiceTest {
             plans,
             items,
             knowledgeBaseService,
-            processing,
+            new ReprocessingItemExecution(processing),
             new DocumentProcessingOptionsRegistry(),
             chunking,
             embeddingPolicy,
@@ -503,7 +601,8 @@ class SchemaReprocessingPlanServiceTest {
             processing,
             checkpoint,
             jsonSupport,
-            document
+            document,
+            chunkTarget
         );
     }
 
@@ -546,10 +645,11 @@ class SchemaReprocessingPlanServiceTest {
         DocumentUploadRepository documents,
         SchemaDraftPublicationRepository publications,
         KnowledgeBaseService knowledgeBaseService,
-        DocumentProcessingService processing,
+        ReprocessingDocumentExecutor processing,
         SchemaDraftWorkflowCheckpointService checkpoint,
         SchemaDraftJsonSupport jsonSupport,
-        DocumentUploadNode document
+        DocumentUploadNode document,
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget
     ) {
     }
 }

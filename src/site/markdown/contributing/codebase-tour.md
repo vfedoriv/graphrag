@@ -7,9 +7,12 @@ GraphRAG is a Java 25 / Spring Boot 4.1.0 REST API. Controllers are thin; busine
 ```text
 src/main/java/io/github/vfedoriv/graphrag/
   application/processing   staged document-processing pipeline
+  bootstrap/integration/reprocessing  schema/document contract mapping
   config                   validated startup/runtime configuration
   controller               REST endpoints and OpenAPI annotations
   document                 parsing/chunking and structural source model
+  documents/contracts      public reprocessing execution and outcome capabilities
+  documents/application/processing  transitional facades over legacy processing
   domain                   operational and graph domain types
   dto                      API request/response contracts
   embedding                embedding clients
@@ -20,6 +23,7 @@ src/main/java/io/github/vfedoriv/graphrag/
   observability            AI workflow/model observations and metrics
   repository               persistence ports
   schema                   schema JSON model/parser/validator
+  schemas/reprocessing     consumer-owned ports and port-only item execution
   service                  lifecycle and orchestration services
   storage                  binary storage contract
 ```
@@ -34,6 +38,21 @@ src/main/java/io/github/vfedoriv/graphrag/
 6. Follow `AdvancedSearchRunController` through readiness/admission, durable run service, processor branches, fusion/reranking/sufficiency/synthesis, and result publication.
 7. Follow `SchemaDraftController` across lifecycle/source/analysis/review/evaluation/publication services and then `SchemaReprocessingPlanController`.
 8. Read [testing](testing.md) and the canonical `EndToEndMvpFlowIntegrationTest` to see the full-flow contract.
+
+For reprocessing, follow `SchemaReprocessingPlanService` into
+`schemas.reprocessing.application.ReprocessingItemExecution` and its execution
+port, then the bootstrap adapter and `DocumentReprocessingFacade`. Recovery uses
+the outcome-reader port and `DocumentProcessingOutcomesFacade`. Schemas retains
+claims/completion/retry policy; documents owns source checks, runtime migration
+input restoration, profile scope, and processing-run inspection. Adapters only
+map immutable contract values and introduce no encompassing transaction.
+
+Document selection, classification, option resolution, and snapshot preparation
+remain in the legacy plan service. Architecture tests freeze its exact document
+repository/record, option resolver, and chunking dependencies for the next
+preparation-isolation change. The new contracts and facades represent the first
+modularization slice; the rest of the broad packages remain in place. See the
+[architecture boundary details](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
 
 ## High-risk invariants
 

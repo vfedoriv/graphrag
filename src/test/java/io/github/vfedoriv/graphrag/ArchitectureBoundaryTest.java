@@ -215,6 +215,155 @@ class ArchitectureBoundaryTest {
         assertNoViolations(violations);
     }
 
+    @Test
+    void reprocessing_recovery_and_execution_do_not_access_document_implementation() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(javaClass -> javaClass.getName().equals(SERVICE_PACKAGE + ".SchemaReprocessingRecoveryService")
+                || isInPackage(javaClass, BASE_PACKAGE + ".schemas.reprocessing.application"))
+            .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
+            .filter(dependency -> isDocumentImplementation(dependency.getTargetClass())
+                || isInfrastructureClient(dependency.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void reprocessing_boundary_values_are_free_of_entities_clients_and_runtime_context() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(javaClass -> isInAnyPackage(javaClass, BASE_PACKAGE + ".schemas.reprocessing.ports",
+                BASE_PACKAGE + ".documents.contracts"))
+            .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
+            .filter(dependency -> !dependency.getTargetClass().getName().startsWith("java.")
+                && !dependency.getTargetClass().getPackageName().equals(dependency.getOriginClass().getPackageName()))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void reprocessing_integration_only_maps_public_contracts() {
+        Set<String> violations = dependenciesFromClassesIn(BASE_PACKAGE + ".bootstrap.integration.reprocessing").stream()
+            .filter(dependency -> isInfrastructureClient(dependency.getTargetClass())
+                || isInPackage(dependency.getTargetClass(), BASE_PACKAGE)
+                    && !isInAnyPackage(dependency.getTargetClass(),
+                        BASE_PACKAGE + ".schemas.reprocessing.ports", BASE_PACKAGE + ".documents.contracts",
+                        BASE_PACKAGE + ".bootstrap.integration.reprocessing"))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void execution_collaborator_uses_only_its_port_and_has_no_transaction() {
+        Set<String> violations = dependenciesFromClassesIn(BASE_PACKAGE + ".schemas.reprocessing.application").stream()
+            .filter(dependency -> isInfrastructureClient(dependency.getTargetClass())
+                || isInPackage(dependency.getTargetClass(), BASE_PACKAGE)
+                    && !isInAnyPackage(dependency.getTargetClass(),
+                        BASE_PACKAGE + ".schemas.reprocessing.ports", BASE_PACKAGE + ".schemas.reprocessing.application"))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        PRODUCTION_CLASSES.stream()
+            .filter(javaClass -> isInAnyPackage(javaClass, BASE_PACKAGE + ".schemas.reprocessing.application",
+                BASE_PACKAGE + ".bootstrap.integration.reprocessing", BASE_PACKAGE + ".documents.application.processing"))
+            .filter(javaClass -> javaClass.isAnnotatedWith(RelationalTransactional.class)
+                || javaClass.isAnnotatedWith(GraphTransactional.class)
+                || javaClass.getMethods().stream().anyMatch(ArchitectureBoundaryTest::isStoreTransactional))
+            .map(JavaClass::getName).forEach(violations::add);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void features_do_not_depend_on_reprocessing_assembly() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(javaClass -> !isInPackage(javaClass, BASE_PACKAGE + ".bootstrap"))
+            .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
+            .filter(dependency -> isInPackage(dependency.getTargetClass(), BASE_PACKAGE + ".bootstrap.integration.reprocessing"))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void remaining_reprocessing_preparation_dependencies_are_frozen_by_source_and_target() {
+        String orchestrator = SERVICE_PACKAGE + ".SchemaReprocessingPlanService";
+        Set<String> allowed = Set.of(
+            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentUploadNode",
+            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentProcessingRunNode",
+            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentProcessingRunStatus",
+            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentUploadRepository",
+            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentChunkRepository",
+            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentProcessingRunRepository",
+            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentProcessingOptionsRegistry",
+            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentProcessingOptionSet",
+            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentFormatDetection",
+            orchestrator + " -> " + APPLICATION_PACKAGE + ".processing.ProcessingOptionResolver",
+            orchestrator + " -> " + APPLICATION_PACKAGE + ".processing.ProcessingJsonCodec",
+            orchestrator + " -> " + BASE_PACKAGE + ".document.ChunkingService",
+            orchestrator + " -> " + BASE_PACKAGE + ".document.chunking.ChunkingContext",
+            orchestrator + " -> " + BASE_PACKAGE + ".document.chunking.ChunkerRevision",
+            orchestrator + "$ChunkMigrationEvaluation -> " + DOMAIN_PACKAGE + ".DocumentUploadNode"
+        );
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(javaClass -> javaClass.getName().startsWith(SERVICE_PACKAGE + ".SchemaReprocessing")
+                || isInPackage(javaClass, BASE_PACKAGE + ".schemas.reprocessing"))
+            .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
+            .filter(dependency -> isDocumentImplementation(dependency.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).filter(edge -> !allowed.contains(edge))
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void orchestrator_execution_methods_cannot_reuse_preparation_dependencies() {
+        JavaClasses orchestrator = new ClassFileImporter().importClasses(
+            io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService.class);
+        assertNoViolations(documentAccessesFromExecutionMethods(orchestrator));
+    }
+
+    @Test
+    void execution_method_guard_rejects_a_preparation_repository_access() {
+        JavaClasses forbidden = new ClassFileImporter().importClasses(ForbiddenExecutionFixture.class);
+        Set<String> violations = documentAccessesFromExecutionMethods(forbidden);
+        assertTrue(violations.stream().anyMatch(value -> value.contains("DocumentUploadRepository")),
+            "The method-origin guard must reject repository access even when its class edge is allowed for preparation");
+    }
+
+    private static Set<String> documentAccessesFromExecutionMethods(JavaClasses classes) {
+        return classes.stream()
+            .flatMap(javaClass -> javaClass.getAccessesFromSelf().stream())
+            .filter(access -> Set.of("processItem", "executionTarget").contains(access.getOrigin().getName()))
+            .filter(access -> isDocumentImplementation(access.getTargetOwner()))
+            .map(access -> access.getDescription())
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+    }
+
+    private static class ForbiddenExecutionFixture {
+        private io.github.vfedoriv.graphrag.repository.DocumentUploadRepository documents;
+
+        void processItem() {
+            documents.findById("document");
+        }
+    }
+
+    private static boolean isDocumentImplementation(JavaClass target) {
+        return isInAnyPackage(target, BASE_PACKAGE + ".document", BASE_PACKAGE + ".documents",
+                APPLICATION_PACKAGE + ".processing")
+            || isInPackage(target, INFRASTRUCTURE_PERSISTENCE_PACKAGE) && target.getSimpleName().contains("Document")
+            || target.getName().startsWith(DOMAIN_PACKAGE + ".Document")
+            || target.getName().startsWith(REPOSITORY_PACKAGE + ".Document")
+            || target.getName().startsWith(SERVICE_PACKAGE + ".Document")
+            || target.getName().equals(SERVICE_PACKAGE + ".ImmutableDocumentProcessingInput");
+    }
+
+    private static boolean isInfrastructureClient(JavaClass target) {
+        return target.isAssignableTo(Neo4jClient.class)
+            || target.isAssignableTo(ChatModel.class)
+            || target.isAssignableTo(EmbeddingModel.class)
+            || target.isAssignableTo(Path.class)
+            || target.isAssignableTo(Files.class);
+    }
+
     private static boolean isStoreTransactional(JavaMethod method) {
         return method.isAnnotatedWith(GraphTransactional.class)
                 || method.isAnnotatedWith(RelationalTransactional.class)

@@ -10,6 +10,12 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
+import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
@@ -19,6 +25,7 @@ import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
 import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
@@ -26,8 +33,11 @@ import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
 import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.service.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService;
+import io.github.vfedoriv.graphrag.document.ChunkingService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +73,12 @@ class DocumentProcessingIntegrationTest {
     private EmbeddingSpaceIndexService embeddingSpaceIndexService;
     @Autowired
     private LexicalIndexRepository lexicalIndexRepository;
+    @Autowired
+    private SchemaReprocessingPlanService reprocessingService;
+    @Autowired
+    private SchemaReprocessingPlanRepository planRepository;
+    @Autowired
+    private ChunkingService chunkingService;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -70,7 +86,7 @@ class DocumentProcessingIntegrationTest {
     }
 
     @Test
-    void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
+    void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         RelationalMetadataTestCleaner.clean(jdbcTemplate);
         String schemaJson = """
@@ -278,7 +294,30 @@ class DocumentProcessingIntegrationTest {
         );
         assertThat(extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
         assertThat(processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
-        assertThat(documentProcessingService.process(uploaded.getId()).getStatus().name()).isEqualTo("COMPLETED");
+        DocumentUploadNode replacementProcessed = documentProcessingService.process(uploaded.getId());
+        assertThat(replacementProcessed.getStatus().name()).isEqualTo("COMPLETED");
+
+        String planId = reprocessingService.create("kb-1", new CreatePlanRequest(
+            null, null, false, List.of(uploaded.getId()), Map.of(),
+            ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION, ChunkReprocessingSelection.DOCUMENT_IDS,
+            chunkingService.migrationTargetRevision())).planId();
+        SchemaReprocessingPlanNode migration = planRepository.findById(planId).orElseThrow();
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+        while ((migration.getStatus() == SchemaReprocessingPlanStatus.QUEUED
+            || migration.getStatus() == SchemaReprocessingPlanStatus.RUNNING) && System.nanoTime() < deadline) {
+            Thread.sleep(25);
+            migration = planRepository.findById(planId).orElseThrow();
+        }
+        assertThat(migration.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.COMPLETED);
+        assertThat(migration.getSucceededDocuments()).isEqualTo(1);
+        List<DocumentProcessingRunNode> migratedHistory =
+            processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId());
+        assertThat(migratedHistory).hasSize(2);
+        assertThat(migratedHistory).filteredOn(DocumentProcessingRunNode::isActiveCompleted)
+            .singleElement().satisfies(run -> {
+                assertThat(run.getStatus()).isEqualTo(DocumentProcessingRunStatus.COMPLETED);
+                assertThat(run.getSourceSha256()).isEqualTo(replacementProcessed.getSha256());
+            });
     }
 
     @Test

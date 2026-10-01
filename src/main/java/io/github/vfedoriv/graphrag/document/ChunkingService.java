@@ -9,6 +9,7 @@ import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
 import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
+import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,21 @@ public class ChunkingService {
         AiProfileNode profile,
         ChunkMigrationSnapshot.ChunkTarget target,
         ChunkMigrationSnapshot.DocumentTarget documentTarget
+    ) {
+        return restore(profile, new DocumentReprocessing.ChunkTarget(
+            target.strategyName(), target.strategyRevision(), target.targetTokens(), target.overlapTokens(),
+            target.hardCharacterLimit(), target.parentTargetTokens(), target.parentHardCharacterLimit(),
+            target.parentMaxPages(), target.contextHeaderMaxTokens(), target.contextHeaderMaxCharacters(),
+            target.tokenizerId(), target.tokenizerRevision(), target.tokenCountMode(),
+            target.representationRevision(), target.settingsHash()), new DocumentReprocessing.DocumentTarget(
+            documentTarget.sourceSha256(), documentTarget.parserId(), documentTarget.parserRevision(),
+            documentTarget.fileFormat(), documentTarget.effectiveChunkerRevision(), documentTarget.effectiveProcessingOptions()));
+    }
+
+    public ChunkingContext restore(
+        AiProfileNode profile,
+        DocumentReprocessing.ChunkTarget target,
+        DocumentReprocessing.DocumentTarget documentTarget
     ) {
         TokenEstimator estimator = tokenizerPolicy.resolve(profile.getTokenizerId(), profile.getEmbeddingModel());
         requireSnapshotIdentity(target, estimator);
@@ -169,7 +185,7 @@ public class ChunkingService {
     }
 
     private void requireSnapshotIdentity(
-        ChunkMigrationSnapshot.ChunkTarget target,
+        DocumentReprocessing.ChunkTarget target,
         TokenEstimator estimator
     ) {
         if (!target.tokenizerId().equals(estimator.tokenizerId().value())

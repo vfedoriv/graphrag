@@ -1,7 +1,8 @@
 # Feature modularization: decisions and migration roadmap
 
 Date: 2026-10-01
-Status: agreed direction; implementation has not started.
+Status: agreed direction; execution/recovery boundary implemented in roadmap
+change 1, with remaining preparation exceptions retained for change 2.
 
 ## Purpose
 
@@ -191,5 +192,5 @@ Later proposals should be grounded in contracts actually established by changes
 
 ## Detailed changes
 
-- [Execution and recovery](../openspec/changes/isolate-reprocessing-execution-recovery/proposal.md)
+- [Execution and recovery](../openspec/changes/archive/2026-10-01-isolate-reprocessing-execution-recovery/proposal.md)
 - [Document migration preparation](../openspec/changes/isolate-document-migration-preparation/proposal.md)

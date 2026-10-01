@@ -41,7 +41,7 @@ documents contracts/facades, schemas ports, and bootstrap integration adapters;
 it changes focused tests and architecture governance, not database migrations,
 provider configuration, processing algorithms, or deployments.
 
-This is roadmap change 1 in [the high-level design](../../../docs/MODULARIZATION_DESIGN.md).
+This is roadmap change 1 in [the high-level design](../../../../docs/MODULARIZATION_DESIGN.md).
 It has no predecessor. Change 2 depends on its contracts and completes migration
 preparation isolation. Wholesale feature relocation, AI/knowledge-base boundaries,
 remote workers, reusable build modules, and broad service decomposition are out of

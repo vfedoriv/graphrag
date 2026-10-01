@@ -2,7 +2,7 @@
 
 See [proposal.md](proposal.md),
 [the roadmap](../../../docs/MODULARIZATION_DESIGN.md), and
-[change 1's design](../isolate-reprocessing-execution-recovery/design.md).
+[change 1's design](../archive/2026-10-01-isolate-reprocessing-execution-recovery/design.md).
 Implement change 1 first. This design assumes its schema-owned ports, document
 facades, integration mapping, and existing behavior checks.
 

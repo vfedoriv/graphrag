@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
@@ -9,7 +7,7 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingProcessingOutcomeReader;
 import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
@@ -27,20 +25,20 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
     );
     private final SchemaReprocessingPlanRepository planRepository;
     private final SchemaReprocessingItemRepository itemRepository;
-    private final DocumentProcessingRunRepository processingRunRepository;
+    private final ReprocessingProcessingOutcomeReader processingOutcomes;
     private final SchemaDraftWorkflowCheckpointService checkpointService;
     private final SchemaDraftJsonSupport jsonSupport;
 
     public SchemaReprocessingRecoveryService(
         SchemaReprocessingPlanRepository planRepository,
         SchemaReprocessingItemRepository itemRepository,
-        DocumentProcessingRunRepository processingRunRepository,
+        ReprocessingProcessingOutcomeReader processingOutcomes,
         SchemaDraftWorkflowCheckpointService checkpointService,
         SchemaDraftJsonSupport jsonSupport
     ) {
         this.planRepository = planRepository;
         this.itemRepository = itemRepository;
-        this.processingRunRepository = processingRunRepository;
+        this.processingOutcomes = processingOutcomes;
         this.checkpointService = checkpointService;
         this.jsonSupport = jsonSupport;
     }
@@ -138,14 +136,8 @@ public class SchemaReprocessingRecoveryService implements ApplicationRunner {
             }
             expectedChunkerRevision = target.effectiveChunkerRevision();
         }
-        String requiredRevision = expectedChunkerRevision;
-        return processingRunRepository.findByDocumentIdOrderByStartedAtAsc(item.getDocumentId()).stream()
-            .filter(run -> run.getStatus() == DocumentProcessingRunStatus.COMPLETED)
-            .filter(DocumentProcessingRunNode::isActiveCompleted)
-            .filter(run -> item.getDocumentSha256().equals(run.getSourceSha256()))
-            .filter(run -> requiredRevision == null
-                || requiredRevision.equals(run.getEffectiveChunkerRevision()))
-            .anyMatch(run -> item.getStartedAt() == null || !run.getStartedAt().isBefore(item.getStartedAt()));
+        return processingOutcomes.completedOverwrite(new ReprocessingProcessingOutcomeReader.Request(
+            item.getDocumentId(), item.getDocumentSha256(), expectedChunkerRevision, item.getStartedAt()));
     }
 
     private void repairCounters(

@@ -80,3 +80,11 @@ The complete suite is credential-free but requires Docker for shared Testcontain
 - Application logs are metadata-first; opt-in AI observation content follows explicit privacy controls.
 
 For architecture, persistence ownership, production readiness, and contribution guidance, start at the [portal index](src/site/markdown/index.md).
+
+Reprocessing execution and recovery use schemas-owned ports mapped by bootstrap
+integration adapters to documents-owned capabilities. Documents owns source
+checks, migration input restoration, profile scope, and processing-run inspection;
+schemas retains plan claims, completion, and retry policy. Preparation still uses
+explicitly frozen document dependencies in the legacy plan service. This is the
+first modularization slice, not a full feature relocation; see the
+[architecture boundary](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).

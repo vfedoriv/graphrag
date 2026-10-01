@@ -59,6 +59,19 @@ Use `./mvnw` instead of bare `mvn`.
 - Error format: RFC 7807 `ProblemDetail`
 - Layering: Controllers -> Services -> repository ports -> PostgreSQL adapters or graph-only Neo4j adapters
 
+Reprocessing execution and recovery use schemas-owned ports under
+`schemas.reprocessing.ports` and port-only `ReprocessingItemExecution`, mapped by
+`bootstrap.integration.reprocessing` to documents-owned contracts/facades.
+Documents owns source checks, migration input restoration, profile scope, and
+processing-run inspection; schemas retains plan claims, completion, and retry
+policy. Preparation remains in `SchemaReprocessingPlanService` with exact
+document repository/record, option resolver, and chunking dependencies frozen by
+`ArchitectureBoundaryTest` for the next preparation-isolation change. This is the
+first modularization slice, not a full feature relocation. Preserve the existing
+recovery predicate and separate relational checkpoints from external processing;
+keep adapters free of repositories, implementation services, and transactions.
+See [architecture](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
 Main controllers:
 - `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, review-only multi-source discovery, example generation, KB schema listing)
 - `KnowledgeBaseController`
