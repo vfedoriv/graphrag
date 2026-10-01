@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Metrics;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Rate;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.LinkedHashMap;
 import java.util.List;

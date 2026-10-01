@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingOptionsRegistry;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,13 +16,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
-import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.document.chunking.Utf8ByteTokenEstimator;
+import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
-import io.github.vfedoriv.graphrag.domain.DocumentStatus;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
@@ -37,9 +39,9 @@ import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryPlanRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftPublicationRepository;
@@ -382,7 +384,7 @@ class SchemaReprocessingPlanServiceTest {
     private void setExecutionSnapshot(Fixture fixture, SchemaReprocessingPlanNode plan) {
         plan.setTargetSnapshotJson(fixture.jsonSupport.canonical(new ChunkMigrationSnapshot(
             "chunker-current", ChunkReprocessingSelection.ALL, fixture.chunkTarget,
-            "profile-1", 3, "es-1", "schema-1", "b".repeat(64), Map.of("doc-1",
+            "profile-1", 3, "es_12c385a71ba5851962bd96a35acdd62204aedd0c13b9610666ec79359e7d4dac", "schema-1", "b".repeat(64), Map.of("doc-1",
                 new ChunkMigrationSnapshot.DocumentTarget("old", "text", "text-v1", "TXT", "effective", Map.of("saved", 8))))));
     }
 
@@ -588,7 +590,7 @@ class SchemaReprocessingPlanServiceTest {
         plan.setSchemaContentHash("b".repeat(64));
         plan.setAiProfileId("profile-1");
         plan.setAiProfileRevision(3);
-        plan.setEmbeddingSpaceId("es-1");
+        plan.setEmbeddingSpaceId("es_12c385a71ba5851962bd96a35acdd62204aedd0c13b9610666ec79359e7d4dac");
         plan.setExpectedChunkerRevision("chunker-current");
         plan.setStatus(SchemaReprocessingPlanStatus.QUEUED);
         plan.setTotalDocuments(1);
@@ -611,7 +613,7 @@ class SchemaReprocessingPlanServiceTest {
         ReprocessingDocumentExecutor processing = mock(ReprocessingDocumentExecutor.class);
         when(processing.sourceMatches(any())).thenReturn(true);
         ChunkingService chunking = mock(ChunkingService.class);
-        EmbeddingSpacePolicy embeddingPolicy = mock(EmbeddingSpacePolicy.class);
+        io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility embeddingPolicy = mock(io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility.class);
         SchemaDraftWorkflowCheckpointService checkpoint = mock(SchemaDraftWorkflowCheckpointService.class);
         AiObservationService observation = mock(AiObservationService.class);
         AiObservationScope observationScope = mock(AiObservationScope.class);
@@ -648,9 +650,6 @@ class SchemaReprocessingPlanServiceTest {
         when(chunking.migrationTargetRevision(any(AiProfileNode.class))).thenReturn("chunker-current");
         when(chunking.snapshotTarget(any(AiProfileNode.class))).thenReturn(chunkTarget);
         when(chunking.snapshot(any(AiProfileNode.class), eq("text"))).thenReturn(context);
-        when(embeddingPolicy.spaceFor(any(AiProfileNode.class))).thenReturn(
-            new EmbeddingSpace("es-1", "https://example.test", "embedding", 3, "utf8-byte-v1")
-        );
         when(documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1")).thenReturn(List.of(document));
         when(documents.findByIdAndKnowledgeBaseId("doc-1", "kb-1")).thenReturn(Optional.of(document));
         when(chunks.findByDocumentIdOrderByChunkIndexAsc("doc-1")).thenReturn(List.of());
@@ -711,6 +710,9 @@ class SchemaReprocessingPlanServiceTest {
         AiProfileNode profile = new AiProfileNode();
         profile.setId("profile-1");
         profile.setRevision(3);
+        profile.setBaseUrl("https://example.test/v1");
+        profile.setEmbeddingModel("embedding-model");
+        profile.setEmbeddingDimensions(3);
         return profile;
     }
 

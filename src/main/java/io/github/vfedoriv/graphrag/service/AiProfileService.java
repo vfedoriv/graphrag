@@ -10,7 +10,7 @@ import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTokenizer;
 import io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments;
 import java.util.Objects;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;

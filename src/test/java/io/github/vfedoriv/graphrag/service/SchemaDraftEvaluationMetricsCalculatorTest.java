@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Metrics;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
 import java.util.List;
 import java.util.Map;

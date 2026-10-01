@@ -31,6 +31,40 @@ The default profile can boot without model beans. AI-backed services resolve the
 
 Cross-store operations are explicit workflows rather than distributed transactions. Services record durable state, perform bounded work, and apply cleanup/recovery rules when later steps fail.
 
+## Document ownership
+
+Document consolidation (roadmap step 4) is implemented. `documents.api` owns
+`DocumentController`, `ChunkingStateController`, and API models.
+`documents.application.management` owns upload, replacement, deletion, storage
+mutation/reconciliation, and chunking-state workflows.
+`documents.application.processing` owns parsing/chunking orchestration, processing
+stages, extraction validation, run lifecycles, recovery, and public capability
+facades. `bootstrap.DocumentsProcessingConfiguration` injects assembled stages
+into `DocumentProcessingService`.
+
+`documents.domain` contains operational records and deterministic parsing,
+chunking, hierarchy, contextual-text, metadata, revision, and extraction values.
+Pure rules have no persistence annotations, effect clients, or adapter/workflow
+dependencies. `documents.ports` expresses relational, binary, chunk, graph-write,
+cleanup, and model effects. `documents.adapters` owns their relational, graph,
+binary, parsing, chunking, and model integrations. The mapped SDN
+`DocumentChunkEntity` is separate from the plain `DocumentChunkNode`; labels,
+properties, queries, IDs, and optimistic-version behavior are preserved.
+The binary adapter delegates shared storage primitives; draft storage stays shared.
+
+Document processing and migration preparation use AI-owned
+`EmbeddingCompatibility` and immutable non-secret `EmbeddingTarget` values.
+Relational checkpoints remain separate from model, filesystem, and graph effects;
+scoped cleanup, persisted snapshots, stale-run recovery, and the absence of an
+enclosing cross-store transaction are unchanged.
+
+`ArchitectureBoundaryTest` freezes exact class-to-class transitional edges with
+retirement steps: registry/discovery and active-schema resolution (5), draft
+sources/analysis (6), dry evaluation/publication and schema-owned migration
+snapshots (7), search readers (8), and settings/AI/support assembly (9).
+These allowances neither reopen completed reprocessing/KB/AI boundaries nor
+permit additional foreign document callers. Step 5 remains pending.
+
 ## Reprocessing execution and recovery boundary
 
 Schemas owns reprocessing plan state, conditional claims, target guards, item
@@ -43,8 +77,8 @@ entities, runtime chunking contexts, model clients, or provider keys.
 `bootstrap.integration.reprocessing` maps these ports to the documents-owned
 `DocumentReprocessing` and `DocumentProcessingOutcomes` capabilities. The
 documents facades check source identity, restore saved migration inputs, scope
-the processing profile, and inspect owned processing runs. They remain
-transitional bridges to the existing `DocumentProcessingService` and repositories.
+the processing profile, and inspect owned processing runs. They delegate to
+document-owned `DocumentProcessingService` and repository ports.
 The adapters add no transactions or business decisions, and features do not
 depend on their implementation.
 
@@ -80,7 +114,7 @@ Integration adapters only map public immutable values. Synchronous document read
 participate in existing caller transactions; plan checkpoints and scheduling after
 commit remain schema-owned. HTTP contracts, SQL, canonical snapshot JSON and
 fingerprints, processing algorithms, and the recovery predicate remain unchanged.
-AI compatibility now uses AI-owned rules and stored-observation ports; full feature relocation remains deferred.
+AI compatibility uses AI-owned rules and stored-observation ports; document ownership is consolidated as described above.
 
 ## Knowledge-base lifecycle and AI state boundaries
 
@@ -110,19 +144,17 @@ invalidation change. Counts and assignments participate in caller transactions;
 integration adapters under `bootstrap.integration.ai` and
 `bootstrap.integration.knowledgebase` only map values and add no transactions.
 
-`EmbeddingSpacePolicy` remains a repository-free delegating bridge, with exactly
-these callers: `EmbeddingPersistenceStage`, `DocumentProcessingService`, and
-`DocumentMigrationPreparationFacade` (documents roadmap step 4), plus
-`AdvancedSearchReadinessService` and `DenseTextRetriever` (search step 8).
+`EmbeddingSpacePolicy` remains a repository-free delegating bridge with exactly
+`AdvancedSearchReadinessService` and `DenseTextRetriever` as callers (search step 8).
 `EmbeddingSpaceIdentity` and `EmbeddingSpace` retain historical utility/value
-entry points for processing and index callers, to retire during steps 4/8/9.
-The immutable `TokenizerId` value remains in legacy profile and knowledge-base
-services, with an exact class/value allowance; its support ownership retires in
+entry points for search and index support, retiring in steps 8/9. The immutable
+`TokenizerId` value in `documents.domain.chunking` remains a frozen dependency
+of legacy profile and knowledge-base services until support consolidation in
 step 9. No allowance permits foreign state reads. Architecture tests enforce
 pure rules/contracts, public-capability mapping, feature-to-bootstrap isolation,
-and the frozen bridge callers, alongside all predecessor reprocessing guards.
-Document consolidation and schema registry/discovery boundaries (steps 4/5)
-remain pending.
+and exact bridge callers alongside all predecessor reprocessing guards.
+Document consolidation (step 4) is implemented; schema registry/discovery
+boundaries (step 5) remain pending.
 
 ## Major flows
 
@@ -137,9 +169,9 @@ remain pending.
 |---|---|---|
 | Schema registry and discovery | `controller/SchemaController.java` | `service/SchemaRegistryService.java`, `service/SchemaDiscoveryService.java`, `schema/SchemaParser.java`, `schema/SchemaValidator.java` |
 | Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
-| Documents and chunks | `controller/DocumentController.java`, `controller/ChunkingStateController.java` | `service/DocumentUploadService.java`, `service/DocumentProcessingService.java`, `document/ChunkingService.java` |
+| Documents and chunks | `documents/api/DocumentController.java`, `documents/api/ChunkingStateController.java` | `documents/application/management/DocumentUploadService.java`, `documents/application/processing/DocumentProcessingService.java`, `documents/application/processing/ChunkingService.java` |
 | Reprocessing preparation, execution, and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
-| Graph extraction | document processing endpoint | `service/GraphExtractionService.java`, `graph/GraphWriteService.java` |
+| Graph extraction | document processing endpoint | `documents/application/processing/GraphExtractionService.java`, `documents/adapters/graph/GraphWriteService.java` |
 | Cypher | `controller/QueryController.java` | `service/CypherGenerationService.java`, `service/CypherValidationService.java`, `service/CypherExecutionService.java` |
 | Advanced search | `controller/AdvancedSearchRunController.java` | `service/AdvancedSearchRunService.java`, `service/DefaultAdvancedSearchRunProcessor.java` |
 | Runtime settings | `controller/RuntimeSettingsController.java` | `service/RuntimeSettingsService.java` |

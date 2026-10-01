@@ -1,9 +1,16 @@
 package io.github.vfedoriv.graphrag.document.chunking;
 
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSlice;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.RecursiveTokenAwareChunkingStrategy;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.document.ParsedSection;
+import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedSection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -45,7 +52,9 @@ class RecursiveChunkingEvaluationTest {
     private Map<String, Object> evaluate(EvaluationCase evaluationCase) {
         TokenEstimator estimator = new Utf8ByteTokenEstimator();
         FixedCharacterChunkingStrategy fixed = new FixedCharacterChunkingStrategy();
-        RecursiveTokenAwareChunkingStrategy recursive = new RecursiveTokenAwareChunkingStrategy();
+        RecursiveTokenAwareChunkingStrategy recursive = new RecursiveTokenAwareChunkingStrategy((text, referenceContext) ->
+            new io.github.vfedoriv.graphrag.documents.adapters.chunking.LangChain4jRecursiveSplitterAdapter(referenceContext)
+                .referenceSegmentCount(text));
         ParsedSection section = new ParsedSection(
             0,
             evaluationCase.text(),

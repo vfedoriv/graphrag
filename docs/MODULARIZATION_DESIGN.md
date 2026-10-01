@@ -1,9 +1,9 @@
 # Feature modularization: decisions and migration roadmap
 
 Date: 2026-10-01
-Status: roadmap steps 1–3 implemented: reprocessing execution/recovery, document
-migration preparation, and knowledge-base/AI state boundaries. Steps 4 and 5
-(document consolidation and schema registry/discovery) remain pending.
+Status: roadmap steps 1–4 implemented: reprocessing execution/recovery, document
+migration preparation, knowledge-base/AI state boundaries, and document
+consolidation. Step 5 (schema registry/discovery) remains pending.
 
 ## Purpose
 
@@ -23,16 +23,17 @@ Detailed OpenSpec changes govern each implementation slice.
 - Feature implementations are distributed across broad `service`, `domain`,
   `repository`, `controller`, and infrastructure packages, alongside narrower
   feature-oriented packages.
-- `DocumentProcessingService` coordinates stages but also assembles collaborators
-  and handles application state, profile selection, and lifecycle checks.
+- `DocumentProcessingService` coordinates injected stages and handles application
+  state, profile selection, and lifecycle checks; bootstrap owns stage assembly.
 - Reprocessing preparation, execution, and recovery now use schemas-owned ports;
   documents owns preparation facts and processing inspection behind capabilities.
 - Knowledge-base document counts/cleanup and AI stored embeddings/assignments now
   use owned ports and immutable capability mappings. AI owns deterministic rules;
   AI profile persistence no longer reads knowledge-base state.
-- `EmbeddingSpacePolicy` delegates to AI compatibility for frozen processing,
-  migration-preparation, and search callers (retirement in steps 4/8); historical
-  value/identity bridges and legacy `TokenizerId` support retire in steps 4/8/9.
+- `EmbeddingSpacePolicy` delegates to AI compatibility only for frozen search
+  callers (retirement in step 8); documents uses AI compatibility directly.
+  Historical value/identity bridges and legacy `TokenizerId` support retire in
+  steps 8/9.
 - Search run management directly reads schema and knowledge-base repositories.
 - Draft evaluation reads and prepares documents but must never persist its dry
   extraction to the knowledge-base graph.
@@ -200,3 +201,27 @@ Later proposals should be grounded in contracts actually established by changes
 - [Document migration preparation](../openspec/changes/archive/2026-10-01-isolate-document-migration-preparation/proposal.md)
 
 - [Knowledge-base and AI state dependencies](../openspec/changes/archive/2026-10-01-separate-knowledge-base-ai-state-dependencies/proposal.md) (implemented and archived step 3)
+
+- [Document consolidation](../openspec/changes/archive/2026-10-01-consolidate-documents/proposal.md) (implemented step 4)
+
+## Step-5 handoff from document consolidation
+
+Document API, management/processing workflows, pure rules, ports, and owned
+adapters now live under `documents`; processing assembly lives in
+`bootstrap.DocumentsProcessingConfiguration`. Exact remaining edges and their
+retirement steps 5–9 are recorded in `ArchitectureBoundaryTest`.
+
+For the pending registry/discovery change, `DiscoverySourcePreparer` currently
+uses `documents.application.management.DocumentUploadService`,
+`documents.application.processing.DocumentParsingService`, `documents.domain.DocumentUploadNode`,
+and `documents.ports.DocumentUploadRepository`. Map these owned inputs through
+the planned `DocumentSourceInputs` capability rather than restoring legacy
+package dependencies. `documents.application.processing.GraphExtractionService`
+still uses `ActiveSchemaResolver`/`ActiveSchemaContext` and the mutable schema
+record; replace this frozen step-5 edge with the proposed revision-aware
+`SchemaSnapshots` capability. `documents.ports.DocumentGraphWriter` and
+`GraphExtractionClient` carry `schema.SchemaDocument`; coordinate snapshot/model
+mapping while preserving extraction target checks and schema JSON behavior.
+`service.ChunkMigrationSnapshot` remains schema-owned. Draft/evaluation, search,
+and support consumers keep their separately frozen steps 6–9; step 5 must not
+broaden them or reopen completed reprocessing/knowledge-base/AI boundaries.

@@ -1,6 +1,9 @@
 package io.github.vfedoriv.graphrag.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.repository.Neo4jDocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.adapters.relational.entity.DocumentUploadEntity;
+import io.github.vfedoriv.graphrag.documents.adapters.relational.repository.JpaDocumentUploadRepository;
 
 import org.neo4j.driver.Driver;
 import org.springframework.beans.factory.ObjectProvider;
@@ -27,14 +30,14 @@ import io.github.vfedoriv.graphrag.repository.GraphRepositoryMarker;
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
-@EntityScan(basePackageClasses = RelationalEntityMarker.class)
+@EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class})
 @EnableJpaRepositories(
-    basePackageClasses = RelationalRepositoryMarker.class,
+    basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class},
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"
 )
 @EnableNeo4jRepositories(
-    basePackageClasses = GraphRepositoryMarker.class,
+    basePackageClasses = {GraphRepositoryMarker.class, Neo4jDocumentChunkRepository.class},
     neo4jTemplateRef = "neo4jTemplate",
     transactionManagerRef = "neo4jTransactionManager"
 )

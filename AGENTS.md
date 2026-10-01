@@ -72,7 +72,7 @@ recovery predicate, all-owned classification scope, snapshot formats, and
 separation of relational checkpoints from external processing. Synchronous
 preparation reads participate in the caller's transactions; integration adapters
 only map immutable values and add no transactions. AI compatibility uses AI-owned
-rules and stored-observation ports; full feature relocation remains deferred.
+rules and stored-observation ports; document ownership is consolidated.
 See [architecture](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
 
 Knowledge-base deletion reads document counts and requests scoped cleanup through
@@ -84,8 +84,21 @@ compatibility under `ai.domain` and admission through `EmbeddingCompatibility`;
 `AiProfileAssignmentsFacade`; AI profile persistence reads only profiles.
 Synchronous count/assignment reads join caller transactions. Cleanup failure
 prevents relational deletion but may leave earlier external effects.
-`EmbeddingSpacePolicy` remains a delegating bridge for processing, migration
-preparation, and search; its exact callers are frozen by architecture tests.
+`EmbeddingSpacePolicy` remains a delegating bridge only for
+`AdvancedSearchReadinessService` and `DenseTextRetriever` (roadmap step 8);
+architecture tests freeze its exact callers. Document processing and migration
+preparation use AI-owned `EmbeddingCompatibility` and immutable `EmbeddingTarget`.
+
+Document ownership is consolidated under `documents`: API entry points and models
+in `api`, management and processing workflows in `application`, deterministic
+values/rules in `domain`, effect and persistence contracts in `ports`, and owned
+relational, graph, parsing, model, chunking, and binary integrations in `adapters`.
+`bootstrap.DocumentsProcessingConfiguration` assembles processing stages.
+Shared draft binary storage remains in `storage`. Relational checkpoints remain
+separate from external processing; there is no enclosing cross-store transaction.
+Exact transitional dependencies carry retirement steps 5–9 in
+`ArchitectureBoundaryTest`; schema registry/discovery boundaries (step 5) remain
+pending.
 
 Main controllers:
 - `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, review-only multi-source discovery, example generation, KB schema listing)

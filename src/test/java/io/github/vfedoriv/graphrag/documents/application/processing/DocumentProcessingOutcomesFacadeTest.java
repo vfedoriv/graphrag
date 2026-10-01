@@ -1,9 +1,9 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentProcessingOutcomes;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

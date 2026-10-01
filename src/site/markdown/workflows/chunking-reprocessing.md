@@ -70,7 +70,14 @@ Each item is independently `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `STALE_SO
 
 List and poll plans through the reprocessing-plan routes. Retry creates a linked plan and requires `{"mode":"RESNAPSHOT_UNRESOLVED"}`; matching successes remain complete while unresolved sources are deliberately resnapshotted. Startup recovery interrupts abandoned queued/running work and keeps it auditable/retryable.
 
-Implementation: `ChunkingStateController`, `ChunkMigrationController`, `ChunkingStateService`, `ChunkingService`, `RecursiveTokenAwareChunkingStrategy`, `FixedCharacterChunkingStrategy`, `SchemaReprocessingPlanController`, and `SchemaReprocessingPlanService`.
+Implementation: `documents.api.ChunkingStateController`,
+`documents.application.management.ChunkingStateService`,
+`documents.application.processing.ChunkingService`, deterministic strategies under
+`documents.domain.chunking`, parser/tokenizer integrations under `documents.adapters`,
+and schema-owned `ChunkMigrationController`, `SchemaReprocessingPlanController`,
+`SchemaReprocessingPlanService`, and durable migration snapshots. Document
+consolidation (step 4) is implemented; registry/discovery boundaries (step 5)
+remain pending. See [document ownership](../concepts/architecture.md#document-ownership).
 
 Preparation and target inspection run through schemas-owned consumer ports and
 `DocumentMigrationPreparationFacade`. Documents resolves parser/options, captures
@@ -80,5 +87,5 @@ facts and rejects changed targets or blockers before saving plans/items. Existin
 canonical snapshots and historical execution inputs remain compatible. Schemas
 retains selection policy, retry lineage, destructive-plan exclusion, and scheduling
 after commit. The reprocessing boundary is fully enforced without preparation
-exceptions; general AI compatibility extraction and full feature relocation remain
-deferred. See the [architecture boundary](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+exceptions. AI compatibility uses AI-owned rules and stored-observation ports;
+document ownership is consolidated. See the [architecture boundary](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).

@@ -1,16 +1,16 @@
 package io.github.vfedoriv.graphrag.documents.application.lifecycle;
 
 import io.github.vfedoriv.graphrag.documents.contracts.KnowledgeBaseDocuments;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.service.GraphArtifactCleanupService;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentArtifactCleanup;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KnowledgeBaseDocumentsFacade implements KnowledgeBaseDocuments {
     private final DocumentUploadRepository documents;
-    private final GraphArtifactCleanupService cleanup;
+    private final DocumentArtifactCleanup cleanup;
 
-    public KnowledgeBaseDocumentsFacade(DocumentUploadRepository documents, GraphArtifactCleanupService cleanup) {
+    public KnowledgeBaseDocumentsFacade(DocumentUploadRepository documents, DocumentArtifactCleanup cleanup) {
         this.documents = documents;
         this.cleanup = cleanup;
     }

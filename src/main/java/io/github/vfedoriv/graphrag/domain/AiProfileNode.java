@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.domain;
 
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
 import java.time.Instant;
 
 public class AiProfileNode {

@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.support;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.bootstrap.integration.ai.StoredEmbeddingInformationAdapter;
 import io.github.vfedoriv.graphrag.documents.application.inspection.StoredEmbeddingsFacade;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy;
 
 public final class AiBoundaryTestSupport {

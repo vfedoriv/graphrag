@@ -2,12 +2,12 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkTopology;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkTopologyAuditRow;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.DocumentChunkPersistenceAdapter;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.DocumentChunkTopology;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.DocumentChunkTopologyAuditRow;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.DocumentChunkPersistenceAdapter;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -205,7 +205,7 @@ class DocumentChunkRepositoryIntegrationTest {
 
     @Test
     void replacementTransitionsBetweenFlatAndHierarchyWithoutStaleTopology() {
-        EmbeddingSpace embeddingSpace = new EmbeddingSpace("space", "provider", "model", 3, "tokenizer");
+        EmbeddingTarget embeddingSpace = new EmbeddingTarget("space", "provider", "model", 3, "tokenizer");
         DocumentChunkNode firstFlat = transitionChunk("flat-1", "CHILD", null, null, 0);
         chunkPersistenceAdapter.replace("transition-doc", "kb-1", embeddingSpace, List.of(firstFlat));
         assertThat(chunkPersistenceAdapter.classifyDocumentTopology("transition-doc"))
@@ -213,7 +213,7 @@ class DocumentChunkRepositoryIntegrationTest {
 
         DocumentChunkNode parent = transitionChunk("parent-1", "PARENT", null, null, 0);
         parent.setText("parent text");
-        parent.setSourceHash(io.github.vfedoriv.graphrag.document.chunking.ChunkHashes.sha256(parent.getText()));
+        parent.setSourceHash(io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkHashes.sha256(parent.getText()));
         parent.setChildCount(1);
         DocumentChunkNode child = transitionChunk("child-1", "CHILD", "parent-1", 0, 1);
         chunkPersistenceAdapter.replace("transition-doc", "kb-1", embeddingSpace, List.of(parent, child));

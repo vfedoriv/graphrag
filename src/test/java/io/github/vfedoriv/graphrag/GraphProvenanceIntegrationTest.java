@@ -1,14 +1,12 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
-import io.github.vfedoriv.graphrag.graph.GraphWriteService;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphWriteService;
 import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.service.GraphArtifactCleanupService;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)

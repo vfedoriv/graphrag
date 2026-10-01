@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.CitationType;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Evidence;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchCitationCatalog.Catalog;
 import java.util.List;
 import java.util.Map;

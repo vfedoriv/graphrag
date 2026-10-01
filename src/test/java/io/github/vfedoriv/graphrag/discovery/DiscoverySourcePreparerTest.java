@@ -5,14 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.document.DocumentParsingService;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.TextSource;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.time.Duration;

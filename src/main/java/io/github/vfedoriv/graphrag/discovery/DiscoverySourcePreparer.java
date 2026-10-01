@@ -1,16 +1,16 @@
 package io.github.vfedoriv.graphrag.discovery;
 
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.ConceptRule;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.PropertyRule;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.RelationshipRule;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.document.DocumentParsingService;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.io.IOException;

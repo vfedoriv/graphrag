@@ -1,22 +1,24 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.config.SchemaDraftEvaluationProperties;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
-import io.github.vfedoriv.graphrag.document.DocumentParsingService;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionValidationService;
+import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.documents.application.processing.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationOutcomeRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;

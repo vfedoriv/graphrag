@@ -1,22 +1,19 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentMigrationPreparation;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
-import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.application.processing.ProcessingOptionResolver;
-import io.github.vfedoriv.graphrag.application.processing.ProcessingJsonCodec;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingOptionsRegistry;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingOptionSet;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
+import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
@@ -34,11 +31,11 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
     private final DocumentProcessingRunRepository runs;
     private final ProcessingOptionResolver options;
     private final ChunkingService chunking;
-    private final EmbeddingSpacePolicy embedding;
+    private final EmbeddingCompatibility embedding;
 
     public DocumentMigrationPreparationFacade(DocumentUploadRepository documents, DocumentChunkRepository chunks,
         DocumentProcessingRunRepository runs, DocumentProcessingOptionsRegistry registry, ChunkingService chunking,
-        EmbeddingSpacePolicy embedding, ObjectMapper mapper) {
+        EmbeddingCompatibility embedding, ObjectMapper mapper) {
         this.documents = documents;
         this.chunks = chunks;
         this.runs = runs;
@@ -69,7 +66,8 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
     @Override
     public Identity identity(Profile captured) {
         AiProfileNode profile = profile(captured);
-        return new Identity(embedding.spaceFor(profile).id(), chunking.migrationTargetRevision(profile));
+        return new Identity(EmbeddingTarget.derive(profile.getBaseUrl(), profile.getEmbeddingModel(),
+            profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()).id(), chunking.migrationTargetRevision(profile));
     }
 
     @Override
@@ -81,8 +79,10 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
         Blocker blocker = null;
         try {
             revision = chunking.migrationTargetRevision(profile);
-            space = embedding.spaceFor(profile).id();
-            embedding.requireCompatible(knowledgeBaseId, profile);
+            space = EmbeddingTarget.derive(profile.getBaseUrl(), profile.getEmbeddingModel(),
+            profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()).id();
+            embedding.requireCompatible(knowledgeBaseId, EmbeddingTarget.derive(profile.getBaseUrl(),
+                profile.getEmbeddingModel(), profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()));
             ChunkMigrationSnapshot.ChunkTarget chunk = chunking.snapshotTarget(profile);
             target = new DocumentReprocessing.ChunkTarget(
                 chunk.strategyName(), chunk.strategyRevision(), chunk.targetTokens(), chunk.overlapTokens(),

@@ -7,10 +7,10 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.R
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Subquery;
-import io.github.vfedoriv.graphrag.domain.DocumentStatus;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.service.DenseTextRetriever;
 import io.github.vfedoriv.graphrag.service.DocumentMetadataTextRetriever;

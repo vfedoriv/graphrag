@@ -1,23 +1,21 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.query.CypherGenerationClient;
 import io.github.vfedoriv.graphrag.query.GeneratedCypher;
 import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingService;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -34,7 +32,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @Import({TestcontainersConfiguration.class, EndToEndMvpFlowIntegrationTest.DeterministicAiTestConfig.class})

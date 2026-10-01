@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.documents.application.inspection;
 
 import io.github.vfedoriv.graphrag.documents.contracts.StoredEmbeddings;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

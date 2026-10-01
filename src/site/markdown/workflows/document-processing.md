@@ -64,4 +64,10 @@ Persisted kinds are `PARENT` and `CHILD`; virtual `FLAT` selects child chunks wi
 
 Partial processing failures record `FAILED` and a safe error message, remove partially produced chunks/extraction artifacts where required, and preserve the original binary for retry. Overwrite first removes obsolete completed-run evidence/relationships, then writes the new attempt. Application logs include identifiers, counts, hashes/fingerprints, status, timings, and exception class—not document text or extracted payloads.
 
-Implementation: `DocumentController`, `DocumentUploadService`, `DocumentProcessingService`, the processing stages, `GraphExtractionService`, `GraphExtractionValidationService`, `GraphWriteService`, and `GraphArtifactCleanupService`.
+Implementation: `documents.api.DocumentController`, management workflows under
+`documents.application.management`, processing stages/extraction/recovery under
+`documents.application.processing`, and graph-write/cleanup implementations under
+`documents.adapters.graph`. Binary effects use a document-owned adapter around
+shared storage. `bootstrap.DocumentsProcessingConfiguration` assembles stages;
+run checkpoints and external effects retain their existing separate boundaries.
+See [document ownership](../concepts/architecture.md#document-ownership).

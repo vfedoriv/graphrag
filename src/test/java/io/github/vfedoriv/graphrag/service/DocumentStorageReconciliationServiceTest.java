@@ -1,5 +1,10 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
+
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentStorageMutationService;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentStorageReconciliationService;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -7,15 +12,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
-import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationState;
-import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationType;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.repository.DocumentStorageMutationRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationState;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationType;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentStorageMutationRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.storage.BinaryStorageService;
+import io.github.vfedoriv.graphrag.documents.adapters.binary.DocumentBinaryStorageAdapter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.List;
@@ -38,10 +43,9 @@ class DocumentStorageReconciliationServiceTest {
         mutation.setContentUri(orphan.toUri().toString());
         when(mutationRepository.claimPending(anyString(), any(), any(), anyInt())).thenReturn(List.of(mutation));
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.empty());
-        when(binaryStorageService.resolvePath(orphan.toUri())).thenReturn(orphan);
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
         DocumentStorageReconciliationService service = new DocumentStorageReconciliationService(
-            mutationRepository, documentUploadRepository, mutationService, binaryStorageService,
+            mutationRepository, documentUploadRepository, mutationService, new DocumentBinaryStorageAdapter(binaryStorageService),
             mock(GraphArtifactCleanupService.class), new SimpleMeterRegistry()
         );
 
@@ -65,7 +69,7 @@ class DocumentStorageReconciliationServiceTest {
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(document));
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
         DocumentStorageReconciliationService service = new DocumentStorageReconciliationService(
-            mutationRepository, documentUploadRepository, mutationService, mock(BinaryStorageService.class),
+            mutationRepository, documentUploadRepository, mutationService, new DocumentBinaryStorageAdapter(mock(BinaryStorageService.class)),
             cleanupService, new SimpleMeterRegistry()
         );
 
@@ -90,7 +94,7 @@ class DocumentStorageReconciliationServiceTest {
         when(binaryStorageService.resolvePath(replacedContent.toUri())).thenReturn(replacedContent);
         when(mutationRepository.deleteCompletedBefore(any())).thenReturn(0L);
         DocumentStorageReconciliationService service = new DocumentStorageReconciliationService(
-            mutationRepository, documentUploadRepository, mutationService, binaryStorageService,
+            mutationRepository, documentUploadRepository, mutationService, new DocumentBinaryStorageAdapter(binaryStorageService),
             mock(GraphArtifactCleanupService.class), new SimpleMeterRegistry()
         );
 

@@ -1,11 +1,12 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.documents.domain.options.ImmutableDocumentProcessingInput;
+
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.DocumentStatus;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.service.*;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.Optional;
@@ -82,10 +83,10 @@ class DocumentReprocessingFacadeTest {
         assertThat(facade.sourceMatches(new DocumentReprocessing.Source("kb", "doc", "hash"))).isTrue();
         io.github.vfedoriv.graphrag.domain.AiProfileNode profile = new io.github.vfedoriv.graphrag.domain.AiProfileNode();
         when(profiles.aiProfile("captured-profile")).thenReturn(profile);
-        io.github.vfedoriv.graphrag.document.chunking.ChunkingContext context =
-            io.github.vfedoriv.graphrag.document.chunking.ChunkingContext.create(
+        io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext context =
+            io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext.create(
                 "recursive", "recursive-v1", 800, 80, 4000,
-                new io.github.vfedoriv.graphrag.document.chunking.Utf8ByteTokenEstimator(), "parser-v1", "representation-v1");
+                new io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator(), "parser-v1", "representation-v1");
         DocumentReprocessing.ChunkTarget target = new DocumentReprocessing.ChunkTarget(
             "recursive", "recursive-v1", 800, 80, 4000, 1000, 5000, 3, 40, 200,
             "utf8-byte-v1", "tokenizer-v1", "CONSERVATIVE", "representation-v1", "settings");

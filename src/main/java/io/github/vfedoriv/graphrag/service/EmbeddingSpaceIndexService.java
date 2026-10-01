@@ -1,6 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
 import java.util.Map;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,11 @@ public class EmbeddingSpaceIndexService {
     }
 
     public void ensureIndex(String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
+        ensureIndex(knowledgeBaseId, new EmbeddingTarget(embeddingSpace.id(), embeddingSpace.normalizedBaseUrl(),
+            embeddingSpace.model(), embeddingSpace.dimensions(), embeddingSpace.tokenizerId()));
+    }
+
+    public void ensureIndex(String knowledgeBaseId, EmbeddingTarget embeddingSpace) {
         String indexName = indexName(knowledgeBaseId, embeddingSpace.id());
         String labelName = labelName(knowledgeBaseId, embeddingSpace.id());
         neo4jClient.query("""
@@ -44,6 +50,11 @@ public class EmbeddingSpaceIndexService {
     }
 
     public void assignChunk(String chunkId, String knowledgeBaseId, EmbeddingSpace embeddingSpace) {
+        assignChunk(chunkId, knowledgeBaseId, new EmbeddingTarget(embeddingSpace.id(), embeddingSpace.normalizedBaseUrl(),
+            embeddingSpace.model(), embeddingSpace.dimensions(), embeddingSpace.tokenizerId()));
+    }
+
+    public void assignChunk(String chunkId, String knowledgeBaseId, EmbeddingTarget embeddingSpace) {
         String labelName = labelName(knowledgeBaseId, embeddingSpace.id());
         neo4jClient.query("""
             MATCH (chunk:DocumentChunk {

@@ -1,13 +1,15 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+
 import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
 import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
-import io.github.vfedoriv.graphrag.document.DocumentParsingService;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceType;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.storage.BinaryStorageService;
 import java.io.InputStream;
 import java.net.URI;

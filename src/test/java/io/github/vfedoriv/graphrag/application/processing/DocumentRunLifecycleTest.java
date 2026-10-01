@@ -1,23 +1,26 @@
 package io.github.vfedoriv.graphrag.application.processing;
 
+import io.github.vfedoriv.graphrag.documents.application.processing.ExtractionRunLifecycle;
+import io.github.vfedoriv.graphrag.documents.application.processing.ProcessingRunLifecycle;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunStatus;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.document.chunking.FixedCharacterChunkingStrategy;
-import io.github.vfedoriv.graphrag.document.chunking.Utf8ByteTokenEstimator;
-import io.github.vfedoriv.graphrag.domain.ExtractionRunNode;
-import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
-import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.service.DocumentFormatDetection;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingOptionSet;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
+import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunStatus;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.documents.domain.options.DocumentFormatDetection;
+import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

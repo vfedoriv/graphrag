@@ -1,9 +1,14 @@
 package io.github.vfedoriv.graphrag.document.chunking;
 
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSlice;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.document.ParsedSection;
+import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedSection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

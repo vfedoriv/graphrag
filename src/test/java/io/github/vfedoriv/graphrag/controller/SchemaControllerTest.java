@@ -20,7 +20,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
-import io.github.vfedoriv.graphrag.document.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
 import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaFormat;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;

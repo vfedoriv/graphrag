@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.infrastructure.persistence.relational;
 
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.AiProfileEntity;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;

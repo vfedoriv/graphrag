@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.ai;
 
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
+
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -10,11 +14,11 @@ import io.github.vfedoriv.graphrag.bootstrap.integration.knowledgebase.Knowledge
 import io.github.vfedoriv.graphrag.documents.application.inspection.StoredEmbeddingsFacade;
 import io.github.vfedoriv.graphrag.documents.application.lifecycle.KnowledgeBaseDocumentsFacade;
 import io.github.vfedoriv.graphrag.documents.contracts.*;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
 import io.github.vfedoriv.graphrag.knowledgebase.application.AiProfileAssignmentsFacade;
 import io.github.vfedoriv.graphrag.repository.*;
-import io.github.vfedoriv.graphrag.service.GraphArtifactCleanupService;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

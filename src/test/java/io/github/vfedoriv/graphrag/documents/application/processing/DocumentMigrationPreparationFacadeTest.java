@@ -1,14 +1,23 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
+
+import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
+import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
+
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.bootstrap.integration.reprocessing.ReprocessingDocumentPreparationAdapter;
-import io.github.vfedoriv.graphrag.documents.contracts.DocumentMigrationPreparation;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
 import io.github.vfedoriv.graphrag.domain.*;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingDocumentPreparation;
 import io.github.vfedoriv.graphrag.service.*;
 import java.time.Instant;
@@ -25,7 +34,7 @@ class DocumentMigrationPreparationFacadeTest {
     private final DocumentProcessingRunRepository runs = mock(DocumentProcessingRunRepository.class);
     private final RuntimeSettingsService runtime = mock(RuntimeSettingsService.class);
     private final ChunkingService chunking = new ChunkingService(runtime);
-    private final EmbeddingSpacePolicy embedding = io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.bridge(chunks);
+    private final EmbeddingCompatibility embedding = io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.compatibility(chunks);
     private final DocumentMigrationPreparationFacade facade = new DocumentMigrationPreparationFacade(
         documents, chunks, runs, new DocumentProcessingOptionsRegistry(), chunking, embedding, new ObjectMapper());
     private final ReprocessingDocumentPreparationAdapter adapter = new ReprocessingDocumentPreparationAdapter(facade);
@@ -90,14 +99,15 @@ class DocumentMigrationPreparationFacadeTest {
         SchemaDraftJsonSupport json = new SchemaDraftJsonSupport(mapper);
         ChunkMigrationSnapshot.ChunkTarget chunk = mapper.convertValue(inspection.chunkTarget(), ChunkMigrationSnapshot.ChunkTarget.class);
         ChunkMigrationSnapshot.DocumentTarget target = mapper.convertValue(prepared.target(), ChunkMigrationSnapshot.DocumentTarget.class);
-        DocumentProcessingOptionSet legacyOptions = new io.github.vfedoriv.graphrag.application.processing.ProcessingOptionResolver(
-            new DocumentProcessingOptionsRegistry(), new io.github.vfedoriv.graphrag.application.processing.ProcessingJsonCodec(mapper))
+        DocumentProcessingOptionSet legacyOptions = new io.github.vfedoriv.graphrag.documents.application.processing.ProcessingOptionResolver(
+            new DocumentProcessingOptionsRegistry(), new io.github.vfedoriv.graphrag.documents.application.processing.ProcessingJsonCodec(mapper))
             .resolve(source, Map.of("preserveLineBreaks", true));
-        io.github.vfedoriv.graphrag.document.chunking.ChunkingContext legacy = chunking.snapshot(profile(), "text");
+        io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext legacy = chunking.snapshot(profile(), "text");
         ChunkMigrationSnapshot.DocumentTarget expected = new ChunkMigrationSnapshot.DocumentTarget(
             "hash-a", "text", legacy.parserRevision(), "TXT", legacy.effectiveRevision().value(), legacyOptions.effectiveOptions());
         ChunkMigrationSnapshot before = new ChunkMigrationSnapshot("target-revision", ChunkReprocessingSelection.ALL,
-            chunking.snapshotTarget(profile()), "profile", 7, embedding.spaceFor(profile()).id(), "schema", "schema-hash", Map.of("a", expected));
+            chunking.snapshotTarget(profile()), "profile", 7, io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
+            profile().getEmbeddingDimensions(), profile().getTokenizerId() == null ? null : profile().getTokenizerId().value()).id(), "schema", "schema-hash", Map.of("a", expected));
         ChunkMigrationSnapshot after = new ChunkMigrationSnapshot(inspection.targetRevision(), ChunkReprocessingSelection.ALL,
             chunk, captured.id(), captured.revision(), inspection.embeddingSpaceId(), "schema", "schema-hash", Map.of("a", target));
         assertThat(json.canonical(after)).isEqualTo(json.canonical(before));
@@ -119,7 +129,8 @@ class DocumentMigrationPreparationFacadeTest {
         ReprocessingDocumentPreparation.Inspection inspection = adapter.inspect("kb", captured);
         assertThat(inspection.blocker().code()).isEqualTo("EMBEDDING_SPACE_INCOMPATIBLE");
         assertThat(inspection.targetRevision()).isEqualTo("target-revision");
-        assertThat(inspection.embeddingSpaceId()).isEqualTo(embedding.spaceFor(profile()).id());
+        assertThat(inspection.embeddingSpaceId()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
+            profile().getEmbeddingDimensions(), profile().getTokenizerId() == null ? null : profile().getTokenizerId().value()).id());
         assertThat(inspection.chunkTarget()).isNull();
         when(runtime.effectiveChunkerRevision()).thenReturn("changed");
         assertThat(adapter.identity(captured).targetRevision()).isEqualTo("changed");

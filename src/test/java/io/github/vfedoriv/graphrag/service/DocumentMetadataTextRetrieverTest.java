@@ -9,8 +9,8 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.M
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Request;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.SourceIdentity;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.TextChunkRetrievalRepository;
 import io.github.vfedoriv.graphrag.repository.TextChunkRetrievalRepository.RawCandidate;
 import java.time.Instant;
