@@ -195,8 +195,10 @@ class AiProfileServiceTest {
     void deleteRejectsDefaultAndAssignedProfiles() {
         Map<String, AiProfileNode> store = new LinkedHashMap<>();
         AiProfileRepository repository = repository(store);
-        when(repository.existsKnowledgeBaseAssignment("profile-1")).thenReturn(true);
-        AiProfileService service = new AiProfileService(repository, appProperties(), new EmptyObjectProvider<>());
+        io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments assignments = mock(io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments.class);
+        when(assignments.exists("profile-1")).thenReturn(true);
+        AiProfileService service = new AiProfileService(repository, appProperties(), new EmptyObjectProvider<>(),
+            new io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility(id -> List.of()), assignments);
         service.seedDefaultProfile();
         service.create(new CreateAiProfileRequest(
             "profile-1",
@@ -225,11 +227,15 @@ class AiProfileServiceTest {
         Map<String, AiProfileNode> store = new LinkedHashMap<>();
         AiProfileRepository profileRepository = repository(store);
         DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
+        io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments assignments = mock(io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments.class);
+        org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> modelFactories = mock(org.springframework.beans.factory.ObjectProvider.class);
+        AiRuntimeModelFactory modelFactory = mock(AiRuntimeModelFactory.class);
+        when(modelFactories.getIfAvailable()).thenReturn(modelFactory);
         AiProfileService service = new AiProfileService(
             profileRepository,
             appProperties(),
-            new EmptyObjectProvider<>(),
-            new EmbeddingSpacePolicy(chunkRepository)
+            modelFactories,
+            io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.compatibility(chunkRepository), assignments
         );
         service.create(new CreateAiProfileRequest(
             "shared",
@@ -243,33 +249,42 @@ class AiProfileServiceTest {
             null,
             false
         ));
+        org.mockito.Mockito.clearInvocations(modelFactory);
         DocumentChunkNode chunk = new DocumentChunkNode();
         chunk.setId("chunk-1");
         chunk.setEmbeddingSpaceId(EmbeddingSpaceIdentity.derive("https://api.openai.com/v1", "embed", 768).id());
-        when(profileRepository.findAssignedKnowledgeBaseIds("shared")).thenReturn(List.of("kb-1", "kb-2"));
+        when(assignments.knowledgeBaseIds("shared")).thenReturn(List.of("kb-1", "kb-2"));
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk));
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-2")).thenReturn(List.of(chunk));
 
         assertThatThrownBy(() -> service.update("shared", new UpdateAiProfileRequest(
-            "Shared",
+            "Changed shared profile",
             "https://other-provider.example/v1",
-            null,
+            "changed-key",
             false,
             "chat",
             "embed",
             768,
             null,
             null,
-            false
+            true
         ))).isInstanceOf(EmbeddingSpaceConflictException.class)
             .hasMessageContaining("assigned knowledge bases");
 
         assertThat(store.get("shared").getBaseUrl()).isEqualTo("https://api.openai.com/v1");
         assertThat(store.get("shared").getRevision()).isEqualTo(1);
+        assertThat(store.get("shared").getName()).isEqualTo("Shared");
+        assertThat(store.get("shared").isDefaultProfile()).isFalse();
+        assertThat(store.get("shared").getApiKey()).isNull();
+        verify(profileRepository, never()).unsetDefaultProfileForOthers("shared");
+        verify(profileRepository).save(any(AiProfileNode.class));
+        verify(modelFactory, never()).invalidate(anyString());
     }
 
     private AiProfileService service(Map<String, AiProfileNode> store) {
-        return new AiProfileService(repository(store), appProperties(), new EmptyObjectProvider<>());
+        return new AiProfileService(repository(store), appProperties(), new EmptyObjectProvider<>(),
+            new io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility(id -> List.of()),
+            mock(io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments.class));
     }
 
     private AiProfileRepository repository(Map<String, AiProfileNode> store) {

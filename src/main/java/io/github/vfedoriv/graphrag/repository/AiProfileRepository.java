@@ -22,7 +22,4 @@ public interface AiProfileRepository {
 
     Long unsetDefaultProfileForOthers(String profileId);
 
-    Boolean existsKnowledgeBaseAssignment(String profileId);
-
-    List<String> findAssignedKnowledgeBaseIds(String profileId);
 }

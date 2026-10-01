@@ -5,7 +5,6 @@ import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.AiProfileEntity;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
 import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -14,14 +13,11 @@ import org.springframework.stereotype.Repository;
 public class RelationalAiProfileRepository implements AiProfileRepository {
 
     private final JpaAiProfileRepository repository;
-    private final KnowledgeBaseRepository knowledgeBaseRepository;
 
     public RelationalAiProfileRepository(
-        JpaAiProfileRepository repository,
-        KnowledgeBaseRepository knowledgeBaseRepository
+        JpaAiProfileRepository repository
     ) {
         this.repository = repository;
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
     }
 
     @Override
@@ -63,16 +59,6 @@ public class RelationalAiProfileRepository implements AiProfileRepository {
     @Override
     public Long unsetDefaultProfileForOthers(String profileId) {
         return (long) repository.unsetDefaultProfileForOthers(profileId);
-    }
-
-    @Override
-    public Boolean existsKnowledgeBaseAssignment(String profileId) {
-        return knowledgeBaseRepository.existsAiProfileAssignment(profileId);
-    }
-
-    @Override
-    public List<String> findAssignedKnowledgeBaseIds(String profileId) {
-        return knowledgeBaseRepository.findIdsByActiveAiProfileId(profileId);
     }
 
     private AiProfileEntity toEntity(AiProfileNode source) {

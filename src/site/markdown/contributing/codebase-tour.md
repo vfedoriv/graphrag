@@ -6,12 +6,15 @@ GraphRAG is a Java 25 / Spring Boot 4.1.0 REST API. Controllers are thin; busine
 
 ```text
 src/main/java/io/github/vfedoriv/graphrag/
+  ai/domain, application, ports  embedding rules, admission, and stored-state ports
   application/processing   staged document-processing pipeline
+  bootstrap/integration/ai, knowledgebase  document/assignment capability mapping
   bootstrap/integration/reprocessing  schema/document contract mapping
   config                   validated startup/runtime configuration
   controller               REST endpoints and OpenAPI annotations
   document                 parsing/chunking and structural source model
-  documents/contracts      public preparation, execution, and outcome capabilities
+  documents/contracts      public preparation, execution, outcome, and stored-state capabilities
+  documents/application/inspection, lifecycle  embedding observations, counts, cleanup
   documents/application/processing  transitional facades over legacy processing
   domain                   operational and graph domain types
   dto                      API request/response contracts
@@ -19,6 +22,7 @@ src/main/java/io/github/vfedoriv/graphrag/
   error                    RFC 7807 exception mapping
   graph                    extraction validation/write/cleanup
   infrastructure           PostgreSQL, Neo4j, storage, and AI adapters
+  knowledgebase/ports, contracts, application  lifecycle ports and assignment lookup
   llm / query              model contracts and Cypher client adapters
   observability            AI workflow/model observations and metrics
   repository               persistence ports
@@ -55,9 +59,20 @@ inspection. Schemas keeps selection policy, schema checks, durable snapshot
 assembly, preview aggregation, retry lineage, and plan persistence. Preview and
 creation use the same read-only preparation; classification remains all-owned.
 Architecture tests enforce this completed reprocessing boundary with no
-preparation exceptions. General AI compatibility extraction and full feature
-relocation remain deferred. See the
+preparation exceptions. AI compatibility uses AI-owned rules and stored-observation ports; full feature
+relocation remains deferred. See the
 [architecture boundary details](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
+For knowledge-base deletion, follow `OwnedDocumentState` and
+`KnowledgeBaseArtifactCleanup` through `KnowledgeBaseDocumentsAdapter` to
+`KnowledgeBaseDocumentsFacade`. For profile compatibility, follow
+`EmbeddingCompatibility` into `ai.domain` and the stored-observation port mapped
+to `StoredEmbeddingsFacade`. For profile assignments, follow `ProfileAssignments`
+through its adapter to `AiProfileAssignmentsFacade`. AI persistence owns profiles
+only. The repository-free `EmbeddingSpacePolicy` bridge still serves the exact
+processing/preparation/search callers listed in the
+[AI boundary details](../concepts/architecture.md#knowledge-base-lifecycle-and-ai-state-boundaries).
+Full document and registry/discovery consolidation remain roadmap steps 4/5.
 
 ## High-risk invariants
 

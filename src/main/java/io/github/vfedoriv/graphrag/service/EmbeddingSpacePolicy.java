@@ -1,21 +1,19 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 
+/** Transitional value-mapping bridge for processing, migration preparation, and search. */
 @Service
 public class EmbeddingSpacePolicy {
+    private final EmbeddingCompatibility compatibility;
 
-    private final DocumentChunkRepository documentChunkRepository;
-
-    public EmbeddingSpacePolicy(DocumentChunkRepository documentChunkRepository) {
-        this.documentChunkRepository = documentChunkRepository;
+    public EmbeddingSpacePolicy(EmbeddingCompatibility compatibility) {
+        this.compatibility = Objects.requireNonNull(compatibility);
     }
 
     public EmbeddingSpace spaceFor(AiProfileNode profile) {
@@ -27,48 +25,18 @@ public class EmbeddingSpacePolicy {
     }
 
     public boolean hasEmbeddedChunks(String knowledgeBaseId) {
-        return !embeddedChunks(knowledgeBaseId).isEmpty();
+        return compatibility.hasEmbeddedChunks(knowledgeBaseId);
     }
 
     public void requireCompatible(String knowledgeBaseId, EmbeddingSpace targetSpace) {
-        List<DocumentChunkNode> chunks = embeddedChunks(knowledgeBaseId);
-        List<String> incompatibleChunkIds = new ArrayList<>();
-        for (DocumentChunkNode chunk : chunks) {
-            String chunkTokenizerId = chunk.getTokenizerId();
-            if (chunkTokenizerId == null || chunkTokenizerId.isBlank()) {
-                chunkTokenizerId = new TokenizerPolicy()
-                    .resolve(null, chunk.getEmbeddingModel())
-                    .tokenizerId()
-                    .value();
-            }
-            if (!targetSpace.id().equals(chunk.getEmbeddingSpaceId())
-                || !targetSpace.tokenizerId().equals(chunkTokenizerId)) {
-                incompatibleChunkIds.add(chunk.getId());
-            }
-        }
-        if (!incompatibleChunkIds.isEmpty()) {
-            throw new EmbeddingSpaceConflictException(
-                "AI profile embedding space is incompatible with stored embeddings in knowledge base "
-                    + knowledgeBaseId + ". Re-embed legacy or incompatible chunks before changing the profile.",
-                List.of(knowledgeBaseId)
-            );
-        }
+        compatibility.requireCompatible(knowledgeBaseId, target(targetSpace));
     }
 
     public List<String> incompatibleKnowledgeBaseIds(List<String> knowledgeBaseIds, EmbeddingSpace targetSpace) {
-        List<String> incompatibleKnowledgeBaseIds = new ArrayList<>();
-        for (String knowledgeBaseId : knowledgeBaseIds) {
-            try {
-                requireCompatible(knowledgeBaseId, targetSpace);
-            } catch (EmbeddingSpaceConflictException ex) {
-                incompatibleKnowledgeBaseIds.add(knowledgeBaseId);
-            }
-        }
-        return incompatibleKnowledgeBaseIds;
+        return compatibility.incompatibleKnowledgeBaseIds(knowledgeBaseIds, target(targetSpace));
     }
 
-    private List<DocumentChunkNode> embeddedChunks(String knowledgeBaseId) {
-        List<DocumentChunkNode> chunks = documentChunkRepository.findEmbeddedChunksByKnowledgeBaseId(knowledgeBaseId);
-        return chunks == null ? List.of() : chunks;
+    private EmbeddingTarget target(EmbeddingSpace space) {
+        return new EmbeddingTarget(space.id(), space.normalizedBaseUrl(), space.model(), space.dimensions(), space.tokenizerId());
     }
 }

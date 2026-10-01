@@ -1,10 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -33,27 +31,9 @@ public final class EmbeddingSpaceIdentity {
         int dimensions,
         TokenizerId explicitTokenizerId
     ) {
-        String normalizedBaseUrl = normalizeBaseUrl(baseUrl);
-        String normalizedModel = model == null ? "" : model.strip();
-        String source = normalizedBaseUrl + "\n" + normalizedModel + "\n" + dimensions;
-        TokenEstimator estimator = new TokenizerPolicy().resolve(explicitTokenizerId, normalizedModel);
-        return new EmbeddingSpace(
-            "es_" + sha256(source),
-            normalizedBaseUrl,
-            normalizedModel,
-            dimensions,
-            estimator.tokenizerId().value()
-        );
-    }
-
-    static String normalizeBaseUrl(String baseUrl) {
-        URI uri = URI.create(baseUrl.strip()).normalize();
-        String scheme = uri.getScheme().toLowerCase();
-        String host = uri.getHost().toLowerCase();
-        int port = uri.getPort();
-        boolean defaultPort = ("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443);
-        String path = uri.getPath() == null ? "" : uri.getPath().replaceAll("/+$", "");
-        return scheme + "://" + host + (port < 0 || defaultPort ? "" : ":" + port) + path;
+        EmbeddingTarget target = EmbeddingTarget.derive(baseUrl, model, dimensions,
+                explicitTokenizerId == null ? null : explicitTokenizerId.value());
+        return new EmbeddingSpace(target.id(), target.normalizedBaseUrl(), target.model(), target.dimensions(), target.tokenizerId());
     }
 
     static String sha256(String value) {

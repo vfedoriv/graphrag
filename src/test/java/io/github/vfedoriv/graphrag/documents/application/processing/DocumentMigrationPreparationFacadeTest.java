@@ -25,7 +25,7 @@ class DocumentMigrationPreparationFacadeTest {
     private final DocumentProcessingRunRepository runs = mock(DocumentProcessingRunRepository.class);
     private final RuntimeSettingsService runtime = mock(RuntimeSettingsService.class);
     private final ChunkingService chunking = new ChunkingService(runtime);
-    private final EmbeddingSpacePolicy embedding = new EmbeddingSpacePolicy(chunks);
+    private final EmbeddingSpacePolicy embedding = io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.bridge(chunks);
     private final DocumentMigrationPreparationFacade facade = new DocumentMigrationPreparationFacade(
         documents, chunks, runs, new DocumentProcessingOptionsRegistry(), chunking, embedding, new ObjectMapper());
     private final ReprocessingDocumentPreparationAdapter adapter = new ReprocessingDocumentPreparationAdapter(facade);

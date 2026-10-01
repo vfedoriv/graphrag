@@ -350,6 +350,218 @@ class ArchitectureBoundaryTest {
         }
     }
 
+    @Test
+    void migrated_knowledge_base_and_ai_paths_cannot_access_foreign_state() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> Set.of(SERVICE_PACKAGE + ".KnowledgeBaseService", SERVICE_PACKAGE + ".AiProfileService",
+                SERVICE_PACKAGE + ".EmbeddingSpacePolicy").contains(c.getName())
+                || isInPackage(c, BASE_PACKAGE + ".ai"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> migratedDependencyForbidden(d.getOriginClass().getName(), d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        PRODUCTION_CLASSES.stream()
+            .filter(c -> c.getName().equals(INFRASTRUCTURE_PERSISTENCE_PACKAGE + ".relational.RelationalAiProfileRepository"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> d.getTargetClass().getSimpleName().contains("KnowledgeBase"))
+            .map(ArchitectureBoundaryTest::format).forEach(violations::add);
+        assertNoViolations(violations);
+    }
+
+    private static boolean migratedDependencyForbidden(String origin, JavaClass target) {
+        boolean tokenizerValueBridge = Set.of(SERVICE_PACKAGE + ".AiProfileService", SERVICE_PACKAGE + ".KnowledgeBaseService")
+            .contains(origin) && target.getName().equals(BASE_PACKAGE + ".document.chunking.TokenizerId");
+        return isDocumentImplementation(target) && !tokenizerValueBridge
+            || target.getName().equals(SERVICE_PACKAGE + ".GraphArtifactCleanupService")
+            || (origin.equals(SERVICE_PACKAGE + ".AiProfileService") || origin.startsWith(BASE_PACKAGE + ".ai."))
+                && (isInPackage(target, BASE_PACKAGE + ".knowledgebase")
+                    || target.getSimpleName().contains("KnowledgeBase"));
+    }
+
+    private static final Set<String> FROZEN_EMBEDDING_POLICY_CALLERS = Set.of(
+        APPLICATION_PACKAGE + ".processing.EmbeddingPersistenceStage",
+        BASE_PACKAGE + ".documents.application.processing.DocumentMigrationPreparationFacade",
+        SERVICE_PACKAGE + ".DocumentProcessingService",
+        SERVICE_PACKAGE + ".AdvancedSearchReadinessService",
+        SERVICE_PACKAGE + ".DenseTextRetriever");
+
+    @Test
+    void ai_rules_ports_and_provider_contracts_are_pure_immutable_values() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> isInAnyPackage(c, BASE_PACKAGE + ".ai.domain", BASE_PACKAGE + ".ai.ports",
+                BASE_PACKAGE + ".knowledgebase.ports", BASE_PACKAGE + ".knowledgebase.contracts"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> !boundaryValueDependencyAllowed(d.getOriginClass(), d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        PRODUCTION_CLASSES.stream()
+            .filter(c -> isInAnyPackage(c, BASE_PACKAGE + ".ai.domain", BASE_PACKAGE + ".documents.contracts",
+                BASE_PACKAGE + ".knowledgebase.contracts"))
+            .flatMap(c -> c.getFields().stream())
+            .filter(f -> !f.getModifiers().contains(com.tngtech.archunit.core.domain.JavaModifier.FINAL))
+            .map(f -> f.getFullName()).forEach(violations::add);
+        assertNoViolations(violations);
+    }
+
+    private static boolean boundaryValueDependencyAllowed(JavaClass origin, JavaClass target) {
+        return !isInfrastructureClient(target) && !isInAnyPackage(target, "java.sql", "java.net.http")
+            && (target.getName().startsWith("java.") || target.getPackageName().equals(origin.getPackageName())
+                || origin.getPackageName().equals(BASE_PACKAGE + ".ai.ports") && isAiBoundaryValue(target));
+    }
+
+    @Test
+    void migrated_integration_adapters_use_public_contracts_without_transactions() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(ArchitectureBoundaryTest::isMigratedAdapter)
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> !integrationDependencyAllowed(d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        PRODUCTION_CLASSES.stream()
+            .filter(c -> isMigratedAdapter(c) || isInAnyPackage(c,
+                BASE_PACKAGE + ".documents.application.inspection", BASE_PACKAGE + ".documents.application.lifecycle",
+                BASE_PACKAGE + ".knowledgebase.application"))
+            .filter(c -> c.isAnnotatedWith(RelationalTransactional.class) || c.isAnnotatedWith(GraphTransactional.class)
+                || c.getMethods().stream().anyMatch(ArchitectureBoundaryTest::isStoreTransactional))
+            .map(JavaClass::getName).forEach(violations::add);
+        assertNoViolations(violations);
+    }
+
+    private static boolean isMigratedAdapter(JavaClass c) {
+        return isInAnyPackage(c, BASE_PACKAGE + ".bootstrap.integration.ai", BASE_PACKAGE + ".bootstrap.integration.knowledgebase");
+    }
+
+    private static boolean integrationDependencyAllowed(JavaClass target) {
+        return isInAnyPackage(target, "java.lang", "java.util", "org.springframework.stereotype",
+                "org.springframework.beans.factory.annotation")
+            || isAiBoundaryValue(target)
+            || isInAnyPackage(target, BASE_PACKAGE + ".ai.ports",
+                BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".knowledgebase.ports",
+                BASE_PACKAGE + ".knowledgebase.contracts") || isMigratedAdapter(target);
+    }
+
+    private static boolean isAiBoundaryValue(JavaClass target) {
+        return Set.of(BASE_PACKAGE + ".ai.domain.EmbeddingTarget", BASE_PACKAGE + ".ai.domain.StoredEmbeddingObservation")
+            .contains(target.getName());
+    }
+
+    @Test
+    void features_never_depend_on_bootstrap_and_bridge_callers_are_frozen() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> !isInPackage(c, BASE_PACKAGE + ".bootstrap"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> isInPackage(d.getTargetClass(), BASE_PACKAGE + ".bootstrap")
+                || !bridgeCallerAllowed(d.getOriginClass(), d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    private static boolean bridgeCallerAllowed(JavaClass origin, JavaClass target) {
+        return !target.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy")
+            || FROZEN_EMBEDDING_POLICY_CALLERS.contains(origin.getName());
+    }
+
+    private static final Set<String> FROZEN_IDENTITY_CALLERS = Set.of(
+        SERVICE_PACKAGE + ".EmbeddingSpaceIdentity", SERVICE_PACKAGE + ".EmbeddingSpacePolicy",
+        SERVICE_PACKAGE + ".DocumentProcessingService", SERVICE_PACKAGE + ".EmbeddingSpaceIndexService",
+        SERVICE_PACKAGE + ".LexicalIndexIdentity", INFRASTRUCTURE_PERSISTENCE_PACKAGE + ".DocumentChunkPersistenceAdapter");
+    private static final Set<String> FROZEN_SPACE_CALLERS = Set.of(
+        SERVICE_PACKAGE + ".EmbeddingSpace", SERVICE_PACKAGE + ".EmbeddingSpaceIdentity",
+        SERVICE_PACKAGE + ".EmbeddingSpacePolicy", SERVICE_PACKAGE + ".DocumentProcessingService",
+        SERVICE_PACKAGE + ".EmbeddingSpaceIndexService", SERVICE_PACKAGE + ".DenseTextRetriever",
+        BASE_PACKAGE + ".documents.application.processing.DocumentMigrationPreparationFacade",
+        APPLICATION_PACKAGE + ".processing.EmbeddingPersistenceStage",
+        INFRASTRUCTURE_PERSISTENCE_PACKAGE + ".DocumentChunkPersistenceAdapter");
+
+    @Test
+    void legacy_identity_and_value_bridges_cannot_gain_callers_or_state_access() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> d.getTargetClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity")
+                    && !FROZEN_IDENTITY_CALLERS.contains(d.getOriginClass().getName())
+                || d.getTargetClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpace")
+                    && !FROZEN_SPACE_CALLERS.contains(d.getOriginClass().getName())
+                || d.getOriginClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity")
+                    && !identityDependencyAllowed(d.getTargetClass())
+                || d.getOriginClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpace")
+                    && !isInAnyPackage(d.getTargetClass(), "java.lang", "java.lang.invoke", "java.lang.runtime"))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    private static boolean identityDependencyAllowed(JavaClass target) {
+        return isInAnyPackage(target, "java.lang", "java.util", "java.security", "java.nio.charset")
+            || Set.of(SERVICE_PACKAGE + ".EmbeddingSpace", DOMAIN_PACKAGE + ".AiProfileNode",
+                BASE_PACKAGE + ".ai.domain.EmbeddingTarget", BASE_PACKAGE + ".document.chunking.TokenizerId").contains(target.getName());
+    }
+
+    @Test
+    void compatibility_bridge_dependencies_cannot_expand() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> c.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> !bridgeDependencyAllowed(d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    private static boolean bridgeDependencyAllowed(JavaClass target) {
+        return isInAnyPackage(target, "java.lang", "java.util", "org.springframework.stereotype") || Set.of(
+            BASE_PACKAGE + ".ai.application.EmbeddingCompatibility", BASE_PACKAGE + ".ai.domain.EmbeddingTarget",
+            DOMAIN_PACKAGE + ".AiProfileNode", SERVICE_PACKAGE + ".EmbeddingSpace",
+            SERVICE_PACKAGE + ".EmbeddingSpaceIdentity").contains(target.getName());
+    }
+
+    @Test
+    void negative_fixtures_reject_foreign_state_provider_bypasses_and_new_bridge_callers() {
+        JavaClass forbidden = new ClassFileImporter().importClasses(ForbiddenAiStateFixture.class)
+            .get(ForbiddenAiStateFixture.class);
+        Set<String> foreign = forbidden.getDirectDependenciesFromSelf().stream()
+            .filter(d -> migratedDependencyForbidden(SERVICE_PACKAGE + ".AiProfileService", d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertTrue(foreign.stream().anyMatch(v -> v.contains("DocumentChunkRepository")));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !bridgeDependencyAllowed(d.getTargetClass())));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !identityDependencyAllowed(d.getTargetClass())));
+        assertTrue(foreign.stream().anyMatch(v -> v.contains("KnowledgeBaseRepository")));
+        assertTrue(foreign.stream().anyMatch(v -> v.contains("KnowledgeBaseNode")));
+        assertTrue(foreign.stream().anyMatch(v -> v.contains("StoredEmbeddings")));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d ->
+            !integrationDependencyAllowed(d.getTargetClass()) && d.getTargetClass().getSimpleName().equals("DocumentChunkRepository")));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d ->
+            !boundaryValueDependencyAllowed(forbidden, d.getTargetClass()) && d.getTargetClass().getSimpleName().equals("AiProfileNode")));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d ->
+            isInPackage(d.getTargetClass(), BASE_PACKAGE + ".bootstrap")));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !bridgeCallerAllowed(forbidden, d.getTargetClass())));
+    }
+
+    @Test
+    void migrated_guards_reject_ai_assignment_bypasses_and_relational_adapter_clients() {
+        JavaClass fixture = new ClassFileImporter().importClasses(ForbiddenAiStateFixture.class).get(ForbiddenAiStateFixture.class);
+        Set<String> forbidden = fixture.getDirectDependenciesFromSelf().stream()
+            .filter(d -> migratedDependencyForbidden(SERVICE_PACKAGE + ".AiProfileService", d.getTargetClass()))
+            .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
+        assertTrue(forbidden.containsAll(Set.of("KnowledgeBaseRepository", "KnowledgeBaseNode", "AiProfileAssignments")));
+        Set<String> adapterForbidden = fixture.getDirectDependenciesFromSelf().stream()
+            .filter(d -> !integrationDependencyAllowed(d.getTargetClass()))
+            .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
+        assertTrue(adapterForbidden.containsAll(Set.of("JdbcTemplate", "EntityManager", "DataSource", "Connection")));
+        assertTrue(adapterForbidden.contains("EmbeddingCompatibilityRule"), "Mapping adapters may use values, not own compatibility decisions");
+    }
+
+    private static class ForbiddenAiStateFixture {
+        io.github.vfedoriv.graphrag.repository.DocumentChunkRepository chunks;
+        io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository assignments;
+        io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode knowledgeBase;
+        io.github.vfedoriv.graphrag.domain.AiProfileNode profile;
+        io.github.vfedoriv.graphrag.documents.contracts.StoredEmbeddings provider;
+        io.github.vfedoriv.graphrag.bootstrap.integration.ai.StoredEmbeddingInformationAdapter adapter;
+        io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy newBridgeCaller;
+        io.github.vfedoriv.graphrag.ai.domain.EmbeddingCompatibilityRule adapterDecisionBypass;
+        io.github.vfedoriv.graphrag.knowledgebase.contracts.AiProfileAssignments assignmentProvider;
+        org.springframework.jdbc.core.JdbcTemplate jdbc;
+        jakarta.persistence.EntityManager entities;
+        javax.sql.DataSource dataSource;
+        java.sql.Connection connection;
+    }
+
     private static boolean isDocumentImplementation(JavaClass target) {
         return isInAnyPackage(target, BASE_PACKAGE + ".document", BASE_PACKAGE + ".documents",
                 APPLICATION_PACKAGE + ".processing")

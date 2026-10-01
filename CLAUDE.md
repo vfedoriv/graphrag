@@ -82,9 +82,22 @@ all reprocessing paths, with no preparation exceptions. Preserve the existing
 recovery predicate, all-owned classification scope, snapshot formats, and
 separation of relational checkpoints from external processing. Synchronous
 preparation reads participate in the caller's transactions; integration adapters
-only map immutable values and add no transactions. General AI compatibility
-extraction and full feature relocation remain deferred.
+only map immutable values and add no transactions. AI compatibility uses AI-owned
+rules and stored-observation ports; full feature relocation remains deferred.
 See [architecture](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
+Knowledge-base deletion reads document counts and requests scoped cleanup through
+`knowledgebase.ports`, mapped under `bootstrap.integration.knowledgebase` to
+`KnowledgeBaseDocumentsFacade`. AI owns deterministic embedding identity/tokenizer
+compatibility under `ai.domain` and admission through `EmbeddingCompatibility`;
+`StoredEmbeddingsFacade` supplies raw observations through `ai.ports` and
+`bootstrap.integration.ai`. Profile assignment presence/IDs come from
+`AiProfileAssignmentsFacade`; AI profile persistence reads only profiles.
+Synchronous count/assignment reads join caller transactions. Cleanup failure
+prevents relational deletion but may leave earlier external effects.
+`EmbeddingSpacePolicy` remains a delegating bridge for processing, migration
+preparation, and search; its exact callers are frozen by architecture tests.
+
 
 ### Main Controllers
 

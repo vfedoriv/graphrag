@@ -1,8 +1,9 @@
 # Feature modularization: decisions and migration roadmap
 
 Date: 2026-10-01
-Status: agreed direction; execution/recovery boundary implemented in roadmap
-change 1, with remaining preparation exceptions retained for change 2.
+Status: roadmap steps 1–3 implemented: reprocessing execution/recovery, document
+migration preparation, and knowledge-base/AI state boundaries. Steps 4 and 5
+(document consolidation and schema registry/discovery) remain pending.
 
 ## Purpose
 
@@ -24,11 +25,14 @@ Detailed OpenSpec changes govern each implementation slice.
   feature-oriented packages.
 - `DocumentProcessingService` coordinates stages but also assembles collaborators
   and handles application state, profile selection, and lifecycle checks.
-- `SchemaReprocessingPlanService` combines plan orchestration, document selection,
-  chunk-migration classification and snapshots, and document execution.
-- `SchemaReprocessingRecoveryService` directly reads document processing runs to
-  recognize external work completed before a missing plan-item checkpoint.
-- `EmbeddingSpacePolicy` combines compatibility rules with stored-chunk retrieval.
+- Reprocessing preparation, execution, and recovery now use schemas-owned ports;
+  documents owns preparation facts and processing inspection behind capabilities.
+- Knowledge-base document counts/cleanup and AI stored embeddings/assignments now
+  use owned ports and immutable capability mappings. AI owns deterministic rules;
+  AI profile persistence no longer reads knowledge-base state.
+- `EmbeddingSpacePolicy` delegates to AI compatibility for frozen processing,
+  migration-preparation, and search callers (retirement in steps 4/8); historical
+  value/identity bridges and legacy `TokenizerId` support retire in steps 4/8/9.
 - Search run management directly reads schema and knowledge-base repositories.
 - Draft evaluation reads and prepares documents but must never persist its dry
   extraction to the knowledge-base graph.
@@ -193,4 +197,6 @@ Later proposals should be grounded in contracts actually established by changes
 ## Detailed changes
 
 - [Execution and recovery](../openspec/changes/archive/2026-10-01-isolate-reprocessing-execution-recovery/proposal.md)
-- [Document migration preparation](../openspec/changes/isolate-document-migration-preparation/proposal.md)
+- [Document migration preparation](../openspec/changes/archive/2026-10-01-isolate-document-migration-preparation/proposal.md)
+
+- [Knowledge-base and AI state dependencies](../openspec/changes/archive/2026-10-01-separate-knowledge-base-ai-state-dependencies/proposal.md) (implemented and archived step 3)

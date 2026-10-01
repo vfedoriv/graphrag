@@ -64,6 +64,7 @@ class SettingsAndAiProfileRelationalIntegrationTest {
 
     @BeforeEach
     void clearRelationalOperationalState() {
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         jdbcTemplate.update("DELETE FROM app.runtime_setting_override");
         jdbcTemplate.update("DELETE FROM app.ai_profile");
     }
@@ -222,6 +223,36 @@ class SettingsAndAiProfileRelationalIntegrationTest {
         assertThat(second.get().getId()).isEqualTo(AiProfileService.DEFAULT_PROFILE_ID);
         assertThat(jpaAiProfileRepository.count()).isEqualTo(1);
         assertThat(jpaAiProfileRepository.findFirstByDefaultProfileTrue()).isPresent();
+    }
+
+    @Autowired
+    private io.github.vfedoriv.graphrag.knowledgebase.ports.OwnedDocumentState ownedDocuments;
+    @Autowired
+    private io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments assignments;
+
+    @Test
+    void documentCountAndProfileAssignmentsParticipateInCallerTransaction() {
+        aiProfileService.create(request("assigned", false, "secret"));
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        transaction.executeWithoutResult(status -> {
+            jdbcTemplate.update("""
+                INSERT INTO app.knowledge_base (id, name, active_ai_profile_id, created_at, updated_at)
+                VALUES ('transaction-kb', 'Transaction', 'assigned', now(), now())
+                """);
+            jdbcTemplate.update("""
+                INSERT INTO app.document_upload (id, knowledge_base_id, size_bytes, sha256, status, uploaded_at)
+                VALUES ('transaction-doc', 'transaction-kb', 3, ?, 'UPLOADED', now())
+                """, "a".repeat(64));
+            assertThat(ownedDocuments.countByKnowledgeBaseId("transaction-kb")).isEqualTo(1);
+            assertThat(assignments.exists("assigned")).isTrue();
+            assertThat(assignments.knowledgeBaseIds("assigned")).containsExactly("transaction-kb");
+            assertThatThrownBy(() -> aiProfileService.delete("assigned")).isInstanceOf(ConflictException.class);
+            status.setRollbackOnly();
+        });
+        assertThat(ownedDocuments.countByKnowledgeBaseId("transaction-kb")).isZero();
+        assertThat(assignments.exists("assigned")).isFalse();
+        assertThat(assignments.knowledgeBaseIds("assigned")).isEmpty();
+        assertThat(aiProfileRepository.findById("assigned")).isPresent();
     }
 
     private AiProfileResponse createDefaultAfterBarrier(

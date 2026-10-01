@@ -80,7 +80,49 @@ Integration adapters only map public immutable values. Synchronous document read
 participate in existing caller transactions; plan checkpoints and scheduling after
 commit remain schema-owned. HTTP contracts, SQL, canonical snapshot JSON and
 fingerprints, processing algorithms, and the recovery predicate remain unchanged.
-General AI compatibility extraction and full feature relocation remain deferred.
+AI compatibility now uses AI-owned rules and stored-observation ports; full feature relocation remains deferred.
+
+## Knowledge-base lifecycle and AI state boundaries
+
+`KnowledgeBaseService` owns existence checks, non-empty deletion admission, and
+count → cleanup → relational-delete ordering. `OwnedDocumentState` and
+`KnowledgeBaseArtifactCleanup` are knowledge-base-owned ports. Their mapping
+adapter uses `KnowledgeBaseDocuments`, backed by `KnowledgeBaseDocumentsFacade`.
+Documents retains owned-record inspection, graph/evidence/chunk cleanup, and
+lexical-index removal. Non-empty deletion changes no records, binaries, or graph
+artifacts. Cleanup failure prevents relational deletion; earlier external effects
+retain existing partial-failure semantics, without cross-store rollback.
+
+AI owns `EmbeddingTarget`, `StoredEmbeddingObservation`, `EmbeddingTokenizer`,
+and `EmbeddingCompatibilityRule`. Historical normalized endpoint/model/dimension
+hashes remain unchanged; resolved tokenizer is a separate compatibility condition.
+Blank stored tokenizer falls back from the stored model. Missing space identity
+is incompatible and is never backfilled. `EmbeddingCompatibility` reads
+`StoredEmbeddingInformation` through the document `StoredEmbeddings` capability
+and `StoredEmbeddingsFacade`, keeping the existing embedded-child chunk scope.
+Contracts contain raw immutable facts without vectors, entities, or secrets.
+
+AI profile update/delete reads `ProfileAssignments` through the knowledge-base
+`AiProfileAssignments` capability and facade. `RelationalAiProfileRepository`
+persists profiles only. Assignment and shared-profile compatibility checks run
+before fields, revisions, defaults, associations, persistence, or client
+invalidation change. Counts and assignments participate in caller transactions;
+integration adapters under `bootstrap.integration.ai` and
+`bootstrap.integration.knowledgebase` only map values and add no transactions.
+
+`EmbeddingSpacePolicy` remains a repository-free delegating bridge, with exactly
+these callers: `EmbeddingPersistenceStage`, `DocumentProcessingService`, and
+`DocumentMigrationPreparationFacade` (documents roadmap step 4), plus
+`AdvancedSearchReadinessService` and `DenseTextRetriever` (search step 8).
+`EmbeddingSpaceIdentity` and `EmbeddingSpace` retain historical utility/value
+entry points for processing and index callers, to retire during steps 4/8/9.
+The immutable `TokenizerId` value remains in legacy profile and knowledge-base
+services, with an exact class/value allowance; its support ownership retires in
+step 9. No allowance permits foreign state reads. Architecture tests enforce
+pure rules/contracts, public-capability mapping, feature-to-bootstrap isolation,
+and the frozen bridge callers, alongside all predecessor reprocessing guards.
+Document consolidation and schema registry/discovery boundaries (steps 4/5)
+remain pending.
 
 ## Major flows
 

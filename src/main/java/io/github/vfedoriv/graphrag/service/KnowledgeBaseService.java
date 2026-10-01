@@ -2,18 +2,18 @@ package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.KnowledgeBaseNotEmptyException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.OwnedDocumentState;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseArtifactCleanup;
+import java.util.Objects;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import java.time.Instant;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 
@@ -23,64 +23,20 @@ public class KnowledgeBaseService {
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final AiProfileService aiProfileService;
-    private final DocumentChunkRepository documentChunkRepository;
-    private final DocumentUploadRepository documentUploadRepository;
+    private final OwnedDocumentState ownedDocuments;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
-    private final EmbeddingSpacePolicy embeddingSpacePolicy;
-    private final GraphArtifactCleanupService graphArtifactCleanupService;
+    private final EmbeddingCompatibility compatibility;
+    private final KnowledgeBaseArtifactCleanup artifactCleanup;
 
-    @Autowired
-    public KnowledgeBaseService(
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        AiProfileService aiProfileService,
-        DocumentChunkRepository documentChunkRepository,
-        DocumentUploadRepository documentUploadRepository,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
-        EmbeddingSpacePolicy embeddingSpacePolicy,
-        GraphArtifactCleanupService graphArtifactCleanupService
-    ) {
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.aiProfileService = aiProfileService;
-        this.documentChunkRepository = documentChunkRepository;
-        this.documentUploadRepository = documentUploadRepository;
-        this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
-        this.embeddingSpacePolicy = embeddingSpacePolicy;
-        this.graphArtifactCleanupService = graphArtifactCleanupService;
-    }
-
-    public KnowledgeBaseService(
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        AiProfileService aiProfileService,
-        DocumentChunkRepository documentChunkRepository
-    ) {
-        this(
-            knowledgeBaseRepository,
-            aiProfileService,
-            documentChunkRepository,
-            null,
-            null,
-            new EmbeddingSpacePolicy(documentChunkRepository),
-            null
-        );
-    }
-
-    public KnowledgeBaseService(
-        KnowledgeBaseRepository knowledgeBaseRepository,
-        AiProfileService aiProfileService,
-        DocumentChunkRepository documentChunkRepository,
-        DocumentUploadRepository documentUploadRepository,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
-        EmbeddingSpacePolicy embeddingSpacePolicy
-    ) {
-        this(
-            knowledgeBaseRepository,
-            aiProfileService,
-            documentChunkRepository,
-            documentUploadRepository,
-            knowledgeBaseLifecycleService,
-            embeddingSpacePolicy,
-            null
-        );
+    public KnowledgeBaseService(KnowledgeBaseRepository knowledgeBaseRepository, AiProfileService aiProfileService,
+        OwnedDocumentState ownedDocuments, KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        EmbeddingCompatibility compatibility, KnowledgeBaseArtifactCleanup artifactCleanup) {
+        this.knowledgeBaseRepository = Objects.requireNonNull(knowledgeBaseRepository);
+        this.aiProfileService = Objects.requireNonNull(aiProfileService);
+        this.ownedDocuments = Objects.requireNonNull(ownedDocuments);
+        this.knowledgeBaseLifecycleService = Objects.requireNonNull(knowledgeBaseLifecycleService);
+        this.compatibility = Objects.requireNonNull(compatibility);
+        this.artifactCleanup = Objects.requireNonNull(artifactCleanup);
     }
 
     @RelationalTransactional
@@ -89,9 +45,7 @@ public class KnowledgeBaseService {
         if (knowledgeBaseRepository.existsById(id)) {
             throw new ConflictException("Knowledge base already exists: " + id);
         }
-        KnowledgeBaseNode saved = knowledgeBaseLifecycleService == null
-            ? createLegacy(id, name)
-            : knowledgeBaseLifecycleService.provision(id, name);
+        KnowledgeBaseNode saved = knowledgeBaseLifecycleService.provision(id, name);
         log.info("Knowledge base created: knowledgeBaseId={}", saved.getId());
         return saved;
     }
@@ -137,7 +91,9 @@ public class KnowledgeBaseService {
     public KnowledgeBaseNode updateActiveAiProfile(String knowledgeBaseId, String profileId) {
         KnowledgeBaseNode knowledgeBase = get(knowledgeBaseId);
         AiProfileNode profile = aiProfileService.getNode(profileId);
-        embeddingSpacePolicy.requireCompatible(knowledgeBaseId, profile);
+        compatibility.requireCompatible(knowledgeBaseId, EmbeddingTarget.derive(
+            profile.getBaseUrl(), profile.getEmbeddingModel(), profile.getEmbeddingDimensions(),
+            profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()));
         Long version = knowledgeBase.getVersion();
         if (version == null) {
             knowledgeBase.setActiveAiProfileId(profile.getId());
@@ -159,28 +115,17 @@ public class KnowledgeBaseService {
         return saved;
     }
 
-    private KnowledgeBaseNode createLegacy(String id, String name) {
-        KnowledgeBaseNode node = new KnowledgeBaseNode();
-        node.setId(id);
-        node.setName(name);
-        node.setActiveAiProfileId(aiProfileService.defaultProfile().getId());
-        node.setCreatedAt(Instant.now());
-        return knowledgeBaseRepository.save(node);
-    }
-
     @RelationalTransactional
     public void delete(String id) {
         log.info("Deleting knowledge base: knowledgeBaseId={}", id);
         if (!knowledgeBaseRepository.existsById(id)) {
             throw new NotFoundException("Knowledge base not found: " + id);
         }
-        long documentCount = documentUploadRepository == null ? 0 : documentUploadRepository.countByKnowledgeBaseId(id);
+        long documentCount = ownedDocuments.countByKnowledgeBaseId(id);
         if (documentCount > 0) {
             throw new KnowledgeBaseNotEmptyException(id, documentCount);
         }
-        if (graphArtifactCleanupService != null) {
-            graphArtifactCleanupService.cleanupKnowledgeBaseArtifacts(id);
-        }
+        artifactCleanup.cleanupKnowledgeBaseArtifacts(id);
         knowledgeBaseRepository.deleteById(id);
         log.info("Knowledge base deleted: knowledgeBaseId={}", id);
     }

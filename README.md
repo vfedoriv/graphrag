@@ -87,6 +87,18 @@ owns selection summaries, option/parser resolution, chunk/run classification,
 target inspection, source checks, migration input restoration, and profile scope.
 Schemas retains selection policy, durable snapshots, plan claims, completion,
 and retry policy. Architecture checks enforce the completed reprocessing boundary
-without preparation exceptions. General AI compatibility extraction and full
-feature relocation remain deferred; see the
+without preparation exceptions. AI compatibility uses AI-owned rules and stored-observation ports; full feature
+relocation remains deferred; see the
 [architecture boundary](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
+Knowledge-base deletion reads document counts and requests scoped cleanup through
+`knowledgebase.ports`, mapped under `bootstrap.integration.knowledgebase` to
+`KnowledgeBaseDocumentsFacade`. AI owns deterministic embedding identity/tokenizer
+compatibility under `ai.domain` and admission through `EmbeddingCompatibility`;
+`StoredEmbeddingsFacade` supplies raw observations through `ai.ports` and
+`bootstrap.integration.ai`. Profile assignment presence/IDs come from
+`AiProfileAssignmentsFacade`; AI profile persistence reads only profiles.
+Synchronous count/assignment reads join caller transactions. Cleanup failure
+prevents relational deletion but may leave earlier external effects.
+`EmbeddingSpacePolicy` remains a delegating bridge for processing, migration
+preparation, and search; its exact callers are frozen by architecture tests.

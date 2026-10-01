@@ -179,6 +179,28 @@ class GraphProvenanceIntegrationTest {
         assertThat((List<String>) evidence.get("sourceChunkIds")).containsExactly("parent-cross-page");
     }
 
+    @Autowired
+    private io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseArtifactCleanup knowledgeBaseCleanup;
+
+    @Test
+    void knowledgeBaseScopedCleanupPreservesOtherKnowledgeBaseAndSupportedSharedFacts() {
+        createDocumentRunChunk("doc-a", "run-a", "chunk-a", "COMPLETED");
+        createDocumentRunChunk("doc-b", "run-b", "chunk-b", "COMPLETED");
+        neo4jClient.query("MATCH (c:DocumentChunk {id: 'chunk-b'}) SET c.knowledgeBaseId = 'other-kb'").run();
+        writeSharedFact("doc-a", "run-a", "chunk-a", "supplier-a");
+        writeSharedFactInKnowledgeBase("other-kb", "doc-b", "run-b", "chunk-b", "supplier-b");
+        knowledgeBaseCleanup.cleanupKnowledgeBaseArtifacts("kb-provenance");
+        assertThat(count("MATCH (c:DocumentChunk {knowledgeBaseId: 'kb-provenance'}) RETURN count(c) AS count")).isZero();
+        assertThat(count("MATCH (e:GraphExtractionEvidence {knowledgeBaseId: 'kb-provenance'}) RETURN count(e) AS count")).isZero();
+        assertThat(count("MATCH (c:DocumentChunk {knowledgeBaseId: 'other-kb'}) RETURN count(c) AS count")).isEqualTo(1L);
+        assertThat(count("MATCH (e:GraphExtractionEvidence {knowledgeBaseId: 'other-kb'}) RETURN count(e) AS count")).isEqualTo(3L);
+        assertThat(count("MATCH (:Contract)-[r:HAS_PARTY]->(:Party) RETURN count(r) AS count")).isEqualTo(1L);
+        knowledgeBaseCleanup.cleanupKnowledgeBaseArtifacts("other-kb");
+        assertThat(count("MATCH (e:GraphExtractionEvidence) RETURN count(e) AS count")).isZero();
+        assertThat(count("MATCH (:Contract) RETURN count(*) AS count")).isZero();
+        assertThat(count("MATCH (:Party) RETURN count(*) AS count")).isZero();
+    }
+
     private void createDocumentRunChunk(String documentId, String runId, String chunkId, String status) {
         neo4jClient.query("""
             CREATE (:DocumentChunk {
@@ -193,8 +215,12 @@ class GraphProvenanceIntegrationTest {
     }
 
     private void writeSharedFact(String documentId, String runId, String chunkId, String role) {
+        writeSharedFactInKnowledgeBase("kb-provenance", documentId, runId, chunkId, role);
+    }
+
+    private void writeSharedFactInKnowledgeBase(String knowledgeBaseId, String documentId, String runId, String chunkId, String role) {
         graphWriteService.write(
-            "kb-provenance",
+            knowledgeBaseId,
             runId,
             SCHEMA_ID,
             documentId,

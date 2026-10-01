@@ -5,9 +5,12 @@ import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
 import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
 import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
-import io.github.vfedoriv.graphrag.document.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTokenizer;
+import io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments;
+import java.util.Objects;
 import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
@@ -32,28 +35,22 @@ public class AiProfileService implements ApplicationRunner {
     private final AiProfileRepository aiProfileRepository;
     private final AppProperties appProperties;
     private final org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
-    private final EmbeddingSpacePolicy embeddingSpacePolicy;
-    private final TokenizerPolicy tokenizerPolicy = new TokenizerPolicy();
+    private final EmbeddingCompatibility compatibility;
+    private final ProfileAssignments assignments;
 
     @Autowired
     public AiProfileService(
         AiProfileRepository aiProfileRepository,
         AppProperties appProperties,
         org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider,
-        EmbeddingSpacePolicy embeddingSpacePolicy
+        EmbeddingCompatibility compatibility,
+        ProfileAssignments assignments
     ) {
         this.aiProfileRepository = aiProfileRepository;
         this.appProperties = appProperties;
         this.runtimeModelFactoryProvider = runtimeModelFactoryProvider;
-        this.embeddingSpacePolicy = embeddingSpacePolicy;
-    }
-
-    public AiProfileService(
-        AiProfileRepository aiProfileRepository,
-        AppProperties appProperties,
-        org.springframework.beans.factory.ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider
-    ) {
-        this(aiProfileRepository, appProperties, runtimeModelFactoryProvider, null);
+        this.compatibility = Objects.requireNonNull(compatibility);
+        this.assignments = Objects.requireNonNull(assignments);
     }
 
     @Override
@@ -126,7 +123,7 @@ public class AiProfileService implements ApplicationRunner {
             false,
             request.chatModel(),
             request.embeddingModel(),
-            tokenizerPolicy.validateExplicit(request.tokenizerId()),
+            validateExplicitTokenizer(request.tokenizerId()),
             request.embeddingDimensions(),
             timeoutSeconds(request.timeoutSeconds()),
             maxRetries(request.maxRetries()),
@@ -152,9 +149,9 @@ public class AiProfileService implements ApplicationRunner {
         AiProfileNode profile = getNode(id);
         validateProfile(request.baseUrl(), request.chatModel(), request.embeddingModel(), request.embeddingDimensions(),
             timeoutSeconds(request.timeoutSeconds()), maxRetries(request.maxRetries()), request.tokenizerId());
-        TokenizerId requestedTokenizerId = tokenizerPolicy.validateExplicit(request.tokenizerId());
-        EmbeddingSpace requestedEmbeddingSpace = EmbeddingSpaceIdentity.derive(
-            request.baseUrl(), request.embeddingModel(), request.embeddingDimensions(), requestedTokenizerId
+        TokenizerId requestedTokenizerId = validateExplicitTokenizer(request.tokenizerId());
+        EmbeddingTarget requestedEmbeddingSpace = EmbeddingTarget.derive(
+            request.baseUrl(), request.embeddingModel(), request.embeddingDimensions(), requestedTokenizerId == null ? null : requestedTokenizerId.value()
         );
         rejectIncompatibleProfileUpdate(profile.getId(), requestedEmbeddingSpace);
         applyValues(
@@ -192,7 +189,7 @@ public class AiProfileService implements ApplicationRunner {
         if (profile.isDefaultProfile()) {
             throw new ConflictException("Default AI profile cannot be deleted");
         }
-        if (Boolean.TRUE.equals(aiProfileRepository.existsKnowledgeBaseAssignment(id))) {
+        if (assignments.exists(id)) {
             throw new ConflictException("AI profile is assigned to at least one knowledge base: " + id);
         }
         aiProfileRepository.deleteById(id);
@@ -265,7 +262,7 @@ public class AiProfileService implements ApplicationRunner {
         if (maxRetries < 0) {
             throw new IllegalArgumentException("maxRetries must be greater than or equal to zero");
         }
-        tokenizerPolicy.validateExplicit(tokenizerId);
+        validateExplicitTokenizer(tokenizerId);
     }
 
     private void unsetOtherDefaults(String profileId) {
@@ -287,15 +284,12 @@ public class AiProfileService implements ApplicationRunner {
         }
     }
 
-    private void rejectIncompatibleProfileUpdate(String profileId, EmbeddingSpace requestedEmbeddingSpace) {
-        if (embeddingSpacePolicy == null) {
-            return;
-        }
-        List<String> assignedKnowledgeBaseIds = aiProfileRepository.findAssignedKnowledgeBaseIds(profileId);
+    private void rejectIncompatibleProfileUpdate(String profileId, EmbeddingTarget requestedEmbeddingSpace) {
+        List<String> assignedKnowledgeBaseIds = assignments.knowledgeBaseIds(profileId);
         if (assignedKnowledgeBaseIds == null || assignedKnowledgeBaseIds.isEmpty()) {
             return;
         }
-        List<String> incompatibleKnowledgeBaseIds = embeddingSpacePolicy.incompatibleKnowledgeBaseIds(
+        List<String> incompatibleKnowledgeBaseIds = compatibility.incompatibleKnowledgeBaseIds(
             assignedKnowledgeBaseIds,
             requestedEmbeddingSpace
         );
@@ -309,7 +303,8 @@ public class AiProfileService implements ApplicationRunner {
 
     public AiProfileResponse toResponse(AiProfileNode profile) {
         boolean configured = profile.getApiKey() != null && !profile.getApiKey().isBlank();
-        TokenEstimator resolvedTokenizer = tokenizerPolicy.resolve(profile.getTokenizerId(), profile.getEmbeddingModel());
+        String resolvedTokenizer = EmbeddingTokenizer.resolve(
+            profile.getTokenizerId() == null ? null : profile.getTokenizerId().value(), profile.getEmbeddingModel());
         return new AiProfileResponse(
             profile.getId(),
             profile.getName(),
@@ -317,7 +312,7 @@ public class AiProfileService implements ApplicationRunner {
             profile.getChatModel(),
             profile.getEmbeddingModel(),
             profile.getTokenizerId() == null ? null : profile.getTokenizerId().value(),
-            resolvedTokenizer.tokenizerId().value(),
+            resolvedTokenizer,
             profile.getEmbeddingDimensions(),
             profile.getTimeoutSeconds(),
             profile.getMaxRetries(),
@@ -328,6 +323,10 @@ public class AiProfileService implements ApplicationRunner {
             profile.getCreatedAt(),
             profile.getUpdatedAt()
         );
+    }
+
+    private TokenizerId validateExplicitTokenizer(String value) {
+        return value == null ? null : TokenizerId.explicit(value);
     }
 
     private String mask(String value) {

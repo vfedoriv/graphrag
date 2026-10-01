@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag;
 
 import io.github.vfedoriv.graphrag.IntegrationTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -62,6 +63,25 @@ class DocumentControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\":\"" + id + "\",\"name\":\"" + id + "\"}"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void nonEmptyKnowledgeBaseDeletionPreservesRecordsBinaryAndArtifactsWhileEmptyDeletionCleansScope() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "kept.txt", "text/plain", "kept bytes".getBytes());
+        String body = mockMvc.perform(multipart("/api/v1/knowledge-bases/kb-1/documents").file(file))
+            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String localPath = objectMapper.readTree(body).path("localPath").asText();
+        neo4jClient.query("CREATE (:DocumentChunk {id:'kept-chunk', knowledgeBaseId:'kb-1'})").run();
+        mockMvc.perform(delete("/api/v1/knowledge-bases/kb-1")).andExpect(status().isConflict());
+        assertThat(java.nio.file.Files.readAllBytes(java.nio.file.Path.of(localPath))).isEqualTo("kept bytes".getBytes());
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.document_upload WHERE knowledge_base_id='kb-1'", Long.class)).isEqualTo(1);
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.knowledge_base WHERE id='kb-1'", Long.class)).isEqualTo(1);
+        assertThat(neo4jClient.query("MATCH (c:DocumentChunk {id:'kept-chunk'}) RETURN count(c) AS count").fetchAs(Long.class).one().orElseThrow()).isEqualTo(1);
+        neo4jClient.query("CREATE (:DocumentChunk {id:'empty-artifact', knowledgeBaseId:'kb-2'})").run();
+        mockMvc.perform(delete("/api/v1/knowledge-bases/kb-2")).andExpect(status().isOk());
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.knowledge_base WHERE id='kb-2'", Long.class)).isZero();
+        assertThat(neo4jClient.query("MATCH (c:DocumentChunk {id:'empty-artifact'}) RETURN count(c) AS count").fetchAs(Long.class).one().orElseThrow()).isZero();
+        assertThat(java.nio.file.Files.exists(java.nio.file.Path.of(localPath))).isTrue();
     }
 
     @Test

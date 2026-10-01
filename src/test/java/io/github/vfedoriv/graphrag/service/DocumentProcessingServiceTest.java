@@ -502,7 +502,7 @@ class DocumentProcessingServiceTest {
             TestAiObservationService.noop(),
             knowledgeBaseService,
             knowledgeBaseLifecycleService,
-            new EmbeddingSpacePolicy(documentChunkRepository),
+            io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.bridge(documentChunkRepository),
             new io.github.vfedoriv.graphrag.application.processing.ProcessingRunLifecycle(
                 documentProcessingRunRepository,
                 objectMapper
