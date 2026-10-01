@@ -81,6 +81,11 @@ public class AiProfileNode {
         return tokenizerId;
     }
 
+    /** Non-secret tokenizer identity for immutable capability requests. */
+    public String getTokenizerIdValue() {
+        return tokenizerId == null ? null : tokenizerId.value();
+    }
+
     public void setTokenizerId(TokenizerId tokenizerId) {
         this.tokenizerId = tokenizerId;
     }

@@ -11,7 +11,7 @@ src/main/java/io/github/vfedoriv/graphrag/
   config                   validated startup/runtime configuration
   controller               REST endpoints and OpenAPI annotations
   document                 parsing/chunking and structural source model
-  documents/contracts      public reprocessing execution and outcome capabilities
+  documents/contracts      public preparation, execution, and outcome capabilities
   documents/application/processing  transitional facades over legacy processing
   domain                   operational and graph domain types
   dto                      API request/response contracts
@@ -47,11 +47,16 @@ claims/completion/retry policy; documents owns source checks, runtime migration
 input restoration, profile scope, and processing-run inspection. Adapters only
 map immutable contract values and introduce no encompassing transaction.
 
-Document selection, classification, option resolution, and snapshot preparation
-remain in the legacy plan service. Architecture tests freeze its exact document
-repository/record, option resolver, and chunking dependencies for the next
-preparation-isolation change. The new contracts and facades represent the first
-modularization slice; the rest of the broad packages remain in place. See the
+For preparation and currentness, follow the schemas-owned
+`ReprocessingDocumentPreparation` port through its adapter to
+`DocumentMigrationPreparationFacade`. Documents owns selection summaries,
+parser/options resolution, chunk/run classification, and chunker/embedding target
+inspection. Schemas keeps selection policy, schema checks, durable snapshot
+assembly, preview aggregation, retry lineage, and plan persistence. Preview and
+creation use the same read-only preparation; classification remains all-owned.
+Architecture tests enforce this completed reprocessing boundary with no
+preparation exceptions. General AI compatibility extraction and full feature
+relocation remain deferred. See the
 [architecture boundary details](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
 
 ## High-risk invariants

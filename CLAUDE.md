@@ -70,17 +70,20 @@ REST Controllers → Services → repository ports → PostgreSQL adapters / gra
 
 All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `ProblemDetail`.
 
-Reprocessing execution and recovery use schemas-owned ports under
-`schemas.reprocessing.ports` and port-only `ReprocessingItemExecution`, mapped by
-`bootstrap.integration.reprocessing` to documents-owned contracts/facades.
-Documents owns source checks, migration input restoration, profile scope, and
-processing-run inspection; schemas retains plan claims, completion, and retry
-policy. Preparation remains in `SchemaReprocessingPlanService` with exact
-document repository/record, option resolver, and chunking dependencies frozen by
-`ArchitectureBoundaryTest` for the next preparation-isolation change. This is the
-first modularization slice, not a full feature relocation. Preserve the existing
-recovery predicate and separate relational checkpoints from external processing;
-keep adapters free of repositories, implementation services, and transactions.
+Reprocessing preparation, execution, and recovery use schemas-owned ports under
+`schemas.reprocessing.ports`, mapped by `bootstrap.integration.reprocessing` to
+public document capabilities. `DocumentMigrationPreparationFacade` owns source
+selection summaries, option/parser resolution, chunk/run classification, and
+chunker/embedding target inspection. Schemas retains selection policy, schema
+checks, durable snapshot assembly, plan claims, completion, and retry policy.
+Preview and creation share read-only preparation; creation recomputes facts.
+`ArchitectureBoundaryTest` rejects document implementation dependencies across
+all reprocessing paths, with no preparation exceptions. Preserve the existing
+recovery predicate, all-owned classification scope, snapshot formats, and
+separation of relational checkpoints from external processing. Synchronous
+preparation reads participate in the caller's transactions; integration adapters
+only map immutable values and add no transactions. General AI compatibility
+extraction and full feature relocation remain deferred.
 See [architecture](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
 
 ### Main Controllers

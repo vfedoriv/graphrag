@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -433,6 +434,95 @@ class SchemaReprocessingPlanServiceTest {
         }
     }
 
+    @Test
+    void explicitPreviewStillValidatesEveryOwnedDocumentBeforeSelection() {
+        Fixture fixture = fixture();
+        DocumentUploadNode invalid = document();
+        invalid.setId("unselected");
+        invalid.setOriginalFilename("invalid.bin");
+        invalid.setContentType("application/octet-stream");
+        when(fixture.documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1"))
+            .thenReturn(List.of(fixture.document, invalid));
+        assertThatThrownBy(() -> fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
+            ChunkReprocessingSelection.DOCUMENT_IDS, List.of("doc-1"), Map.of()), 0, 20))
+            .isInstanceOf(io.github.vfedoriv.graphrag.error.ProcessingOptionsValidationException.class);
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void creationRecomputesBlockersAfterAReadyPreview() {
+        Fixture fixture = fixture();
+        assertThat(fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
+            ChunkReprocessingSelection.ALL, List.of(), Map.of()), 0, 20).ready()).isTrue();
+        when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
+        assertThatThrownBy(() -> fixture.service.create("kb-1", chunkRequest(ChunkReprocessingSelection.ALL, List.of())))
+            .isInstanceOf(ConflictException.class).hasMessageContaining("Another destructive");
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void creationRejectsTargetChangingDuringPreparation() {
+        Fixture fixture = fixture();
+        when(fixture.chunking.migrationTargetRevision(any(AiProfileNode.class)))
+            .thenReturn("chunker-current", "changed-during-preparation");
+        assertThatThrownBy(() -> fixture.service.create("kb-1", chunkRequest(ChunkReprocessingSelection.ALL, List.of())))
+            .isInstanceOf(ConflictException.class).hasMessageContaining("changed-during-preparation");
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void previewKeepsSchemaThenDocumentTargetThenActivePlanBlockerPriority() {
+        Fixture fixture = fixture();
+        KnowledgeBaseNode missingSchema = new KnowledgeBaseNode();
+        missingSchema.setId("kb-1");
+        when(fixture.knowledgeBases.findById("kb-1")).thenReturn(Optional.of(missingSchema));
+        when(fixture.chunking.snapshotTarget(any(AiProfileNode.class))).thenThrow(new IllegalArgumentException("invalid target"));
+        when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
+        assertThat(fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
+            ChunkReprocessingSelection.ALL, List.of(), Map.of()), 0, 20).blockers())
+            .extracting(value -> value.code()).containsExactly("ACTIVE_SCHEMA_MISSING", "INVALID_MIGRATION_TARGET", "ACTIVE_DESTRUCTIVE_PLAN");
+        verify(fixture.checkpoint, never()).createPlan(any(), any());
+    }
+
+    @Test
+    void historyCurrentnessRequiresEveryCapturedTargetIdentity() {
+        for (int changed = 0; changed < 7; changed++) {
+            Fixture fixture = fixture();
+            SchemaReprocessingPlanNode plan = queuedChunkPlan();
+            plan.setStatus(SchemaReprocessingPlanStatus.FAILED);
+            plan.setQueuedDocuments(0);
+            plan.setFailedDocuments(1);
+            plan.setCompletedAt(Instant.now());
+            switch (changed) {
+                case 1 -> plan.setSchemaId("changed-schema");
+                case 2 -> plan.setSchemaContentHash("changed-hash");
+                case 3 -> plan.setAiProfileId("changed-profile");
+                case 4 -> plan.setAiProfileRevision(4);
+                case 5 -> plan.setEmbeddingSpaceId("changed-embedding");
+                case 6 -> plan.setExpectedChunkerRevision("changed-chunker");
+                default -> { }
+            }
+            when(fixture.plans.findPageByFilters(eq("kb-1"), isNull(), isNull(), isNull(), isNull(), any()))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(plan)));
+            io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanSummaryResponse summary =
+                fixture.service.list("kb-1", null, 0, 20).getContent().getFirst();
+            assertThat(summary.targetCurrent()).isEqualTo(changed == 0);
+            assertThat(summary.retryable()).isEqualTo(changed == 0);
+            verifyNoInteractions(fixture.processing);
+        }
+    }
+
+    @Test
+    void historyTargetInspectionFailureRetainsFalseCurrentness() {
+        Fixture fixture = fixture();
+        SchemaReprocessingPlanNode plan = queuedChunkPlan();
+        when(fixture.plans.findPageByFilters(eq("kb-1"), isNull(), isNull(), isNull(), isNull(), any()))
+            .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(plan)));
+        when(fixture.chunking.migrationTargetRevision(any(AiProfileNode.class)))
+            .thenThrow(new IllegalStateException("target unavailable"));
+        assertThat(fixture.service.list("kb-1", null, 0, 20).getContent().getFirst().targetCurrent()).isFalse();
+    }
+
     private CreatePlanRequest chunkRequest(
         ChunkReprocessingSelection selection,
         List<String> documentIds
@@ -555,10 +645,10 @@ class SchemaReprocessingPlanServiceTest {
         when(knowledgeBases.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
         when(schemas.findById("schema-1")).thenReturn(Optional.of(schema));
         when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile);
-        when(chunking.migrationTargetRevision(profile)).thenReturn("chunker-current");
-        when(chunking.snapshotTarget(profile)).thenReturn(chunkTarget);
-        when(chunking.snapshot(profile, "text")).thenReturn(context);
-        when(embeddingPolicy.spaceFor(profile)).thenReturn(
+        when(chunking.migrationTargetRevision(any(AiProfileNode.class))).thenReturn("chunker-current");
+        when(chunking.snapshotTarget(any(AiProfileNode.class))).thenReturn(chunkTarget);
+        when(chunking.snapshot(any(AiProfileNode.class), eq("text"))).thenReturn(context);
+        when(embeddingPolicy.spaceFor(any(AiProfileNode.class))).thenReturn(
             new EmbeddingSpace("es-1", "https://example.test", "embedding", 3, "utf8-byte-v1")
         );
         when(documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1")).thenReturn(List.of(document));
@@ -571,18 +661,15 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingPlanService service = new SchemaReprocessingPlanService(
             lifecycle,
             knowledgeBases,
-            documents,
-            chunks,
-            runs,
+            new io.github.vfedoriv.graphrag.bootstrap.integration.reprocessing.ReprocessingDocumentPreparationAdapter(
+                new io.github.vfedoriv.graphrag.documents.application.processing.DocumentMigrationPreparationFacade(
+                    documents, chunks, runs, new DocumentProcessingOptionsRegistry(), chunking, embeddingPolicy, new ObjectMapper())),
             schemas,
             publications,
             plans,
             items,
             knowledgeBaseService,
             new ReprocessingItemExecution(processing),
-            new DocumentProcessingOptionsRegistry(),
-            chunking,
-            embeddingPolicy,
             jsonSupport,
             new ObjectMapper(),
             observation,
@@ -602,7 +689,9 @@ class SchemaReprocessingPlanServiceTest {
             checkpoint,
             jsonSupport,
             document,
-            chunkTarget
+            chunkTarget,
+            chunking,
+            knowledgeBases
         );
     }
 
@@ -649,7 +738,9 @@ class SchemaReprocessingPlanServiceTest {
         SchemaDraftWorkflowCheckpointService checkpoint,
         SchemaDraftJsonSupport jsonSupport,
         DocumentUploadNode document,
-        ChunkMigrationSnapshot.ChunkTarget chunkTarget
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget,
+        ChunkingService chunking,
+        KnowledgeBaseRepository knowledgeBases
     ) {
     }
 }

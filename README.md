@@ -81,10 +81,12 @@ The complete suite is credential-free but requires Docker for shared Testcontain
 
 For architecture, persistence ownership, production readiness, and contribution guidance, start at the [portal index](src/site/markdown/index.md).
 
-Reprocessing execution and recovery use schemas-owned ports mapped by bootstrap
-integration adapters to documents-owned capabilities. Documents owns source
-checks, migration input restoration, profile scope, and processing-run inspection;
-schemas retains plan claims, completion, and retry policy. Preparation still uses
-explicitly frozen document dependencies in the legacy plan service. This is the
-first modularization slice, not a full feature relocation; see the
+Reprocessing preparation, execution, and recovery use schemas-owned ports mapped
+by bootstrap integration adapters to documents-owned capabilities. Documents
+owns selection summaries, option/parser resolution, chunk/run classification,
+target inspection, source checks, migration input restoration, and profile scope.
+Schemas retains selection policy, durable snapshots, plan claims, completion,
+and retry policy. Architecture checks enforce the completed reprocessing boundary
+without preparation exceptions. General AI compatibility extraction and full
+feature relocation remain deferred; see the
 [architecture boundary](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).

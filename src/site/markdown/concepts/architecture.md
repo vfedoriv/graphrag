@@ -59,17 +59,28 @@ start time no earlier than the item's start when present. Activation does not
 require a chunker revision or additional schema/profile matching. Relational
 claims and checkpoints remain separate from model, filesystem, and graph work.
 
-Preparation remains in `SchemaReprocessingPlanService`: document selection,
-chunk/run-based classification, option resolution, and target snapshots still
-use the document, chunk, and processing-run repositories, document records,
-`ProcessingOptionResolver`/`ProcessingJsonCodec`, `DocumentProcessingOptionsRegistry`,
-and `ChunkingService`/`ChunkingContext`. `ArchitectureBoundaryTest` freezes these
-exceptions by exact source and target for the following preparation-isolation
-change. They do not authorize document-internal access in execution or recovery.
-Method-origin checks also prevent the orchestrator's execution methods from
-reusing its preparation-only dependencies.
-This slice establishes boundaries without relocating entire features or changing
-HTTP contracts, SQL, or persisted snapshot formats.
+Preparation and document-specific target inspection use the schemas-owned
+`ReprocessingDocumentPreparation` port, mapped to `DocumentMigrationPreparation`
+and `DocumentMigrationPreparationFacade`. Documents owns ownership-safe source
+summaries, parser/options resolution, chunk presence and completed-run
+classification, and chunker/embedding target inspection. Requests capture profile
+identity/revision and non-secret embedding/tokenizer inputs; runtime objects and
+provider keys never cross these contracts.
+
+Schemas retains activation/chunk selection policy, schema target checks, blocker
+priority, preview counts/pagination, durable snapshot assembly, retry lineage,
+and destructive-plan exclusion. Preview and creation share read-only preparation;
+creation recomputes facts and rejects stale revisions or blockers before plan
+persistence. Classification still covers all owned documents before selection,
+including explicit-ID previews. Target inspection preserves currentness semantics.
+
+`ArchitectureBoundaryTest` now rejects document internals throughout preparation,
+execution, retry, recovery, and currentness without preparation exceptions.
+Integration adapters only map public immutable values. Synchronous document reads
+participate in existing caller transactions; plan checkpoints and scheduling after
+commit remain schema-owned. HTTP contracts, SQL, canonical snapshot JSON and
+fingerprints, processing algorithms, and the recovery predicate remain unchanged.
+General AI compatibility extraction and full feature relocation remain deferred.
 
 ## Major flows
 
@@ -85,7 +96,7 @@ HTTP contracts, SQL, or persisted snapshot formats.
 | Schema registry and discovery | `controller/SchemaController.java` | `service/SchemaRegistryService.java`, `service/SchemaDiscoveryService.java`, `schema/SchemaParser.java`, `schema/SchemaValidator.java` |
 | Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
 | Documents and chunks | `controller/DocumentController.java`, `controller/ChunkingStateController.java` | `service/DocumentUploadService.java`, `service/DocumentProcessingService.java`, `document/ChunkingService.java` |
-| Reprocessing execution and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
+| Reprocessing preparation, execution, and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
 | Graph extraction | document processing endpoint | `service/GraphExtractionService.java`, `graph/GraphWriteService.java` |
 | Cypher | `controller/QueryController.java` | `service/CypherGenerationService.java`, `service/CypherValidationService.java`, `service/CypherExecutionService.java` |
 | Advanced search | `controller/AdvancedSearchRunController.java` | `service/AdvancedSearchRunService.java`, `service/DefaultAdvancedSearchRunProcessor.java` |

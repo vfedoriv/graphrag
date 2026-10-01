@@ -285,31 +285,13 @@ class ArchitectureBoundaryTest {
     }
 
     @Test
-    void remaining_reprocessing_preparation_dependencies_are_frozen_by_source_and_target() {
-        String orchestrator = SERVICE_PACKAGE + ".SchemaReprocessingPlanService";
-        Set<String> allowed = Set.of(
-            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentUploadNode",
-            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentProcessingRunNode",
-            orchestrator + " -> " + DOMAIN_PACKAGE + ".DocumentProcessingRunStatus",
-            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentUploadRepository",
-            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentChunkRepository",
-            orchestrator + " -> " + REPOSITORY_PACKAGE + ".DocumentProcessingRunRepository",
-            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentProcessingOptionsRegistry",
-            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentProcessingOptionSet",
-            orchestrator + " -> " + SERVICE_PACKAGE + ".DocumentFormatDetection",
-            orchestrator + " -> " + APPLICATION_PACKAGE + ".processing.ProcessingOptionResolver",
-            orchestrator + " -> " + APPLICATION_PACKAGE + ".processing.ProcessingJsonCodec",
-            orchestrator + " -> " + BASE_PACKAGE + ".document.ChunkingService",
-            orchestrator + " -> " + BASE_PACKAGE + ".document.chunking.ChunkingContext",
-            orchestrator + " -> " + BASE_PACKAGE + ".document.chunking.ChunkerRevision",
-            orchestrator + "$ChunkMigrationEvaluation -> " + DOMAIN_PACKAGE + ".DocumentUploadNode"
-        );
+    void all_reprocessing_preparation_and_inspection_use_consumer_ports() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
             .filter(javaClass -> javaClass.getName().startsWith(SERVICE_PACKAGE + ".SchemaReprocessing")
                 || isInPackage(javaClass, BASE_PACKAGE + ".schemas.reprocessing"))
             .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
             .filter(dependency -> isDocumentImplementation(dependency.getTargetClass()))
-            .map(ArchitectureBoundaryTest::format).filter(edge -> !allowed.contains(edge))
+            .map(ArchitectureBoundaryTest::format)
             .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertNoViolations(violations);
     }
@@ -327,6 +309,28 @@ class ArchitectureBoundaryTest {
         Set<String> violations = documentAccessesFromExecutionMethods(forbidden);
         assertTrue(violations.stream().anyMatch(value -> value.contains("DocumentUploadRepository")),
             "The method-origin guard must reject repository access even when its class edge is allowed for preparation");
+    }
+
+    @Test
+    void preparation_guard_rejects_repository_and_provider_contract_bypasses() {
+        JavaClasses forbidden = new ClassFileImporter().importClasses(ForbiddenPreparationFixture.class);
+        Set<String> violations = forbidden.stream()
+            .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
+            .filter(dependency -> isDocumentImplementation(dependency.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format)
+            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertTrue(violations.stream().anyMatch(value -> value.contains("DocumentUploadRepository")));
+        assertTrue(violations.stream().anyMatch(value -> value.contains("DocumentMigrationPreparation")));
+    }
+
+    private static class ForbiddenPreparationFixture {
+        private io.github.vfedoriv.graphrag.repository.DocumentUploadRepository documents;
+        private io.github.vfedoriv.graphrag.documents.contracts.DocumentMigrationPreparation provider;
+
+        void prepare() {
+            documents.findById("document");
+            provider.allOwned("kb");
+        }
     }
 
     private static Set<String> documentAccessesFromExecutionMethods(JavaClasses classes) {

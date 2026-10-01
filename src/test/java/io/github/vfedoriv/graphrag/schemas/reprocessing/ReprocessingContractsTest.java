@@ -68,6 +68,19 @@ class ReprocessingContractsTest {
         }
     }
 
+    @Test
+    void preparationContractsExistWithoutProviderSecrets() throws Exception {
+        for (String name : List.of(
+            "io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingDocumentPreparation",
+            "io.github.vfedoriv.graphrag.documents.contracts.DocumentMigrationPreparation")) {
+            Class<?> contract = Class.forName(name);
+            assertThat(contract.isInterface()).isTrue();
+            Class<?> profile = Class.forName(name + "$Profile");
+            assertThat(Arrays.stream(profile.getRecordComponents()).map(RecordComponent::getName))
+                .containsExactly("id", "revision", "baseUrl", "embeddingModel", "embeddingDimensions", "tokenizerId");
+        }
+    }
+
     private void assertRequiredFields(Object value, String... fields) throws Exception {
         RecordComponent[] components = value.getClass().getRecordComponents();
         Object[] arguments = new Object[components.length];

@@ -115,6 +115,11 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftJsonSupport jsonSupport;
     @Autowired private RuntimeSettingsService runtimeSettingsService;
 
+    @Autowired private io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService reprocessingPlans;
+    @Autowired private io.github.vfedoriv.graphrag.service.SchemaReprocessingRecoveryService reprocessingRecovery;
+    @Autowired @org.springframework.beans.factory.annotation.Qualifier("transactionManager")
+    private org.springframework.transaction.PlatformTransactionManager relationalTransactions;
+
     @BeforeEach
     void setUp() throws Exception {
         resetModelGate();
@@ -1137,6 +1142,77 @@ class SchemaDraftLifecycleIntegrationTest {
         assertThat(staleTargetHistory.path("content").get(0).path("retryable").asBoolean()).isFalse();
         assertThat(output.getAll()).doesNotContain(heldOutText, "Person P-100", "node:Person",
             "schema-draft-evaluation-v2\"", "POSSIBLE_NOISE");
+    }
+
+    @Test
+    void chunkPreparationParticipatesInCallerTransactionAndRecoveryUsesSavedTargets() throws Exception {
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
+            {"name":"migration","version":1,"nodes":[{"label":"Person","key":["personId"],
+            "properties":[{"name":"personId","type":"STRING","required":true}]}],"relationships":[]}
+            """, SchemaSourceType.PREDEFINED, KNOWLEDGE_BASE_ID);
+        schemaRegistryService.activateSchema(KNOWLEDGE_BASE_ID, schema.getId());
+        DocumentUploadNode document = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "migration.txt", "text/plain", "Person P-100".getBytes()));
+        String revision = runtimeSettingsService.effectiveChunkerRevision();
+        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest request =
+            new io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, List.of(document.getId()), Map.of(),
+                io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION,
+                io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection.DOCUMENT_IDS, revision);
+        assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID,
+            new io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, List.of(document.getId(), "foreign"), Map.of(),
+                request.reason(), request.selection(), revision)))
+            .isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
+        assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID,
+            new io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, request.documentIds(), Map.of(), request.reason(), request.selection(), "stale")))
+            .isInstanceOf(ConflictException.class);
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_plan", Long.class)).isZero();
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_item", Long.class)).isZero();
+
+        org.springframework.transaction.support.TransactionTemplate transaction =
+            new org.springframework.transaction.support.TransactionTemplate(relationalTransactions);
+        transaction.executeWithoutResult(status -> {
+            jdbcTemplate.update("UPDATE app.document_upload SET processing_defaults_json = ? WHERE id = ?",
+                "{\"preserveLineBreaks\":false}", document.getId());
+            io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse queued =
+                reprocessingPlans.create(KNOWLEDGE_BASE_ID, request);
+            String snapshotJson = jdbcTemplate.queryForObject(
+                "SELECT target_snapshot_json FROM app.schema_reprocessing_plan WHERE id = ?", String.class, queued.planId());
+            io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot snapshot = jsonSupport.read(
+                snapshotJson, io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot.class);
+            assertThat(snapshot.documents().get(document.getId()).effectiveProcessingOptions())
+                .containsEntry("preserveLineBreaks", false);
+            assertThat(jdbcTemplate.queryForObject(
+                "SELECT status FROM app.schema_reprocessing_plan WHERE id = ?", String.class, queued.planId())).isEqualTo("QUEUED");
+            assertThat(countNodes("DocumentChunk")).isZero();
+            assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID, request))
+                .isInstanceOf(ConflictException.class).hasMessageContaining("Another destructive");
+            status.setRollbackOnly();
+        });
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_plan", Long.class)).isZero();
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_item", Long.class)).isZero();
+        assertThat(countNodes("DocumentChunk")).isZero();
+
+        String planId = reprocessingPlans.create(KNOWLEDGE_BASE_ID, request).planId();
+        assertThat(awaitPlanTerminal(planId).path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(countNodes("DocumentChunk")).isGreaterThan(0);
+        jdbcTemplate.update("""
+            UPDATE app.schema_reprocessing_plan SET status = 'RUNNING', completed_at = NULL,
+                claimed_by = 'expired', claimed_at = now() - interval '2 hours', claim_until = now() - interval '1 hour',
+                succeeded_documents = 0, running_documents = 1 WHERE id = ?
+            """, planId);
+        jdbcTemplate.update("""
+            UPDATE app.schema_reprocessing_item SET status = 'RUNNING', completed_at = NULL,
+                started_at = now() - interval '2 hours', claimed_by = 'expired',
+                claimed_at = now() - interval '2 hours', claim_until = now() - interval '1 hour' WHERE plan_id = ?
+            """, planId);
+        reprocessingRecovery.recover();
+        JsonNode recovered = awaitPlanTerminal(planId);
+        assertThat(recovered.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(recovered.path("succeededDocuments").asInt()).isEqualTo(1);
+        assertThat(recovered.path("items").path("content").get(0).path("status").asText()).isEqualTo("SUCCEEDED");
     }
 
     @Test
