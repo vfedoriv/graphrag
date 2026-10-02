@@ -1,6 +1,11 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftAnalysisRetryEligibilityService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowNavigationService;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftKnowledgeBases;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftSchemaLookup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -10,22 +15,20 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftStatus;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunPageResponse;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceResultRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
 import java.time.Instant;
 import java.util.List;
@@ -39,15 +42,14 @@ class SchemaDraftWorkflowNavigationServiceTest {
     private final SchemaDraftEvaluationRunRepository evaluationRepository = mock(SchemaDraftEvaluationRunRepository.class);
     private final SchemaReprocessingPlanRepository reprocessingRepository = mock(SchemaReprocessingPlanRepository.class);
     private final SchemaDraftSourceRepository sourceRepository = mock(SchemaDraftSourceRepository.class);
-    private final KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
-    private final SchemaDefinitionRepository schemaRepository = mock(SchemaDefinitionRepository.class);
-    private final SchemaRegistryService schemaRegistryService = mock(SchemaRegistryService.class);
+    private final DraftKnowledgeBases knowledgeBaseRepository = mock(DraftKnowledgeBases.class);
+    private final DraftSchemaLookup schemaRepository = mock(DraftSchemaLookup.class);
     private final SchemaDraftJsonSupport jsonSupport = new SchemaDraftJsonSupport(new ObjectMapper());
     private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService =
         new SchemaDraftAnalysisRetryEligibilityService(analysisRepository, sourceRepository);
     private final SchemaDraftWorkflowNavigationService service = new SchemaDraftWorkflowNavigationService(
         analysisRepository, evaluationRepository, reprocessingRepository, sourceRepository,
-        knowledgeBaseRepository, schemaRepository, schemaRegistryService, jsonSupport, analysisRetryEligibilityService);
+        knowledgeBaseRepository, schemaRepository, jsonSupport, analysisRetryEligibilityService);
 
     @Test
     void derivesRunningAggregateAndStaleCurrentnessFromAuthoritativeDraftState() {

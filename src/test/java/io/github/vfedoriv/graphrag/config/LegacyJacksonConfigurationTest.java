@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftReviewState;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.DecisionResponse;
-import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftDecisionType;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftReviewState;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DecisionResponse;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,11 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftGuidanceMapper;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowCheckpointService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowNavigationService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
 
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
@@ -13,15 +19,15 @@ import io.github.vfedoriv.graphrag.config.SchemaDraftEvaluationProperties;
 import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.StartEvaluationRequest;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationReadiness;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.application.processing.GraphExtractionValidationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationOutcomeRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import java.util.List;

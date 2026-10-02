@@ -39,6 +39,37 @@ class DocumentSourceInputsFacadeTest {
     }
 
     @Test
+    void inspectOwnedReturnsMetadataWithoutReadingDocumentContent() {
+        DocumentUploadNode document = new DocumentUploadNode();
+        document.setId("document");
+        document.setKnowledgeBaseId("kb");
+        document.setOriginalFilename("source.txt");
+        document.setContentType("text/plain");
+        document.setSizeBytes(42L);
+        document.setSha256("source-hash");
+        document.setContentUri("private-storage-uri");
+        when(repository.findById("document")).thenReturn(Optional.of(document));
+
+        assertThat(facade.inspectOwned("kb", "document"))
+            .contains(new DocumentSourceInputs.Metadata(
+                "document", "source.txt", "text/plain", 42L, "source-hash"));
+        verifyNoInteractions(binaries, parser);
+    }
+
+    @Test
+    void inspectOwnedReturnsEmptyForMissingAndForeignDocuments() {
+        DocumentUploadNode foreign = new DocumentUploadNode();
+        foreign.setId("foreign-document");
+        foreign.setKnowledgeBaseId("other-kb");
+        when(repository.findById("missing")).thenReturn(Optional.empty());
+        when(repository.findById("foreign-document")).thenReturn(Optional.of(foreign));
+
+        assertThat(facade.inspectOwned("kb", "missing")).isEmpty();
+        assertThat(facade.inspectOwned("kb", "foreign-document")).isEmpty();
+        verifyNoInteractions(binaries, parser);
+    }
+
+    @Test
     void readProvidesCopiedBytesWithoutParsing() throws Exception {
         DocumentUploadNode document = new DocumentUploadNode();
         document.setId("document");

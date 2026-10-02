@@ -2,6 +2,7 @@ package io.github.vfedoriv.graphrag.documents.application.processing;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 

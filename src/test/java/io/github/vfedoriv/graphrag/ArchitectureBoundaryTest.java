@@ -68,59 +68,15 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".service.KnowledgeBaseService",
             BASE_PACKAGE + ".service.RuntimeSettingsService",
             BASE_PACKAGE + ".service.SchemaDraftEvaluationEligibilityService",
-            BASE_PACKAGE + ".service.SchemaDraftLifecycleService",
+            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftLifecycleService",
             BASE_PACKAGE + ".service.SchemaDraftPublicationService",
-            BASE_PACKAGE + ".service.SchemaDraftReviewService",
-            BASE_PACKAGE + ".service.SchemaDraftSourceService",
+            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftReviewService",
+            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftSourceService",
             BASE_PACKAGE + ".schemas.registry.application.SchemaRegistryService"
     );
 
-    // Exact direct dependencies retained until roadmap steps 6–9. New callers fail this check.
+    // Exact direct dependencies retained until roadmap steps 7–9. New callers fail this check.
     private static final java.util.Map<Integer, Set<String>> FROZEN_SCHEMA_BRIDGE_EDGES = java.util.Map.of(
-        6, Set.of(
-            edge("dto.SchemaDraftDtos$CandidateResponse", "schemas.discovery.DiscoveryContracts$CandidateKind"),
-            edge("dto.SchemaDraftDtos$CandidateResponse", "schemas.discovery.DiscoveryContracts$Evidence"),
-            edge("dto.SchemaDraftDtos$CandidateResponse", "schemas.discovery.DiscoveryContracts$EvidenceOrigin"),
-            edge("dto.SchemaDraftDtos$CandidateResponse", "schemas.discovery.DiscoveryContracts$ReviewState"),
-            edge("dto.SchemaDraftDtos$SourceOutcomeResponse", "schemas.discovery.SourceFailureCode"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.CandidateExtractionAttemptContext"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryAggregator"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryAggregator$AggregateResult"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryContracts$Conflict"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryContracts$ConflictCategory"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryContracts$FailureCategory"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoveryDeadlineExceededException"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoverySourceAnalyzer"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.DiscoverySourceAnalyzer$SourceAnalysis"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.PreparedDiscoverySource"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.SourceFailureClassifier"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.SourceFailureCode"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.SourceFailureDecision"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.SourceStateException"),
-            edge("service.SchemaDraftAnalysisService", "schemas.discovery.application.DiscoveryExecutionPolicy"),
-            edge("service.SchemaDraftAnalysisService$SourceTaskResult", "schemas.discovery.DiscoverySourceAnalyzer$SourceAnalysis"),
-            edge("service.SchemaDraftAnalysisService$SourceTaskResult", "schemas.discovery.PreparedDiscoverySource"),
-            edge("service.SchemaDraftAnalysisService$SourceTaskResult", "schemas.discovery.SourceFailureDecision"),
-            edge("service.SchemaDraftAnalysisService$StoredAnalysis", "schemas.discovery.CandidateExtractionResult$AliasSuggestion"),
-            edge("service.SchemaDraftAnalysisService$StoredAnalysis", "schemas.discovery.DiscoveryContracts$Candidate"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "schemas.discovery.DiscoveryContracts$SourceType"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "schemas.discovery.PreparedDiscoverySource"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "schemas.discovery.PreparedDiscoverySource$AnalysisChunk"),
-            edge("service.SchemaDraftLifecycleService", "schemas.registry.application.SchemaRegistryService"),
-            edge("service.SchemaDraftLifecycleService", "schemas.registry.domain.SchemaDefinitionNode"),
-            edge("service.SchemaDraftLifecycleService", "schemas.registry.ports.SchemaDefinitionRepository"),
-            edge("service.SchemaDraftReviewService", "schemas.discovery.DiscoveryContracts"),
-            edge("service.SchemaDraftReviewService", "schemas.discovery.DiscoveryContracts$Candidate"),
-            edge("service.SchemaDraftReviewService", "schemas.discovery.DiscoveryContracts$CandidateKind"),
-            edge("service.SchemaDraftReviewService", "schemas.discovery.DiscoveryContracts$EvidenceOrigin"),
-            edge("service.SchemaDraftReviewService", "schemas.discovery.DiscoveryContracts$ReviewState"),
-            edge("service.SchemaDraftReviewService", "schemas.registry.application.SchemaParser"),
-            edge("service.SchemaDraftReviewService", "schemas.registry.domain.SchemaDefinitionNode"),
-            edge("service.SchemaDraftReviewService", "schemas.registry.ports.SchemaDefinitionRepository"),
-            edge("service.SchemaDraftWorkflowNavigationService", "schemas.registry.application.SchemaRegistryService"),
-            edge("service.SchemaDraftWorkflowNavigationService", "schemas.registry.domain.SchemaDefinitionNode"),
-            edge("service.SchemaDraftWorkflowNavigationService", "schemas.registry.ports.SchemaDefinitionRepository")
-        ),
         7, Set.of(
             edge("service.SchemaDraftEvaluationService", "schemas.registry.application.SchemaParser"),
             edge("service.SchemaDraftPublicationService", "schemas.registry.application.SchemaRegistryService"),
@@ -170,16 +126,8 @@ class ArchitectureBoundaryTest {
             .importPackages(BASE_PACKAGE);
 
     // Exact transitional edges, grouped by their retirement roadmap step.
-    // 6 authoring; 7 evaluation; 8 search; 9 support/assembly.
+    // 7 evaluation; 8 search; 9 support/assembly.
     private static final java.util.Map<Integer, Set<String>> FROZEN_DOCUMENT_EDGES = java.util.Map.of(
-        6, Set.of(
-            edge("service.SchemaDraftAnalysisSourceFactory", "documents.application.management.DocumentUploadService"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "documents.application.processing.DocumentParsingService"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "documents.domain.DocumentUploadNode"),
-            edge("service.SchemaDraftAnalysisSourceFactory", "documents.ports.DocumentUploadRepository"),
-            edge("service.SchemaDraftSourceService", "documents.domain.DocumentUploadNode"),
-            edge("service.SchemaDraftSourceService", "documents.ports.DocumentUploadRepository")
-        ),
         7, Set.of(
             edge("documents.application.processing.ChunkingService", "service.ChunkMigrationSnapshot$ChunkTarget"),
             edge("documents.application.processing.ChunkingService", "service.ChunkMigrationSnapshot$DocumentTarget"),
@@ -317,7 +265,7 @@ class ArchitectureBoundaryTest {
         assertTrue(added.isEmpty() && stale.isEmpty(),
             "Unlisted document dependencies:\n" + String.join("\n", added)
                 + "\nStale document exceptions (remove them):\n" + String.join("\n", stale));
-        assertTrue(FROZEN_DOCUMENT_EDGES.keySet().equals(Set.of(6, 7, 8, 9)));
+        assertTrue(FROZEN_DOCUMENT_EDGES.keySet().equals(Set.of(7, 8, 9)));
     }
 
     @Test
@@ -384,7 +332,154 @@ class ArchitectureBoundaryTest {
             .flatMap(Set::stream).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertTrue(actual.equals(expected), "Schema bridge edges changed; expected " + expected
             + " but found " + actual);
-        assertTrue(FROZEN_SCHEMA_BRIDGE_EDGES.keySet().equals(Set.of(6, 7, 8, 9)));
+        assertTrue(FROZEN_SCHEMA_BRIDGE_EDGES.keySet().equals(Set.of(7, 8, 9)));
+    }
+
+    // Exact evaluation/publication and assembly dependencies pending roadmap steps 7/9.
+    private static final Set<String> FROZEN_DRAFT_LATER_EDGES = Set.of(
+        edge("config.PersistenceConfiguration", "schemas.drafts.adapters.relational.entity.SchemaDraftEntity"),
+        edge("config.PersistenceConfiguration", "schemas.drafts.adapters.relational.repository.JpaSchemaDraftRepository"),
+        edge("service.SchemaDraftEvaluationContractMapper", "schemas.drafts.application.SchemaDraftJsonSupport"),
+        edge("service.SchemaDraftEvaluationEligibilityService", "schemas.drafts.application.SchemaDraftLifecycleService"),
+        edge("service.SchemaDraftEvaluationEligibilityService", "schemas.drafts.domain.SchemaDraftNode"),
+        edge("service.SchemaDraftEvaluationEligibilityService", "schemas.drafts.ports.SchemaDraftSourceResultRepository"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftGuidanceMapper"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftJsonSupport"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftLifecycleService"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftReviewService"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftWorkflowCheckpointService"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.application.SchemaDraftWorkflowNavigationService"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.domain.SchemaDraftAggregateRevisionNode"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.domain.SchemaDraftNode"),
+        edge("service.SchemaDraftEvaluationService", "schemas.drafts.ports.SchemaDraftAggregateRevisionRepository"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.application.SchemaDraftJsonSupport"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.application.SchemaDraftLifecycleService"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.application.SchemaDraftReviewService"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.application.SchemaDraftWorkflowCheckpointService"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftAggregateRevisionNode"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftConflictNode"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftConflictType"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftDecisionNode"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftNode"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.domain.SchemaDraftStatus"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.ports.SchemaDraftAggregateRevisionRepository"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.ports.SchemaDraftConflictRepository"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.ports.SchemaDraftDecisionRepository"),
+        edge("service.SchemaDraftPublicationService", "schemas.drafts.ports.SchemaDraftRepository"),
+        edge("service.SchemaReprocessingPlanService", "schemas.drafts.application.SchemaDraftJsonSupport"),
+        edge("service.SchemaReprocessingPlanService", "schemas.drafts.application.SchemaDraftLifecycleService"),
+        edge("service.SchemaReprocessingPlanService", "schemas.drafts.application.SchemaDraftWorkflowCheckpointService"),
+        edge("service.SchemaReprocessingPlanService", "schemas.drafts.application.SchemaDraftWorkflowNavigationService"),
+        edge("service.SchemaReprocessingRecoveryService", "schemas.drafts.application.SchemaDraftJsonSupport"),
+        edge("service.SchemaReprocessingRecoveryService", "schemas.drafts.application.SchemaDraftWorkflowCheckpointService")
+    );
+
+    @Test
+    void draft_internal_callers_are_exact_later_slice_dependencies() {
+        Set<String> actual = PRODUCTION_CLASSES.stream()
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> isInAnyPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.drafts.application",
+                BASE_PACKAGE + ".schemas.drafts.domain", BASE_PACKAGE + ".schemas.drafts.ports",
+                BASE_PACKAGE + ".schemas.drafts.adapters"))
+            .filter(d -> !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".schemas.drafts")
+                && !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".bootstrap.integration.schemas"))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertTrue(actual.equals(FROZEN_DRAFT_LATER_EDGES), "Draft later edges changed: " + actual);
+    }
+
+    private static final Set<String> FROZEN_DRAFT_DOWNSTREAM_EDGES = Set.of(
+        edge("schemas.drafts.api.model.SchemaDraftDtos$EvaluationOutcomeResponse", "domain.SchemaDraftEvaluationOutcomeStatus"),
+        edge("schemas.drafts.api.model.SchemaDraftDtos$EvaluationRunResponse", "domain.SchemaDraftEvaluationStatus"),
+        edge("schemas.drafts.api.model.SchemaDraftDtos$EvaluationRunSummaryResponse", "domain.SchemaDraftEvaluationStatus"),
+        edge("schemas.drafts.api.model.SchemaDraftDtos$EvaluationWorkflowReference", "domain.SchemaDraftEvaluationStatus"),
+        edge("schemas.drafts.api.model.SchemaDraftDtos$ReprocessingWorkflowReference", "domain.SchemaReprocessingPlanStatus"),
+        edge("schemas.drafts.api.model.SchemaDraftDtos$StartEvaluationResponse", "domain.SchemaDraftEvaluationStatus"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "domain.SchemaDraftEvaluationOutcomeNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "domain.SchemaDraftEvaluationRunNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "domain.SchemaReprocessingItemNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "domain.SchemaReprocessingPlanNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "repository.SchemaDraftEvaluationOutcomeRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "repository.SchemaDraftEvaluationRunRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "repository.SchemaDraftPublicationRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "repository.SchemaReprocessingItemRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowCheckpointService", "repository.SchemaReprocessingPlanRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowNavigationService", "domain.SchemaDraftEvaluationRunNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowNavigationService", "domain.SchemaDraftEvaluationStatus"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowNavigationService", "domain.SchemaReprocessingPlanNode"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowNavigationService", "repository.SchemaDraftEvaluationRunRepository"),
+        edge("schemas.drafts.application.SchemaDraftWorkflowNavigationService", "repository.SchemaReprocessingPlanRepository")
+    );
+
+    @Test
+    void draft_later_checkpoint_api_and_summary_dependencies_remain_exact() {
+        Set<String> actual = dependenciesFromClassesIn(BASE_PACKAGE + ".schemas.drafts").stream()
+            .filter(d -> isInPackage(d.getTargetClass(), REPOSITORY_PACKAGE)
+                || d.getTargetClass().getName().startsWith(DOMAIN_PACKAGE + ".SchemaDraftEvaluation")
+                || d.getTargetClass().getName().startsWith(DOMAIN_PACKAGE + ".SchemaReprocessing"))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertTrue(actual.equals(FROZEN_DRAFT_DOWNSTREAM_EDGES), "Draft navigation dependencies changed: " + actual);
+    }
+
+    @Test
+    void draft_authoring_uses_public_document_registry_and_knowledge_base_facts() {
+        Set<String> violations = dependenciesFromClassesIn(BASE_PACKAGE + ".schemas.drafts").stream()
+            .filter(d -> draftForeignImplementation(d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    private static boolean draftForeignImplementation(JavaClass target) {
+        return schemaOwnershipDependencyForbidden(target)
+            || isInPackage(target, BASE_PACKAGE + ".schemas.registry")
+            || Set.of(SERVICE_PACKAGE + ".KnowledgeBaseService", SERVICE_PACKAGE + ".KnowledgeBaseLifecycleService",
+                DOMAIN_PACKAGE + ".AiProfileNode").contains(target.getName());
+    }
+
+    @Test
+    void draft_fact_boundary_values_are_immutable_and_exclude_persistence_and_clients() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> isInPackage(c, BASE_PACKAGE + ".schemas.drafts.ports")
+                && !c.getSimpleName().endsWith("Repository") && !c.getSimpleName().equals("DraftBinaryStorage"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> draftForeignImplementation(d.getTargetClass()) || isInfrastructureClient(d.getTargetClass())
+                || isInAnyPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.drafts.domain",
+                    BASE_PACKAGE + ".schemas.drafts.adapters", BASE_PACKAGE + ".schemas.drafts.application"))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        PRODUCTION_CLASSES.stream()
+            .filter(c -> isInPackage(c, BASE_PACKAGE + ".schemas.drafts.ports")
+                && !c.getSimpleName().endsWith("Repository"))
+            .flatMap(c -> c.getFields().stream())
+            .filter(field -> !field.getModifiers().contains(com.tngtech.archunit.core.domain.JavaModifier.FINAL))
+            .map(field -> field.getFullName()).forEach(violations::add);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void draft_boundary_fixture_rejects_foreign_records_repositories_clients_and_adapter_transactions() {
+        JavaClass fixture = new ClassFileImporter().importClasses(ForbiddenDraftBoundaryFixture.class)
+            .get(ForbiddenDraftBoundaryFixture.class);
+        Set<String> forbidden = fixture.getDirectDependenciesFromSelf().stream()
+            .filter(d -> draftForeignImplementation(d.getTargetClass()) || isInfrastructureClient(d.getTargetClass()))
+            .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
+        assertTrue(forbidden.containsAll(Set.of("SchemaDefinitionRepository", "KnowledgeBaseRepository",
+            "DocumentUploadRepository", "AiProfileNode", "ChatModel")));
+        assertTrue(fixture.getDirectDependenciesFromSelf().stream()
+            .anyMatch(d -> d.getTargetClass().getSimpleName().equals("SchemaDraftRepository")
+                && !integrationDependencyAllowed(d.getTargetClass())),
+            "Mapping adapters cannot consume authoring persistence ports");
+        assertTrue(fixture.getMethods().stream().anyMatch(ArchitectureBoundaryTest::isStoreTransactional));
+    }
+
+    private static class ForbiddenDraftBoundaryFixture {
+        io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository drafts;
+        io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository schemas;
+        io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository knowledgeBases;
+        io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository documents;
+        io.github.vfedoriv.graphrag.domain.AiProfileNode mutableProfile;
+        ChatModel model;
+
+        @RelationalTransactional
+        void forbiddenAdapterTransaction() { }
     }
 
     private static boolean schemaContractDependencyForbidden(JavaClass target) {
@@ -681,7 +776,8 @@ class ArchitectureBoundaryTest {
                 .filter(javaClass -> javaClass.isAssignableTo(JpaRepository.class))
                 .filter(javaClass -> !isInAnyPackage(javaClass, RELATIONAL_REPOSITORY_PACKAGE, BASE_PACKAGE + ".documents.adapters.relational.repository",
                     BASE_PACKAGE + ".knowledgebase.adapters.relational.repository",
-                    BASE_PACKAGE + ".schemas.registry.adapters.relational.repository"))
+                    BASE_PACKAGE + ".schemas.registry.adapters.relational.repository",
+                    BASE_PACKAGE + ".schemas.drafts.adapters.relational.repository"))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
         PRODUCTION_CLASSES.stream()
@@ -693,7 +789,8 @@ class ArchitectureBoundaryTest {
                 .filter(javaClass -> javaClass.isAnnotatedWith(Entity.class))
                 .filter(javaClass -> !isInAnyPackage(javaClass, RELATIONAL_ENTITY_PACKAGE, BASE_PACKAGE + ".documents.adapters.relational.entity",
                     BASE_PACKAGE + ".knowledgebase.adapters.relational.entity",
-                    BASE_PACKAGE + ".schemas.registry.adapters.relational.entity"))
+                    BASE_PACKAGE + ".schemas.registry.adapters.relational.entity",
+                    BASE_PACKAGE + ".schemas.drafts.adapters.relational.entity"))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
         PRODUCTION_CLASSES.stream()
@@ -966,10 +1063,18 @@ class ArchitectureBoundaryTest {
         return isInAnyPackage(target, "java.lang", "java.util", "org.springframework.stereotype",
                 "org.springframework.beans.factory.annotation")
             || isAiBoundaryValue(target)
+            || isDraftFactPort(target)
             || isInAnyPackage(target, BASE_PACKAGE + ".ai.ports",
                 BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".schemas.registry.ports",
-                BASE_PACKAGE + ".schemas.discovery.ports", BASE_PACKAGE + ".knowledgebase.ports",
+                BASE_PACKAGE + ".schemas.discovery.ports",
+                BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".knowledgebase.ports",
                 BASE_PACKAGE + ".knowledgebase.contracts") || isMigratedAdapter(target);
+    }
+
+    private static boolean isDraftFactPort(JavaClass target) {
+        return Set.of("DraftDocumentInputs", "DraftSchemaLookup", "DraftKnowledgeBases").stream()
+            .map(name -> BASE_PACKAGE + ".schemas.drafts.ports." + name)
+            .anyMatch(name -> target.getName().equals(name) || target.getName().startsWith(name + "$"));
     }
 
     private static boolean isAiBoundaryValue(JavaClass target) {

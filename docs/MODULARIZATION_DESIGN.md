@@ -1,9 +1,9 @@
 # Feature modularization: decisions and migration roadmap
 
-Date: 2026-10-01
-Status: roadmap steps 1–4 implemented: reprocessing execution/recovery, document
-migration preparation, knowledge-base/AI state boundaries, and document
-consolidation. Step 5 (schema registry/discovery) is implemented.
+Date: 2026-10-02
+Status: roadmap steps 1–6 are implemented: reprocessing execution/recovery,
+document migration preparation, knowledge-base/AI state boundaries, document
+consolidation, schema registry/discovery, and draft authoring ownership.
 
 ## Purpose
 
@@ -12,9 +12,10 @@ boundaries explicit, and retain a path toward reusable libraries and independent
 deployable workers. These are complementary goals. Reuse and separate deployment
 are options, not requirements for the initial migration.
 
-This document records the architectural discussion and exploration. It is a
-planning document, not a description of the repository's current package layout.
-Detailed OpenSpec changes govern each implementation slice.
+This document records architectural decisions, current migration status, and
+remaining roadmap choices. It is not an exhaustive package reference; the
+architecture portal describes the current ownership boundaries. Detailed
+OpenSpec changes govern each implementation slice.
 
 ## Findings from the current repository
 
@@ -35,10 +36,13 @@ Detailed OpenSpec changes govern each implementation slice.
   Historical value/identity bridges and legacy `TokenizerId` support retire in
   steps 8/9.
 - Search run management directly reads schema and knowledge-base repositories.
-- Draft evaluation reads and prepares documents but must never persist its dry
-  extraction to the knowledge-base graph.
-- Draft analysis, review, evaluation, and publication have substantial workflows
-  and shared durable state; migrating all schemas in one change would be too broad.
+- Draft authoring now owns lifecycle, sources, durable analysis/recovery, review,
+  conflicts, draft history, and its relational/binary persistence under
+  `schemas.drafts`.
+- Evaluation/publication remain a separate step-7 slice. Evaluation reads and
+  prepares documents but must never persist its dry extraction to the
+  knowledge-base graph; navigation retains bounded later-workflow summaries
+  until evaluation and reprocessing owners move.
 
 ## Confirmed decisions
 
@@ -157,7 +161,8 @@ own enforceable boundary; no repository-wide rename is required up front.
   processing algorithm, HTTP API, destructive-plan exclusion, or persisted format.
 - Change 1 may retain named preparation dependencies for change 2. It must not
   claim that all schemas/document coupling has already disappeared.
-- Change 6 establishes ownership, not a rewrite of every large draft service.
+- Change 6 established draft ownership without rewriting its analysis algorithms,
+  API behavior, persistence history, or workflow semantics.
 - Change 9 is limited to identified residual dependencies and application assembly.
 - New architecture tests should reject new violations while freezing any remaining
   transitional exceptions by explicit class/path and removing them in later slices.
@@ -222,7 +227,42 @@ aggregation, and deadlines. Its document inputs are acquired through the
 file parsing, defensive copies, and no path or persistence-record exposure.
 
 `ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies
-and freezes the remaining exact edges by retirement step: draft authoring (6),
-evaluation/publication and reprocessing organization (7), search (8), and
-support/assembly (9). Existing draft/evaluation/search callers retain their
-legacy entry points until those roadmap steps move them to public contracts.
+and freezes remaining exact edges by retirement step: evaluation/publication and
+reprocessing organization (7), search (8), and support/assembly (9). Draft
+authoring's step-6 document and registry/discovery exceptions are retired.
+
+## Step-6 draft authoring boundary
+
+Step 6 consolidates draft authoring under `schemas.drafts`: API mapping,
+lifecycle, source revisions, durable analysis and recovery, review decisions,
+conflicts, navigation, draft-owned relational persistence, and binary storage
+effects. The package has API, application, domain, ports, and adapter areas.
+Existing SQL/table mappings, serialized snapshots, source history, binary
+namespace, and HTTP contracts remain compatible; no SQL or binary migration is
+required.
+
+Draft workflows consume scoped document facts through the `DraftDocumentInputs`
+port, mapped to documents' `DocumentSourceInputs` capability. Metadata and
+fingerprint inspection, content reads, and parsing use immutable values without
+document records or local paths. Schemas keeps source revision and hash checks,
+stale/unavailable decisions, analysis bounds, and chunk/run policy. Loaded bytes
+are checked against the captured source hash before parsing. Draft-owned
+text/file content uses a schema-owned binary adapter over shared storage;
+referenced document content remains document-owned.
+
+Base schema identity, knowledge-base association, stored definition, and content
+hash facts flow through `DraftSchemaLookup`, mapped to
+`schemas.contracts.StoredSchemaSnapshots`. Metadata reads do not parse; review
+inheritance requests a parsed snapshot separately. Managed knowledge-base admission,
+active schema identity, and non-secret active AI profile ID/revision facts flow
+through `DraftKnowledgeBases`, mapped to the knowledge-base-owned capability.
+The integration adapters only translate immutable values and add no transaction
+boundary; synchronous reads join the caller's relational transaction. Provider
+client construction stays AI-owned.
+
+Evaluation/publication orchestration remains step 7. Draft navigation retains
+bounded batch summaries for evaluation and reprocessing until those owners move
+in steps 7 and 9. Search exceptions remain step 8, and support/assembly remains
+step 9. `ArchitectureBoundaryTest` removes the exact step-6 document and
+registry/discovery authoring edges while retaining only named later-step
+exceptions.

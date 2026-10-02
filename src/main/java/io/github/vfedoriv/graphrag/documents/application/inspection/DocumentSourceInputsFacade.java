@@ -7,6 +7,7 @@ import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +24,14 @@ public class DocumentSourceInputsFacade implements DocumentSourceInputs {
         this.documents = documents;
         this.binaries = binaries;
         this.parsing = parsing;
+    }
+
+    @Override
+    public Optional<Metadata> inspectOwned(String knowledgeBaseId, String documentId) {
+        return documents.findById(documentId)
+            .filter(document -> knowledgeBaseId.equals(document.getKnowledgeBaseId()))
+            .map(document -> new Metadata(document.getId(), document.getOriginalFilename(), document.getContentType(),
+                document.getSizeBytes(), document.getSha256()));
     }
 
     @Override

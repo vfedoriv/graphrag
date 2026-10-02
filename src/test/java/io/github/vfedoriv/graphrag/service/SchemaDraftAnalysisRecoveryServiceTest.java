@@ -5,10 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftAnalysisRecoveryService;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

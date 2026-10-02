@@ -7,7 +7,7 @@ import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.time.Instant;
 import java.util.List;
 
-/** Complete, immutable stored schema value for consumers outside the registry. */
+/** Immutable stored schema value; metadata lookups may omit the parsed schema. */
 public record SchemaSnapshot(
     String knowledgeBaseId,
     String schemaDefinitionId,

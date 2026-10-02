@@ -10,6 +10,7 @@ import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingServ
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

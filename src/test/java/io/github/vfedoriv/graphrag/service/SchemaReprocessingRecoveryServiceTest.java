@@ -9,6 +9,8 @@ import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowCheckpointService;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingProcessingOutcomeReader;
 import java.time.Instant;
 import java.util.List;

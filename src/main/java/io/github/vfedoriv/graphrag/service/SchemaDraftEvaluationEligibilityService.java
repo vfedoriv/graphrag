@@ -1,14 +1,15 @@
 package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationIneligibilityReason;
-import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationReadiness;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationEligibleDocumentResponse;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationIneligibilityReason;
+import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationReadiness;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceResultRepository;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

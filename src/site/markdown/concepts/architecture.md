@@ -153,13 +153,14 @@ of legacy profile and knowledge-base services until support consolidation in
 step 9. No allowance permits foreign state reads. Architecture tests enforce
 pure rules/contracts, public-capability mapping, feature-to-bootstrap isolation,
 and exact bridge callers alongside all predecessor reprocessing guards.
-Document consolidation (step 4) and schema registry/discovery boundaries (step 5)
-are implemented. Registry definitions, parser, validator, persistence adapter,
-and active resolver live under `schemas.registry`. Knowledge-base association
-state lives under `knowledgebase`; registry workflows use its admission and
-association capabilities through mapping-only `bootstrap.integration.schemas`
-adapters. Association reads and writes join the caller's relational transaction;
-activation retains the knowledge-base lock and after-commit reprocessing trigger.
+Document consolidation (step 4), schema registry/discovery boundaries (step 5),
+and draft authoring ownership (step 6) are implemented. Registry definitions,
+parser, validator, persistence adapter, and active resolver live under
+`schemas.registry`. Knowledge-base association state lives under `knowledgebase`;
+registry workflows use its admission and association capabilities through
+mapping-only `bootstrap.integration.schemas` adapters. Association reads and
+writes join the caller's relational transaction; activation retains the
+knowledge-base lock and after-commit reprocessing trigger.
 
 `schemas.contracts` exposes immutable, complete schema snapshots with stored
 content and hash. Document extraction resolves the active or expected schema
@@ -167,8 +168,46 @@ through this contract, preserving revision checks. `schemas.discovery` owns
 input preparation, orchestration, model-response interpretation, and aggregation.
 Document source reads and file parsing come from the `DocumentSourceInputs`
 capability, whose immutable values carry no storage paths or persistence records.
-Remaining direct schema dependencies in draft/evaluation, search, and support
-are frozen to roadmap steps 6–9 by `ArchitectureBoundaryTest`.
+
+## Schema draft authoring boundary
+
+`schemas.drafts` owns authoring API mapping, lifecycle, durable source and
+revision state, analysis and recovery, review decisions and conflicts, navigation,
+and draft storage journaling. Its `api`, `application`, `domain`, `ports`, and
+`adapters` packages keep draft rules and persistence with the schema feature.
+Relational checkpoints remain separate from external processing. Draft-owned
+text/file bytes use a schema-owned binary port and adapter over shared storage;
+referenced document binaries stay in documents. No SQL or binary migration is
+required, and existing source history, snapshots, and workflow behavior remain
+readable.
+
+`DraftDocumentInputs` supplies scoped owned-document metadata and fingerprints
+through `documents.contracts.DocumentSourceInputs`, provided by
+`documents.application.inspection.DocumentSourceInputsFacade`; content reads
+and parsing use the same public capability. The immutable values carry
+identifiers, hashes, metadata, and defensively copied bytes without document
+records or local paths. Schemas retains source revisions, stale and unavailable
+classification, analysis bounds, and run policy. Loaded document bytes are
+checked against the captured source hash before parsing, including when a
+replacement commits between metadata inspection and content loading.
+
+`DraftSchemaLookup` maps `schemas.contracts.StoredSchemaSnapshots`, provided by
+`schemas.registry.application.StoredSchemaSnapshotsFacade`, to immutable
+snapshots for base-schema association, stored definition, and content hash
+checks without parsing. Review inheritance requests a parsed stored snapshot
+separately. `DraftKnowledgeBases` maps managed knowledge base admission, active
+schema ID, and non-secret active AI profile facts, including profile ID and
+revision, from `knowledgebase.contracts.DraftKnowledgeBaseFacts`. These
+`bootstrap.integration.schemas` adapters only map values and add no transactions;
+synchronous reads join their caller's transaction. Model client construction
+remains AI-owned.
+
+Evaluation and publication workflows remain a separate step-7 slice. Draft
+navigation keeps bounded batch summaries for evaluation and reprocessing until
+those owners move in steps 7 and 9. Search dependencies remain step 8, and
+support/assembly dependencies remain step 9. `ArchitectureBoundaryTest` retires
+the exact step-6 document and registry/discovery authoring edges while retaining
+only the named later-step exceptions; it rejects new or stale allowances.
 
 ## Major flows
 
@@ -182,6 +221,7 @@ are frozen to roadmap steps 6–9 by `ArchitectureBoundaryTest`.
 | Area | Entry points | Core implementation |
 |---|---|---|
 | Schema registry and discovery | `controller/SchemaController.java` | `schemas/registry/application/SchemaRegistryService.java`, `schemas/discovery/application/SchemaDiscoveryService.java`, `schemas/registry/application/SchemaParser.java`, `schemas/registry/application/SchemaValidator.java` |
+| Schema draft authoring | `schemas/drafts/api/SchemaDraftController.java` | `schemas/drafts/application`, `schemas/drafts/domain`, `schemas/drafts/ports`, `schemas/drafts/adapters` |
 | Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
 | Documents and chunks | `documents/api/DocumentController.java`, `documents/api/ChunkingStateController.java` | `documents/application/management/DocumentUploadService.java`, `documents/application/processing/DocumentProcessingService.java`, `documents/application/processing/ChunkingService.java` |
 | Reprocessing preparation, execution, and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |

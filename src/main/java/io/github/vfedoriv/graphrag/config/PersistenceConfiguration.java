@@ -31,14 +31,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.RelationalEntityMarker;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.RelationalRepositoryMarker;
 import io.github.vfedoriv.graphrag.repository.GraphRepositoryMarker;
+import io.github.vfedoriv.graphrag.schemas.drafts.adapters.relational.entity.SchemaDraftEntity;
+import io.github.vfedoriv.graphrag.schemas.drafts.adapters.relational.repository.JpaSchemaDraftRepository;
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
 @EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class,
-    KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class})
+    KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class, SchemaDraftEntity.class})
 @EnableJpaRepositories(
     basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class,
-        JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class},
+        JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class, JpaSchemaDraftRepository.class},
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"
 )

@@ -111,8 +111,25 @@ Schema registry and discovery ownership (step 5) is implemented under
 `schemas.registry` and `schemas.discovery`. Immutable `schemas.contracts` snapshots
 feed document extraction; knowledge-base associations and document source inputs
 are accessed through public capabilities and mapping-only bootstrap adapters.
-`ArchitectureBoundaryTest` freezes remaining draft/evaluation/search/support
-dependencies for retirement in steps 6–9.
+Schema draft authoring (step 6) is owned by `schemas.drafts` across API,
+application, domain, ports, and relational/binary adapters. Lifecycle, source
+revision and storage recovery, durable analysis, review, conflicts, and draft
+history use schema-owned persistence. `DraftDocumentInputs` obtains scoped
+metadata/fingerprints and content/parsing through the documents-owned
+`DocumentSourceInputs` capability. Loaded document bytes are checked against the
+captured source hash before parsing. `DraftSchemaLookup` reads immutable stored
+schema facts without parsing; review requests a parsed definition separately; `DraftKnowledgeBases` supplies managed-knowledge-base
+admission, active schema ID, and non-secret active profile ID/revision facts.
+Mapping adapters under
+`bootstrap.integration.schemas` expose no persistence records, paths, clients, or
+secrets and add no transactions; synchronous reads join the caller's transaction.
+Draft-owned bytes still use shared storage, while relational checkpoints remain
+separate from external work.
+
+The exact step-6 document and registry/discovery authoring exceptions are retired.
+Evaluation/publication and navigation's bounded later-workflow summaries remain
+step 7/9 seams, search remains step 8, and support/assembly remains step 9.
+`ArchitectureBoundaryTest` retains only those exact later-step exceptions.
 
 
 ### Main Controllers
