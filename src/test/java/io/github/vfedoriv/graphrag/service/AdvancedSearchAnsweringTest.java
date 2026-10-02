@@ -1,4 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchCitationCatalog;
+import io.github.vfedoriv.graphrag.search.answering.domain.QueryEvidenceAssemblyService;
+import io.github.vfedoriv.graphrag.search.answering.adapters.model.AdvancedSearchAnswerSynthesizer;
+
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -9,31 +14,31 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Answer;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.AnswerStatus;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Claim;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.ClaimKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.CitationType;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Confidence;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.ConfidenceLevel;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Evidence;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.GraphFact;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.Limitation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchAnswerContracts.SourceRange;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ParentCitation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SchemaRepresentation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.CitationKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.ParentContext;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Answer;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.AnswerStatus;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Claim;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.ClaimKind;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.CitationType;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Confidence;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.ConfidenceLevel;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Evidence;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.GraphFact;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Limitation;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.SourceRange;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ParentCitation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.SchemaRepresentation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.CitationKind;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceSource;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.ParentContext;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.SourceBounds;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchAnswerSynthesizer.Outcome;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchCitationCatalog.Catalog;
-import io.github.vfedoriv.graphrag.service.QueryEvidenceAssemblyService.AdvancedQueryEvidenceAssembly;
+import io.github.vfedoriv.graphrag.search.answering.domain.AnswerSynthesis.Outcome;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchCitationCatalog.Catalog;
+import io.github.vfedoriv.graphrag.search.answering.domain.QueryEvidenceAssemblyService.AdvancedQueryEvidenceAssembly;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -92,8 +97,8 @@ class AdvancedSearchAnsweringTest {
         EvidenceSource parent = new EvidenceSource("parent-1", "doc-1", 1, bounds, "run-1", "rev-1", "section");
         ParentContext context = new ParentContext(
             "context-1", "doc-1", "PARENT", "broader context", bounds, "rev-1", List.of("child-1"), 3);
-        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphFact fact =
-            new io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphFact(
+        io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphFact fact =
+            new io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphFact(
                 "F1", new SchemaRepresentation(FactKind.NODE, "Project", null, null), Map.of(), List.of("GE1"),
                 List.of(new ParentCitation("parent-1", "doc-1", 0, 50, 1, 1, "run-1", "rev-1", "section")));
         EvidenceCandidate textCandidate = new EvidenceCandidate(

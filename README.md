@@ -99,10 +99,23 @@ compatibility under `ai.domain` and admission through `EmbeddingCompatibility`;
 `AiProfileAssignmentsFacade`; AI profile persistence reads only profiles.
 Synchronous count/assignment reads join caller transactions. Cleanup failure
 prevents relational deletion but may leave earlier external effects.
-`EmbeddingSpacePolicy` remains a delegating bridge only for
-`AdvancedSearchReadinessService` and `DenseTextRetriever` (roadmap step 8);
-architecture tests freeze its exact callers. Document processing and migration
-preparation use AI-owned `EmbeddingCompatibility` and immutable `EmbeddingTarget`.
+Search consolidation (roadmap step 8) is implemented under `search.query`,
+`search.retrieval`, `search.ranking`, `search.answering`, and `search.runs`. Search
+owns query and advanced-search APIs, workflows, deterministic policy, query and
+retrieval effects, model adapters, and durable run persistence. Document metadata
+is supplied through `DocumentMetadataAccess`: citation lookup is capped at 128
+IDs and metadata selection at 200 results; `SearchDocumentMetadataAdapter` maps
+it to search-owned ports. `SearchKnowledgeBaseAccess` supplies knowledge-base existence and active
+schema/profile facts, while `StoredSchemaSnapshots`, `SchemaSnapshots`, and
+`CapturedSchemaParsing` supply stored, active, and captured schema facts through
+`SearchSchemaAdapter` in `bootstrap.integration.search`. AI owns compatibility
+through `EmbeddingCompatibility` and immutable `EmbeddingTarget`; the
+`EmbeddingSpacePolicy` bridge has been removed. `ArchitectureBoundaryTest` retires
+the step-8 schema, document-metadata, and compatibility exceptions. Exact settings,
+AI model/profile construction, observability, logging, transaction, shared
+embedding/lexical-index, and configuration-assembly seams remain assigned to
+roadmap step 9. Document processing and migration preparation use AI-owned
+`EmbeddingCompatibility` and immutable `EmbeddingTarget` directly.
 
 Document ownership is consolidated under `documents`: API entry points and models
 in `api`, management and processing workflows in `application`, deterministic
@@ -143,5 +156,5 @@ retains durable intent, inactive registration, and transactional draft linkage.
 Draft navigation consumes bounded batch summary ports through mapping-only bridges.
 Existing HTTP/SQL/snapshot contracts, fingerprints, race semantics, and recovery
 predicates remain unchanged. The exact step-6 and step-7 exceptions are retired;
-`ArchitectureBoundaryTest` retains only exact search (step 8) and support/assembly
-(step 9) exceptions.
+`ArchitectureBoundaryTest` retains only exact support/assembly (step 9)
+exceptions after search consolidation.

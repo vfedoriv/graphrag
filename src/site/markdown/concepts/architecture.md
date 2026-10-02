@@ -58,11 +58,11 @@ Relational checkpoints remain separate from model, filesystem, and graph effects
 scoped cleanup, persisted snapshots, stale-run recovery, and the absence of an
 enclosing cross-store transaction are unchanged.
 
-`ArchitectureBoundaryTest` freezes exact class-to-class transitional edges with
-retirement steps: search readers (8) and settings/AI/support assembly (9).
-The exact draft-authoring (6) and evaluation/publication/reprocessing (7) edges
-are retired. These allowances preserve the completed feature boundaries and
-prohibit additional foreign callers.
+`ArchitectureBoundaryTest` freezes only identified support and assembly edges
+for roadmap step 9. Search's exact step-8 document, schema, and compatibility
+exceptions are retired, as are the step-6 draft-authoring and step-7
+evaluation/publication/reprocessing edges. The remaining allowances are exact
+class-to-class pairs and prohibit additional foreign callers.
 
 ## Reprocessing execution and recovery boundary
 
@@ -143,15 +143,16 @@ invalidation change. Counts and assignments participate in caller transactions;
 integration adapters under `bootstrap.integration.ai` and
 `bootstrap.integration.knowledgebase` only map values and add no transactions.
 
-`EmbeddingSpacePolicy` remains a repository-free delegating bridge with exactly
-`AdvancedSearchReadinessService` and `DenseTextRetriever` as callers (search step 8).
-`EmbeddingSpaceIdentity` and `EmbeddingSpace` retain historical utility/value
-entry points for search and index support, retiring in steps 8/9. The immutable
-`TokenizerId` value in `documents.domain.chunking` remains a frozen dependency
-of legacy profile and knowledge-base services until support consolidation in
-step 9. No allowance permits foreign state reads. Architecture tests enforce
-pure rules/contracts, public-capability mapping, feature-to-bootstrap isolation,
-and exact bridge callers alongside all predecessor reprocessing guards.
+Search readiness and dense retrieval use AI-owned `EmbeddingCompatibility` and
+immutable non-secret `EmbeddingTarget` values. The obsolete
+`EmbeddingSpacePolicy` bridge has been removed. Shared embedding identity/index
+and lexical-index maintenance remain step-9 support because document writes and
+cleanup also use those services. The immutable `TokenizerId` value in
+`documents.domain.chunking` remains a frozen dependency of legacy profile and
+knowledge-base services until support consolidation in step 9. No allowance
+permits foreign state reads. Architecture tests enforce pure rules/contracts,
+public-capability mapping, feature-to-bootstrap isolation, and exact remaining
+support edges alongside all predecessor reprocessing guards.
 Document consolidation (step 4), schema registry/discovery boundaries (step 5),
 and draft authoring ownership (step 6) are implemented. Registry definitions,
 parser, validator, persistence adapter, and active resolver live under
@@ -206,8 +207,8 @@ Draft navigation consumes `DraftEvaluationSummaries` and
 and reprocessing own the immutable batch summaries, including latest/current
 resource references; list mapping does not read downstream repositories or issue
 one detail request per draft. Stable ordering, filtering before totals, and
-pagination remain compatible. Only exact search (step 8) and support/assembly
-(step 9) dependencies remain frozen.
+pagination remain compatible. Search's exact step-8 exceptions are retired; only
+identified support/assembly (step 9) dependencies remain frozen.
 
 ## Schema evaluation and publication boundary
 
@@ -253,7 +254,47 @@ add no transactions; synchronous fact reads join the caller's transaction.
 Existing HTTP/SQL mappings, historical JSON, and canonical fingerprint bytes
 remain compatible without SQL or binary migration. Architecture tests reject
 foreign implementation/persistence access and retire the exact step-7 exceptions;
-only the named step-8/9 edges remain.
+search consolidation also retires its exact step-8 edges, leaving only named
+support/assembly (step 9) dependencies frozen.
+
+## Search ownership
+
+Query/ask and advanced search are consolidated under `search.query`,
+`search.retrieval`, `search.ranking`, `search.answering`, and `search.runs`. These
+areas own their API values, workflows, deterministic policy, effect ports and
+adapters, and durable run state. `search.query.adapters.graph` owns query
+execution and planner inspection; `search.retrieval.adapters.graph` owns graph,
+text, and parent-context retrieval; `search.runs.adapters.relational` owns run,
+attempt, and result persistence. Existing SQL mappings, JSON snapshots, result
+payload version, API responses, and recovery semantics remain unchanged.
+
+Search obtains document names and content types through document-owned
+`DocumentMetadataAccess`. `SearchDocumentMetadataAdapter` maps these immutable
+facts to search ports; citation lookup is bounded to 128 IDs and metadata-based
+selection to 200 results. `SearchKnowledgeBaseAccess` provides scoped admission
+and non-secret active schema/profile IDs. `SearchSchemaAdapter` maps the
+schema-owned `StoredSchemaSnapshots`, `SchemaSnapshots`, and
+`CapturedSchemaParsing` capabilities to `SearchSchemas`. Readiness checks schema
+availability without parsing, run creation captures the exact stored content and
+hash, and workers parse that captured content rather than current registry state.
+The bootstrap adapters only map values and add no transactions; synchronous reads
+participate in the caller's relational transaction.
+
+AI owns search embedding compatibility through `EmbeddingCompatibility` and
+`EmbeddingTarget`. `GraphPlanValidation` is a domain value; plan validation and
+rendering rules remain under `search.retrieval.domain`, while
+`AdvancedSearchPlanValidator` and
+`search.retrieval.application.validation.GraphPlanValidationService` are
+application workflows. Model-dependent planning, dense embedding, reranking,
+sufficiency, and answer synthesis use search model adapters, keeping client
+construction and profile support AI-owned.
+
+Step 9 retains the named support and assembly seams for runtime settings, AI
+profile/model construction, observability, metadata-first logging, transaction
+wrappers, shared embedding/lexical-index maintenance, and configuration wiring.
+Document persistence and cleanup do not depend on search. The architecture test
+freezes only exact step-9 pairs; search's step-8 schema/document/compatibility
+exceptions have been retired.
 
 ## Major flows
 
@@ -274,8 +315,8 @@ only the named step-8/9 edges remain.
 | Schema publication | `schemas/publication/api/SchemaDraftPublicationController.java` | `schemas/publication/application`, `schemas/publication/domain`, `schemas/publication/ports`, `schemas/publication/adapters`, `schemas/contracts` |
 | Reprocessing preparation, execution, and recovery | `schemas/reprocessing/api/SchemaReprocessingPlanController.java` | `schemas/reprocessing/application`, `schemas/reprocessing/domain`, `schemas/reprocessing/ports`, `schemas/reprocessing/adapters`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
 | Graph extraction | document processing endpoint | `documents/application/processing/GraphExtractionService.java`, `documents/adapters/graph/GraphWriteService.java` |
-| Cypher | `controller/QueryController.java` | `service/CypherGenerationService.java`, `service/CypherValidationService.java`, `service/CypherExecutionService.java` |
-| Advanced search | `controller/AdvancedSearchRunController.java` | `service/AdvancedSearchRunService.java`, `service/DefaultAdvancedSearchRunProcessor.java` |
+| Search API | `search/query/api/QueryController.java`, `search/runs/api/AdvancedSearchRunController.java` | `search/query/application`, `search/retrieval`, `search/ranking`, `search/answering`, `search/runs` |
+| Search integration | `bootstrap/integration/search` | `SearchDocumentMetadataAdapter`, `SearchKnowledgeBaseAdapter`, `SearchSchemaAdapter` |
 | Runtime settings | `controller/RuntimeSettingsController.java` | `service/RuntimeSettingsService.java` |
 | Observability | all AI workflows | `observability/AiObservationService.java` |
 

@@ -8,6 +8,7 @@ GraphRAG is a Java 25 / Spring Boot 4.1.0 REST API. Controllers are thin; busine
 src/main/java/io/github/vfedoriv/graphrag/
   ai/domain, application, ports  embedding rules, admission, and stored-state ports
   bootstrap/integration/ai, knowledgebase  document/assignment capability mapping
+  bootstrap/integration/search  document, knowledge-base, and schema fact mapping
   bootstrap/integration/reprocessing  schema/document contract mapping
   config                   validated startup/runtime configuration
   controller               REST endpoints and OpenAPI annotations
@@ -27,10 +28,12 @@ src/main/java/io/github/vfedoriv/graphrag/
   graph                    schema-generation transformer support
   infrastructure           PostgreSQL, Neo4j, storage, and AI adapters
   knowledgebase/ports, contracts, application  lifecycle ports and assignment lookup
-  llm / query              model contracts and Cypher client adapters
   observability            AI workflow/model observations and metrics
   repository               persistence ports
   schema                   schema JSON model/parser/validator
+  search/query             query API, application workflows, graph/model adapters
+  search/retrieval, ranking, answering  retrieval, ranking, and answer policy/effects
+  search/runs               durable advanced-search API, workflow, and SQL adapters
   schemas/reprocessing     consumer-owned ports and port-only item execution
   service                  lifecycle and orchestration services
   storage                  binary storage contract
@@ -70,15 +73,17 @@ workflows and adapters are consolidated under `documents`. See the
 For knowledge-base deletion, follow `OwnedDocumentState` and
 `KnowledgeBaseArtifactCleanup` through `KnowledgeBaseDocumentsAdapter` to
 `KnowledgeBaseDocumentsFacade`. For profile compatibility, follow
-`EmbeddingCompatibility` into `ai.domain` and the stored-observation port mapped
-to `StoredEmbeddingsFacade`. For profile assignments, follow `ProfileAssignments`
-through its adapter to `AiProfileAssignmentsFacade`. AI persistence owns profiles
-only. The repository-free `EmbeddingSpacePolicy` bridge still serves the exact
-search callers listed in the
-[AI boundary details](../concepts/architecture.md#knowledge-base-lifecycle-and-ai-state-boundaries).
-Document consolidation (step 4) is implemented. Registry/discovery consolidation
-(step 5) is implemented; exact remaining dependencies are frozen through steps
-5–9 in `ArchitectureBoundaryTest`.
+`EmbeddingCompatibility` and `EmbeddingTarget` into `ai`; stored embedding
+observations and profile assignments use their public ports and mapping adapters.
+AI persistence owns profiles only. Search owns query/ask and advanced-search
+APIs, workflows, policy, effects, and durable state in `search.query`,
+`search.retrieval`, `search.ranking`, `search.answering`, and `search.runs`.
+`SearchDocumentMetadataAdapter`, `SearchKnowledgeBaseAdapter`, and
+`SearchSchemaAdapter` map public capabilities from `bootstrap.integration.search`;
+document metadata selection is capped at 200 results and citation batches at 128
+IDs. `EmbeddingSpacePolicy` has been removed and the exact step-8 boundary-test
+exceptions are retired. Only the named support and assembly edges for step 9
+remain frozen in `ArchitectureBoundaryTest`.
 
 ## High-risk invariants
 

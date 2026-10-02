@@ -7,6 +7,8 @@ import io.github.vfedoriv.graphrag.schemas.publication.adapters.relational.repos
 import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.entity.SchemaReprocessingPlanEntity;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.repository.JpaSchemaReprocessingPlanRepository;
 import jakarta.persistence.EntityManagerFactory;
+import io.github.vfedoriv.graphrag.search.runs.adapters.relational.entity.AdvancedSearchRunEntity;
+import io.github.vfedoriv.graphrag.search.runs.adapters.relational.repository.JpaAdvancedSearchRunRepository;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.repository.Neo4jDocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.adapters.relational.entity.DocumentUploadEntity;
 import io.github.vfedoriv.graphrag.documents.adapters.relational.repository.JpaDocumentUploadRepository;
@@ -42,10 +44,10 @@ import io.github.vfedoriv.graphrag.schemas.drafts.adapters.relational.repository
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
-@EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class,
+@EntityScan(basePackageClasses = {RelationalEntityMarker.class, AdvancedSearchRunEntity.class, DocumentUploadEntity.class,
     KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class, SchemaDraftEntity.class, SchemaDraftEvaluationRunEntity.class, SchemaDraftPublicationEntity.class, SchemaReprocessingPlanEntity.class})
 @EnableJpaRepositories(
-    basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class,
+    basePackageClasses = {RelationalRepositoryMarker.class, JpaAdvancedSearchRunRepository.class, JpaDocumentUploadRepository.class,
         JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class, JpaSchemaDraftRepository.class, JpaSchemaDraftEvaluationRunRepository.class, JpaSchemaDraftPublicationRepository.class, JpaSchemaReprocessingPlanRepository.class},
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"

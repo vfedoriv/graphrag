@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.observability;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Attempt;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchAnswerSynthesizer.Outcome;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
+import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor.Attempt;
+import io.github.vfedoriv.graphrag.search.answering.domain.AnswerSynthesis.Outcome;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;

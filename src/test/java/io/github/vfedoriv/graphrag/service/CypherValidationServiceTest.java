@@ -1,7 +1,10 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.search.query.adapters.graph.QueryNeo4jExecutor;
+import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
+
+import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -9,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.query.QueryValidationResult;
+import io.github.vfedoriv.graphrag.search.query.domain.QueryValidationResult;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
 import java.nio.file.Path;
@@ -222,11 +225,11 @@ class CypherValidationServiceTest {
     @Test
     void resolvesActiveSchemaForKnowledgeBaseValidation() {
         stubExplain();
-        ActiveSchemaResolver resolver = org.mockito.Mockito.mock(ActiveSchemaResolver.class);
+        SearchSchemas resolver = org.mockito.Mockito.mock(SearchSchemas.class);
         SchemaDefinitionNode schemaDefinition = new SchemaDefinitionNode();
         schemaDefinition.setId("schema-1");
         schemaDefinition.setName("contracts");
-        when(resolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schemaDefinition, schema()));
+        when(resolver.resolveActive("kb-1")).thenReturn(new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, schema()));
 
         QueryValidationResult result = service(resolver).validate("kb-1", "MATCH (n:Contract) RETURN n LIMIT 5", Map.of());
 
@@ -249,10 +252,10 @@ class CypherValidationServiceTest {
     }
 
     private CypherValidationService service() {
-        return service(org.mockito.Mockito.mock(ActiveSchemaResolver.class));
+        return service(org.mockito.Mockito.mock(SearchSchemas.class));
     }
 
-    private CypherValidationService service(ActiveSchemaResolver activeSchemaResolver) {
+    private CypherValidationService service(SearchSchemas activeSchemaResolver) {
         return new CypherValidationService(
             io.github.vfedoriv.graphrag.TestRuntimeSettings.from(new AppProperties(
                 new AppProperties.Neo4j("neo4j"),

@@ -7,10 +7,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.error.QueryDeadlineExceededException;
-import io.github.vfedoriv.graphrag.error.QueryRejectedException;
-import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
-import io.github.vfedoriv.graphrag.service.CypherExecutionService;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryExecutionResponse;
+import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.util.Collection;
 import java.util.Map;

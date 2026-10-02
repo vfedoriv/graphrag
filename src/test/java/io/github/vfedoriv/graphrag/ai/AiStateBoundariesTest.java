@@ -117,7 +117,6 @@ class AiStateBoundariesTest {
     @Test
     void requiredCapabilitiesCannotBeNullOrBypassedThroughConvenienceConstructors() {
         assertThatThrownBy(() -> new EmbeddingCompatibility(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy(null)).isInstanceOf(NullPointerException.class);
         assertThat(io.github.vfedoriv.graphrag.service.KnowledgeBaseService.class.getConstructors()).hasSize(1);
         assertThat(io.github.vfedoriv.graphrag.service.AiProfileService.class.getConstructors()).hasSize(1);
         assertThatThrownBy(() -> new io.github.vfedoriv.graphrag.service.AiProfileService(

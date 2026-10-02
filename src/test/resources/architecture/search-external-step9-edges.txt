@@ -1,0 +1,14 @@
+io.github.vfedoriv.graphrag.config.PersistenceConfiguration -> io.github.vfedoriv.graphrag.search.runs.adapters.relational.entity.AdvancedSearchRunEntity
+io.github.vfedoriv.graphrag.config.PersistenceConfiguration -> io.github.vfedoriv.graphrag.search.runs.adapters.relational.repository.JpaAdvancedSearchRunRepository
+io.github.vfedoriv.graphrag.error.GlobalExceptionHandler -> io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException
+io.github.vfedoriv.graphrag.error.GlobalExceptionHandler -> io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException
+io.github.vfedoriv.graphrag.error.GlobalExceptionHandler -> io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchCapacityException
+io.github.vfedoriv.graphrag.error.GlobalExceptionHandler -> io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchReadinessConflictException
+io.github.vfedoriv.graphrag.error.GlobalExceptionHandler -> io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchResultUnavailableException
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts$Answer
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts$AnswerStatus
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts$DiagnosticResult
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.answering.domain.AnswerSynthesis$Outcome
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus
+io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics -> io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor$Attempt
+io.github.vfedoriv.graphrag.service.RuntimeSettingsService -> io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy

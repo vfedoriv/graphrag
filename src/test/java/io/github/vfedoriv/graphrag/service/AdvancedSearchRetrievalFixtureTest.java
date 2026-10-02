@@ -1,16 +1,17 @@
 package io.github.vfedoriv.graphrag.service;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchFusionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Branch;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Candidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Diagnostics;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.SourceIdentity;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Status;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchFusionService.FusionOptions;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Branch;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Candidate;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Diagnostics;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Result;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.SourceIdentity;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Status;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchFusionService.FusionOptions;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumMap;

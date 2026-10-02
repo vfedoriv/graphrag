@@ -1,11 +1,13 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.runs.adapters.codec.AdvancedSearchResultCodec;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.vfedoriv.graphrag.dto.AdvancedSearchResultDtos.AdvancedSearchResultV1;
+import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchResultDtos.AdvancedSearchResultV1;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

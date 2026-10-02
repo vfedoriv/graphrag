@@ -1,26 +1,28 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
+
+import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Direction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.LongLiteral;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.NodeProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.StringLiteral;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Direction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.LongLiteral;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.NodeProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.StringLiteral;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,26 +30,26 @@ import org.junit.jupiter.api.Test;
 
 class GraphPlanValidationServiceTest {
 
-    private ActiveSchemaResolver activeSchemaResolver;
+    private SearchSchemas activeSchemaResolver;
     private RuntimeSettingsService runtimeSettingsService;
     private GraphPlanValidationService validator;
 
     @BeforeEach
     void setUp() {
-        activeSchemaResolver = mock(ActiveSchemaResolver.class);
+        activeSchemaResolver = mock(SearchSchemas.class);
         runtimeSettingsService = mock(RuntimeSettingsService.class);
         RuntimeSettingsService.QuerySettings querySettings = new RuntimeSettingsService.QuerySettings(
             10, 5, true, List.of("CREATE"), true, 4096, 8, 20, 2, 1
         );
         when(runtimeSettingsService.query()).thenReturn(querySettings);
-        when(activeSchemaResolver.resolve("kb-1"))
-            .thenReturn(new ActiveSchemaContext("kb-1", "schema-1", null, schema()));
+        when(activeSchemaResolver.resolveActive("kb-1"))
+            .thenReturn(new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, schema()));
         validator = new GraphPlanValidationService(activeSchemaResolver, runtimeSettingsService);
     }
 
     @Test
     void acceptsSchemaConstrainedTwoHopPlan() {
-        GraphPlanValidationService.ValidationResult result = validator.validate("kb-1", validPlan());
+        io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidationResult result = validator.validate("kb-1", validPlan());
 
         assertThat(result.valid()).isTrue();
         assertThat(result.errors()).isEmpty();
@@ -127,9 +129,9 @@ class GraphPlanValidationServiceTest {
     private GraphPlan copy(
         GraphPlan ignored,
         String root,
-        List<io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Filter> filters,
+        List<io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Filter> filters,
         List<TypedHop> hops,
-        List<io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Projection> projections,
+        List<io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Projection> projections,
         Aggregation aggregation,
         List<Ordering> ordering,
         int limit

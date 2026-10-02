@@ -1,20 +1,24 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
+import io.github.vfedoriv.graphrag.search.query.application.CypherGenerationService;
+import io.github.vfedoriv.graphrag.search.query.application.QueryAskService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
-import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
-import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
-import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
-import io.github.vfedoriv.graphrag.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.search.query.api.model.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryAskResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryExecutionResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryValidationResponse;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
-import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;

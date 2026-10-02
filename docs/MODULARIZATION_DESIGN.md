@@ -1,10 +1,11 @@
 # Feature modularization: decisions and migration roadmap
 
 Date: 2026-10-02
-Status: roadmap steps 1–7 are implemented: reprocessing execution/recovery,
+Status: roadmap steps 1–8 are implemented: reprocessing execution/recovery,
 document migration preparation, knowledge-base/AI state boundaries, document
 consolidation, schema registry/discovery, draft authoring, and evaluation/publication
-with final reprocessing ownership.
+with final reprocessing ownership, and search consolidation. Step 9 finalizes
+identified support boundaries and application assembly.
 
 ## Purpose
 
@@ -32,11 +33,14 @@ OpenSpec changes govern each implementation slice.
 - Knowledge-base document counts/cleanup and AI stored embeddings/assignments now
   use owned ports and immutable capability mappings. AI owns deterministic rules;
   AI profile persistence no longer reads knowledge-base state.
-- `EmbeddingSpacePolicy` delegates to AI compatibility only for frozen search
-  callers (retirement in step 8); documents uses AI compatibility directly.
-  Historical value/identity bridges and legacy `TokenizerId` support retire in
-  steps 8/9.
-- Search run management directly reads schema and knowledge-base repositories.
+- Search owns query/ask and advanced-search APIs, workflows, deterministic
+  policy, retrieval effects, model adapters, and durable run persistence under
+  `search.query`, `search.retrieval`, `search.ranking`, `search.answering`, and
+  `search.runs`.
+- Search consumes bounded document metadata and immutable knowledge-base/schema
+  facts through public capabilities mapped by `bootstrap.integration.search`.
+  AI owns embedding compatibility; the obsolete `EmbeddingSpacePolicy` bridge
+  has been removed.
 - Draft authoring now owns lifecycle, sources, durable analysis/recovery, review,
   conflicts, draft history, and its relational/binary persistence under
   `schemas.drafts`.
@@ -152,7 +156,7 @@ them. Do not expose persistence entities, provider clients, or write-only keys.
 | 5 | Establish schema registry and discovery boundaries | Schema snapshots and revision-aware contracts; registry/discovery ownership and document input boundaries | 3 |
 | 6 | Consolidate draft authoring | Lifecycle, sources, analysis, review, conflicts, and recovery remain schema-owned without foreign internal access | 4, 5 |
 | 7 | Isolate evaluation and publication | Held-out preparation contracts, side-effect-free dry extraction, revision-specific readiness/publication, final reprocessing organization | 6 |
-| 8 | Consolidate search | Query/ask and advanced search use public feature contracts and search-owned adapters | 4, 5 |
+| 8 | Consolidate search | Implemented: query/ask and advanced search use public feature contracts and search-owned adapters; exact step-8 exceptions are retired | 4, 5 |
 | 9 | Finalize support boundaries and assembly | Close explicit transitional exceptions; enforce final feature graph and support ownership | 4, 7, 8 |
 
 Changes 4 and 5 can proceed independently after 3. Search need not wait for all
@@ -230,8 +234,9 @@ aggregation, and deadlines. Its document inputs are acquired through the
 `DocumentSourceInputs` public capability, with scope checks, byte bounds before
 file parsing, defensive copies, and no path or persistence-record exposure.
 
-`ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies
-and freezes remaining exact search (8) and support/assembly (9) edges. Draft
+`ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies.
+Search migration has retired its exact step-8 exceptions; only identified
+support/assembly (9) edges remain frozen. Draft
 authoring's step-6 document and registry/discovery exceptions and the migrated
 step-7 document, registry, and downstream persistence exceptions are retired.
 
@@ -267,12 +272,12 @@ client construction stays AI-owned.
 Draft navigation consumes evaluation and reprocessing history/currentness through
 bounded immutable summary ports. Its remaining support/assembly dependencies are
 exact step-9 seams. `ArchitectureBoundaryTest` retires the exact step-6 and step-7
-edges and retains only named search (8) and support/assembly (9) exceptions.
+edges; after search migration it retains only named support/assembly (9) exceptions.
 
 ## Step-7 evaluation, publication, and reprocessing boundary
 
 Step 7 is implemented by
-[the ownership change](../openspec/changes/isolate-schema-evaluation-publication/proposal.md).
+[the archived ownership change](../openspec/changes/archive/2026-10-02-isolate-schema-evaluation-publication/proposal.md).
 `schemas.evaluation`, `schemas.publication`, and `schemas.reprocessing` own their
 HTTP mapping, state, repository ports, relational adapters, checkpoints, and
 recovery. Evaluation and reprocessing also produce their history and currentness
@@ -302,5 +307,44 @@ all-owned classification before selection, creation recomputation, destructive-p
 exclusion, authoritative item counters, and its historical recovery predicate.
 HTTP contracts, SQL mappings, canonical snapshots/fingerprints, source-race
 semantics, and external-work checkpoint separation remain compatible without SQL
-or binary migration. Search consolidation remains step 8; only exact support and
-assembly seams remain step 9.
+or binary migration. Search consolidation (step 8) is implemented; only exact
+support and assembly seams remain for step 9.
+
+## Step-8 search ownership
+
+Search consolidation is implemented across `search.query`, `search.retrieval`,
+`search.ranking`, `search.answering`, and `search.runs`. These areas own their
+HTTP/API values, workflows, deterministic policy, effect ports/adapters, and
+durable run state. `search.runs.adapters.relational` owns the run, attempt, and
+result entities and relational adapters; `search.retrieval.adapters.graph` owns
+graph retrieval effects. Query execution and planner inspection use search-owned
+adapters over the shared Neo4j driver.
+
+Document metadata flows through the document-owned `DocumentMetadataAccess`
+capability. Its citation batch is capped at 128 document IDs and metadata
+selection at 200 results; `SearchDocumentMetadataAdapter` maps the immutable
+facts to search ports. `SearchKnowledgeBaseAccess` supplies scoped admission and
+non-secret active schema/profile identifiers. `SearchSchemaAdapter` maps
+`StoredSchemaSnapshots`, `SchemaSnapshots`, and `CapturedSchemaParsing` to the
+search-owned `SearchSchemas` port. Readiness checks schema availability without
+parsing; run creation captures the exact stored definition and hash; workers parse
+the captured content rather than substituting current registry state. Integration
+adapters map public values and add no transactions.
+
+AI owns embedding compatibility through `EmbeddingCompatibility` and immutable
+`EmbeddingTarget`; `EmbeddingSpacePolicy` is removed. Graph-plan data and pure
+validation are values/rules under `search.retrieval.domain` (`GraphPlanValidation`),
+while `AdvancedSearchPlanValidator` and
+`search.retrieval.application.validation.GraphPlanValidationService` own
+application validation. Model-dependent planning, embedding, ranking, sufficiency,
+and synthesis effects are placed in model adapters; search retains the prompts,
+business policy, and interpretation needed by those workflows.
+
+The exact step-8 schema, document-metadata, and compatibility exceptions are
+retired. Step 9 retains only identified support and assembly seams: runtime
+settings, AI profile/model construction, observability, metadata-first logging,
+relational transaction support, shared embedding/lexical-index maintenance, and
+configuration wiring. These shared services remain outside search until their
+planned support-ownership work; document writes and cleanup do not depend on
+search implementations. `ArchitectureBoundaryTest` freezes only the exact
+remaining step-9 pairs.

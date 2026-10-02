@@ -10,7 +10,7 @@ import io.github.vfedoriv.graphrag.application.settings.RuntimeSettingLiveApplie
 import io.github.vfedoriv.graphrag.application.settings.RuntimeSettingsCatalog;
 import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
 import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
-import io.github.vfedoriv.graphrag.query.QueryPolicy;
+import io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkRevisionCalculator;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSettingsHash;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;

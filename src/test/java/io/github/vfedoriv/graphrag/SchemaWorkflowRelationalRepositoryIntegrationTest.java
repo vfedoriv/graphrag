@@ -230,7 +230,7 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
             Neo4jTestcontainersConfiguration.class
         )).isEmpty();
         assertThat(applicationContext.getBeanProvider(
-            io.github.vfedoriv.graphrag.service.QueryNeo4jExecutor.class
+            io.github.vfedoriv.graphrag.search.query.adapters.graph.QueryNeo4jExecutor.class
         ).getIfAvailable()).isNotNull();
     }
 

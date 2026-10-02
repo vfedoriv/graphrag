@@ -1,11 +1,13 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunLifecycle;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunNode;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunNode;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
 import java.time.Duration;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;

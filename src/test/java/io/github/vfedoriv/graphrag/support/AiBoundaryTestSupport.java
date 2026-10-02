@@ -4,7 +4,6 @@ import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.bootstrap.integration.ai.StoredEmbeddingInformationAdapter;
 import io.github.vfedoriv.graphrag.documents.application.inspection.StoredEmbeddingsFacade;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy;
 
 public final class AiBoundaryTestSupport {
     private AiBoundaryTestSupport() { }
@@ -13,7 +12,4 @@ public final class AiBoundaryTestSupport {
         return new EmbeddingCompatibility(new StoredEmbeddingInformationAdapter(new StoredEmbeddingsFacade(chunks)));
     }
 
-    public static EmbeddingSpacePolicy bridge(DocumentChunkRepository chunks) {
-        return new EmbeddingSpacePolicy(compatibility(chunks));
-    }
 }

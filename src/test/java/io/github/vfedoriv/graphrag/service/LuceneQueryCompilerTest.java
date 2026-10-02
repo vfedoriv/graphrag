@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.retrieval.domain.LuceneQueryCompiler;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.IntStream;

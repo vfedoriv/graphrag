@@ -1,5 +1,11 @@
 package io.github.vfedoriv.graphrag.error;
 
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchCapacityException;
+import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchReadinessConflictException;
+import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchResultUnavailableException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaValidationException;

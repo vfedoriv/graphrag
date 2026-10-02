@@ -1,17 +1,19 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.search.query.api.QueryController;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
-import io.github.vfedoriv.graphrag.dto.QueryAskResponse;
-import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
-import io.github.vfedoriv.graphrag.dto.QueryGenerateRequest;
-import io.github.vfedoriv.graphrag.dto.QueryValidationResponse;
-import io.github.vfedoriv.graphrag.service.CypherExecutionService;
-import io.github.vfedoriv.graphrag.service.CypherGenerationService;
-import io.github.vfedoriv.graphrag.service.CypherValidationService;
-import io.github.vfedoriv.graphrag.service.QueryAskService;
+import io.github.vfedoriv.graphrag.search.query.api.model.GeneratedQueryResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryAskResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryExecutionResponse;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryGenerateRequest;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryValidationResponse;
+import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
+import io.github.vfedoriv.graphrag.search.query.application.CypherGenerationService;
+import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
+import io.github.vfedoriv.graphrag.search.query.application.QueryAskService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

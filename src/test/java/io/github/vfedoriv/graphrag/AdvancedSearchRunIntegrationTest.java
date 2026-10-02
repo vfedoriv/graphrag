@@ -12,16 +12,20 @@ import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunNode;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStatus;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Branch;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunNode;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
+import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Branch;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.AdvancedSearchRunRepository;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchResultCodec;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchRunMaintenance;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchRunProcessor.Attempt;
+import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunRepository;
+import io.github.vfedoriv.graphrag.search.runs.adapters.codec.AdvancedSearchResultCodec;
+import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchRunMaintenance;
+import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor;
+import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor.Attempt;
+import io.github.vfedoriv.graphrag.search.runs.ports.SearchKnowledgeBases;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +52,7 @@ import org.slf4j.LoggerFactory;
     "app.advanced-search.branch-concurrency=1"
 })
 class AdvancedSearchRunIntegrationTest {
+    @Autowired private AdmissionProbe admissionProbe;
     @Autowired private MockMvc mockMvc;
     @Autowired private JdbcTemplate jdbcTemplate;
     @Autowired private AdvancedSearchRunRepository runRepository;
@@ -57,6 +62,7 @@ class AdvancedSearchRunIntegrationTest {
 
     @BeforeEach
     void reset() throws Exception {
+        admissionProbe.changeRevision.set(false);
         RelationalMetadataTestCleaner.clean(jdbcTemplate);
         createKnowledgeBase("kb-runs");
         createKnowledgeBase("kb-other");
@@ -91,6 +97,12 @@ class AdvancedSearchRunIntegrationTest {
         cancel(second).andExpect(status().isOk()).andExpect(jsonPath("$.cancellationRequested").value(true));
         awaitStatus(first, AdvancedSearchRunStatus.CANCELLED);
         awaitStatus(second, AdvancedSearchRunStatus.CANCELLED);
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.advanced_search_result WHERE run_id IN (?, ?)",
+            Integer.class, first, second)).isZero();
+        mockMvc.perform(get("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs/{id}/result", "kb-runs", first))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.runStatus").value("CANCELLED"));
     }
 
     @Test
@@ -145,6 +157,29 @@ class AdvancedSearchRunIntegrationTest {
         assertThat(jdbcTemplate.queryForObject(
             "SELECT count(*) FROM app.advanced_search_run WHERE knowledge_base_id = 'kb-runs'", Integer.class))
             .isZero();
+    }
+
+    @Test
+    void admissionRechecksProfileRevisionInsideTransactionAndReleasesCapacityOnFailure() throws Exception {
+        Long revision = jdbcTemplate.queryForObject(
+            "SELECT revision FROM app.ai_profile WHERE id = 'default'", Long.class);
+        admissionProbe.changeRevision.set(true);
+        mockMvc.perform(post("/api/v1/knowledge-bases/{kb}/queries/advanced-search-runs", "kb-runs")
+                .contentType("application/json").content("{\"query\":\"profile race\"}"))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.blockers[0].code").value("PROFILE_CHANGED"));
+        assertThat(admissionProbe.changeRevision).isFalse();
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT revision FROM app.ai_profile WHERE id = 'default'", Long.class)).isEqualTo(revision);
+        assertThat(jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM app.advanced_search_run", Integer.class)).isZero();
+        String first = submit("kb-runs", "capacity released first");
+        awaitStatus(first, AdvancedSearchRunStatus.RUNNING);
+        String second = submit("kb-runs", "capacity released second");
+        cancel(first).andExpect(status().isOk());
+        cancel(second).andExpect(status().isOk());
+        awaitStatus(first, AdvancedSearchRunStatus.CANCELLED);
+        awaitStatus(second, AdvancedSearchRunStatus.CANCELLED);
     }
 
     @Test
@@ -253,8 +288,41 @@ class AdvancedSearchRunIntegrationTest {
             """, id, knowledgeBaseId, "query", "{}", java.sql.Timestamp.from(expiresAt));
     }
 
+    static final class AdmissionProbe implements SearchKnowledgeBases {
+        private final SearchKnowledgeBases delegate;
+        private final JdbcTemplate jdbcTemplate;
+        private final AtomicBoolean changeRevision = new AtomicBoolean();
+
+        AdmissionProbe(SearchKnowledgeBases delegate, JdbcTemplate jdbcTemplate) {
+            this.delegate = delegate;
+            this.jdbcTemplate = jdbcTemplate;
+        }
+
+        @Override
+        public Facts require(String knowledgeBaseId) {
+            if (TransactionSynchronizationManager.isActualTransactionActive()
+                    && changeRevision.compareAndSet(true, false)) {
+                jdbcTemplate.update("UPDATE app.ai_profile SET revision = revision + 1 WHERE id = 'default'");
+            }
+            return delegate.require(knowledgeBaseId);
+        }
+
+        @Override
+        public boolean exists(String knowledgeBaseId) {
+            return delegate.exists(knowledgeBaseId);
+        }
+    }
+
     @TestConfiguration(proxyBeanMethods = false)
     static class ProcessorConfiguration {
+        @Bean
+        @Primary
+        AdmissionProbe admissionProbe(
+            @Qualifier("searchKnowledgeBaseAdapter") SearchKnowledgeBases delegate, JdbcTemplate jdbcTemplate
+        ) {
+            return new AdmissionProbe(delegate, jdbcTemplate);
+        }
+
         @Bean
         @Primary
         AdvancedSearchRunProcessor blockingProcessor(ObjectMapper objectMapper) {

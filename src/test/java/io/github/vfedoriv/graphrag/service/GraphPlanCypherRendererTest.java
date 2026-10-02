@@ -1,23 +1,26 @@
 package io.github.vfedoriv.graphrag.service;
+import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
 
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanCypherRenderer;
+
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Direction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.StringLiteral;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
-import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository.Query;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidatedGraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Direction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.StringLiteral;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphQuery;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidatedGraphPlan;
 import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -30,7 +33,7 @@ class GraphPlanCypherRendererTest {
     void rendersOnlyTemplateOwnedIdentifiersAndParameterizedLiterals() {
         GraphPlan plan = plan(null);
 
-        Query query = renderer.render(validated(plan));
+        GraphQuery query = renderer.render(validated(plan));
 
         assertThat(query.cypher())
             .contains("MATCH path = (n0:`Person`)-[r0:`WORKS_AT`]->(n1:`Company`)")
@@ -53,7 +56,7 @@ class GraphPlanCypherRendererTest {
             "people"
         );
 
-        Query query = renderer.render(validated(plan(aggregation)));
+        GraphQuery query = renderer.render(validated(plan(aggregation)));
 
         assertThat(query.cypher())
             .contains("LIMIT $scanLimit")
@@ -79,7 +82,7 @@ class GraphPlanCypherRendererTest {
     private ValidatedGraphPlan validated(GraphPlan plan) {
         return new ValidatedGraphPlan(
             plan,
-            new ActiveSchemaContext("kb-1", "schema-1", null, null),
+            new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, null),
             50,
             Duration.ofSeconds(3)
         );

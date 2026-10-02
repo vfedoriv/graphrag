@@ -15,7 +15,7 @@ import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolv
 import io.github.vfedoriv.graphrag.embedding.SpringAiEmbeddingClient;
 import io.github.vfedoriv.graphrag.documents.adapters.model.SpringAiGraphExtractionClient;
 import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
-import io.github.vfedoriv.graphrag.query.SpringAiCypherGenerationClient;
+import io.github.vfedoriv.graphrag.search.query.adapters.model.SpringAiCypherGenerationClient;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.AiProfileService;
 import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;

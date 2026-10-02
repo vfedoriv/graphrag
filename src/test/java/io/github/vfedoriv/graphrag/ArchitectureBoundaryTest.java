@@ -3,8 +3,8 @@ package io.github.vfedoriv.graphrag;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
 
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
@@ -76,24 +76,6 @@ class ArchitectureBoundaryTest {
 
     // Exact direct dependencies retained until roadmap steps 8–9. New callers fail this check.
     private static final java.util.Map<Integer, Set<String>> FROZEN_SCHEMA_BRIDGE_EDGES = java.util.Map.of(
-        8, Set.of(
-            edge("service.AdvancedSearchGraphRetriever", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.AdvancedSearchPlanValidator", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.AdvancedSearchPlanner", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.AdvancedSearchReadinessService", "schemas.registry.ports.SchemaDefinitionRepository"),
-            edge("service.AdvancedSearchRunService", "schemas.registry.domain.SchemaDefinitionNode"),
-            edge("service.AdvancedSearchRunService", "schemas.registry.ports.SchemaDefinitionRepository"),
-            edge("service.CypherGenerationService", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.CypherGenerationService", "schemas.registry.application.ActiveSchemaResolver"),
-            edge("service.CypherValidationService", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.CypherValidationService", "schemas.registry.application.ActiveSchemaResolver"),
-            edge("service.DefaultAdvancedSearchRunProcessor", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.DefaultAdvancedSearchRunProcessor", "schemas.registry.application.SchemaParser"),
-            edge("service.GraphPlanCypherRenderer", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.GraphPlanValidationService", "schemas.registry.application.ActiveSchemaContext"),
-            edge("service.GraphPlanValidationService", "schemas.registry.application.ActiveSchemaResolver"),
-            edge("service.GraphPlanValidationService$ValidatedGraphPlan", "schemas.registry.application.ActiveSchemaContext")
-        ),
         9, Set.of(
             edge("config.PersistenceConfiguration", "schemas.registry.adapters.relational.entity.SchemaDefinitionEntity"),
             edge("config.PersistenceConfiguration", "schemas.registry.adapters.relational.repository.JpaSchemaDefinitionRepository"),
@@ -118,12 +100,6 @@ class ArchitectureBoundaryTest {
     // Exact transitional edges, grouped by their retirement roadmap step.
     // 7 evaluation; 8 search; 9 support/assembly.
     private static final java.util.Map<Integer, Set<String>> FROZEN_DOCUMENT_EDGES = java.util.Map.of(
-        8, Set.of(
-            edge("service.AdvancedSearchCitationMetadataService", "documents.domain.DocumentUploadNode"),
-            edge("service.AdvancedSearchCitationMetadataService", "documents.ports.DocumentUploadRepository"),
-            edge("service.DocumentMetadataTextRetriever", "documents.domain.DocumentUploadNode"),
-            edge("service.DocumentMetadataTextRetriever", "documents.ports.DocumentUploadRepository")
-        ),
         9, Set.of(
             edge("documents.application.inspection.DocumentSourceInputsFacade", "error.NotFoundException"),
             edge("documents.application.inspection.DocumentEvaluationPreparationFacade", "error.NotFoundException"),
@@ -237,7 +213,7 @@ class ArchitectureBoundaryTest {
         assertTrue(added.isEmpty() && stale.isEmpty(),
             "Unlisted document dependencies:\n" + String.join("\n", added)
                 + "\nStale document exceptions (remove them):\n" + String.join("\n", stale));
-        assertTrue(FROZEN_DOCUMENT_EDGES.keySet().equals(Set.of(8, 9)));
+        assertTrue(FROZEN_DOCUMENT_EDGES.keySet().equals(Set.of(9)));
     }
 
     @Test
@@ -371,7 +347,7 @@ class ArchitectureBoundaryTest {
             .flatMap(Set::stream).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertTrue(actual.equals(expected), "Schema bridge edges changed; expected " + expected
             + " but found " + actual);
-        assertTrue(FROZEN_SCHEMA_BRIDGE_EDGES.keySet().equals(Set.of(8, 9)));
+        assertTrue(FROZEN_SCHEMA_BRIDGE_EDGES.keySet().equals(Set.of(9)));
     }
 
     // Exact assembly dependencies pending roadmap step 9.
@@ -539,7 +515,6 @@ class ArchitectureBoundaryTest {
 
     @Test
     void compatibility_bridge_exception_sets_reject_stale_callers() {
-        assertExactCallers(SERVICE_PACKAGE + ".EmbeddingSpacePolicy", FROZEN_EMBEDDING_POLICY_CALLERS);
         assertExactCallers(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity", FROZEN_IDENTITY_CALLERS);
         assertExactCallers(SERVICE_PACKAGE + ".EmbeddingSpace", FROZEN_SPACE_CALLERS);
     }
@@ -576,6 +551,7 @@ class ArchitectureBoundaryTest {
         ChatModel model;
         Path path;
         Files files;
+        java.net.http.HttpClient http;
         org.springframework.jdbc.core.JdbcTemplate jdbc;
         jakarta.persistence.EntityManager entityManager;
     }
@@ -721,7 +697,7 @@ class ArchitectureBoundaryTest {
     @Test
     void direct_neo4j_client_usage_stays_in_persistence_adapters_or_frozen_legacy_exceptions() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
-                .filter(javaClass -> !isInAnyPackage(javaClass, INFRASTRUCTURE_PERSISTENCE_PACKAGE, BASE_PACKAGE + ".documents.adapters"))
+                .filter(javaClass -> !isInAnyPackage(javaClass, INFRASTRUCTURE_PERSISTENCE_PACKAGE, BASE_PACKAGE + ".documents.adapters", BASE_PACKAGE + ".search.retrieval.adapters.graph"))
                 .filter(javaClass -> !FROZEN_LEGACY_NEO4J_CLIENT_EXCEPTIONS.contains(javaClass.getName()))
                 .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
                 .filter(dependency -> dependency.getTargetClass().isAssignableTo(Neo4jClient.class))
@@ -768,7 +744,8 @@ class ArchitectureBoundaryTest {
                     BASE_PACKAGE + ".schemas.drafts.adapters.relational.repository",
                     BASE_PACKAGE + ".schemas.evaluation.adapters.relational.repository",
                     BASE_PACKAGE + ".schemas.publication.adapters.relational.repository",
-                    BASE_PACKAGE + ".schemas.reprocessing.adapters.relational.repository"))
+                    BASE_PACKAGE + ".schemas.reprocessing.adapters.relational.repository",
+                    BASE_PACKAGE + ".search.runs.adapters.relational.repository"))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
         PRODUCTION_CLASSES.stream()
@@ -784,7 +761,8 @@ class ArchitectureBoundaryTest {
                     BASE_PACKAGE + ".schemas.drafts.adapters.relational.entity",
                     BASE_PACKAGE + ".schemas.evaluation.adapters.relational.entity",
                     BASE_PACKAGE + ".schemas.publication.adapters.relational.entity",
-                    BASE_PACKAGE + ".schemas.reprocessing.adapters.relational.entity"))
+                    BASE_PACKAGE + ".schemas.reprocessing.adapters.relational.entity",
+                    BASE_PACKAGE + ".search.runs.adapters.relational.entity"))
                 .map(JavaClass::getName)
                 .forEach(violations::add);
         PRODUCTION_CLASSES.stream()
@@ -1004,9 +982,6 @@ class ArchitectureBoundaryTest {
                     || target.getSimpleName().contains("KnowledgeBase"));
     }
 
-    private static final Set<String> FROZEN_EMBEDDING_POLICY_CALLERS = Set.of(
-        SERVICE_PACKAGE + ".AdvancedSearchReadinessService",
-        SERVICE_PACKAGE + ".DenseTextRetriever");
 
     @Test
     void ai_rules_ports_and_provider_contracts_are_pure_immutable_values() {
@@ -1094,18 +1069,16 @@ class ArchitectureBoundaryTest {
     }
 
     private static boolean bridgeCallerAllowed(JavaClass origin, JavaClass target) {
-        return !target.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy")
-            || FROZEN_EMBEDDING_POLICY_CALLERS.contains(origin.getName());
+        return !target.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy");
     }
 
     private static final Set<String> FROZEN_IDENTITY_CALLERS = Set.of(
-        SERVICE_PACKAGE + ".EmbeddingSpaceIdentity", SERVICE_PACKAGE + ".EmbeddingSpacePolicy",
+        SERVICE_PACKAGE + ".EmbeddingSpaceIdentity",
         SERVICE_PACKAGE + ".EmbeddingSpaceIndexService",
         SERVICE_PACKAGE + ".LexicalIndexIdentity");
     private static final Set<String> FROZEN_SPACE_CALLERS = Set.of(
         SERVICE_PACKAGE + ".EmbeddingSpace", SERVICE_PACKAGE + ".EmbeddingSpaceIdentity",
-        SERVICE_PACKAGE + ".EmbeddingSpacePolicy", SERVICE_PACKAGE + ".EmbeddingSpaceIndexService",
-        SERVICE_PACKAGE + ".DenseTextRetriever");
+        SERVICE_PACKAGE + ".EmbeddingSpaceIndexService");
 
     @Test
     void legacy_identity_and_value_bridges_cannot_gain_callers_or_state_access() {
@@ -1130,23 +1103,6 @@ class ArchitectureBoundaryTest {
     }
 
     @Test
-    void compatibility_bridge_dependencies_cannot_expand() {
-        Set<String> violations = PRODUCTION_CLASSES.stream()
-            .filter(c -> c.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy"))
-            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
-            .filter(d -> !bridgeDependencyAllowed(d.getTargetClass()))
-            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
-        assertNoViolations(violations);
-    }
-
-    private static boolean bridgeDependencyAllowed(JavaClass target) {
-        return isInAnyPackage(target, "java.lang", "java.util", "org.springframework.stereotype") || Set.of(
-            BASE_PACKAGE + ".ai.application.EmbeddingCompatibility", BASE_PACKAGE + ".ai.domain.EmbeddingTarget",
-            DOMAIN_PACKAGE + ".AiProfileNode", SERVICE_PACKAGE + ".EmbeddingSpace",
-            SERVICE_PACKAGE + ".EmbeddingSpaceIdentity").contains(target.getName());
-    }
-
-    @Test
     void negative_fixtures_reject_foreign_state_provider_bypasses_and_new_bridge_callers() {
         JavaClass forbidden = new ClassFileImporter().importClasses(ForbiddenAiStateFixture.class)
             .get(ForbiddenAiStateFixture.class);
@@ -1154,7 +1110,7 @@ class ArchitectureBoundaryTest {
             .filter(d -> migratedDependencyForbidden(SERVICE_PACKAGE + ".AiProfileService", d.getTargetClass()))
             .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertTrue(foreign.stream().anyMatch(v -> v.contains("DocumentChunkRepository")));
-        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !bridgeDependencyAllowed(d.getTargetClass())));
+        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> isInfrastructureClient(d.getTargetClass())));
         assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !identityDependencyAllowed(d.getTargetClass())));
         assertTrue(foreign.stream().anyMatch(v -> v.contains("KnowledgeBaseRepository")));
         assertTrue(foreign.stream().anyMatch(v -> v.contains("KnowledgeBaseNode")));
@@ -1165,7 +1121,7 @@ class ArchitectureBoundaryTest {
             !boundaryValueDependencyAllowed(forbidden, d.getTargetClass()) && d.getTargetClass().getSimpleName().equals("AiProfileNode")));
         assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d ->
             isInPackage(d.getTargetClass(), BASE_PACKAGE + ".bootstrap")));
-        assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> !bridgeCallerAllowed(forbidden, d.getTargetClass())));
+        assertTrue(PRODUCTION_CLASSES.stream().noneMatch(c -> c.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy")));
     }
 
     @Test
@@ -1189,7 +1145,7 @@ class ArchitectureBoundaryTest {
         io.github.vfedoriv.graphrag.domain.AiProfileNode profile;
         io.github.vfedoriv.graphrag.documents.contracts.StoredEmbeddings provider;
         io.github.vfedoriv.graphrag.bootstrap.integration.ai.StoredEmbeddingInformationAdapter adapter;
-        io.github.vfedoriv.graphrag.service.EmbeddingSpacePolicy newBridgeCaller;
+        io.github.vfedoriv.graphrag.search.runs.ports.SearchProfiles newSearchProfileCaller;
         io.github.vfedoriv.graphrag.ai.domain.EmbeddingCompatibilityRule adapterDecisionBypass;
         io.github.vfedoriv.graphrag.knowledgebase.contracts.AiProfileAssignments assignmentProvider;
         org.springframework.jdbc.core.JdbcTemplate jdbc;
@@ -1256,5 +1212,137 @@ class ArchitectureBoundaryTest {
 
     private static void assertNoViolations(Set<String> violations) {
         assertTrue(violations.isEmpty(), "Architecture boundary violations:\n" + String.join("\n", violations));
+    }
+    private static final String SEARCH_PACKAGE = BASE_PACKAGE + ".search";
+
+    @Test
+    void search_owns_workflows_effects_and_persistence() {
+        Set<String> violations = PRODUCTION_CLASSES.stream()
+            .filter(c -> !isInPackage(c, SEARCH_PACKAGE))
+            .filter(c -> c.getSimpleName().matches("(AdvancedSearch.*(Node|Repository|Controller|Service|Processor|Codec)|Cypher.*Service|QueryController|QueryAskService|Neo4j(GraphRetrieval|TextChunkRetrieval|ParentContext).*Repository|RelationalAdvancedSearch.*Repository|JpaAdvancedSearch.*Repository)"))
+            .map(JavaClass::getName).collect(java.util.stream.Collectors.toSet());
+        assertNoViolations(violations);
+        assertTrue(PRODUCTION_CLASSES.stream().noneMatch(c -> c.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy")));
+    }
+
+    private static boolean searchForeignInternal(JavaClass target) {
+        return isInAnyPackage(target, BASE_PACKAGE + ".documents", BASE_PACKAGE + ".schemas", BASE_PACKAGE + ".knowledgebase")
+            && !isInAnyPackage(target, BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".knowledgebase.contracts")
+            || Set.of(REPOSITORY_PACKAGE + ".KnowledgeBaseRepository", DOMAIN_PACKAGE + ".KnowledgeBaseNode").contains(target.getName());
+    }
+
+    private static boolean searchPureEffect(JavaClass target) {
+        return isInfrastructureClient(target)
+            || isInAnyPackage(target, "org.neo4j.driver", "org.springframework.ai", "java.nio.file", "java.net.http", "java.sql", "jakarta.persistence")
+            || isInPackage(target, BASE_PACKAGE + ".bootstrap")
+            || target.isInterface() && isInAnyPackage(target, BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".knowledgebase.contracts")
+            || isInPackage(target, SEARCH_PACKAGE) && (target.getPackageName().contains(".adapters")
+                || target.getPackageName().contains(".application") || target.getPackageName().contains(".api")
+                || target.isInterface() && target.getPackageName().contains(".ports"));
+    }
+
+    @Test
+    void search_uses_public_foreign_contracts_and_keeps_effects_in_adapters() {
+        Set<String> violations = dependenciesFromClassesIn(SEARCH_PACKAGE).stream()
+            .filter(d -> searchForeignInternal(d.getTargetClass())
+                || d.getOriginClass().getPackageName().contains(".domain") && searchPureEffect(d.getTargetClass())
+                || d.getOriginClass().getPackageName().contains(".application") && (isInfrastructureClient(d.getTargetClass()) || isInAnyPackage(d.getTargetClass(), "org.neo4j.driver", "org.springframework.ai"))
+                || d.getOriginClass().getPackageName().contains(".ports")
+                    && (isInfrastructureClient(d.getTargetClass()) || d.getTargetClass().getPackageName().contains(".adapters"))
+                || !d.getOriginClass().getPackageName().contains(".adapters.model")
+                    && d.getTargetClass().getName().equals(DOMAIN_PACKAGE + ".AiProfileNode"))
+            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+        assertNoViolations(violations);
+    }
+
+    @Test
+    void foreign_features_do_not_depend_on_search_implementations() throws java.io.IOException {
+        Set<String> expected = new TreeSet<>(java.nio.file.Files.readAllLines(
+            java.nio.file.Path.of("src/test/resources/architecture/search-external-step9-edges.txt")));
+        Set<String> actual = PRODUCTION_CLASSES.stream()
+            .filter(c -> !isInPackage(c, SEARCH_PACKAGE) && !isInPackage(c, BASE_PACKAGE + ".bootstrap"))
+            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> isInPackage(d.getTargetClass(), SEARCH_PACKAGE))
+            .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toCollection(TreeSet::new));
+        assertTrue(actual.equals(expected), "Exact external step-9 search seams differ:\n" + String.join("\n", actual));
+        assertNoViolations(dependenciesFromClassesIn(BASE_PACKAGE + ".documents").stream()
+            .filter(d -> isInPackage(d.getTargetClass(), SEARCH_PACKAGE))
+            .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toSet()));
+    }
+
+    private static boolean searchMappingDependencyAllowed(JavaClass target) {
+        return !isInfrastructureClient(target)
+            && !isInAnyPackage(target, "org.neo4j.driver", "org.springframework.ai", "org.springframework.transaction", "java.sql", "java.nio.file", "java.net.http", "jakarta.persistence", "org.springframework.jdbc")
+            && (!isInPackage(target, BASE_PACKAGE)
+            || isInAnyPackage(target, BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".schemas.contracts",
+                BASE_PACKAGE + ".knowledgebase.contracts", BASE_PACKAGE + ".bootstrap.integration.search")
+            || target.getName().equals(BASE_PACKAGE + ".error.NotFoundException")
+            || isInPackage(target, SEARCH_PACKAGE) && target.getPackageName().contains(".ports"));
+    }
+
+    @Test
+    void search_mapping_adapters_are_transaction_free_and_contract_only() {
+        JavaClasses bridges = new ClassFileImporter().withImportOption(new ImportOption.DoNotIncludeTests())
+            .importPackages(BASE_PACKAGE + ".bootstrap.integration.search");
+        Set<String> violations = bridges.stream().flatMap(c -> c.getDirectDependenciesFromSelf().stream())
+            .filter(d -> !searchMappingDependencyAllowed(d.getTargetClass()))
+            .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toSet());
+        assertNoViolations(violations);
+        for (JavaClass bridge : bridges) {
+            assertTrue(!bridge.isAnnotatedWith(org.springframework.transaction.annotation.Transactional.class));
+            assertTrue(bridge.getMethods().stream().noneMatch(m -> m.isAnnotatedWith(org.springframework.transaction.annotation.Transactional.class)
+                || m.isAnnotatedWith(io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional.class)));
+        }
+    }
+
+    @Test
+    void search_step_nine_support_seams_are_exact() throws java.io.IOException {
+        Set<String> expected = new TreeSet<>(java.nio.file.Files.readAllLines(
+            java.nio.file.Path.of("src/test/resources/architecture/search-step9-edges.txt")));
+        Set<String> actual = dependenciesFromClassesIn(SEARCH_PACKAGE).stream()
+            .filter(d -> isInPackage(d.getTargetClass(), BASE_PACKAGE)
+                && !isInAnyPackage(d.getTargetClass(), SEARCH_PACKAGE, BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".knowledgebase.contracts", BASE_PACKAGE + ".ai.domain")
+                && !d.getTargetClass().getName().equals(BASE_PACKAGE + ".ai.application.EmbeddingCompatibility"))
+            .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toCollection(TreeSet::new));
+        assertTrue(actual.equals(expected), "Exact step-9 search support seams differ:\n" + String.join("\n", actual));
+    }
+
+    @Test
+    void search_negative_fixtures_reject_foreign_state_effects_and_new_support_seams() {
+        JavaClass fixture = new ClassFileImporter().importClasses(ForbiddenSearchFixture.class).get(ForbiddenSearchFixture.class);
+        assertTrue(fixture.getDirectDependenciesFromSelf().stream().anyMatch(d -> searchForeignInternal(d.getTargetClass())));
+        assertTrue(fixture.getDirectDependenciesFromSelf().stream().anyMatch(d -> searchPureEffect(d.getTargetClass())));
+        assertTrue(fixture.getDirectDependenciesFromSelf().stream().anyMatch(d -> isInPackage(d.getTargetClass(), BASE_PACKAGE + ".bootstrap")));
+        assertTrue(fixture.getDirectDependenciesFromSelf().stream().anyMatch(d -> isInPackage(d.getTargetClass(), SEARCH_PACKAGE)
+            && d.getTargetClass().getPackageName().contains(".adapters.relational")));
+    }
+    @Test
+    void search_governance_rejects_effect_ports_and_external_bridge_effects() {
+        JavaClass fixture = new ClassFileImporter().importClasses(ForbiddenSearchFixture.class).get(ForbiddenSearchFixture.class);
+        Set<String> pureEffects = fixture.getDirectDependenciesFromSelf().stream()
+            .filter(d -> searchPureEffect(d.getTargetClass()))
+            .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
+        assertTrue(pureEffects.containsAll(Set.of("QueryExecutor", "SearchEmbeddingModel", "AdvancedSearchRunRepository", "SchemaSnapshots")));
+        Set<String> bridgeEffects = fixture.getDirectDependenciesFromSelf().stream()
+            .filter(d -> !searchMappingDependencyAllowed(d.getTargetClass()))
+            .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
+        assertTrue(bridgeEffects.containsAll(Set.of("JdbcTemplate", "EntityManager", "Driver", "ChatModel", "Files", "TransactionTemplate", "HttpClient")));
+    }
+    private static class ForbiddenSearchFixture {
+        io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository foreign;
+        io.github.vfedoriv.graphrag.search.runs.adapters.relational.entity.AdvancedSearchRunEntity run;
+        io.github.vfedoriv.graphrag.search.query.adapters.graph.QueryNeo4jExecutor database;
+        io.github.vfedoriv.graphrag.bootstrap.integration.search.SearchSchemaAdapter assembly;
+        ChatModel provider;
+        io.github.vfedoriv.graphrag.search.query.ports.QueryExecutor queryPort;
+        io.github.vfedoriv.graphrag.search.retrieval.ports.SearchEmbeddingModel embeddings;
+        io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunRepository persistence;
+        io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshots schemaCapability;
+        org.springframework.jdbc.core.JdbcTemplate jdbc;
+        jakarta.persistence.EntityManager entities;
+        org.neo4j.driver.Driver driver;
+        Files files;
+        java.net.http.HttpClient http;
+        org.springframework.transaction.support.TransactionTemplate transactions;
     }
 }

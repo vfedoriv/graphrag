@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.query;
 
+import io.github.vfedoriv.graphrag.search.query.adapters.model.SpringAiCypherGenerationClient;
+import io.github.vfedoriv.graphrag.search.query.domain.GeneratedCypher;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;

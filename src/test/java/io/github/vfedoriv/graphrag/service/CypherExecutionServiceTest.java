@@ -1,14 +1,18 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.query.adapters.graph.QueryNeo4jExecutor;
+import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
+import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
 import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
-import io.github.vfedoriv.graphrag.error.QueryRejectedException;
-import io.github.vfedoriv.graphrag.query.QueryValidationResult;
+import io.github.vfedoriv.graphrag.search.query.api.model.QueryExecutionResponse;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException;
+import io.github.vfedoriv.graphrag.search.query.domain.QueryValidationResult;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;

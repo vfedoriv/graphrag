@@ -43,4 +43,4 @@ Use durable [advanced search](advanced-search.md) when the user needs cited synt
 - 409: no usable active schema/profile or another explicit readiness conflict.
 - 5xx: provider, Neo4j, or timeout failure normalized through RFC 7807.
 
-Implementation: `QueryController`, `QueryAskService`, `CypherGenerationService`, `SpringAiCypherGenerationClient`, `CypherValidationService`, `CypherLimitScanner`, `CypherExecutionService`, and `QueryNeo4jExecutor`.
+Implementation: `search.query.api.QueryController`; application orchestration and safety policy in `search.query.application`; model calls in `search.query.adapters.model.SpringAiCypherGenerationClient`; and graph execution in `search.query.adapters.graph.QueryNeo4jExecutor`.

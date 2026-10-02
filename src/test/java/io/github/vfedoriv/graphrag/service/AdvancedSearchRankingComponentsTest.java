@@ -1,13 +1,16 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.ranking.adapters.model.AdvancedSearchReranker;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchDiversitySelector;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.CitationKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.CitationKind;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceSource;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.SourceBounds;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import java.util.List;
 import org.junit.jupiter.api.Test;

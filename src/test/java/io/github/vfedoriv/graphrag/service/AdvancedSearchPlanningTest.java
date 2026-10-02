@@ -1,6 +1,12 @@
 package io.github.vfedoriv.graphrag.service;
+import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator;
+import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchFollowUpPolicy;
+import io.github.vfedoriv.graphrag.search.answering.adapters.model.AdvancedSearchSufficiencyEvaluator;
 
-import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.search.retrieval.adapters.model.AdvancedSearchPlanner;
+
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,27 +15,27 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.CoverageStatus;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.GraphFilter;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.GraphProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.GraphRequest;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.LiteralType;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.LiteralValue;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.MetadataConstraint;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.Plan;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.Refinement;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.Subquestion;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.CitationKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.CoverageStatus;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphFilter;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphRequest;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.LiteralType;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.LiteralValue;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.MetadataConstraint;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Plan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Refinement;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Subquestion;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.CitationKind;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceSource;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.SourceBounds;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchFollowUpPolicy.Decision;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchPlanValidator.ValidatedPlan;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchSufficiencyEvaluator.Outcome;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidationResult;
+import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchFollowUpPolicy.Decision;
+import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator.ValidatedPlan;
+import io.github.vfedoriv.graphrag.search.answering.adapters.model.AdvancedSearchSufficiencyEvaluator.Outcome;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidationResult;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
 import java.time.Duration;
 import java.time.Instant;
@@ -222,7 +228,7 @@ class AdvancedSearchPlanningTest {
         };
     }
 
-    private ActiveSchemaContext schemaContext() {
+    private SchemaSnapshot schemaContext() {
         SchemaDocument schema = new SchemaDocument(
             "test", 1, null,
             List.of(new SchemaDocument.NodeDefinition(
@@ -231,7 +237,7 @@ class AdvancedSearchPlanningTest {
             )),
             List.of(), List.of(), List.of()
         );
-        return new ActiveSchemaContext("kb-1", "schema-1", null, schema);
+        return new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, schema);
     }
 
     private EvidenceCandidate evidence(String id) {
