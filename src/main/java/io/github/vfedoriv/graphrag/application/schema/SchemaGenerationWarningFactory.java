@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.application.schema;
 
 import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
-import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

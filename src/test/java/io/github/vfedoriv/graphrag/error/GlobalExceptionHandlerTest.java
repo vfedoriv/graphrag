@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.error;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaValidationException;
 import io.github.vfedoriv.graphrag.dto.AdvancedSearchReadinessDtos.ReadinessIssue;
 import java.util.List;
 import java.util.List;

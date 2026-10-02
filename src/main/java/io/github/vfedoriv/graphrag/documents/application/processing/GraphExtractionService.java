@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
-import io.github.vfedoriv.graphrag.service.ActiveSchemaContext;
-import io.github.vfedoriv.graphrag.service.ActiveSchemaResolver;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshots;
 
 import io.github.vfedoriv.graphrag.documents.ports.DocumentArtifactCleanup;
 
@@ -15,7 +15,7 @@ import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GraphExtractionService {
 
-    private final ActiveSchemaResolver activeSchemaResolver;
+    private final SchemaSnapshots schemaSnapshots;
     private final ExtractionRunLifecycle extractionRunLifecycle;
     private final GraphExtractionValidationService validationService;
     private final DocumentGraphWriter graphWriteService;
@@ -35,7 +35,7 @@ public class GraphExtractionService {
     private final AiObservationService aiObservationService;
 
     public GraphExtractionService(
-        ActiveSchemaResolver activeSchemaResolver,
+        SchemaSnapshots schemaSnapshots,
         ExtractionRunLifecycle extractionRunLifecycle,
         GraphExtractionValidationService validationService,
         DocumentGraphWriter graphWriteService,
@@ -43,7 +43,7 @@ public class GraphExtractionService {
         DocumentArtifactCleanup graphArtifactCleanupService,
         AiObservationService aiObservationService
     ) {
-        this.activeSchemaResolver = activeSchemaResolver;
+        this.schemaSnapshots = schemaSnapshots;
         this.extractionRunLifecycle = extractionRunLifecycle;
         this.validationService = validationService;
         this.graphWriteService = graphWriteService;
@@ -53,7 +53,7 @@ public class GraphExtractionService {
     }
 
     public void extract(DocumentUploadNode document, List<DocumentChunkNode> chunks, boolean allowOverwrite) {
-        extract(document, chunks, allowOverwrite, activeSchemaResolver.resolve(document.getKnowledgeBaseId()));
+        extract(document, chunks, allowOverwrite, schemaSnapshots.resolveActive(document.getKnowledgeBaseId()));
     }
 
     public void extract(
@@ -67,7 +67,7 @@ public class GraphExtractionService {
             document,
             chunks,
             allowOverwrite,
-            activeSchemaResolver.resolveExpected(document.getKnowledgeBaseId(), schemaId, schemaContentHash)
+            schemaSnapshots.resolveExpectedSnapshot(document.getKnowledgeBaseId(), schemaId, schemaContentHash)
         );
     }
 
@@ -75,7 +75,7 @@ public class GraphExtractionService {
         DocumentUploadNode document,
         List<DocumentChunkNode> chunks,
         boolean allowOverwrite,
-        ActiveSchemaContext schemaContext
+        SchemaSnapshot schemaContext
     ) {
         long startNanos = System.nanoTime();
         requireConsistentScope(document, chunks);
@@ -97,7 +97,7 @@ public class GraphExtractionService {
         ExtractionRunNode run = extractionRunLifecycle.start(
             document.getId(),
             schemaContext.schemaDefinitionId(),
-            "chat:" + schemaContext.schemaDefinition().getName()
+            "chat:" + schemaContext.name()
         );
         log.info("Extraction run created: runId={}, schemaId={}, model={}", run.getId(), run.getSchemaId(), run.getModel());
         try (AiObservationScope workflow = aiObservationService.startWorkflow(new AiWorkflowContext(

@@ -2,8 +2,8 @@ package io.github.vfedoriv.graphrag.documents.adapters.graph;
 
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 
-import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;

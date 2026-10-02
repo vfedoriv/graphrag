@@ -17,7 +17,7 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
 import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository.Query;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidatedGraphPlan;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

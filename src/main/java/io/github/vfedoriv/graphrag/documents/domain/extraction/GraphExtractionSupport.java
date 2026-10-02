@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.domain.extraction;
 
-import io.github.vfedoriv.graphrag.schema.NodeKeySupport;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

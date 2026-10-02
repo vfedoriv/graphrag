@@ -7,7 +7,7 @@ import io.github.vfedoriv.graphrag.dto.AdvancedSearchReadinessDtos.ReadinessResp
 import io.github.vfedoriv.graphrag.error.AdvancedSearchReadinessConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

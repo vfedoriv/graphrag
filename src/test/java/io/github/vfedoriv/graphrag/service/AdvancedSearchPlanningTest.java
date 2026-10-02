@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,7 +25,7 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.Evidenc
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchFollowUpPolicy.Decision;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchPlanValidator.ValidatedPlan;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchSufficiencyEvaluator.Outcome;

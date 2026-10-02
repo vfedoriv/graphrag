@@ -4,6 +4,10 @@ import jakarta.persistence.EntityManagerFactory;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.repository.Neo4jDocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.adapters.relational.entity.DocumentUploadEntity;
 import io.github.vfedoriv.graphrag.documents.adapters.relational.repository.JpaDocumentUploadRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.entity.KnowledgeBaseSchemaEntity;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseSchemaRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.entity.SchemaDefinitionEntity;
+import io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.repository.JpaSchemaDefinitionRepository;
 
 import org.neo4j.driver.Driver;
 import org.springframework.beans.factory.ObjectProvider;
@@ -30,9 +34,11 @@ import io.github.vfedoriv.graphrag.repository.GraphRepositoryMarker;
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
-@EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class})
+@EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class,
+    KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class})
 @EnableJpaRepositories(
-    basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class},
+    basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class,
+        JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class},
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"
 )

@@ -3,7 +3,7 @@
 Date: 2026-10-01
 Status: roadmap steps 1–4 implemented: reprocessing execution/recovery, document
 migration preparation, knowledge-base/AI state boundaries, and document
-consolidation. Step 5 (schema registry/discovery) remains pending.
+consolidation. Step 5 (schema registry/discovery) is implemented.
 
 ## Purpose
 
@@ -204,24 +204,25 @@ Later proposals should be grounded in contracts actually established by changes
 
 - [Document consolidation](../openspec/changes/archive/2026-10-01-consolidate-documents/proposal.md) (implemented step 4)
 
-## Step-5 handoff from document consolidation
+## Step-5 registry and discovery boundary
 
-Document API, management/processing workflows, pure rules, ports, and owned
-adapters now live under `documents`; processing assembly lives in
-`bootstrap.DocumentsProcessingConfiguration`. Exact remaining edges and their
-retirement steps 5–9 are recorded in `ArchitectureBoundaryTest`.
+Step 5 is implemented in
+[the archived change](../openspec/changes/archive/2026-10-02-establish-schema-registry-discovery-boundaries/proposal.md).
+`schemas.registry` owns definition state, parser/validator rules, and active
+resolution. Knowledge-base association state is owned by `knowledgebase`, with
+registry admission/association ports mapped to public capabilities by
+`bootstrap.integration.schemas`. Reads and writes retain their caller transaction;
+activation keeps the KB lock and schedules reprocessing after commit.
 
-For the pending registry/discovery change, `DiscoverySourcePreparer` currently
-uses `documents.application.management.DocumentUploadService`,
-`documents.application.processing.DocumentParsingService`, `documents.domain.DocumentUploadNode`,
-and `documents.ports.DocumentUploadRepository`. Map these owned inputs through
-the planned `DocumentSourceInputs` capability rather than restoring legacy
-package dependencies. `documents.application.processing.GraphExtractionService`
-still uses `ActiveSchemaResolver`/`ActiveSchemaContext` and the mutable schema
-record; replace this frozen step-5 edge with the proposed revision-aware
-`SchemaSnapshots` capability. `documents.ports.DocumentGraphWriter` and
-`GraphExtractionClient` carry `schema.SchemaDocument`; coordinate snapshot/model
-mapping while preserving extraction target checks and schema JSON behavior.
-`service.ChunkMigrationSnapshot` remains schema-owned. Draft/evaluation, search,
-and support consumers keep their separately frozen steps 6–9; step 5 must not
-broaden them or reopen completed reprocessing/knowledge-base/AI boundaries.
+`schemas.contracts` provides immutable, complete schema snapshots containing
+stored JSON and hash. Document extraction consumes snapshots for active and
+expected targets. `schemas.discovery` owns source preparation, model analysis,
+aggregation, and deadlines. Its document inputs are acquired through the
+`DocumentSourceInputs` public capability, with scope checks, byte bounds before
+file parsing, defensive copies, and no path or persistence-record exposure.
+
+`ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies
+and freezes the remaining exact edges by retirement step: draft authoring (6),
+evaluation/publication and reprocessing organization (7), search (8), and
+support/assembly (9). Existing draft/evaluation/search callers retain their
+legacy entry points until those roadmap steps move them to public contracts.

@@ -1,8 +1,11 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.config.SchemaDraftEvaluationProperties;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionNode;
@@ -23,7 +26,7 @@ import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
@@ -234,7 +237,7 @@ public class SchemaDraftPublicationService {
     private SchemaDefinitionNode resolveOrCreateSchema(
         SchemaDraftNode draft, String projectionJson, String knowledgeBaseId
     ) {
-        List<SchemaDefinitionNode> matching = schemaRepository.findAllByKnowledgeBaseId(knowledgeBaseId).stream()
+        List<SchemaDefinitionNode> matching = schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream()
             .filter(schema -> schema.getName().equals(draft.getTargetName())
                 && schema.getVersion() == draft.getTargetVersion())
             .toList();
@@ -279,7 +282,8 @@ public class SchemaDraftPublicationService {
     private PublicationResponse toResponse(SchemaDraftPublicationNode publication) {
         SchemaDefinitionNode schema = schemaRepository.findById(publication.getSchemaId())
             .orElseThrow(() -> new NotFoundException("Published schema no longer exists: " + publication.getSchemaId()));
-        boolean active = Boolean.TRUE.equals(schemaRepository.existsActiveKnowledgeBaseReference(schema.getId()));
+        boolean active = schemaRegistryService.getSchema(schema.getId()).getStatus()
+            == io.github.vfedoriv.graphrag.domain.SchemaStatus.ACTIVE;
         return new PublicationResponse(publication.getId(), publication.getDraftId(), publication.getSchemaId(),
             publication.getDraftRevision(), publication.getProjectionContentHash(), schema.getContentHash(),
             !publication.getProjectionContentHash().equals(schema.getContentHash()), active, publication.getCreatedAt());

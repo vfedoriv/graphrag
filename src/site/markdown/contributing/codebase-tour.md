@@ -77,7 +77,7 @@ only. The repository-free `EmbeddingSpacePolicy` bridge still serves the exact
 search callers listed in the
 [AI boundary details](../concepts/architecture.md#knowledge-base-lifecycle-and-ai-state-boundaries).
 Document consolidation (step 4) is implemented. Registry/discovery consolidation
-(step 5) remains pending; exact remaining dependencies are frozen through steps
+(step 5) is implemented; exact remaining dependencies are frozen through steps
 5–9 in `ArchitectureBoundaryTest`.
 
 ## High-risk invariants

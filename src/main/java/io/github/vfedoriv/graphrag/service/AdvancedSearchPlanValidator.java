@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.BooleanLiteral;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.DoubleLiteral;

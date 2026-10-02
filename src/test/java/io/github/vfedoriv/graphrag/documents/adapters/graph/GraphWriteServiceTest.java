@@ -5,7 +5,7 @@ import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionRe
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;

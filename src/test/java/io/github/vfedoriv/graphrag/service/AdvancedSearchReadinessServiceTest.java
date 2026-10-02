@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.model.ChatModel;

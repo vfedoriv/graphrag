@@ -1,20 +1,22 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.application.DiscoveryExecutionPolicy;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult.AliasSuggestion;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryAggregator;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Candidate;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryDeadlineExceededException;
-import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
-import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
-import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
-import io.github.vfedoriv.graphrag.discovery.SourceFailureCode;
-import io.github.vfedoriv.graphrag.discovery.SourceFailureDecision;
-import io.github.vfedoriv.graphrag.discovery.SourceStateException;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult.AliasSuggestion;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryAggregator;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Candidate;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryDeadlineExceededException;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourceAnalyzer;
+import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureClassifier;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureCode;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureDecision;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceStateException;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;

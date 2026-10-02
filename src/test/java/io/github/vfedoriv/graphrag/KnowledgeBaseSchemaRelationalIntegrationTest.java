@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;

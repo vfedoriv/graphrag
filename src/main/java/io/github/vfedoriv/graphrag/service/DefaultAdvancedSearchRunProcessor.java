@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,8 +17,8 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Result;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchTextRetrievalContracts.Subquery;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchFollowUpPolicy.Decision;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchFusionService.FusionOptions;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchParentContextService.ExpansionOptions;

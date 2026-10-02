@@ -1,13 +1,13 @@
 package io.github.vfedoriv.graphrag.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Candidate;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.Conflict;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ResponseStatus;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceStatus;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.discovery.SourceFailureCode;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Candidate;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Conflict;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.FailureCategory;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ResponseStatus;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceStatus;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceType;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 

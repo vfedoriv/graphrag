@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import io.github.vfedoriv.graphrag.schema.SchemaValidationException;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaValidationException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import java.net.URI;
 import java.util.LinkedHashMap;

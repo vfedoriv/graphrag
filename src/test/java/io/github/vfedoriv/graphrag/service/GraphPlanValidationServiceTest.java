@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,7 +21,7 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.StringLiteral;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

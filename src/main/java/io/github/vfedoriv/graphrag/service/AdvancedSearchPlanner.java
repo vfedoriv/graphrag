@@ -1,8 +1,10 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchPlanningContracts.Plan;
 import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchPlanValidator.ValidatedPlan;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
 import java.time.Instant;

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,7 +21,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
@@ -39,12 +41,13 @@ class SchemaDraftWorkflowNavigationServiceTest {
     private final SchemaDraftSourceRepository sourceRepository = mock(SchemaDraftSourceRepository.class);
     private final KnowledgeBaseRepository knowledgeBaseRepository = mock(KnowledgeBaseRepository.class);
     private final SchemaDefinitionRepository schemaRepository = mock(SchemaDefinitionRepository.class);
+    private final SchemaRegistryService schemaRegistryService = mock(SchemaRegistryService.class);
     private final SchemaDraftJsonSupport jsonSupport = new SchemaDraftJsonSupport(new ObjectMapper());
     private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService =
         new SchemaDraftAnalysisRetryEligibilityService(analysisRepository, sourceRepository);
     private final SchemaDraftWorkflowNavigationService service = new SchemaDraftWorkflowNavigationService(
         analysisRepository, evaluationRepository, reprocessingRepository, sourceRepository,
-        knowledgeBaseRepository, schemaRepository, jsonSupport, analysisRetryEligibilityService);
+        knowledgeBaseRepository, schemaRepository, schemaRegistryService, jsonSupport, analysisRetryEligibilityService);
 
     @Test
     void derivesRunningAggregateAndStaleCurrentnessFromAuthoritativeDraftState() {

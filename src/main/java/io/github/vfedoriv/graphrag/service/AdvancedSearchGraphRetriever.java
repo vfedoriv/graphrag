@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Diagnostics;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphFact;

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;

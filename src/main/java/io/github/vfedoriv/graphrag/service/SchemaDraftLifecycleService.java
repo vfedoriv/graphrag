@@ -1,8 +1,10 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;
@@ -13,7 +15,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateDraftRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.UpdateGuidanceRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
@@ -35,6 +37,7 @@ public class SchemaDraftLifecycleService {
     private final SchemaDraftSourceRepository sourceRepository;
     private final SchemaDraftAnalysisRunRepository runRepository;
     private final SchemaDefinitionRepository schemaRepository;
+    private final SchemaRegistryService schemaRegistryService;
     private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     private final KnowledgeBaseService knowledgeBaseService;
     private final SchemaDraftJsonSupport jsonSupport;
@@ -47,6 +50,7 @@ public class SchemaDraftLifecycleService {
         SchemaDraftSourceRepository sourceRepository,
         SchemaDraftAnalysisRunRepository runRepository,
         SchemaDefinitionRepository schemaRepository,
+        SchemaRegistryService schemaRegistryService,
         KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
         KnowledgeBaseService knowledgeBaseService,
         SchemaDraftJsonSupport jsonSupport,
@@ -58,6 +62,7 @@ public class SchemaDraftLifecycleService {
         this.sourceRepository = sourceRepository;
         this.runRepository = runRepository;
         this.schemaRepository = schemaRepository;
+        this.schemaRegistryService = schemaRegistryService;
         this.knowledgeBaseLifecycleService = knowledgeBaseLifecycleService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.jsonSupport = jsonSupport;
@@ -180,7 +185,7 @@ public class SchemaDraftLifecycleService {
         if (baseSchemaId == null || baseSchemaId.isBlank()) {
             return null;
         }
-        SchemaDefinitionNode base = schemaRepository.findAllByKnowledgeBaseId(knowledgeBaseId).stream()
+        SchemaDefinitionNode base = schemaRegistryService.listSchemasByKnowledgeBase(knowledgeBaseId).stream()
             .filter(schema -> baseSchemaId.equals(schema.getId()))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Base schema not found in knowledge base: " + baseSchemaId));

@@ -13,7 +13,7 @@ import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
 import io.github.vfedoriv.graphrag.service.AiProfileContext;
 import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

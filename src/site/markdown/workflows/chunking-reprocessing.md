@@ -76,8 +76,8 @@ Implementation: `documents.api.ChunkingStateController`,
 `documents.domain.chunking`, parser/tokenizer integrations under `documents.adapters`,
 and schema-owned `ChunkMigrationController`, `SchemaReprocessingPlanController`,
 `SchemaReprocessingPlanService`, and durable migration snapshots. Document
-consolidation (step 4) is implemented; registry/discovery boundaries (step 5)
-remain pending. See [document ownership](../concepts/architecture.md#document-ownership).
+consolidation (step 4) and registry/discovery boundaries (step 5) are
+implemented. Document extraction consumes immutable schema snapshots. See [document ownership](../concepts/architecture.md#document-ownership).
 
 Preparation and target inspection run through schemas-owned consumer ports and
 `DocumentMigrationPreparationFacade`. Documents resolves parser/options, captures

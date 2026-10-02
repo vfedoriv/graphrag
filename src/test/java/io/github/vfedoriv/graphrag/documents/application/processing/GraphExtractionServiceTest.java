@@ -1,7 +1,8 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
-import io.github.vfedoriv.graphrag.service.ActiveSchemaContext;
-import io.github.vfedoriv.graphrag.service.ActiveSchemaResolver;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshots;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
 
@@ -20,12 +21,11 @@ import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunNode;
 import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphWriteService;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,7 @@ import org.springframework.beans.factory.ObjectProvider;
 class GraphExtractionServiceTest {
 
     @Mock
-    private ActiveSchemaResolver activeSchemaResolver;
+    private SchemaSnapshots schemaSnapshots;
     @Mock
     private ExtractionRunLifecycle extractionRunLifecycle;
     @Mock
@@ -130,6 +130,20 @@ class GraphExtractionServiceTest {
         );
     }
 
+    @Test
+    void expectedTargetFailureStopsExtractionBeforeRunCreation() {
+        GraphExtractionService service = new GraphExtractionService(
+            schemaSnapshots, extractionRunLifecycle, validationService, graphWriteService,
+            graphExtractionClientProvider, graphArtifactCleanupService, TestAiObservationService.noop());
+        when(schemaSnapshots.resolveExpectedSnapshot("kb-1", "schema-1", "old-hash"))
+            .thenThrow(new IllegalStateException("Schema content no longer matches immutable processing target"));
+
+        assertThatThrownBy(() -> service.extract(document(), List.of(chunk()), false, "schema-1", "old-hash"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Schema content no longer matches immutable processing target");
+        verify(extractionRunLifecycle, never()).start(any(), any(), any());
+    }
+
     private GraphExtractionService serviceWithClient(GraphExtractionClient extractionClient) {
         when(graphExtractionClientProvider.orderedStream()).thenReturn(java.util.stream.Stream.of(extractionClient));
         lenient()
@@ -147,7 +161,7 @@ class GraphExtractionServiceTest {
             return run;
         });
         return new GraphExtractionService(
-            activeSchemaResolver,
+            schemaSnapshots,
             extractionRunLifecycle,
             validationService,
             graphWriteService,
@@ -158,9 +172,6 @@ class GraphExtractionServiceTest {
     }
 
     private void mockActiveSchema() {
-        SchemaDefinitionNode schema = new SchemaDefinitionNode();
-        schema.setId("schema-1");
-        schema.setName("contracts");
         SchemaDocument schemaDocument = new SchemaParser().parse("""
             {
               "name": "contracts",
@@ -169,7 +180,8 @@ class GraphExtractionServiceTest {
               "relationships": []
             }
             """);
-        when(activeSchemaResolver.resolve("kb-1")).thenReturn(new ActiveSchemaContext("kb-1", "schema-1", schema, schemaDocument));
+        when(schemaSnapshots.resolveActive("kb-1")).thenReturn(new SchemaSnapshot(
+            "kb-1", "schema-1", "contracts", 1, null, null, null, "{}", "hash", null, null, schemaDocument));
     }
 
     private DocumentUploadNode document() {

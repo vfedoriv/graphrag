@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.infrastructure.persistence.relational;
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.KnowledgeBaseEntity;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseSchemaRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseSchemaRepository;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
 import java.time.Instant;

@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.service;
 
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;

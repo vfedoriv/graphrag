@@ -2,8 +2,8 @@ package io.github.vfedoriv.graphrag.service;
 
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceType;
+import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;

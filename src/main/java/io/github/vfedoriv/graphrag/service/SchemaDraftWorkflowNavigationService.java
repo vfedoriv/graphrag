@@ -1,7 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+
 import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
@@ -19,7 +21,7 @@ import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationRunSummaryRespo
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.EvaluationWorkflowReference;
 import io.github.vfedoriv.graphrag.dto.SchemaDraftDtos.ReprocessingWorkflowReference;
 import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
@@ -43,6 +45,7 @@ public class SchemaDraftWorkflowNavigationService {
     private final SchemaDraftSourceRepository sourceRepository;
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final SchemaDefinitionRepository schemaRepository;
+    private final SchemaRegistryService schemaRegistryService;
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService;
 
@@ -53,6 +56,7 @@ public class SchemaDraftWorkflowNavigationService {
         SchemaDraftSourceRepository sourceRepository,
         KnowledgeBaseRepository knowledgeBaseRepository,
         SchemaDefinitionRepository schemaRepository,
+        SchemaRegistryService schemaRegistryService,
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService
     ) {
@@ -62,6 +66,7 @@ public class SchemaDraftWorkflowNavigationService {
         this.sourceRepository = sourceRepository;
         this.knowledgeBaseRepository = knowledgeBaseRepository;
         this.schemaRepository = schemaRepository;
+        this.schemaRegistryService = schemaRegistryService;
         this.jsonSupport = jsonSupport;
         this.analysisRetryEligibilityService = analysisRetryEligibilityService;
     }
@@ -152,8 +157,8 @@ public class SchemaDraftWorkflowNavigationService {
             .distinct().map(id -> knowledgeBaseRepository.findById(id).orElse(null))
             .filter(java.util.Objects::nonNull)
             .collect(Collectors.toMap(KnowledgeBaseNode::getId, Function.identity()));
-        Map<String, SchemaDefinitionNode> schemas = plans.stream().map(SchemaReprocessingPlanNode::getKnowledgeBaseId)
-            .distinct().flatMap(id -> schemaRepository.findAllByKnowledgeBaseId(id).stream())
+        Map<String, SchemaDefinitionNode> schemas = knowledgeBases.keySet().stream()
+            .flatMap(id -> schemaRegistryService.listSchemasByKnowledgeBase(id).stream())
             .collect(Collectors.toMap(SchemaDefinitionNode::getId, Function.identity(), (left, right) -> left));
         return plans.stream().collect(Collectors.toMap(SchemaReprocessingPlanNode::getId, plan -> {
             KnowledgeBaseNode knowledgeBase = knowledgeBases.get(plan.getKnowledgeBaseId());

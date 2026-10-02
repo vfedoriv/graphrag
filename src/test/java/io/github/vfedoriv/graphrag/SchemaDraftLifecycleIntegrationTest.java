@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException;
+import io.github.vfedoriv.graphrag.schemas.discovery.ModelResponseDiagnostics;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -12,9 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
 import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
@@ -36,7 +40,7 @@ import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
@@ -1840,7 +1844,7 @@ class SchemaDraftLifecycleIntegrationTest {
                 @Override
                 public <T> T extractValidated(
                     String portablePrompt,
-                    io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext context,
+                    io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext context,
                     java.util.function.Function<CandidateExtractionResult, T> validator
                 ) {
                     return validator.apply(extract(portablePrompt));
@@ -1853,8 +1857,8 @@ class SchemaDraftLifecycleIntegrationTest {
                     MAX_ACTIVE_MODEL_CALLS.accumulateAndGet(active, Math::max);
                     try {
                         if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
-                            throw new io.github.vfedoriv.graphrag.discovery.MalformedModelResponseException(
-                                io.github.vfedoriv.graphrag.discovery.ModelResponseDiagnostics.none());
+                            throw new io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException(
+                                io.github.vfedoriv.graphrag.schemas.discovery.ModelResponseDiagnostics.none());
                         }
                         if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
                             throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");

@@ -111,6 +111,9 @@ relational, graph, parsing, model, chunking, and binary integrations in `adapter
 `bootstrap.DocumentsProcessingConfiguration` assembles processing stages.
 Shared draft binary storage remains in `storage`. Relational checkpoints remain
 separate from external processing; there is no enclosing cross-store transaction.
-Exact transitional dependencies carry retirement steps 5–9 in
-`ArchitectureBoundaryTest`; schema registry/discovery boundaries (step 5) remain
-pending.
+Schema registry and discovery ownership (step 5) is implemented under
+`schemas.registry` and `schemas.discovery`. Immutable `schemas.contracts` snapshots
+feed document extraction; knowledge-base associations and document source inputs
+are accessed through public capabilities and mapping-only bootstrap adapters.
+`ArchitectureBoundaryTest` freezes remaining draft/evaluation/search/support
+dependencies for retirement in steps 6–9.

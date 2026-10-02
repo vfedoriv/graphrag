@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.application.schema;
 import dev.langchain4j.community.data.document.graph.GraphDocument;
 import dev.langchain4j.community.data.document.graph.GraphEdge;
 import dev.langchain4j.community.data.document.graph.GraphNode;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationNormalizationSupport;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,22 +1,26 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;
+import io.github.vfedoriv.graphrag.schemas.discovery.application.SchemaDiscoveryService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.TestAiObservationService;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryAggregator;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.ResponseStatus;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceStatus;
-import io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.discovery.DiscoverySourceAnalyzer;
-import io.github.vfedoriv.graphrag.discovery.DiscoverySourcePreparer;
-import io.github.vfedoriv.graphrag.discovery.PreparedDiscoverySource;
-import io.github.vfedoriv.graphrag.discovery.SourceFailureClassifier;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryAggregator;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ResponseStatus;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceStatus;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceType;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourceAnalyzer;
+import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
+import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
+import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureClassifier;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
@@ -54,6 +58,18 @@ class SchemaDiscoveryServiceTest {
         when(knowledgeBases.activeAiProfile("kb")).thenReturn(profile);
         service = new SchemaDiscoveryService(
             preparer, analyzer, aggregator, settings, knowledgeBases, observations, new SourceFailureClassifier());
+    }
+
+    @Test
+    void neverCallsModelWhenInputPreparationFails() {
+        SchemaDiscoveryRequest request = request();
+        when(preparer.prepare("kb", request, List.of()))
+            .thenThrow(new IllegalArgumentException("Discovery source exceeds byte limit 100"));
+
+        assertThatThrownBy(() -> service.discover("kb", request, List.of()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Discovery source exceeds byte limit 100");
+        verifyNoInteractions(analyzer);
     }
 
     @Test
@@ -123,8 +139,8 @@ class SchemaDiscoveryServiceTest {
 
         assertThat(response.status()).isEqualTo(ResponseStatus.PARTIAL);
         assertThat(response.sourceOutcomes()).extracting(outcome -> outcome.failureCategory())
-            .containsExactly(null, io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory.TIMEOUT,
-                io.github.vfedoriv.graphrag.discovery.DiscoveryContracts.FailureCategory.OVERLOADED);
+            .containsExactly(null, io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.FailureCategory.TIMEOUT,
+                io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.FailureCategory.OVERLOADED);
     }
 
     @Test

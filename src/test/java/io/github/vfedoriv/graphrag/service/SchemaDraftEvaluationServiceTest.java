@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
+
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,7 +50,7 @@ class SchemaDraftEvaluationServiceTest {
     @Mock private ObjectProvider<GraphExtractionClient> extractionClients;
     @Mock private GraphExtractionValidationService validationService;
     @Mock private SchemaDraftEvaluationMetricsCalculator metricsCalculator;
-    @Mock private io.github.vfedoriv.graphrag.schema.SchemaParser schemaParser;
+    @Mock private io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser schemaParser;
     @Mock private SchemaDraftJsonSupport jsonSupport;
     @Mock private SchemaDraftGuidanceMapper guidanceMapper;
     @Mock private SchemaDraftEvaluationContractMapper contractMapper;

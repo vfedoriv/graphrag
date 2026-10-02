@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
 import io.github.vfedoriv.graphrag.dto.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.dto.QueryExecutionResponse;
@@ -16,7 +16,7 @@ import io.github.vfedoriv.graphrag.service.CypherExecutionService;
 import io.github.vfedoriv.graphrag.service.CypherGenerationService;
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingService;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;

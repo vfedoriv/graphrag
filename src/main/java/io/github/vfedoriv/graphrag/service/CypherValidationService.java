@@ -1,10 +1,13 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
 import io.github.vfedoriv.graphrag.query.QueryPolicy;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

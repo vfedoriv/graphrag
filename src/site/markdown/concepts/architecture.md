@@ -59,11 +59,11 @@ scoped cleanup, persisted snapshots, stale-run recovery, and the absence of an
 enclosing cross-store transaction are unchanged.
 
 `ArchitectureBoundaryTest` freezes exact class-to-class transitional edges with
-retirement steps: registry/discovery and active-schema resolution (5), draft
-sources/analysis (6), dry evaluation/publication and schema-owned migration
-snapshots (7), search readers (8), and settings/AI/support assembly (9).
-These allowances neither reopen completed reprocessing/KB/AI boundaries nor
-permit additional foreign document callers. Step 5 remains pending.
+retirement steps: draft sources/analysis (6), dry evaluation/publication and
+schema-owned migration snapshots (7), search readers (8), and
+settings/AI/support assembly (9).
+These allowances preserve completed reprocessing, knowledge-base, AI, and
+schema registry/discovery boundaries and prohibit additional foreign callers.
 
 ## Reprocessing execution and recovery boundary
 
@@ -153,8 +153,22 @@ of legacy profile and knowledge-base services until support consolidation in
 step 9. No allowance permits foreign state reads. Architecture tests enforce
 pure rules/contracts, public-capability mapping, feature-to-bootstrap isolation,
 and exact bridge callers alongside all predecessor reprocessing guards.
-Document consolidation (step 4) is implemented; schema registry/discovery
-boundaries (step 5) remain pending.
+Document consolidation (step 4) and schema registry/discovery boundaries (step 5)
+are implemented. Registry definitions, parser, validator, persistence adapter,
+and active resolver live under `schemas.registry`. Knowledge-base association
+state lives under `knowledgebase`; registry workflows use its admission and
+association capabilities through mapping-only `bootstrap.integration.schemas`
+adapters. Association reads and writes join the caller's relational transaction;
+activation retains the knowledge-base lock and after-commit reprocessing trigger.
+
+`schemas.contracts` exposes immutable, complete schema snapshots with stored
+content and hash. Document extraction resolves the active or expected schema
+through this contract, preserving revision checks. `schemas.discovery` owns
+input preparation, orchestration, model-response interpretation, and aggregation.
+Document source reads and file parsing come from the `DocumentSourceInputs`
+capability, whose immutable values carry no storage paths or persistence records.
+Remaining direct schema dependencies in draft/evaluation, search, and support
+are frozen to roadmap steps 6–9 by `ArchitectureBoundaryTest`.
 
 ## Major flows
 
@@ -167,7 +181,7 @@ boundaries (step 5) remain pending.
 
 | Area | Entry points | Core implementation |
 |---|---|---|
-| Schema registry and discovery | `controller/SchemaController.java` | `service/SchemaRegistryService.java`, `service/SchemaDiscoveryService.java`, `schema/SchemaParser.java`, `schema/SchemaValidator.java` |
+| Schema registry and discovery | `controller/SchemaController.java` | `schemas/registry/application/SchemaRegistryService.java`, `schemas/discovery/application/SchemaDiscoveryService.java`, `schemas/registry/application/SchemaParser.java`, `schemas/registry/application/SchemaValidator.java` |
 | Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
 | Documents and chunks | `documents/api/DocumentController.java`, `documents/api/ChunkingStateController.java` | `documents/application/management/DocumentUploadService.java`, `documents/application/processing/DocumentProcessingService.java`, `documents/application/processing/ChunkingService.java` |
 | Reprocessing preparation, execution, and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |

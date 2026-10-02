@@ -8,7 +8,7 @@ import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
 import io.github.vfedoriv.graphrag.service.AiProfileContext;
 import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
 import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;

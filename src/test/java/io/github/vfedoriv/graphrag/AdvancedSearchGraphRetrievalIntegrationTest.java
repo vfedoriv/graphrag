@@ -20,7 +20,7 @@ import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Status;
 import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
 import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository;
-import io.github.vfedoriv.graphrag.service.ActiveSchemaContext;
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
 import io.github.vfedoriv.graphrag.service.AdvancedSearchGraphRetriever;
 import io.github.vfedoriv.graphrag.service.GraphPlanCypherRenderer;
 import io.github.vfedoriv.graphrag.service.GraphPlanValidationService;

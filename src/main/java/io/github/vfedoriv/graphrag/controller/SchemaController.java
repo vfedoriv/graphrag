@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.dto.CreateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
 import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
@@ -17,11 +17,11 @@ import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
 import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
 import io.github.vfedoriv.graphrag.dto.ValidateSchemaRequest;
-import io.github.vfedoriv.graphrag.documents.application.processing.DocumentParsingService;
+import io.github.vfedoriv.graphrag.documents.contracts.DocumentSourceInputs;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
-import io.github.vfedoriv.graphrag.service.SchemaDiscoveryService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.discovery.application.SchemaDiscoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -61,14 +61,14 @@ public class SchemaController {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final SchemaRegistryService schemaRegistryService;
     private final SchemaGenerationService schemaGenerationService;
-    private final DocumentParsingService documentParsingService;
+    private final DocumentSourceInputs documentParsingService;
     private final SchemaDiscoveryService schemaDiscoveryService;
 
     @Autowired
     public SchemaController(
         SchemaRegistryService schemaRegistryService,
         SchemaGenerationService schemaGenerationService,
-        DocumentParsingService documentParsingService,
+        DocumentSourceInputs documentParsingService,
         SchemaDiscoveryService schemaDiscoveryService
     ) {
         this.schemaRegistryService = schemaRegistryService;
@@ -80,7 +80,7 @@ public class SchemaController {
     public SchemaController(
         SchemaRegistryService schemaRegistryService,
         SchemaGenerationService schemaGenerationService,
-        DocumentParsingService documentParsingService
+        DocumentSourceInputs documentParsingService
     ) {
         this(schemaRegistryService, schemaGenerationService, documentParsingService, null);
     }

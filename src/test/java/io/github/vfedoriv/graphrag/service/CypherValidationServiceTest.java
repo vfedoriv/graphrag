@@ -1,14 +1,17 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaResolver;
+import io.github.vfedoriv.graphrag.schemas.registry.application.ActiveSchemaContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.query.QueryValidationResult;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.schema.SchemaParser;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
