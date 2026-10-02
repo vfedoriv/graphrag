@@ -1,9 +1,11 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.evaluation.application.SchemaDraftEvaluationMetricsCalculator;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Metrics;
-import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.Metrics;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.EvaluationObservations.Result;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +17,16 @@ class SchemaDraftEvaluationMetricsCalculatorTest {
     @Test
     void calculatesContractualRatesAndValidationCounts() {
         SchemaDocument schema = schema();
-        GraphExtractionResult raw = new GraphExtractionResult(
+        Result raw = new Result(
             List.of(
-                new GraphExtractionResult.ExtractedNode("Person", Map.of("personId", "p-1", "age", "wrong"), 1.0),
-                new GraphExtractionResult.ExtractedNode("Person", Map.of(), 1.0),
-                new GraphExtractionResult.ExtractedNode("Unknown", Map.of(), 1.0)
+                new io.github.vfedoriv.graphrag.schemas.evaluation.domain.EvaluationObservations.Node("Person", Map.of("personId", "p-1", "age", "wrong"), 1.0),
+                new io.github.vfedoriv.graphrag.schemas.evaluation.domain.EvaluationObservations.Node("Person", Map.of(), 1.0),
+                new io.github.vfedoriv.graphrag.schemas.evaluation.domain.EvaluationObservations.Node("Unknown", Map.of(), 1.0)
             ),
-            List.of(new GraphExtractionResult.ExtractedRelationship(
+            List.of(new io.github.vfedoriv.graphrag.schemas.evaluation.domain.EvaluationObservations.Relationship(
                 "UNKNOWN", "Person", Map.of("personId", "p-1"), "Person", Map.of("personId", "p-2"), Map.of(), 1.0))
         );
-        GraphExtractionResult sanitized = new GraphExtractionResult(List.of(raw.nodes().getFirst()), List.of());
+        Result sanitized = new Result(List.of(raw.nodes().getFirst()), List.of());
 
         Metrics metrics = calculator.calculate(raw, sanitized, schema, 2, 1);
 
@@ -42,8 +44,8 @@ class SchemaDraftEvaluationMetricsCalculatorTest {
     @Test
     void reportsEmptyDenominatorsAsNotApplicable() {
         Metrics metrics = calculator.calculate(
-            new GraphExtractionResult(List.of(), List.of()),
-            new GraphExtractionResult(List.of(), List.of()), schema(), 0, 0);
+            new Result(List.of(), List.of()),
+            new Result(List.of(), List.of()), schema(), 0, 0);
 
         assertThat(metrics.recognizedEntityRate().applicable()).isFalse();
         assertThat(metrics.recognizedEntityRate().value()).isNull();

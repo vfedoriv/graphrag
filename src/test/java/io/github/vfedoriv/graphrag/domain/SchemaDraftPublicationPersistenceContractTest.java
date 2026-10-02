@@ -2,11 +2,11 @@ package io.github.vfedoriv.graphrag.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftEvaluationOutcomeEntity;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftEvaluationRunEntity;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaDraftPublicationEntity;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingItemEntity;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.SchemaReprocessingPlanEntity;
+import io.github.vfedoriv.graphrag.schemas.evaluation.adapters.relational.entity.SchemaDraftEvaluationOutcomeEntity;
+import io.github.vfedoriv.graphrag.schemas.evaluation.adapters.relational.entity.SchemaDraftEvaluationRunEntity;
+import io.github.vfedoriv.graphrag.schemas.publication.adapters.relational.entity.SchemaDraftPublicationEntity;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.entity.SchemaReprocessingItemEntity;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.entity.SchemaReprocessingPlanEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;

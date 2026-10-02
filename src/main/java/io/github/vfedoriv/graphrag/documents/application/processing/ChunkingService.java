@@ -10,7 +10,6 @@ import io.github.vfedoriv.graphrag.documents.domain.chunking.RecursiveTokenAware
 import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenEstimator;
 import io.github.vfedoriv.graphrag.documents.adapters.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
 import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 import java.util.List;
@@ -68,9 +67,9 @@ public class ChunkingService {
         return runtimeSettingsService.effectiveChunkerRevision();
     }
 
-    public ChunkMigrationSnapshot.ChunkTarget snapshotTarget(AiProfileNode profile) {
+    public DocumentReprocessing.ChunkTarget snapshotTarget(AiProfileNode profile) {
         ChunkingContext context = snapshot(profile, "migration-target");
-        return new ChunkMigrationSnapshot.ChunkTarget(
+        return new DocumentReprocessing.ChunkTarget(
             context.strategyName(),
             context.strategyRevision(),
             context.targetTokens(),
@@ -87,21 +86,6 @@ public class ChunkingService {
             context.representationRevision(),
             context.settingsHash().value()
         );
-    }
-
-    public ChunkingContext restore(
-        AiProfileNode profile,
-        ChunkMigrationSnapshot.ChunkTarget target,
-        ChunkMigrationSnapshot.DocumentTarget documentTarget
-    ) {
-        return restore(profile, new DocumentReprocessing.ChunkTarget(
-            target.strategyName(), target.strategyRevision(), target.targetTokens(), target.overlapTokens(),
-            target.hardCharacterLimit(), target.parentTargetTokens(), target.parentHardCharacterLimit(),
-            target.parentMaxPages(), target.contextHeaderMaxTokens(), target.contextHeaderMaxCharacters(),
-            target.tokenizerId(), target.tokenizerRevision(), target.tokenCountMode(),
-            target.representationRevision(), target.settingsHash()), new DocumentReprocessing.DocumentTarget(
-            documentTarget.sourceSha256(), documentTarget.parserId(), documentTarget.parserRevision(),
-            documentTarget.fileFormat(), documentTarget.effectiveChunkerRevision(), documentTarget.effectiveProcessingOptions()));
     }
 
     public ChunkingContext restore(

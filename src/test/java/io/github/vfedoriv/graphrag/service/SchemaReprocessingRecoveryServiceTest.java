@@ -1,16 +1,20 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingRecoveryService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
-import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowCheckpointService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingItemRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingCheckpointService;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingProcessingOutcomeReader;
 import java.time.Instant;
 import java.util.List;
@@ -24,8 +28,8 @@ import static org.mockito.Mockito.*;
 class SchemaReprocessingRecoveryServiceTest {
     private final SchemaReprocessingPlanRepository plans = mock(SchemaReprocessingPlanRepository.class);
     private final SchemaReprocessingItemRepository items = mock(SchemaReprocessingItemRepository.class);
-    private final SchemaDraftWorkflowCheckpointService checkpoint = mock(SchemaDraftWorkflowCheckpointService.class);
-    private final SchemaDraftJsonSupport json = new SchemaDraftJsonSupport(new ObjectMapper());
+    private final ReprocessingCheckpointService checkpoint = mock(ReprocessingCheckpointService.class);
+    private final ReprocessingJsonSupport json = new ReprocessingJsonSupport(new ObjectMapper());
 
     @Test
     void reconcilesExternalSuccessAndMakesUnmatchedWorkRetryableForBothReasons() {
@@ -105,6 +109,35 @@ class SchemaReprocessingRecoveryServiceTest {
         new SchemaReprocessingRecoveryService(plans, items, outcomes, checkpoint, json).recover();
         verify(items).complete(eq("item"), eq("worker"), eq(SchemaReprocessingItemStatus.INTERRUPTED),
             eq("CLAIM_EXPIRED"), eq(true), any());
+        verifyNoInteractions(outcomes);
+    }
+
+    @Test
+    void runningPlansWithoutAnExpiredClaimKeepTheirCurrentOwner() {
+        for (Instant claimUntil : new Instant[] {null, Instant.now().plusSeconds(3600)}) {
+            SchemaReprocessingPlanNode plan = plan("owned", ReprocessingPlanReason.SCHEMA_ACTIVATION);
+            plan.setClaimUntil(claimUntil);
+            when(plans.findByStatusIn(any())).thenReturn(List.of(plan));
+            ReprocessingProcessingOutcomeReader outcomes = mock(ReprocessingProcessingOutcomeReader.class);
+            new SchemaReprocessingRecoveryService(plans, items, outcomes, checkpoint, json).recover();
+            assertThat(plan.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.RUNNING);
+            verifyNoInteractions(items, outcomes, checkpoint);
+        }
+    }
+
+    @Test
+    void expiredPlanDoesNotCompleteAnItemOwnedByANewerWorker() {
+        SchemaReprocessingPlanNode plan = plan("expired", ReprocessingPlanReason.SCHEMA_ACTIVATION);
+        SchemaReprocessingItemNode item = runningItem("owned-item", plan.getId());
+        item.setClaimedBy("newer-worker");
+        item.setClaimUntil(Instant.now().plusSeconds(3600));
+        when(plans.findByStatusIn(any())).thenReturn(List.of(plan));
+        when(items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
+        ReprocessingProcessingOutcomeReader outcomes = mock(ReprocessingProcessingOutcomeReader.class);
+        new SchemaReprocessingRecoveryService(plans, items, outcomes, checkpoint, json).recover();
+        assertThat(item.getStatus()).isEqualTo(SchemaReprocessingItemStatus.RUNNING);
+        assertThat(plan.getRunningDocuments()).isEqualTo(1);
+        verify(items, never()).complete(any(), any(), any(), any(), anyBoolean(), any());
         verifyNoInteractions(outcomes);
     }
 

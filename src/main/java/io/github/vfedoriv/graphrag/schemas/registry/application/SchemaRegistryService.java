@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.registry.application;
 
-import io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.contracts.SchemaActivationReprocessing;
 
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaFormat;
@@ -42,7 +42,7 @@ public class SchemaRegistryService {
     private final SchemaDefinitionRepository schemaRepository;
     private final KnowledgeBaseAdmission knowledgeBaseAdmission;
     private final SchemaAssociations schemaAssociations;
-    private final ObjectProvider<SchemaReprocessingPlanService> reprocessingPlanService;
+    private final ObjectProvider<SchemaActivationReprocessing> reprocessingPlanService;
 
     @Autowired
     public SchemaRegistryService(
@@ -51,7 +51,7 @@ public class SchemaRegistryService {
         SchemaDefinitionRepository schemaRepository,
         KnowledgeBaseAdmission knowledgeBaseAdmission,
         SchemaAssociations schemaAssociations,
-        ObjectProvider<SchemaReprocessingPlanService> reprocessingPlanService
+        ObjectProvider<SchemaActivationReprocessing> reprocessingPlanService
     ) {
         this.schemaParser = schemaParser;
         this.schemaValidator = schemaValidator;
@@ -188,6 +188,11 @@ public class SchemaRegistryService {
         List<String> errors = schemaValidator.validate(doc);
         log.info("Schema JSON validation completed: name={}, version={}, valid={}, errorCount={}", doc.name(), doc.version(), errors.isEmpty(), errors.size());
         return errors;
+    }
+
+    @RelationalTransactional(readOnly = true)
+    public boolean identityExistsGlobally(String name, int version) {
+        return Boolean.TRUE.equals(schemaRepository.existsByNameAndVersion(name, version));
     }
 
     @RelationalTransactional

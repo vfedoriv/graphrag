@@ -59,11 +59,10 @@ scoped cleanup, persisted snapshots, stale-run recovery, and the absence of an
 enclosing cross-store transaction are unchanged.
 
 `ArchitectureBoundaryTest` freezes exact class-to-class transitional edges with
-retirement steps: draft sources/analysis (6), dry evaluation/publication and
-schema-owned migration snapshots (7), search readers (8), and
-settings/AI/support assembly (9).
-These allowances preserve completed reprocessing, knowledge-base, AI, and
-schema registry/discovery boundaries and prohibit additional foreign callers.
+retirement steps: search readers (8) and settings/AI/support assembly (9).
+The exact draft-authoring (6) and evaluation/publication/reprocessing (7) edges
+are retired. These allowances preserve the completed feature boundaries and
+prohibit additional foreign callers.
 
 ## Reprocessing execution and recovery boundary
 
@@ -202,12 +201,59 @@ revision, from `knowledgebase.contracts.DraftKnowledgeBaseFacts`. These
 synchronous reads join their caller's transaction. Model client construction
 remains AI-owned.
 
-Evaluation and publication workflows remain a separate step-7 slice. Draft
-navigation keeps bounded batch summaries for evaluation and reprocessing until
-those owners move in steps 7 and 9. Search dependencies remain step 8, and
-support/assembly dependencies remain step 9. `ArchitectureBoundaryTest` retires
-the exact step-6 document and registry/discovery authoring edges while retaining
-only the named later-step exceptions; it rejects new or stale allowances.
+Draft navigation consumes `DraftEvaluationSummaries` and
+`DraftReprocessingSummaries` through mapping-only bootstrap adapters. Evaluation
+and reprocessing own the immutable batch summaries, including latest/current
+resource references; list mapping does not read downstream repositories or issue
+one detail request per draft. Stable ordering, filtering before totals, and
+pagination remain compatible. Only exact search (step 8) and support/assembly
+(step 9) dependencies remain frozen.
+
+## Schema evaluation and publication boundary
+
+Roadmap step 7 is implemented under `schemas.evaluation`, `schemas.publication`,
+and `schemas.reprocessing`. Each area owns its API/domain values, workflow state,
+repository ports, relational adapters, checkpoints, and recovery. Evaluation and
+reprocessing also own their history/currentness summaries. Draft-owned
+`DraftAdmissions`, `DraftReviewInputs`, `DraftContributors`, and
+`DraftPublicationLink` expose immutable authoring preconditions and linkage
+without persistence records or repositories.
+
+Evaluation consumes document inventory/preparation through `EvaluationDocuments`
+and per-chunk dry extraction through `EvaluationDryExtraction`, mapped by
+`bootstrap.integration.schemas` to public document capabilities. Documents owns
+source loading, parsing, chunk splitting, profile/client selection, and extraction
+validation. Raw and validated immutable observations retain invalid/dropped
+values needed by schema-owned deterministic metrics. Dry extraction creates no
+document processing/extraction runs, chunks/embeddings, graph facts, or
+relationships. Binary/model work remains outside relational checkpoints.
+
+The outcome loop preserves source-check, reusable-outcome, client-availability,
+preparation, extraction, metric, and checkpoint ordering. Eligibility, historical
+contributor fallback, live chunking/profile behavior, canonical decision timestamps,
+reuse fingerprints, and deterministic advisory fallback remain unchanged. No new
+source-race or profile-revision enforcement is introduced.
+
+Publication consumes registry operations through `SchemaRegistryCapabilities`
+and evaluation qualification facts through `PublicationEvaluationQualifications`.
+It owns readiness and blocker ordering, exact revision/hash guards, identity
+claims, and durable publication intent. Registry creates/associates an ordinary
+inactive schema. Resume reconciles the exact associated identity/content;
+completion persists publication and invokes draft-owned linkage in the same
+relational transaction. Retrieval retains missing-schema, content-drift, and
+registry active-status reporting. Publication does not activate or process
+documents.
+
+Reprocessing reads immutable stored schema and publication facts and non-secret
+knowledge-base/profile facts. `ReprocessingCheckpointService` owns plan creation,
+destructive-plan exclusion, and repair. `SchemaActivationReprocessing` preserves
+the registry lock and after-commit activation trigger. The preparation, execution,
+claim/recovery, and snapshot guarantees above remain unchanged. Mapping adapters
+add no transactions; synchronous fact reads join the caller's transaction.
+Existing HTTP/SQL mappings, historical JSON, and canonical fingerprint bytes
+remain compatible without SQL or binary migration. Architecture tests reject
+foreign implementation/persistence access and retire the exact step-7 exceptions;
+only the named step-8/9 edges remain.
 
 ## Major flows
 
@@ -224,7 +270,9 @@ only the named later-step exceptions; it rejects new or stale allowances.
 | Schema draft authoring | `schemas/drafts/api/SchemaDraftController.java` | `schemas/drafts/application`, `schemas/drafts/domain`, `schemas/drafts/ports`, `schemas/drafts/adapters` |
 | Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
 | Documents and chunks | `documents/api/DocumentController.java`, `documents/api/ChunkingStateController.java` | `documents/application/management/DocumentUploadService.java`, `documents/application/processing/DocumentProcessingService.java`, `documents/application/processing/ChunkingService.java` |
-| Reprocessing preparation, execution, and recovery | `controller/SchemaReprocessingPlanController.java` | `service/SchemaReprocessingPlanService.java`, `service/SchemaReprocessingRecoveryService.java`, `schemas/reprocessing/ports`, `schemas/reprocessing/application`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
+| Schema evaluation | `schemas/evaluation/api/SchemaDraftEvaluationController.java` | `schemas/evaluation/application`, `schemas/evaluation/domain`, `schemas/evaluation/ports`, `schemas/evaluation/adapters`, `bootstrap/integration/schemas` |
+| Schema publication | `schemas/publication/api/SchemaDraftPublicationController.java` | `schemas/publication/application`, `schemas/publication/domain`, `schemas/publication/ports`, `schemas/publication/adapters`, `schemas/contracts` |
+| Reprocessing preparation, execution, and recovery | `schemas/reprocessing/api/SchemaReprocessingPlanController.java` | `schemas/reprocessing/application`, `schemas/reprocessing/domain`, `schemas/reprocessing/ports`, `schemas/reprocessing/adapters`, `documents/contracts`, `documents/application/processing`, `bootstrap/integration/reprocessing` |
 | Graph extraction | document processing endpoint | `documents/application/processing/GraphExtractionService.java`, `documents/adapters/graph/GraphWriteService.java` |
 | Cypher | `controller/QueryController.java` | `service/CypherGenerationService.java`, `service/CypherValidationService.java`, `service/CypherExecutionService.java` |
 | Advanced search | `controller/AdvancedSearchRunController.java` | `service/AdvancedSearchRunService.java`, `service/DefaultAdvancedSearchRunProcessor.java` |

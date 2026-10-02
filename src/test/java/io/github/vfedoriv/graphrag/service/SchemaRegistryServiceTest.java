@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.reprocessing.contracts.SchemaActivationReprocessing;
+
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,15 +43,15 @@ class SchemaRegistryServiceTest {
         SchemaDefinitionRepository definitions = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseAdmission admission = Mockito.mock(KnowledgeBaseAdmission.class);
         SchemaAssociations associations = Mockito.mock(SchemaAssociations.class);
-        SchemaReprocessingPlanService plans = Mockito.mock(SchemaReprocessingPlanService.class);
-        ObjectProvider<SchemaReprocessingPlanService> provider = Mockito.mock(ObjectProvider.class);
+        SchemaActivationReprocessing plans = Mockito.mock(io.github.vfedoriv.graphrag.schemas.reprocessing.contracts.SchemaActivationReprocessing.class);
+        ObjectProvider<SchemaActivationReprocessing> provider = Mockito.mock(ObjectProvider.class);
         when(definitions.findById("schema-01"))
             .thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
         when(admission.provision("kb-01", "kb-kb-01"))
             .thenReturn(new SchemaKnowledgeBase("kb-01", null),
                 new SchemaKnowledgeBase("kb-01", "schema-01"));
         Mockito.doAnswer(invocation -> {
-            Consumer<SchemaReprocessingPlanService> consumer = invocation.getArgument(0);
+            Consumer<SchemaActivationReprocessing> consumer = invocation.getArgument(0);
             consumer.accept(plans);
             return null;
         }).when(provider).ifAvailable(any());
@@ -78,7 +80,7 @@ class SchemaRegistryServiceTest {
         SchemaDefinitionRepository definitions = Mockito.mock(SchemaDefinitionRepository.class);
         KnowledgeBaseAdmission admission = Mockito.mock(KnowledgeBaseAdmission.class);
         SchemaAssociations associations = Mockito.mock(SchemaAssociations.class);
-        ObjectProvider<SchemaReprocessingPlanService> provider = Mockito.mock(ObjectProvider.class);
+        ObjectProvider<SchemaActivationReprocessing> provider = Mockito.mock(ObjectProvider.class);
         when(definitions.findById("schema-01"))
             .thenReturn(Optional.of(schemaNode("schema-01", "contracts", 1)));
         when(admission.provision("kb-01", "kb-kb-01"))

@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.controller;
 
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse;
-import io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewResponse;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

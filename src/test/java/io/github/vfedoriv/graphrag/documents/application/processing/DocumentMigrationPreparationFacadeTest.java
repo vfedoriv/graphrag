@@ -1,9 +1,11 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
+import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
-import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
@@ -107,15 +109,15 @@ class DocumentMigrationPreparationFacadeTest {
         ChunkMigrationSnapshot.DocumentTarget expected = new ChunkMigrationSnapshot.DocumentTarget(
             "hash-a", "text", legacy.parserRevision(), "TXT", legacy.effectiveRevision().value(), legacyOptions.effectiveOptions());
         ChunkMigrationSnapshot before = new ChunkMigrationSnapshot("target-revision", ChunkReprocessingSelection.ALL,
-            chunking.snapshotTarget(profile()), "profile", 7, io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
+            mapper.convertValue(chunking.snapshotTarget(profile()), ChunkMigrationSnapshot.ChunkTarget.class), "profile", 7, io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
             profile().getEmbeddingDimensions(), profile().getTokenizerId() == null ? null : profile().getTokenizerId().value()).id(), "schema", "schema-hash", Map.of("a", expected));
         ChunkMigrationSnapshot after = new ChunkMigrationSnapshot(inspection.targetRevision(), ChunkReprocessingSelection.ALL,
             chunk, captured.id(), captured.revision(), inspection.embeddingSpaceId(), "schema", "schema-hash", Map.of("a", target));
         assertThat(json.canonical(after)).isEqualTo(json.canonical(before));
         assertThat(json.fingerprint(json.canonical(after))).isEqualTo(json.fingerprint(json.canonical(before)));
-        assertThat(chunking.restore(profile(), chunk, target)).usingRecursiveComparison()
+        assertThat(chunking.restore(profile(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class))).usingRecursiveComparison()
             .ignoringFields("tokenEstimator").isEqualTo(legacy);
-        assertThat(chunking.restore(profile(), chunk, target).tokenEstimator().revision())
+        assertThat(chunking.restore(profile(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class)).tokenEstimator().revision())
             .isEqualTo(legacy.tokenEstimator().revision());
         assertThat(target.effectiveProcessingOptions()).containsEntry("preserveLineBreaks", true);
     }

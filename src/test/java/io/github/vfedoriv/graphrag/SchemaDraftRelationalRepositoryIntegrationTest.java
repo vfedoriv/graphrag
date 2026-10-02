@@ -42,6 +42,34 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @RelationalIntegrationTest
 class SchemaDraftRelationalRepositoryIntegrationTest {
+    @Autowired private io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink publicationLink;
+    @Autowired private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
+    @Test
+    void publicationLinkJoinsCallerRollbackAndRejectsStaleVersions() {
+        SchemaDraftNode draft = draftRepository.save(draft("draft-link", firstKnowledgeBaseId, "{}"));
+        String originalAggregate = draft.getCurrentAggregateId();
+        org.springframework.transaction.support.TransactionTemplate transaction =
+            new org.springframework.transaction.support.TransactionTemplate(transactionManager);
+        transaction.executeWithoutResult(status -> {
+            publicationLink.complete(new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                firstKnowledgeBaseId, draft.getId(), draft.getRevision(), originalAggregate,
+                draft.getPersistenceVersion(), null, "published-hash", Instant.now()));
+            assertThat(draftRepository.findById(draft.getId()).orElseThrow().getStatus()).isEqualTo(SchemaDraftStatus.PUBLISHED);
+            status.setRollbackOnly();
+        });
+        SchemaDraftNode restored = draftRepository.findById(draft.getId()).orElseThrow();
+        assertThat(restored.getStatus()).isEqualTo(SchemaDraftStatus.OPEN);
+        assertThat(restored.getPublicationContentHash()).isNull();
+        restored.setTargetName("changed");
+        draftRepository.save(restored);
+        assertThatThrownBy(() -> publicationLink.complete(
+            new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                firstKnowledgeBaseId, draft.getId(), draft.getRevision(), originalAggregate,
+                draft.getPersistenceVersion(), null, "published-hash", Instant.now())))
+            .isInstanceOf(org.springframework.dao.OptimisticLockingFailureException.class);
+    }
+
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     @Autowired private KnowledgeBaseService knowledgeBaseService;

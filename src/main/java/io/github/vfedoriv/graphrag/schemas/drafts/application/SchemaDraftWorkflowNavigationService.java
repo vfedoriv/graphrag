@@ -1,30 +1,22 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
 
-import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftSchemaLookup;
-import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftKnowledgeBases;
-import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunSummaryResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisWorkflowReference;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationRunPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationRunSummaryResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationWorkflowReference;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ReprocessingWorkflowReference;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftEvaluationSummaries;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftReprocessingSummaries;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -39,30 +31,24 @@ import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransaction
 @Service
 public class SchemaDraftWorkflowNavigationService {
     private final SchemaDraftAnalysisRunRepository analysisRepository;
-    private final SchemaDraftEvaluationRunRepository evaluationRepository;
-    private final SchemaReprocessingPlanRepository reprocessingRepository;
+    private final DraftEvaluationSummaries evaluationSummaries;
+    private final DraftReprocessingSummaries reprocessingSummaries;
     private final SchemaDraftSourceRepository sourceRepository;
-    private final DraftKnowledgeBases knowledgeBaseRepository;
-    private final DraftSchemaLookup schemaRepository;
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService;
 
     public SchemaDraftWorkflowNavigationService(
         SchemaDraftAnalysisRunRepository analysisRepository,
-        SchemaDraftEvaluationRunRepository evaluationRepository,
-        SchemaReprocessingPlanRepository reprocessingRepository,
+        DraftEvaluationSummaries evaluationSummaries,
+        DraftReprocessingSummaries reprocessingSummaries,
         SchemaDraftSourceRepository sourceRepository,
-        DraftKnowledgeBases knowledgeBaseRepository,
-        DraftSchemaLookup schemaRepository,
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftAnalysisRetryEligibilityService analysisRetryEligibilityService
     ) {
         this.analysisRepository = analysisRepository;
-        this.evaluationRepository = evaluationRepository;
-        this.reprocessingRepository = reprocessingRepository;
+        this.evaluationSummaries = evaluationSummaries;
+        this.reprocessingSummaries = reprocessingSummaries;
         this.sourceRepository = sourceRepository;
-        this.knowledgeBaseRepository = knowledgeBaseRepository;
-        this.schemaRepository = schemaRepository;
         this.jsonSupport = jsonSupport;
         this.analysisRetryEligibilityService = analysisRetryEligibilityService;
     }
@@ -78,17 +64,6 @@ public class SchemaDraftWorkflowNavigationService {
         List<AnalysisRunSummaryResponse> content = runs.getContent().stream()
             .map(run -> analysisSummary(draft, run, retryInputs)).toList();
         return new AnalysisRunPageResponse(boundedPage, boundedSize, runs.getTotalElements(), content);
-    }
-
-    @RelationalTransactional(readOnly = true)
-    public EvaluationRunPageResponse evaluationPage(SchemaDraftNode draft, int page, int size) {
-        int boundedPage = Math.max(0, page);
-        int boundedSize = Math.max(1, Math.min(100, size));
-        Page<SchemaDraftEvaluationRunNode> runs = evaluationRepository.findPageByDraftId(
-            draft.getId(), PageRequest.of(boundedPage, boundedSize));
-        List<EvaluationRunSummaryResponse> content = runs.getContent().stream()
-            .map(run -> evaluationSummary(draft, run)).toList();
-        return new EvaluationRunPageResponse(boundedPage, boundedSize, runs.getTotalElements(), content);
     }
 
     @RelationalTransactional(readOnly = true)
@@ -108,57 +83,25 @@ public class SchemaDraftWorkflowNavigationService {
                 draftsById.get(run.getDraftId()), run,
                 memberships.getOrDefault(run.getDraftId(), jsonSupport.fingerprint(""))))
             .collect(Collectors.toMap(SchemaDraftAnalysisRunNode::getDraftId, Function.identity(), this::newerAnalysis));
-        Map<String, SchemaDraftEvaluationRunNode> evaluations = evaluationRepository.findLatestForDraftIds(draftIds).stream()
-            .collect(Collectors.toMap(SchemaDraftEvaluationRunNode::getDraftId, Function.identity()));
-        Map<String, SchemaReprocessingPlanNode> plans = reprocessingRepository.findLatestForDraftIds(draftIds).stream()
-            .collect(Collectors.toMap(SchemaReprocessingPlanNode::getDraftId, Function.identity()));
-        Map<String, Boolean> targetCurrent = targetCurrent(plans.values().stream().toList());
+        Map<String, DraftEvaluationSummaries.Reference> evaluations = evaluationSummaries.latest(drafts.stream()
+            .map(draft -> new DraftEvaluationSummaries.Context(draft.getId(), draft.getRevision(), draft.getCurrentAggregateId())).toList());
+        Map<String, DraftReprocessingSummaries.Reference> plans = reprocessingSummaries.latest(draftIds);
         Map<String, WorkflowReferences> result = new HashMap<>();
         for (SchemaDraftNode draft : drafts) {
             SchemaDraftAnalysisRunNode analysis = analyses.get(draft.getId());
-            SchemaDraftEvaluationRunNode evaluation = evaluations.get(draft.getId());
-            SchemaReprocessingPlanNode plan = plans.get(draft.getId());
+            DraftEvaluationSummaries.Reference evaluation = evaluations.get(draft.getId());
+            DraftReprocessingSummaries.Reference plan = plans.get(draft.getId());
             result.put(draft.getId(), new WorkflowReferences(
                 analysis == null ? null : new AnalysisWorkflowReference(
                     analysis.getId(), analysis.getStatus(), true, analysisLocation(analysis)),
                 evaluation == null ? null : new EvaluationWorkflowReference(
-                    evaluation.getId(), evaluation.getStatus(), evaluationCurrent(draft, evaluation), true,
-                    evaluationLocation(evaluation)),
+                    evaluation.id(), io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationStatus.valueOf(evaluation.status()), evaluation.current(), true,
+                    evaluation.statusLocation()),
                 plan == null ? null : new ReprocessingWorkflowReference(
-                    plan.getId(), plan.getStatus(), targetCurrent.getOrDefault(plan.getId(), false), true,
-                    reprocessingLocation(plan))));
+                    plan.id(), io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus.valueOf(plan.status()), plan.current(), true,
+                    plan.statusLocation())));
         }
         return Map.copyOf(result);
-    }
-
-    public boolean evaluationCurrent(SchemaDraftNode draft, SchemaDraftEvaluationRunNode run) {
-        return draft != null && run.getDraftRevision() == draft.getRevision()
-            && run.getAggregateRevisionId() != null
-            && run.getAggregateRevisionId().equals(draft.getCurrentAggregateId())
-            && run.getProjectionContentHash() != null;
-    }
-
-    public boolean targetCurrent(SchemaReprocessingPlanNode plan) {
-        String activeSchemaId = knowledgeBaseRepository.activeSchemaId(plan.getKnowledgeBaseId()).orElse(null);
-        SchemaSnapshot schema = schemaRepository.findById(plan.getSchemaId()).orElse(null);
-        return schema != null && plan.getSchemaId().equals(activeSchemaId)
-            && plan.getSchemaContentHash().equals(schema.contentHash());
-    }
-
-    public Map<String, Boolean> targetCurrent(List<SchemaReprocessingPlanNode> plans) {
-        if (plans.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, String> activeSchemas = new HashMap<>();
-        plans.stream().map(SchemaReprocessingPlanNode::getKnowledgeBaseId).distinct()
-            .forEach(id -> knowledgeBaseRepository.activeSchemaId(id).ifPresent(active -> activeSchemas.put(id, active)));
-        Map<String, SchemaSnapshot> schemas = activeSchemas.keySet().stream().flatMap(id -> schemaRepository.associated(id).stream())
-            .collect(Collectors.toMap(SchemaSnapshot::schemaDefinitionId, Function.identity(), (left, right) -> left));
-        return plans.stream().collect(Collectors.toMap(SchemaReprocessingPlanNode::getId, plan -> {
-            SchemaSnapshot schema = schemas.get(plan.getSchemaId());
-            return schema != null && plan.getSchemaId().equals(activeSchemas.get(plan.getKnowledgeBaseId()))
-                && plan.getSchemaContentHash().equals(schema.contentHash());
-        }));
     }
 
     private AnalysisRunSummaryResponse analysisSummary(
@@ -175,21 +118,6 @@ public class SchemaDraftWorkflowNavigationService {
             run.getFailureCategory(), run.isRetryable(), retryDecision.canRetry(),
             run.getRetryOfRunId(), run.getCreatedAt(),
             run.getStartedAt(), run.getCompletedAt(), analysisLocation(run));
-    }
-
-    private EvaluationRunSummaryResponse evaluationSummary(
-        SchemaDraftNode draft, SchemaDraftEvaluationRunNode run
-    ) {
-        boolean terminal = run.getStatus() != SchemaDraftEvaluationStatus.QUEUED
-            && run.getStatus() != SchemaDraftEvaluationStatus.RUNNING;
-        return new EvaluationRunSummaryResponse(
-            run.getId(), run.getStatus(), run.getDraftRevision(), run.getAggregateRevisionId(),
-            run.getProjectionContentHash(), run.getAiProfileId(), run.getAiProfileRevision(), run.getPromptRevision(),
-            run.getContractRevision(), run.getRetryOfRunId(), run.getTotalDocuments(), run.getSucceededDocuments(),
-            run.getFailedDocuments(), run.getStaleDocuments(), evaluationCurrent(draft, run),
-            terminal && draft.getStatus() == SchemaDraftStatus.OPEN
-                && run.getDraftRevision() == draft.getRevision(), run.getFailureCategory(),
-            run.getCreatedAt(), run.getStartedAt(), run.getCompletedAt(), evaluationLocation(run));
     }
 
     public boolean isAnalysisCurrent(SchemaDraftNode draft, SchemaDraftAnalysisRunNode run) {
@@ -241,15 +169,6 @@ public class SchemaDraftWorkflowNavigationService {
     private String analysisLocation(SchemaDraftAnalysisRunNode run) {
         return "/api/v1/knowledge-bases/" + run.getKnowledgeBaseId() + "/schema-drafts/" + run.getDraftId()
             + "/analysis-runs/" + run.getId();
-    }
-
-    private String evaluationLocation(SchemaDraftEvaluationRunNode run) {
-        return "/api/v1/knowledge-bases/" + run.getKnowledgeBaseId() + "/schema-drafts/" + run.getDraftId()
-            + "/evaluation-runs/" + run.getId();
-    }
-
-    private String reprocessingLocation(SchemaReprocessingPlanNode plan) {
-        return "/api/v1/knowledge-bases/" + plan.getKnowledgeBaseId() + "/reprocessing-plans/" + plan.getId();
     }
 
     public record WorkflowReferences(

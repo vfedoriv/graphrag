@@ -1,5 +1,11 @@
 package io.github.vfedoriv.graphrag.config;
 
+import io.github.vfedoriv.graphrag.schemas.evaluation.adapters.relational.entity.SchemaDraftEvaluationRunEntity;
+import io.github.vfedoriv.graphrag.schemas.evaluation.adapters.relational.repository.JpaSchemaDraftEvaluationRunRepository;
+import io.github.vfedoriv.graphrag.schemas.publication.adapters.relational.entity.SchemaDraftPublicationEntity;
+import io.github.vfedoriv.graphrag.schemas.publication.adapters.relational.repository.JpaSchemaDraftPublicationRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.entity.SchemaReprocessingPlanEntity;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.repository.JpaSchemaReprocessingPlanRepository;
 import jakarta.persistence.EntityManagerFactory;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.repository.Neo4jDocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.adapters.relational.entity.DocumentUploadEntity;
@@ -37,10 +43,10 @@ import io.github.vfedoriv.graphrag.schemas.drafts.adapters.relational.repository
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
 @EntityScan(basePackageClasses = {RelationalEntityMarker.class, DocumentUploadEntity.class,
-    KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class, SchemaDraftEntity.class})
+    KnowledgeBaseSchemaEntity.class, SchemaDefinitionEntity.class, SchemaDraftEntity.class, SchemaDraftEvaluationRunEntity.class, SchemaDraftPublicationEntity.class, SchemaReprocessingPlanEntity.class})
 @EnableJpaRepositories(
     basePackageClasses = {RelationalRepositoryMarker.class, JpaDocumentUploadRepository.class,
-        JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class, JpaSchemaDraftRepository.class},
+        JpaKnowledgeBaseSchemaRepository.class, JpaSchemaDefinitionRepository.class, JpaSchemaDraftRepository.class, JpaSchemaDraftEvaluationRunRepository.class, JpaSchemaDraftPublicationRepository.class, JpaSchemaReprocessingPlanRepository.class},
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"
 )

@@ -1,26 +1,29 @@
 package io.github.vfedoriv.graphrag.dto;
 
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AdvisoryExecutionStatus;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.AdvisoryExecutionStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.CandidatePageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ConflictListScope;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ConflictResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationOutcomePageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.MetricApplicability;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.QuestionCoverage;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationOutcomePageResponse;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.MetricApplicability;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.QuestionCoverage;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.SourceOutcomePageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.SourceOutcomeResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationRunPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationIneligibilityReason;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationReadiness;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationRunPageResponse;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationEligibleDocumentPageResponse;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationIneligibilityReason;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationReadiness;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DiffResponse;
 import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanItemPageResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanPageResponse;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.PlanItemPageResponse;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.PlanPageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;
@@ -49,7 +52,7 @@ class SchemaDraftOpenApiContractTest {
         assertThat(List.of(QuestionCoverage.values())).extracting(Enum::name)
             .containsExactly("SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "UNASSESSED");
 
-        Map<String, Schema> schemas = ModelConverters.getInstance().readAll(SchemaDraftDtos.EvaluationRunResponse.class);
+        Map<String, Schema> schemas = ModelConverters.getInstance().readAll(SchemaDraftEvaluationDtos.EvaluationRunResponse.class);
         assertThat(schemas).containsKeys("EvaluationMetricsResponse", "AdvisoryAssessmentResponse",
             "EvaluationReproducibilityResponse", "RateMetricResponse", "QuestionAssessmentResponse",
             "SchemaDraftEvaluationOutcomePage");

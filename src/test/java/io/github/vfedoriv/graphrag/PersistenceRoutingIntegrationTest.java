@@ -19,7 +19,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.entity.DocumentChunkEntity;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
@@ -123,7 +123,7 @@ class PersistenceRoutingIntegrationTest {
 
     @Test
     void explicitNeo4jTemplateSupportsGraphEntityQueries() {
-        DocumentChunkNode chunk = new DocumentChunkNode();
+        DocumentChunkEntity chunk = new DocumentChunkEntity();
         chunk.setId("template-chunk");
         chunk.setKnowledgeBaseId("template-kb");
         chunk.setDocumentId("template-document");
@@ -133,9 +133,9 @@ class PersistenceRoutingIntegrationTest {
 
         neo4jTemplate.save(chunk);
 
-        assertThat(neo4jTemplate.findById("template-chunk", DocumentChunkNode.class))
+        assertThat(neo4jTemplate.findById("template-chunk", DocumentChunkEntity.class))
             .get()
-            .extracting(DocumentChunkNode::getKnowledgeBaseId)
+            .extracting(DocumentChunkEntity::getKnowledgeBaseId)
             .isEqualTo("template-kb");
     }
 

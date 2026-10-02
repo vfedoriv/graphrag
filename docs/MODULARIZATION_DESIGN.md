@@ -1,9 +1,10 @@
 # Feature modularization: decisions and migration roadmap
 
 Date: 2026-10-02
-Status: roadmap steps 1–6 are implemented: reprocessing execution/recovery,
+Status: roadmap steps 1–7 are implemented: reprocessing execution/recovery,
 document migration preparation, knowledge-base/AI state boundaries, document
-consolidation, schema registry/discovery, and draft authoring ownership.
+consolidation, schema registry/discovery, draft authoring, and evaluation/publication
+with final reprocessing ownership.
 
 ## Purpose
 
@@ -39,10 +40,13 @@ OpenSpec changes govern each implementation slice.
 - Draft authoring now owns lifecycle, sources, durable analysis/recovery, review,
   conflicts, draft history, and its relational/binary persistence under
   `schemas.drafts`.
-- Evaluation/publication remain a separate step-7 slice. Evaluation reads and
-  prepares documents but must never persist its dry extraction to the
-  knowledge-base graph; navigation retains bounded later-workflow summaries
-  until evaluation and reprocessing owners move.
+- Evaluation, publication, and reprocessing own their API/state, workflows,
+  checkpoints, and persistence under their respective schema areas. Evaluation
+  reads document preparation and per-chunk dry extraction through public
+  capabilities; dry work writes no document processing state or graph artifacts.
+- Evaluation/reprocessing owners supply immutable batch history/currentness facts.
+  Draft navigation uses its own summary ports through mapping-only adapters,
+  preserving bounded list queries and stable pagination.
 
 ## Confirmed decisions
 
@@ -227,9 +231,9 @@ aggregation, and deadlines. Its document inputs are acquired through the
 file parsing, defensive copies, and no path or persistence-record exposure.
 
 `ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies
-and freezes remaining exact edges by retirement step: evaluation/publication and
-reprocessing organization (7), search (8), and support/assembly (9). Draft
-authoring's step-6 document and registry/discovery exceptions are retired.
+and freezes remaining exact search (8) and support/assembly (9) edges. Draft
+authoring's step-6 document and registry/discovery exceptions and the migrated
+step-7 document, registry, and downstream persistence exceptions are retired.
 
 ## Step-6 draft authoring boundary
 
@@ -260,9 +264,43 @@ The integration adapters only translate immutable values and add no transaction
 boundary; synchronous reads join the caller's relational transaction. Provider
 client construction stays AI-owned.
 
-Evaluation/publication orchestration remains step 7. Draft navigation retains
-bounded batch summaries for evaluation and reprocessing until those owners move
-in steps 7 and 9. Search exceptions remain step 8, and support/assembly remains
-step 9. `ArchitectureBoundaryTest` removes the exact step-6 document and
-registry/discovery authoring edges while retaining only named later-step
-exceptions.
+Draft navigation consumes evaluation and reprocessing history/currentness through
+bounded immutable summary ports. Its remaining support/assembly dependencies are
+exact step-9 seams. `ArchitectureBoundaryTest` retires the exact step-6 and step-7
+edges and retains only named search (8) and support/assembly (9) exceptions.
+
+## Step-7 evaluation, publication, and reprocessing boundary
+
+Step 7 is implemented by
+[the ownership change](../openspec/changes/isolate-schema-evaluation-publication/proposal.md).
+`schemas.evaluation`, `schemas.publication`, and `schemas.reprocessing` own their
+HTTP mapping, state, repository ports, relational adapters, checkpoints, and
+recovery. Evaluation and reprocessing also produce their history and currentness
+summaries; draft navigation consumes batch ports through transaction-free
+`bootstrap.integration.schemas` adapters rather than downstream repositories.
+
+Draft-owned contracts provide scoped admission, revision/projection, canonical
+review decisions/guidance, contributor fingerprints, and publication linkage.
+Registry-owned contracts provide stored immutable schemas, parsing/validation,
+identity lookup, and inactive generated registration. Knowledge-base capabilities
+provide managed admission, active schema, and non-secret profile identity and
+embedding/tokenizer facts. Synchronous reads retain caller transactions; bridges
+only map contract values and provider construction remains AI-owned.
+
+Documents owns source loading, parsing, chunk splitting, model selection, and
+validation behind evaluation preparation and per-chunk dry-extraction capabilities.
+Evaluation retains its sequential outcome loop, eligibility, reuse keys, metrics,
+and deterministic advisory fallback. Source checks precede reuse, client
+availability, preparation, and extraction. Dry work creates no processing or
+extraction runs, chunks/embeddings, or graph facts/relationships.
+
+Publication preserves readiness/blocker ordering, exact revision/hash guards,
+durable intent, resumable inactive registration, and completion with draft-owned
+linkage in one relational transaction. Registry activation retains its lock and
+after-commit trigger through `SchemaActivationReprocessing`. Reprocessing preserves
+all-owned classification before selection, creation recomputation, destructive-plan
+exclusion, authoritative item counters, and its historical recovery predicate.
+HTTP contracts, SQL mappings, canonical snapshots/fingerprints, source-race
+semantics, and external-work checkpoint separation remain compatible without SQL
+or binary migration. Search consolidation remains step 8; only exact support and
+assembly seams remain step 9.

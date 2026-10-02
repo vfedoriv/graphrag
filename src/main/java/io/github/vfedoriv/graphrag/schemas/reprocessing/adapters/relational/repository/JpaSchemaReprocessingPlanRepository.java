@@ -1,0 +1,82 @@
+package io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.repository;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.adapters.relational.entity.SchemaReprocessingPlanEntity;
+import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface JpaSchemaReprocessingPlanRepository extends JpaRepository<SchemaReprocessingPlanEntity, String> {
+    Optional<SchemaReprocessingPlanEntity> findByIdAndKnowledgeBaseId(String id, String knowledgeBaseId);
+    boolean existsByKnowledgeBaseIdAndStatusIn(
+        String knowledgeBaseId,
+        List<SchemaReprocessingPlanStatus> statuses
+    );
+    List<SchemaReprocessingPlanEntity> findByStatusIn(List<SchemaReprocessingPlanStatus> statuses);
+    Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseId(String knowledgeBaseId, Pageable pageable);
+    Page<SchemaReprocessingPlanEntity> findByKnowledgeBaseIdAndDraftId(
+        String knowledgeBaseId, String draftId, Pageable pageable);
+
+    @Query(value = """
+        select plan from SchemaReprocessingPlanEntity plan
+        where plan.knowledgeBaseId = :knowledgeBaseId
+          and (:draftId is null or plan.draftId = :draftId)
+          and (:reason is null or plan.reason = :reason)
+          and (:selection is null or plan.selection = :selection)
+          and (:status is null or plan.status = :status)
+        order by plan.createdAt desc, plan.id desc
+        """,
+        countQuery = """
+        select count(plan) from SchemaReprocessingPlanEntity plan
+        where plan.knowledgeBaseId = :knowledgeBaseId
+          and (:draftId is null or plan.draftId = :draftId)
+          and (:reason is null or plan.reason = :reason)
+          and (:selection is null or plan.selection = :selection)
+          and (:status is null or plan.status = :status)
+        """)
+    Page<SchemaReprocessingPlanEntity> findPageByFilters(
+        @Param("knowledgeBaseId") String knowledgeBaseId,
+        @Param("draftId") String draftId,
+        @Param("reason") ReprocessingPlanReason reason,
+        @Param("selection") ChunkReprocessingSelection selection,
+        @Param("status") SchemaReprocessingPlanStatus status,
+        Pageable pageable
+    );
+
+    @Query("""
+        select plan from SchemaReprocessingPlanEntity plan
+        where plan.draftId in :draftIds
+          and not exists (
+            select newer.id from SchemaReprocessingPlanEntity newer
+            where newer.draftId = plan.draftId
+              and (newer.createdAt > plan.createdAt
+                or (newer.createdAt = plan.createdAt and newer.id > plan.id))
+          )
+        """)
+    List<SchemaReprocessingPlanEntity> findLatestForDraftIds(@Param("draftIds") List<String> draftIds);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @RelationalTransactional
+    @Query("""
+        update SchemaReprocessingPlanEntity plan
+        set plan.status = io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus.RUNNING,
+            plan.claimedBy = :workerId, plan.claimedAt = :claimedAt, plan.claimUntil = :claimUntil,
+            plan.startedAt = :claimedAt, plan.persistenceVersion = plan.persistenceVersion + 1
+        where plan.id = :planId
+          and plan.status = io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus.QUEUED
+          and plan.claimedBy is null
+        """)
+    int claim(
+        @Param("planId") String planId, @Param("workerId") String workerId,
+        @Param("claimedAt") Instant claimedAt, @Param("claimUntil") Instant claimUntil
+    );
+}

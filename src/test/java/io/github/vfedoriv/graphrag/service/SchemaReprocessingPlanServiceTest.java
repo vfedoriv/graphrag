@@ -1,4 +1,8 @@
-package io.github.vfedoriv.graphrag.service;
+package io.github.vfedoriv.graphrag.schemas.reprocessing.application;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
 
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingOptionsRegistry;
 
@@ -20,37 +24,34 @@ import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingServ
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
 import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowCheckpointService;
-import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftWorkflowNavigationService;
-import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryMode;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.RetryPlanRequest;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftAdmissions;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingCheckpointService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ReprocessingHistoryService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryMode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryPlanRequest;
 import io.github.vfedoriv.graphrag.error.ConflictException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftPublicationRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.ReprocessingKnowledgeBases;
+import io.github.vfedoriv.graphrag.schemas.contracts.StoredSchemaSnapshots;
+import io.github.vfedoriv.graphrag.schemas.publication.contracts.PublicationFacts;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingItemRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ class SchemaReprocessingPlanServiceTest {
     void previewsClassificationCountsWithoutCreatingAPlan() {
         Fixture fixture = fixture();
 
-        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
+        io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
             "kb-1",
             new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.OUTDATED_STRATEGY, List.of(), Map.of()),
             0,
@@ -167,7 +168,7 @@ class SchemaReprocessingPlanServiceTest {
         Fixture fixture = fixture();
         when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
 
-        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
+        io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response = fixture.service.preview(
             "kb-1",
             new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.ALL, List.of(), Map.of()),
             0,
@@ -193,7 +194,7 @@ class SchemaReprocessingPlanServiceTest {
             20
         )).isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
 
-        io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response =
+        io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response =
             fixture.service.preview(
                 "kb-1",
                 new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.ALL, List.of(), Map.of()),
@@ -323,7 +324,7 @@ class SchemaReprocessingPlanServiceTest {
         item.setStatus(SchemaReprocessingItemStatus.QUEUED);
         AiProfileNode changedProfile = profile();
         changedProfile.setId("profile-changed");
-        when(fixture.knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(changedProfile);
+        when(fixture.knowledgeBases.activeProfile("kb-1")).thenReturn(profileFacts(changedProfile));
         when(fixture.plans.claim(eq(plan.getId()), anyString(), any(), any())).thenReturn(1L);
         when(fixture.plans.findById(plan.getId())).thenReturn(Optional.of(plan));
         when(fixture.items.findByPlanIdOrderByDocumentIdAsc(plan.getId())).thenReturn(List.of(item));
@@ -479,9 +480,8 @@ class SchemaReprocessingPlanServiceTest {
     @Test
     void previewKeepsSchemaThenDocumentTargetThenActivePlanBlockerPriority() {
         Fixture fixture = fixture();
-        KnowledgeBaseNode missingSchema = new KnowledgeBaseNode();
-        missingSchema.setId("kb-1");
-        when(fixture.knowledgeBases.findById("kb-1")).thenReturn(Optional.of(missingSchema));
+        ReprocessingKnowledgeBases.KnowledgeBase missingSchema = new ReprocessingKnowledgeBases.KnowledgeBase("kb-1", null);
+        when(fixture.knowledgeBases.find("kb-1")).thenReturn(Optional.of(missingSchema));
         when(fixture.chunking.snapshotTarget(any(AiProfileNode.class))).thenThrow(new IllegalArgumentException("invalid target"));
         when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
         assertThat(fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
@@ -510,7 +510,7 @@ class SchemaReprocessingPlanServiceTest {
             }
             when(fixture.plans.findPageByFilters(eq("kb-1"), isNull(), isNull(), isNull(), isNull(), any()))
                 .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(plan)));
-            io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.PlanSummaryResponse summary =
+            io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.PlanSummaryResponse summary =
                 fixture.service.list("kb-1", null, 0, 20).getContent().getFirst();
             assertThat(summary.targetCurrent()).isEqualTo(changed == 0);
             assertThat(summary.retryable()).isEqualTo(changed == 0);
@@ -527,6 +527,36 @@ class SchemaReprocessingPlanServiceTest {
         when(fixture.chunking.migrationTargetRevision(any(AiProfileNode.class)))
             .thenThrow(new IllegalStateException("target unavailable"));
         assertThat(fixture.service.list("kb-1", null, 0, 20).getContent().getFirst().targetCurrent()).isFalse();
+    }
+
+    @Test
+    void activationSchedulesOnlyAfterTheCreationTransactionCommits() {
+        Fixture fixture = schemaFixture();
+        org.springframework.transaction.support.TransactionSynchronizationManager.initSynchronization();
+        try {
+            fixture.service.create("kb-1", schemaRequest(true, List.of()));
+            verifyNoInteractions(fixture.executor);
+            List<org.springframework.transaction.support.TransactionSynchronization> synchronizations =
+                org.springframework.transaction.support.TransactionSynchronizationManager.getSynchronizations();
+            assertThat(synchronizations).hasSize(1);
+            synchronizations.getFirst().afterCommit();
+            verify(fixture.executor).execute(any(Runnable.class));
+        } finally {
+            org.springframework.transaction.support.TransactionSynchronizationManager.clearSynchronization();
+        }
+    }
+
+    @Test
+    void previewKeepsMissingSchemaThenUnresolvableProfileThenActivePlanPriority() {
+        Fixture fixture = fixture();
+        when(fixture.knowledgeBases.find("kb-1"))
+            .thenReturn(Optional.of(new ReprocessingKnowledgeBases.KnowledgeBase("kb-1", null)));
+        when(fixture.knowledgeBases.activeProfile("kb-1")).thenThrow(new IllegalStateException("profile missing"));
+        when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
+        assertThat(fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
+            ChunkReprocessingSelection.ALL, List.of(), Map.of()), 0, 20).blockers())
+            .extracting(value -> value.code()).containsExactly(
+                "ACTIVE_SCHEMA_MISSING", "AI_PROFILE_UNRESOLVABLE", "ACTIVE_DESTRUCTIVE_PLAN");
     }
 
     private CreatePlanRequest chunkRequest(
@@ -568,11 +598,8 @@ class SchemaReprocessingPlanServiceTest {
 
     private Fixture schemaFixture() {
         Fixture fixture = fixture();
-        SchemaDraftPublicationNode publication = new SchemaDraftPublicationNode();
-        publication.setDraftId("draft-1");
-        publication.setKnowledgeBaseId("kb-1");
-        publication.setSchemaId("schema-1");
-        publication.setStatus(SchemaDraftPublicationStatus.COMPLETED);
+        PublicationFacts.Publication publication = new PublicationFacts.Publication(
+            "publication-1", "draft-1", "kb-1", "schema-1", 1, null, null, null, true, Instant.now());
         when(fixture.publications.findByDraftId("draft-1")).thenReturn(Optional.of(publication));
         return fixture;
     }
@@ -604,31 +631,25 @@ class SchemaReprocessingPlanServiceTest {
     }
 
     private Fixture fixture() {
-        KnowledgeBaseLifecycleService lifecycle = mock(KnowledgeBaseLifecycleService.class);
-        KnowledgeBaseRepository knowledgeBases = mock(KnowledgeBaseRepository.class);
+        ReprocessingKnowledgeBases knowledgeBases = mock(ReprocessingKnowledgeBases.class);
         DocumentUploadRepository documents = mock(DocumentUploadRepository.class);
         DocumentChunkRepository chunks = mock(DocumentChunkRepository.class);
         DocumentProcessingRunRepository runs = mock(DocumentProcessingRunRepository.class);
-        SchemaDefinitionRepository schemas = mock(SchemaDefinitionRepository.class);
-        SchemaDraftPublicationRepository publications = mock(SchemaDraftPublicationRepository.class);
+        StoredSchemaSnapshots schemas = mock(StoredSchemaSnapshots.class);
+        PublicationFacts publications = mock(PublicationFacts.class);
         SchemaReprocessingPlanRepository plans = mock(SchemaReprocessingPlanRepository.class);
         SchemaReprocessingItemRepository items = mock(SchemaReprocessingItemRepository.class);
-        KnowledgeBaseService knowledgeBaseService = mock(KnowledgeBaseService.class);
         ReprocessingDocumentExecutor processing = mock(ReprocessingDocumentExecutor.class);
         when(processing.sourceMatches(any())).thenReturn(true);
         ChunkingService chunking = mock(ChunkingService.class);
         io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility embeddingPolicy = mock(io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility.class);
-        SchemaDraftWorkflowCheckpointService checkpoint = mock(SchemaDraftWorkflowCheckpointService.class);
+        ReprocessingCheckpointService checkpoint = mock(ReprocessingCheckpointService.class);
         AiObservationService observation = mock(AiObservationService.class);
         AiObservationScope observationScope = mock(AiObservationScope.class);
-        SchemaDraftJsonSupport jsonSupport = new SchemaDraftJsonSupport(new ObjectMapper());
+        ReprocessingJsonSupport jsonSupport = new ReprocessingJsonSupport(new ObjectMapper());
         AiProfileNode profile = profile();
-        KnowledgeBaseNode knowledgeBase = new KnowledgeBaseNode();
-        knowledgeBase.setId("kb-1");
-        knowledgeBase.setActiveSchemaId("schema-1");
-        SchemaDefinitionNode schema = new SchemaDefinitionNode();
-        schema.setId("schema-1");
-        schema.setContentHash("b".repeat(64));
+        ReprocessingKnowledgeBases.KnowledgeBase knowledgeBase = new ReprocessingKnowledgeBases.KnowledgeBase("kb-1", "schema-1");
+        SchemaSnapshot schema = new SchemaSnapshot(null, "schema-1", null, 1, null, null, null, null, "b".repeat(64), null, null, null);
         DocumentUploadNode document = document();
         ChunkingContext context = context();
         ChunkMigrationSnapshot.ChunkTarget chunkTarget = new ChunkMigrationSnapshot.ChunkTarget(
@@ -648,11 +669,17 @@ class SchemaReprocessingPlanServiceTest {
             context.representationRevision(),
             context.settingsHash().value()
         );
-        when(knowledgeBases.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
+        when(knowledgeBases.find("kb-1")).thenReturn(Optional.of(knowledgeBase));
         when(schemas.findById("schema-1")).thenReturn(Optional.of(schema));
-        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile);
+        when(knowledgeBases.activeProfile("kb-1")).thenReturn(profileFacts(profile));
         when(chunking.migrationTargetRevision(any(AiProfileNode.class))).thenReturn("chunker-current");
-        when(chunking.snapshotTarget(any(AiProfileNode.class))).thenReturn(chunkTarget);
+        when(chunking.snapshotTarget(any(AiProfileNode.class))).thenReturn(
+            new io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing.ChunkTarget(
+                chunkTarget.strategyName(), chunkTarget.strategyRevision(), chunkTarget.targetTokens(),
+                chunkTarget.overlapTokens(), chunkTarget.hardCharacterLimit(), chunkTarget.parentTargetTokens(),
+                chunkTarget.parentHardCharacterLimit(), chunkTarget.parentMaxPages(), chunkTarget.contextHeaderMaxTokens(),
+                chunkTarget.contextHeaderMaxCharacters(), chunkTarget.tokenizerId(), chunkTarget.tokenizerRevision(),
+                chunkTarget.tokenCountMode(), chunkTarget.representationRevision(), chunkTarget.settingsHash()));
         when(chunking.snapshot(any(AiProfileNode.class), eq("text"))).thenReturn(context);
         when(documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1")).thenReturn(List.of(document));
         when(documents.findByIdAndKnowledgeBaseId("doc-1", "kb-1")).thenReturn(Optional.of(document));
@@ -661,8 +688,8 @@ class SchemaReprocessingPlanServiceTest {
         when(checkpoint.createPlan(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(plans.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(observation.startWorkflow(any())).thenReturn(observationScope);
+        TaskExecutor executor = mock(TaskExecutor.class);
         SchemaReprocessingPlanService service = new SchemaReprocessingPlanService(
-            lifecycle,
             knowledgeBases,
             new io.github.vfedoriv.graphrag.bootstrap.integration.reprocessing.ReprocessingDocumentPreparationAdapter(
                 new io.github.vfedoriv.graphrag.documents.application.processing.DocumentMigrationPreparationFacade(
@@ -671,15 +698,14 @@ class SchemaReprocessingPlanServiceTest {
             publications,
             plans,
             items,
-            knowledgeBaseService,
             new ReprocessingItemExecution(processing),
             jsonSupport,
             new ObjectMapper(),
             observation,
-            mock(SchemaDraftLifecycleService.class),
-            mock(SchemaDraftWorkflowNavigationService.class),
+            mock(DraftAdmissions.class),
+            mock(ReprocessingHistoryService.class),
             checkpoint,
-            mock(TaskExecutor.class)
+            executor
         );
         return new Fixture(
             service,
@@ -687,14 +713,14 @@ class SchemaReprocessingPlanServiceTest {
             items,
             documents,
             publications,
-            knowledgeBaseService,
             processing,
             checkpoint,
             jsonSupport,
             document,
             chunkTarget,
             chunking,
-            knowledgeBases
+            knowledgeBases,
+            executor
         );
     }
 
@@ -720,6 +746,11 @@ class SchemaReprocessingPlanServiceTest {
         return profile;
     }
 
+    private ReprocessingKnowledgeBases.Profile profileFacts(AiProfileNode profile) {
+        return new ReprocessingKnowledgeBases.Profile(profile.getId(), profile.getRevision(), profile.getBaseUrl(),
+            profile.getEmbeddingModel(), profile.getEmbeddingDimensions(), profile.getTokenizerIdValue());
+    }
+
     private ChunkingContext context() {
         return ChunkingContext.create(
             "recursive",
@@ -738,15 +769,15 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingPlanRepository plans,
         SchemaReprocessingItemRepository items,
         DocumentUploadRepository documents,
-        SchemaDraftPublicationRepository publications,
-        KnowledgeBaseService knowledgeBaseService,
+        PublicationFacts publications,
         ReprocessingDocumentExecutor processing,
-        SchemaDraftWorkflowCheckpointService checkpoint,
-        SchemaDraftJsonSupport jsonSupport,
+        ReprocessingCheckpointService checkpoint,
+        ReprocessingJsonSupport jsonSupport,
         DocumentUploadNode document,
         ChunkMigrationSnapshot.ChunkTarget chunkTarget,
         ChunkingService chunking,
-        KnowledgeBaseRepository knowledgeBases
+        ReprocessingKnowledgeBases knowledgeBases,
+        TaskExecutor executor
     ) {
     }
 }

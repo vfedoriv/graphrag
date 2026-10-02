@@ -20,20 +20,10 @@ import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.Sour
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.StartAnalysisResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.UpdateDraftRequest;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.UpdateGuidanceRequest;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationRunResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationRunPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationEligibleDocumentPageResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.StartEvaluationRequest;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.StartEvaluationResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.PublicationReadinessResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.PublishDraftRequest;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.PublicationResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftAnalysisService;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftSourceService;
-import io.github.vfedoriv.graphrag.service.SchemaDraftEvaluationService;
-import io.github.vfedoriv.graphrag.service.SchemaDraftPublicationService;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -64,23 +54,17 @@ public class SchemaDraftController {
     private final SchemaDraftSourceService sourceService;
     private final SchemaDraftAnalysisService analysisService;
     private final SchemaDraftReviewService reviewService;
-    private final SchemaDraftEvaluationService evaluationService;
-    private final SchemaDraftPublicationService publicationService;
 
     public SchemaDraftController(
         SchemaDraftLifecycleService lifecycleService,
         SchemaDraftSourceService sourceService,
         SchemaDraftAnalysisService analysisService,
-        SchemaDraftReviewService reviewService,
-        SchemaDraftEvaluationService evaluationService,
-        SchemaDraftPublicationService publicationService
+        SchemaDraftReviewService reviewService
     ) {
         this.lifecycleService = lifecycleService;
         this.sourceService = sourceService;
         this.analysisService = analysisService;
         this.reviewService = reviewService;
-        this.evaluationService = evaluationService;
-        this.publicationService = publicationService;
     }
 
     @PostMapping
@@ -283,80 +267,4 @@ public class SchemaDraftController {
         return reviewService.diff(knowledgeBaseId, draftId);
     }
 
-    @PostMapping("/{draftId}/evaluation-runs")
-    @Operation(
-        summary = "Start held-out schema draft evaluation",
-        description = "Starts evaluation only when discovery analysis is current and every selected document has "
-            + "a SHA-256 that did not successfully contribute to the current draft aggregate. Exact binary hashes "
-            + "are compared across DOCUMENT, FILE, and TEXT discovery sources."
-    )
-    public ResponseEntity<StartEvaluationResponse> startEvaluation(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
-        @Valid @RequestBody StartEvaluationRequest request
-    ) {
-        StartEvaluationResponse response = evaluationService.start(knowledgeBaseId, draftId, request);
-        return ResponseEntity.accepted().location(URI.create(response.statusLocation())).body(response);
-    }
-
-    @GetMapping("/{draftId}/evaluation-runs/{runId}")
-    public EvaluationRunResponse evaluationStatus(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId, @PathVariable String runId,
-        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
-    ) {
-        return evaluationService.get(knowledgeBaseId, draftId, runId, page, size);
-    }
-
-    @GetMapping("/{draftId}/evaluation-runs")
-    public EvaluationRunPageResponse evaluationRuns(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
-        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
-    ) {
-        return evaluationService.list(knowledgeBaseId, draftId, page, size);
-    }
-
-    @GetMapping("/{draftId}/evaluation-eligible-documents")
-    @Operation(
-        summary = "List held-out evaluation candidates",
-        description = "Returns knowledge-base documents with draft-wide evaluation readiness and per-document "
-            + "eligibility. ACTIVE_DISCOVERY_EVIDENCE means the exact SHA-256 contributed to the current aggregate. "
-            + "DRAFT_ANALYSIS_REQUIRED means discovery must be analyzed again before any document can be selected."
-    )
-    public EvaluationEligibleDocumentPageResponse evaluationEligibleDocuments(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
-        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size
-    ) {
-        return evaluationService.eligibleDocuments(knowledgeBaseId, draftId, page, size);
-    }
-
-    @PostMapping("/{draftId}/evaluation-runs/{runId}/retry")
-    public ResponseEntity<StartEvaluationResponse> retryEvaluation(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId, @PathVariable String runId,
-        @Valid @RequestBody RevisionRequest request
-    ) {
-        StartEvaluationResponse response = evaluationService.retry(
-            knowledgeBaseId, draftId, runId, request.revision());
-        return ResponseEntity.accepted().location(URI.create(response.statusLocation())).body(response);
-    }
-
-    @GetMapping("/{draftId}/publication-readiness")
-    public PublicationReadinessResponse publicationReadiness(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId
-    ) {
-        return publicationService.readiness(knowledgeBaseId, draftId);
-    }
-
-    @PostMapping("/{draftId}/publish")
-    public PublicationResponse publish(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId,
-        @Valid @RequestBody PublishDraftRequest request
-    ) {
-        return publicationService.publish(knowledgeBaseId, draftId, request);
-    }
-
-    @GetMapping("/{draftId}/publication")
-    public PublicationResponse publication(
-        @PathVariable String knowledgeBaseId, @PathVariable String draftId
-    ) {
-        return publicationService.get(knowledgeBaseId, draftId);
-    }
 }

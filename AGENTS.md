@@ -115,10 +115,21 @@ secrets and add no transactions; synchronous reads join the caller's transaction
 Draft-owned bytes still use shared storage, while relational checkpoints remain
 separate from external work.
 
-The exact step-6 document and registry/discovery authoring exceptions are retired.
-Evaluation/publication and navigation's bounded later-workflow summaries remain
-step 7/9 seams, search remains step 8, and support/assembly remains step 9.
-`ArchitectureBoundaryTest` retains only those exact later-step exceptions.
+Schema evaluation, publication, and reprocessing ownership (step 7) is implemented
+under `schemas.evaluation`, `schemas.publication`, and `schemas.reprocessing`.
+Each area owns its API/domain values, workflows, checkpoints, and relational
+adapters; evaluation and reprocessing also own their history/currentness summaries.
+Draft authoring exposes immutable admission, review, contributor, and publication-link
+contracts. Document-owned preparation and per-chunk dry extraction are mapped to
+evaluation ports by transaction-free bootstrap adapters; dry evaluation writes no
+document processing state or graph artifacts. Registry operations and non-secret
+knowledge-base/profile facts flow through public immutable contracts. Publication
+retains durable intent, inactive registration, and transactional draft linkage.
+Draft navigation consumes bounded batch summary ports through mapping-only bridges.
+Existing HTTP/SQL/snapshot contracts, fingerprints, race semantics, and recovery
+predicates remain unchanged. The exact step-6 and step-7 exceptions are retired;
+`ArchitectureBoundaryTest` retains only exact search (step 8) and support/assembly
+(step 9) exceptions.
 
 Main controllers:
 - `SchemaController` (create/list/get/update/delete/validate/activate, schema generation, review-only multi-source discovery, example generation, KB schema listing)

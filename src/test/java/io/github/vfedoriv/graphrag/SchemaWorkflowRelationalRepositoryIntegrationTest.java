@@ -13,31 +13,31 @@ import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationStatus;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationRunNode;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftPublicationStatus;
+import io.github.vfedoriv.graphrag.schemas.publication.domain.SchemaDraftPublicationNode;
+import io.github.vfedoriv.graphrag.schemas.publication.domain.SchemaDraftPublicationStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingItemStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanNode;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
-import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
-import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftPublicationRepository;
+import io.github.vfedoriv.graphrag.schemas.evaluation.ports.SchemaDraftEvaluationRunRepository;
+import io.github.vfedoriv.graphrag.schemas.publication.ports.SchemaDraftPublicationRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingItemRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingItemRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
 import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
-import io.github.vfedoriv.graphrag.service.SchemaReprocessingRecoveryService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingRecoveryService;
 import io.github.vfedoriv.graphrag.infrastructure.persistence.graph.GraphSchemaInitializer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -153,6 +153,55 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
         assertThat(repaired.getQueuedDocuments()).isZero();
         assertThat(repaired.getSucceededDocuments()).isEqualTo(1);
         assertThat(repaired.getReason()).isEqualTo(ReprocessingPlanReason.SCHEMA_ACTIVATION);
+    }
+
+    @Test
+    void publicationCompletionRollsBackBothOwnersAndKeepsRegistrationInactive() {
+        SchemaDefinitionNode schema = schemaRegistryService.createGeneratedInactiveSchema(
+            "{\"name\":\"workflow-checkpoint\",\"version\":1,\"nodes\":[{\"label\":\"Thing\",\"key\":\"id\","
+                + "\"properties\":[{\"name\":\"id\",\"type\":\"string\",\"required\":true}]}],\"relationships\":[]}",
+            knowledgeBaseId);
+        draft.setCurrentAggregateId(aggregate.getId());
+        draft = draftRepository.save(draft);
+        io.github.vfedoriv.graphrag.schemas.publication.application.PublicationCheckpointService checkpoint =
+            applicationContext.getBean(io.github.vfedoriv.graphrag.schemas.publication.application.PublicationCheckpointService.class);
+        SchemaDraftPublicationNode intent = checkpoint.savePublicationIntent(publication("checkpoint-publication", schema));
+        intent.setSchemaId(schema.getId());
+        intent.setStatus(SchemaDraftPublicationStatus.COMPLETED);
+        intent.setRetryable(false);
+        intent.setCompletedAt(Instant.now());
+        io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion stale =
+            new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                knowledgeBaseId, draft.getId(), draft.getRevision() + 1, aggregate.getId(), draft.getPersistenceVersion(),
+                schema.getId(), schema.getContentHash(), intent.getCompletedAt());
+        assertThatThrownBy(() -> checkpoint.completePublication(intent, stale))
+            .isInstanceOf(org.springframework.dao.OptimisticLockingFailureException.class);
+        assertThat(publicationRepository.findById(intent.getId()).orElseThrow().getStatus())
+            .isEqualTo(SchemaDraftPublicationStatus.PENDING);
+        assertThat(draftRepository.findById(draft.getId()).orElseThrow().getPublicationSchemaId()).isNull();
+
+        io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion current =
+            new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                knowledgeBaseId, draft.getId(), draft.getRevision(), aggregate.getId(), draft.getPersistenceVersion(),
+                schema.getId(), schema.getContentHash(), intent.getCompletedAt());
+        org.springframework.transaction.support.TransactionTemplate transaction =
+            new org.springframework.transaction.support.TransactionTemplate(
+                applicationContext.getBean("transactionManager", org.springframework.transaction.PlatformTransactionManager.class));
+        transaction.executeWithoutResult(status -> {
+            SchemaDraftPublicationNode completion = publicationRepository.findById(intent.getId()).orElseThrow();
+            completion.setSchemaId(schema.getId());
+            completion.setStatus(SchemaDraftPublicationStatus.COMPLETED);
+            completion.setCompletedAt(intent.getCompletedAt());
+            checkpoint.completePublication(completion, current);
+            status.setRollbackOnly();
+        });
+        assertThat(publicationRepository.findById(intent.getId()).orElseThrow().getStatus())
+            .isEqualTo(SchemaDraftPublicationStatus.PENDING);
+        assertThat(draftRepository.findById(draft.getId()).orElseThrow().getStatus()).isEqualTo(SchemaDraftStatus.OPEN);
+        assertThat(schemaRegistryService.getSchema(schema.getId()).getStatus())
+            .isEqualTo(io.github.vfedoriv.graphrag.domain.SchemaStatus.INACTIVE);
+        assertThat(knowledgeBaseService.get(knowledgeBaseId).getActiveSchemaId()).isNull();
+        assertThat(jdbcTemplate.queryForObject("select count(*) from app.schema_reprocessing_plan", Integer.class)).isZero();
     }
 
     @Test

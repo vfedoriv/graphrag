@@ -1,19 +1,21 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.schemas.evaluation.application.SchemaDraftEvaluationContractMapper;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.AdvisoryAssessment;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.CoordinateAssessment;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Metrics;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.QuestionAssessment;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationContracts.Rate;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AdvisoryAssessmentResponse;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.AdvisoryAssessment;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.CoordinateAssessment;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.Metrics;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.QuestionAssessment;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationContracts.Rate;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.AdvisoryAssessmentResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DraftGuidance;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.EvaluationMetricsResponse;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.MetricApplicability;
-import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.MetricIdentifier;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationMetricsResponse;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.MetricApplicability;
+import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.MetricIdentifier;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftGuidanceMapper;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import java.util.List;
@@ -25,7 +27,7 @@ class SchemaDraftApiContractMapperTest {
     private final SchemaDraftJsonSupport jsonSupport = new SchemaDraftJsonSupport(objectMapper);
     private final SchemaDraftGuidanceMapper guidanceMapper = new SchemaDraftGuidanceMapper(jsonSupport, objectMapper);
     private final SchemaDraftEvaluationContractMapper evaluationMapper =
-        new SchemaDraftEvaluationContractMapper(jsonSupport, objectMapper);
+        new SchemaDraftEvaluationContractMapper(new io.github.vfedoriv.graphrag.schemas.evaluation.application.EvaluationJsonSupport(objectMapper), objectMapper);
 
     @Test
     void readsEveryLegacyGuidanceShapeAndWritesCanonicalEnvelope() {

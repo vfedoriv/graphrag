@@ -14,7 +14,6 @@ import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
-import io.github.vfedoriv.graphrag.service.ChunkMigrationSnapshot;
 import io.github.vfedoriv.graphrag.error.NotFoundException;
 import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,13 +82,7 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
             profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()).id();
             embedding.requireCompatible(knowledgeBaseId, EmbeddingTarget.derive(profile.getBaseUrl(),
                 profile.getEmbeddingModel(), profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()));
-            ChunkMigrationSnapshot.ChunkTarget chunk = chunking.snapshotTarget(profile);
-            target = new DocumentReprocessing.ChunkTarget(
-                chunk.strategyName(), chunk.strategyRevision(), chunk.targetTokens(), chunk.overlapTokens(),
-                chunk.hardCharacterLimit(), chunk.parentTargetTokens(), chunk.parentHardCharacterLimit(),
-                chunk.parentMaxPages(), chunk.contextHeaderMaxTokens(), chunk.contextHeaderMaxCharacters(),
-                chunk.tokenizerId(), chunk.tokenizerRevision(), chunk.tokenCountMode(),
-                chunk.representationRevision(), chunk.settingsHash());
+            target = chunking.snapshotTarget(profile);
         } catch (RuntimeException exception) {
             blocker = new Blocker(exception instanceof EmbeddingSpaceConflictException
                 ? "EMBEDDING_SPACE_INCOMPATIBLE" : "INVALID_MIGRATION_TARGET",
