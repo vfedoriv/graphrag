@@ -1,20 +1,18 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
-import io.github.vfedoriv.graphrag.domain.ExtractionRunStatus;
-import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunStatus;
+import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingService;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

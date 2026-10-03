@@ -1,15 +1,23 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.document.ChunkingService;
-import io.github.vfedoriv.graphrag.document.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -22,9 +30,9 @@ class ChunkMigrationContractsTest {
         when(runtimeSettings.chunking()).thenReturn(settings());
         when(runtimeSettings.effectiveChunkerRevision()).thenReturn("chunker_" + "a".repeat(64));
         ChunkingService chunkingService = new ChunkingService(runtimeSettings);
-        AiProfileNode profile = profile();
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = profile().facts();
         ChunkingContext documentContext = chunkingService.snapshot(profile, "text");
-        ChunkMigrationSnapshot.ChunkTarget chunkTarget = chunkingService.snapshotTarget(profile);
+        ChunkMigrationSnapshot.ChunkTarget chunkTarget = new ObjectMapper().convertValue(chunkingService.snapshotTarget(profile), ChunkMigrationSnapshot.ChunkTarget.class);
         Map<String, ChunkMigrationSnapshot.DocumentTarget> documents = new LinkedHashMap<>();
         documents.put("doc-b", documentTarget("b".repeat(64), documentContext));
         documents.put("doc-a", documentTarget("a".repeat(64), documentContext));
@@ -45,8 +53,8 @@ class ChunkMigrationContractsTest {
         ChunkMigrationSnapshot restoredSnapshot = jsonSupport.read(canonical, ChunkMigrationSnapshot.class);
         ChunkingContext restored = chunkingService.restore(
             profile,
-            restoredSnapshot.chunkTarget(),
-            restoredSnapshot.documents().get("doc-a")
+            new ObjectMapper().convertValue(restoredSnapshot.chunkTarget(), DocumentReprocessing.ChunkTarget.class),
+            new ObjectMapper().convertValue(restoredSnapshot.documents().get("doc-a"), DocumentReprocessing.DocumentTarget.class)
         );
 
         assertThat(canonical.indexOf("\"doc-a\"")).isLessThan(canonical.indexOf("\"doc-b\""));
@@ -59,9 +67,9 @@ class ChunkMigrationContractsTest {
         RuntimeSettingsService runtimeSettings = mock(RuntimeSettingsService.class);
         when(runtimeSettings.chunking()).thenReturn(settings());
         ChunkingService chunkingService = new ChunkingService(runtimeSettings);
-        AiProfileNode profile = profile();
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = profile().facts();
         ChunkingContext documentContext = chunkingService.snapshot(profile, "text");
-        ChunkMigrationSnapshot.ChunkTarget current = chunkingService.snapshotTarget(profile);
+        ChunkMigrationSnapshot.ChunkTarget current = new ObjectMapper().convertValue(chunkingService.snapshotTarget(profile), ChunkMigrationSnapshot.ChunkTarget.class);
         ChunkMigrationSnapshot.ChunkTarget changed = new ChunkMigrationSnapshot.ChunkTarget(
             current.strategyName(),
             current.strategyRevision(),
@@ -82,8 +90,8 @@ class ChunkMigrationContractsTest {
 
         assertThatThrownBy(() -> chunkingService.restore(
             profile,
-            changed,
-            documentTarget("a".repeat(64), documentContext)
+            new ObjectMapper().convertValue(changed, DocumentReprocessing.ChunkTarget.class),
+            new ObjectMapper().convertValue(documentTarget("a".repeat(64), documentContext), DocumentReprocessing.DocumentTarget.class)
         ))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("tokenizer target");
@@ -103,8 +111,8 @@ class ChunkMigrationContractsTest {
         );
     }
 
-    private RuntimeSettingsService.ChunkingSettings settings() {
-        return new RuntimeSettingsService.ChunkingSettings(
+    private RuntimeSettingsAccess.ChunkingSettings settings() {
+        return new RuntimeSettingsAccess.ChunkingSettings(
             "recursive",
             800,
             80,

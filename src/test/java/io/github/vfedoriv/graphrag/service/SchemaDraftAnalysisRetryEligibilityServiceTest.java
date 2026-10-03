@@ -3,10 +3,11 @@ package io.github.vfedoriv.graphrag.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftAnalysisRetryEligibilityService;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
 import org.junit.jupiter.api.Test;
 
 class SchemaDraftAnalysisRetryEligibilityServiceTest {

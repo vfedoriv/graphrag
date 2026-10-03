@@ -1,0 +1,27 @@
+package io.github.vfedoriv.graphrag.schemas.registry.api.model;
+
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Instant;
+
+public record SchemaResponse(
+    @Schema(description = "Schema identifier.", example = "schema-01")
+    String id,
+    @Schema(description = "Logical schema name.", example = "legal-contracts")
+    String name,
+    @Schema(description = "Schema version number.", example = "1")
+    int version,
+    @Schema(description = "Schema source classification.", example = "GENERATED")
+    SchemaSourceType sourceType,
+    @Schema(description = "Schema document format.", example = "JSON")
+    SchemaFormat format,
+    @Schema(description = "Hash of schema content.", example = "a74f9f7fbb...")
+    String contentHash,
+    @Schema(description = "Schema lifecycle status.", example = "ACTIVE")
+    SchemaStatus status,
+    @Schema(description = "Creation timestamp in UTC.", example = "2026-05-03T10:12:00Z")
+    Instant createdAt
+) {
+}

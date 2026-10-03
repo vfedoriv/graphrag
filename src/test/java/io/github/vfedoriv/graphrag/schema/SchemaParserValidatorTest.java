@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.schema;
 
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaParser;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaValidator;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;

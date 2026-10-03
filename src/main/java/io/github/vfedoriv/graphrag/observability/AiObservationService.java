@@ -1,13 +1,12 @@
 package io.github.vfedoriv.graphrag.observability;
 
-import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
-import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.observability.configuration.AiObservabilityProperties;
+import io.github.vfedoriv.graphrag.ai.contracts.StartupModelMetadata;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
-import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.contracts.AiProfileAccess;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -64,19 +63,19 @@ public class AiObservationService {
     private final AiObservabilityProperties properties;
     private final ObservationRegistry observationRegistry;
     private final MeterRegistry meterRegistry;
-    private final AppProperties appProperties;
+    private final StartupModelMetadata appProperties;
     private final Environment environment;
-    private final RuntimeSettingsService runtimeSettingsService;
-    private final ObjectProvider<AiProfileService> aiProfileServiceProvider;
+    private final RuntimeSettingsAccess runtimeSettingsService;
+    private final ObjectProvider<? extends AiProfileAccess> aiProfileServiceProvider;
 
     public AiObservationService(
         AiObservabilityProperties properties,
         ObservationRegistry observationRegistry,
         MeterRegistry meterRegistry,
-        AppProperties appProperties,
+        StartupModelMetadata appProperties,
         Environment environment,
-        RuntimeSettingsService runtimeSettingsService,
-        ObjectProvider<AiProfileService> aiProfileServiceProvider
+        RuntimeSettingsAccess runtimeSettingsService,
+        ObjectProvider<? extends AiProfileAccess> aiProfileServiceProvider
     ) {
         this.properties = properties;
         this.observationRegistry = observationRegistry;
@@ -243,7 +242,7 @@ public class AiObservationService {
     }
 
     private Observation startObservation(String name, String workflow, String schemaName) {
-        RuntimeSettingsService.AiObservationSettings settings = settings();
+        RuntimeSettingsAccess.AiObservationSettings settings = settings();
         Observation observation = settings.enabled()
             ? Observation.start(name, observationRegistry)
             : Observation.NOOP;
@@ -338,7 +337,7 @@ public class AiObservationService {
         tags.add(Tag.of(AiObservationAttributes.PROVIDER_PROFILE, stable(context.providerProfile())));
         tags.add(Tag.of(AiObservationAttributes.MODEL_NAME, stable(context.modelName())));
         tags.add(Tag.of(AiObservationAttributes.STATUS, stable(status)));
-        RuntimeSettingsService.AiObservationSettings settings = settings();
+        RuntimeSettingsAccess.AiObservationSettings settings = settings();
         tags.add(Tag.of(AiObservationAttributes.CONTENT_CAPTURE, String.valueOf(settings.contentCaptureEnabled())));
         if (settings.schemaNameTagEnabled() && context.schemaName() != null && !context.schemaName().isBlank()) {
             tags.add(Tag.of(AiObservationAttributes.SCHEMA_NAME, truncate(context.schemaName())));
@@ -371,7 +370,7 @@ public class AiObservationService {
     }
 
     private String providerProfile(boolean chat) {
-        AiProfileNode profile = activeProfile();
+        ProfileFacts profile = activeProfile();
         if (profile != null) {
             return profile.getId();
         }
@@ -386,21 +385,21 @@ public class AiObservationService {
         if (!settings().modelNameTagEnabled() || appProperties == null) {
             return AiObservationAttributes.UNKNOWN;
         }
-        AiProfileNode profile = activeProfile();
+        ProfileFacts profile = activeProfile();
         if (profile != null) {
             return chat ? profile.getChatModel() : profile.getEmbeddingModel();
         }
-        return chat ? appProperties.model().chatModel() : appProperties.model().embeddingModel();
+        return chat ? appProperties.chatModel() : appProperties.embeddingModel();
     }
 
-    private AiProfileNode activeProfile() {
+    private ProfileFacts activeProfile() {
         String profileId = AiProfileContext.activeProfileId();
-        AiProfileService aiProfileService = aiProfileServiceProvider.getIfAvailable();
+        AiProfileAccess aiProfileService = aiProfileServiceProvider.getIfAvailable();
         if (profileId == null || aiProfileService == null) {
             return null;
         }
         try {
-            return aiProfileService.getNode(profileId);
+            return aiProfileService.require(profileId);
         } catch (RuntimeException ex) {
             return null;
         }
@@ -461,9 +460,9 @@ public class AiObservationService {
         }
     }
 
-    private RuntimeSettingsService.AiObservationSettings settings() {
+    private RuntimeSettingsAccess.AiObservationSettings settings() {
         if (runtimeSettingsService == null) {
-            return new RuntimeSettingsService.AiObservationSettings(
+            return new RuntimeSettingsAccess.AiObservationSettings(
                 properties.enabled(),
                 properties.contentCaptureEnabled(),
                 properties.maxAttributeLength(),

@@ -13,6 +13,13 @@ stateDiagram-v2
     ACTIVE --> ACTIVE: immutable
 ```
 
+
+Registry HTTP mapping lives under `schemas.registry.api`; discovery models belong
+to `schemas.discovery`, and generation/example prompts, normalization, and model
+adapters to `schemas.generation`. Generation parsing uses a schema-owned port
+mapped to document inputs by bootstrap. AI-owned capabilities select models;
+bootstrap retains schema resource loading. Routes and serialized values are unchanged.
+
 ## Validate and create
 
 Validate without persistence:
@@ -62,4 +69,12 @@ These conflicts return RFC 7807 HTTP 409; validation failures return HTTP 400. L
 
 See the [schema-format reference](../reference/schema-format.md) for a complete representative document and runtime Swagger/OpenAPI for exhaustive request/response shapes.
 
-Implementation: `SchemaController`, `SchemaRegistryService`, `SchemaDiscoveryService`, `SchemaParser`, `SchemaValidator`, and `SchemaBootstrapService`.
+Implementation: `SchemaController` maps the API to `schemas.registry` and
+`schemas.discovery`. The registry owns `SchemaRegistryService`,
+`ActiveSchemaResolver`, `SchemaParser`, `SchemaValidator`, and definition
+persistence. Knowledge-base-owned association state supplies per-KB status and
+activation through public capabilities. Discovery reads owned document inputs
+through `DocumentSourceInputs`; preparation validates every source before model
+calls. Document extraction uses an immutable schema snapshot containing the
+stored JSON and hash, including expected-target checks during reprocessing.
+`SchemaBootstrapService` remains the startup entry point.

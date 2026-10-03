@@ -1,5 +1,12 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.ManagedKnowledgeBases;
+
+import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
+
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentStorageMutationService;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -7,13 +14,13 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.DocumentStatus;
-import io.github.vfedoriv.graphrag.application.processing.DocumentRunHistoryLifecycle;
-import io.github.vfedoriv.graphrag.domain.DocumentStorageMutationNode;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.storage.BinaryStorageService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentRunHistoryLifecycle;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentBinaryStorage;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
@@ -30,13 +37,13 @@ import org.springframework.mock.web.MockMultipartFile;
 class DocumentUploadServiceTest {
 
     @Mock
-    private BinaryStorageService binaryStorageService;
+    private DocumentBinaryStorage binaryStorageService;
     @Mock
     private DocumentUploadRepository documentUploadRepository;
     @Mock
     private GraphArtifactCleanupService graphArtifactCleanupService;
     @Mock
-    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private ManagedKnowledgeBases knowledgeBaseLifecycleService;
     @Mock
     private DocumentStorageMutationService storageMutationService;
     @Mock

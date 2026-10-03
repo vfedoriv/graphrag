@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.config;
 
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;

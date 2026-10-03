@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.infrastructure.persistence.graph.GraphSchemaInitializer;
+import io.github.vfedoriv.graphrag.bootstrap.GraphSchemaInitializer;
 import java.nio.file.Files;
 import java.util.Collection;
 import org.junit.jupiter.api.MethodOrderer;

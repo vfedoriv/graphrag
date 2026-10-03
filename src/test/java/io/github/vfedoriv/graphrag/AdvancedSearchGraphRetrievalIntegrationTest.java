@@ -4,28 +4,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Direction;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.LongLiteral;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Request;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Status;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
-import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository;
-import io.github.vfedoriv.graphrag.service.ActiveSchemaContext;
-import io.github.vfedoriv.graphrag.service.AdvancedSearchGraphRetriever;
-import io.github.vfedoriv.graphrag.service.GraphPlanCypherRenderer;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidatedGraphPlan;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidationResult;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Aggregation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.AggregationFunction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonFilter;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ComparisonOperator;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Direction;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.LongLiteral;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Ordering;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.PropertyReference;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Request;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Result;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.SortDirection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Status;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.TypedHop;
+import io.github.vfedoriv.graphrag.search.retrieval.ports.GraphRetrievalRepository;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
+import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchGraphRetriever;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanCypherRenderer;
+import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidatedGraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidationResult;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -127,7 +127,7 @@ class AdvancedSearchGraphRetrievalIntegrationTest {
         GraphPlanValidationService validation = mock(GraphPlanValidationService.class);
         ValidatedGraphPlan validated = new ValidatedGraphPlan(
             plan,
-            new ActiveSchemaContext("kb-1", "schema-1", null, null),
+            new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, null),
             maxRows,
             Duration.ofSeconds(10)
         );

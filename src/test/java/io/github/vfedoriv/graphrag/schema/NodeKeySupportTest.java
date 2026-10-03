@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.schema;
 
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;

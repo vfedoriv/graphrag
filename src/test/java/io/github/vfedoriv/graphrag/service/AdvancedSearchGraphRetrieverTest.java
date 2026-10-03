@@ -1,19 +1,25 @@
 package io.github.vfedoriv.graphrag.service;
+import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
+
+import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchGraphRetriever;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanCypherRenderer;
+
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.NodeProjection;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Request;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Status;
-import io.github.vfedoriv.graphrag.error.QueryDeadlineExceededException;
-import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository;
-import io.github.vfedoriv.graphrag.repository.GraphRetrievalRepository.Query;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidatedGraphPlan;
-import io.github.vfedoriv.graphrag.service.GraphPlanValidationService.ValidationResult;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.NodeProjection;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Request;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Status;
+import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
+import io.github.vfedoriv.graphrag.search.retrieval.ports.GraphRetrievalRepository;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphQuery;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidatedGraphPlan;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidationResult;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -39,12 +45,12 @@ class AdvancedSearchGraphRetrieverTest {
             List.of(), 3);
         ValidatedGraphPlan validated = new ValidatedGraphPlan(
             plan,
-            new ActiveSchemaContext("kb-1", "schema-1", null, null),
+            new SchemaSnapshot("kb-1", "schema-1", null, 0, null, null, null, null, null, null, null, null),
             10,
             Duration.ofSeconds(5)
         );
         when(validationService.validate("kb-1", plan)).thenReturn(new ValidationResult(true, List.of(), validated));
-        when(renderer.render(validated)).thenReturn(new Query("RETURN 1", Map.of()));
+        when(renderer.render(validated)).thenReturn(new GraphQuery("RETURN 1", Map.of()));
     }
 
     @Test
@@ -68,7 +74,7 @@ class AdvancedSearchGraphRetrieverTest {
             ))
         )));
 
-        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result result =
+        io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Result result =
             retriever.retrieve(request());
 
         assertThat(result.diagnostics().status()).isEqualTo(Status.COMPLETED);
@@ -99,7 +105,7 @@ class AdvancedSearchGraphRetrieverTest {
             ))
         )));
 
-        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result result =
+        io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Result result =
             retriever.retrieve(request());
 
         assertThat(result.diagnostics().status()).isEqualTo(Status.COMPLETED);
@@ -110,7 +116,7 @@ class AdvancedSearchGraphRetrieverTest {
     void reportsTimeoutWithoutQueryOrContent() {
         when(repository.execute(any(), any())).thenThrow(new QueryDeadlineExceededException(null));
 
-        io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.Result result =
+        io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.Result result =
             retriever.retrieve(request());
 
         assertThat(result.diagnostics().status()).isEqualTo(Status.DEADLINE_EXCEEDED);

@@ -1,16 +1,18 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.answering.domain.QueryEvidenceAssemblyService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.GraphFact;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.ParentCitation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchGraphRetrievalContracts.SchemaRepresentation;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.CitationKind;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.EvidenceSource;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.ParentContext;
-import io.github.vfedoriv.graphrag.domain.AdvancedSearchRankingContracts.SourceBounds;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.FactKind;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.GraphFact;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.ParentCitation;
+import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts.SchemaRepresentation;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.CitationKind;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceSource;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.ParentContext;
+import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.SourceBounds;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

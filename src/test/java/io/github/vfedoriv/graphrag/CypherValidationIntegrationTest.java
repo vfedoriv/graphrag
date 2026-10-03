@@ -4,11 +4,11 @@ import io.github.vfedoriv.graphrag.IntegrationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.query.QueryValidationResult;
-import io.github.vfedoriv.graphrag.service.CypherValidationService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.search.query.domain.QueryValidationResult;
+import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

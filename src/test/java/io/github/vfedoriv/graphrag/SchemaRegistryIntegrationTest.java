@@ -3,24 +3,31 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.service.SchemaBootstrapService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.bootstrap.SchemaBootstrapService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RelationalIntegrationTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -34,6 +41,8 @@ class SchemaRegistryIntegrationTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private SchemaBootstrapService schemaBootstrapService;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Test
     void persistsAndActivatesSchema() {
@@ -200,6 +209,88 @@ class SchemaRegistryIntegrationTest {
         assertThat(schemaRegistryService.listSchemas()).extracting(SchemaDefinitionNode::getName).contains("contracts-global-regression");
         assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-global-regression")).isEmpty();
         assertThat(usesSchemaRelationCount("kb-global-regression")).isZero();
+    }
+
+    @Test
+    void sharedSchemaHasGlobalAndScopedStatusFromAssociations() {
+        resetRelationalMetadata();
+        saveKnowledgeBase("kb-shared-a");
+        saveKnowledgeBase("kb-shared-b");
+        SchemaDefinitionNode shared = schemaRegistryService.createSchema(
+            schemaJson("shared-status"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode alternate = schemaRegistryService.createSchema(
+            schemaJson("alternate-status"), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.attachSchema("kb-shared-a", shared.getId());
+        schemaRegistryService.attachSchema("kb-shared-b", shared.getId());
+        schemaRegistryService.activateSchema("kb-shared-a", shared.getId());
+        schemaRegistryService.activateSchema("kb-shared-b", alternate.getId());
+
+        assertThat(schemaRegistryService.getSchema(shared.getId()).getStatus()).isEqualTo(SchemaStatus.ACTIVE);
+        assertThat(schemaRegistryService.listSchemas()).filteredOn(schema -> schema.getId().equals(shared.getId()))
+            .extracting(SchemaDefinitionNode::getStatus).containsExactly(SchemaStatus.ACTIVE);
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-shared-a"))
+            .filteredOn(schema -> schema.getId().equals(shared.getId()))
+            .extracting(SchemaDefinitionNode::getStatus).containsExactly(SchemaStatus.ACTIVE);
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-shared-b"))
+            .filteredOn(schema -> schema.getId().equals(shared.getId()))
+            .extracting(SchemaDefinitionNode::getStatus).containsExactly(SchemaStatus.INACTIVE);
+    }
+
+    @Test
+    void activationAndAssociationJoinCallerRollback() {
+        resetRelationalMetadata();
+        saveKnowledgeBase("kb-rollback");
+        SchemaDefinitionNode first = schemaRegistryService.createSchema(
+            schemaJson("rollback-first"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode second = schemaRegistryService.createSchema(
+            schemaJson("rollback-second"), SchemaSourceType.PREDEFINED);
+        schemaRegistryService.activateSchema("kb-rollback", first.getId());
+
+        assertThatThrownBy(() -> new TransactionTemplate(transactionManager).execute(status -> {
+            schemaRegistryService.activateSchema("kb-rollback", second.getId());
+            throw new IllegalStateException("rollback probe");
+        })).isInstanceOf(IllegalStateException.class).hasMessage("rollback probe");
+
+        assertThat(knowledgeBaseRepository.findById("kb-rollback").orElseThrow().getActiveSchemaId())
+            .isEqualTo(first.getId());
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-rollback"))
+            .filteredOn(schema -> schema.getStatus() == SchemaStatus.ACTIVE)
+            .extracting(SchemaDefinitionNode::getId).containsExactly(first.getId());
+        assertThat(usesSchemaTargetCount("kb-rollback", second.getId())).isZero();
+    }
+
+    @Test
+    void competingActivationsLeaveOneActiveAssociation() throws Exception {
+        resetRelationalMetadata();
+        saveKnowledgeBase("kb-competing");
+        SchemaDefinitionNode first = schemaRegistryService.createSchema(
+            schemaJson("competing-first"), SchemaSourceType.PREDEFINED);
+        SchemaDefinitionNode second = schemaRegistryService.createSchema(
+            schemaJson("competing-second"), SchemaSourceType.PREDEFINED);
+        CountDownLatch start = new CountDownLatch(1);
+        try (ExecutorService workers = Executors.newFixedThreadPool(2)) {
+            Future<?> left = workers.submit(() -> activateWhenReleased(start, first.getId()));
+            Future<?> right = workers.submit(() -> activateWhenReleased(start, second.getId()));
+            start.countDown();
+            left.get(20, TimeUnit.SECONDS);
+            right.get(20, TimeUnit.SECONDS);
+        }
+
+        String activeId = knowledgeBaseRepository.findById("kb-competing").orElseThrow().getActiveSchemaId();
+        assertThat(activeId).isIn(first.getId(), second.getId());
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase("kb-competing"))
+            .filteredOn(schema -> schema.getStatus() == SchemaStatus.ACTIVE)
+            .extracting(SchemaDefinitionNode::getId).containsExactly(activeId);
+    }
+
+    private void activateWhenReleased(CountDownLatch start, String schemaId) {
+        try {
+            start.await();
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(exception);
+        }
+        schemaRegistryService.activateSchema("kb-competing", schemaId);
     }
 
     @Test

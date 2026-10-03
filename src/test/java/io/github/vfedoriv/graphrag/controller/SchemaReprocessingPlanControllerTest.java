@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.SchemaReprocessingPlanController;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -10,13 +12,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.vfedoriv.graphrag.domain.ChunkReprocessingSelection;
-import io.github.vfedoriv.graphrag.domain.ReprocessingPlanReason;
-import io.github.vfedoriv.graphrag.domain.SchemaReprocessingPlanStatus;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.CreatePlanRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaReprocessingDtos.StartPlanResponse;
-import io.github.vfedoriv.graphrag.error.GlobalExceptionHandler;
-import io.github.vfedoriv.graphrag.service.SchemaReprocessingPlanService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.StartPlanResponse;
+import io.github.vfedoriv.graphrag.bootstrap.http.GlobalExceptionHandler;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

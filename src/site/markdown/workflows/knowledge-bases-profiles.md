@@ -2,6 +2,14 @@
 
 A knowledge base is the ownership boundary for schemas, documents, retrieval, and queries. Its ID is supplied by the client. Each knowledge base has one active AI profile, and new knowledge bases inherit the persisted default profile.
 
+
+Knowledge-base API, lifecycle state, management, and relational adapters live under
+`knowledgebase`; profile API/state/persistence live under `ai.profiles`. Foreign
+workflows use immutable `AiProfileAccess` facts and knowledge-base public
+capabilities. Provider keys and clients remain AI-owned. Captured execution and
+revision-scoped caches preserve model selection and nested scope restoration;
+profile/assignment reads retain caller transaction participation.
+
 ## Knowledge-base lifecycle
 
 ```bash
@@ -69,4 +77,8 @@ An incompatible assignment or update returns HTTP 409 and leaves the previous ac
 
 Failures include 400 for invalid URLs/models/dimensions/tokenizer, 404 for unknown IDs, 409 for assigned-profile deletion or embedding incompatibility, and provider failures when an operation uses invalid/unreachable credentials. See runtime Swagger for exhaustive DTO fields.
 
-Implementation: `AiProfileController`, `KnowledgeBaseController`, `AiProfileService`, `KnowledgeBaseService`, `EmbeddingSpacePolicy`, and `AiRuntimeModelFactory`.
+Implementation: `KnowledgeBaseController` and `AiProfileController`; lifecycle and
+provider construction under `knowledgebase` and `ai`; embedding compatibility in
+`ai.application.EmbeddingCompatibility` using immutable `ai.domain.EmbeddingTarget`.
+Search reads public knowledge-base/profile facts through
+`SearchKnowledgeBaseAccess`; it no longer uses an `EmbeddingSpacePolicy` bridge.

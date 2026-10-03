@@ -1,9 +1,13 @@
 package io.github.vfedoriv.graphrag.dto;
+import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchResultDtos;
+
+import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos;
+import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.dto.AdvancedSearchResultDtos.AdvancedSearchResultV1;
+import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchResultDtos.AdvancedSearchResultV1;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;

@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.dto;
 
+import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkHierarchyResponse;
+import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkPageResponse;
+import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkSummaryResponse;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.swagger.v3.core.converter.ModelConverters;

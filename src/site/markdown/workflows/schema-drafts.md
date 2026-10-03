@@ -75,4 +75,33 @@ Publication does not activate and does not process documents. Activate the publi
 
 Application logs contain identifiers, revisions, fingerprints, counts, status, timing, and exception class—not source text, guidance, prompts, candidates, model responses, or schema projections. Controlled trace content follows [AI observability settings](../operations/observability.md).
 
-Implementation: `SchemaDraftController`, draft lifecycle/source/analysis/review/conflict services, `SchemaDraftEvaluationService`, `SchemaDraftPublicationService`, and `SchemaReprocessingPlanService`. Use Swagger/OpenAPI for the full route and paged DTO catalog.
+Draft authoring lives under `schemas.drafts`; evaluation, publication, and
+reprocessing own their API values, workflows, checkpoints, and persistence under
+`schemas.evaluation`, `schemas.publication`, and `schemas.reprocessing`. Authoring
+admission, review/projection, contributor fingerprints, and publication linkage
+cross immutable internal contracts. Navigation reads bounded batch summaries
+from evaluation/reprocessing owners through mapping-only adapters, preserving
+history ordering, currentness, and pagination without downstream repository reads.
+
+Document-owned preparation loads/parses/chunks the source, and per-chunk dry
+extraction returns raw and validated observations for evaluation-owned metrics.
+The existing outcome order remains source/hash check, reusable outcome lookup,
+client availability, preparation, extraction/validation, metrics, and checkpoint.
+Live chunking/profile resolution, contributor fallback, canonical snapshots and
+reuse fingerprints, and source-race behavior remain compatible. Advisory analysis
+retains its deterministic `COMPLETED_WITHOUT_MODEL_JUDGMENT` fallback; this
+ownership change adds no advisory model adapter.
+
+Publication persists its intent before registry registration. Resume reconciles
+the same associated name/version/content rather than creating another schema;
+completion commits publication and draft-owned linkage together. Those relational
+checkpoints remain separate from registry registration and external processing.
+The existing readiness order, revision/hash guards, idempotency, content-drift
+reporting, inactive publication, and explicit activation behavior are unchanged.
+
+Implementation: `schemas.drafts.api.SchemaDraftController`,
+`schemas.evaluation.api.SchemaDraftEvaluationController`,
+`schemas.publication.api.SchemaDraftPublicationController`, and
+`schemas.reprocessing.api.SchemaReprocessingPlanController`, with owned application,
+domain, ports, and adapter packages. See the [architecture boundary](../concepts/architecture.md#schema-evaluation-and-publication-boundary)
+and Swagger/OpenAPI for the full route and paged DTO catalog.

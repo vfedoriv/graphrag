@@ -1,0 +1,10 @@
+package io.github.vfedoriv.graphrag.settings.api.model;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record RuntimeSettingUpdateRequest(
+    @NotBlank String key,
+    @NotNull Object value
+) {
+}

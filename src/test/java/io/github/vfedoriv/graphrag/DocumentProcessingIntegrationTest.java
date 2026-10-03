@@ -1,33 +1,41 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import static io.github.vfedoriv.graphrag.document.StructuredDocumentTestFixtures.docxBytes;
 import static io.github.vfedoriv.graphrag.document.StructuredDocumentTestFixtures.pdfPageWithLines;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.domain.DocumentProcessingRunNode;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
-import io.github.vfedoriv.graphrag.repository.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.DocumentProcessingRunRepository;
-import io.github.vfedoriv.graphrag.repository.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.service.DocumentProcessingService;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
+import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
+import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
+import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingService;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
+import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +68,15 @@ class DocumentProcessingIntegrationTest {
     @Autowired
     private SchemaRegistryService schemaRegistryService;
     @Autowired
-    private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private VectorIndexes embeddingSpaceIndexService;
     @Autowired
     private LexicalIndexRepository lexicalIndexRepository;
+    @Autowired
+    private SchemaReprocessingPlanService reprocessingService;
+    @Autowired
+    private SchemaReprocessingPlanRepository planRepository;
+    @Autowired
+    private ChunkingService chunkingService;
 
     @AfterEach
     void cleanDocumentStorage() throws Exception {
@@ -70,7 +84,7 @@ class DocumentProcessingIntegrationTest {
     }
 
     @Test
-    void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() {
+    void persistsChunksCreatesVectorIndexAndSupportsVectorSearch() throws Exception {
         neo4jClient.query("MATCH (n) DETACH DELETE n").run();
         RelationalMetadataTestCleaner.clean(jdbcTemplate);
         String schemaJson = """
@@ -278,7 +292,30 @@ class DocumentProcessingIntegrationTest {
         );
         assertThat(extractionRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
         assertThat(processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId())).isEmpty();
-        assertThat(documentProcessingService.process(uploaded.getId()).getStatus().name()).isEqualTo("COMPLETED");
+        DocumentUploadNode replacementProcessed = documentProcessingService.process(uploaded.getId());
+        assertThat(replacementProcessed.getStatus().name()).isEqualTo("COMPLETED");
+
+        String planId = reprocessingService.create("kb-1", new CreatePlanRequest(
+            null, null, false, List.of(uploaded.getId()), Map.of(),
+            ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION, ChunkReprocessingSelection.DOCUMENT_IDS,
+            chunkingService.migrationTargetRevision())).planId();
+        SchemaReprocessingPlanNode migration = planRepository.findById(planId).orElseThrow();
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+        while ((migration.getStatus() == SchemaReprocessingPlanStatus.QUEUED
+            || migration.getStatus() == SchemaReprocessingPlanStatus.RUNNING) && System.nanoTime() < deadline) {
+            Thread.sleep(25);
+            migration = planRepository.findById(planId).orElseThrow();
+        }
+        assertThat(migration.getStatus()).isEqualTo(SchemaReprocessingPlanStatus.COMPLETED);
+        assertThat(migration.getSucceededDocuments()).isEqualTo(1);
+        List<DocumentProcessingRunNode> migratedHistory =
+            processingRunRepository.findByDocumentIdOrderByStartedAtAsc(uploaded.getId());
+        assertThat(migratedHistory).hasSize(2);
+        assertThat(migratedHistory).filteredOn(DocumentProcessingRunNode::isActiveCompleted)
+            .singleElement().satisfies(run -> {
+                assertThat(run.getStatus()).isEqualTo(DocumentProcessingRunStatus.COMPLETED);
+                assertThat(run.getSourceSha256()).isEqualTo(replacementProcessed.getSha256());
+            });
     }
 
     @Test

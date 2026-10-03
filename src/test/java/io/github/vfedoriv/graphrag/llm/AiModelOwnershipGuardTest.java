@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.llm;
 
+import io.github.vfedoriv.graphrag.bootstrap.AiModelOwnershipGuard;
+
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

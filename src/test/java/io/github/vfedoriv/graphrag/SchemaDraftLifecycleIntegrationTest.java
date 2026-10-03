@@ -1,6 +1,10 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+
+import io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,35 +18,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionResult;
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftEvaluationRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionClient;
-import io.github.vfedoriv.graphrag.graph.GraphExtractionResult;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftEvaluationRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
-import io.github.vfedoriv.graphrag.service.SchemaDraftReviewService;
-import io.github.vfedoriv.graphrag.service.SchemaDraftJsonSupport;
-import io.github.vfedoriv.graphrag.service.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictType;
+import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationRunNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
+import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftDecisionRepository;
+import io.github.vfedoriv.graphrag.schemas.evaluation.ports.SchemaDraftEvaluationRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftConflictRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceResultRepository;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -112,8 +117,14 @@ class SchemaDraftLifecycleIntegrationTest {
     @Autowired private SchemaDraftDecisionRepository decisionRepository;
     @Autowired private SchemaDraftEvaluationRunRepository evaluationRunRepository;
     @Autowired private SchemaDraftConflictRepository conflictRepository;
+    @Autowired private io.github.vfedoriv.graphrag.schemas.publication.ports.SchemaDraftPublicationRepository publicationRepository;
     @Autowired private SchemaDraftJsonSupport jsonSupport;
     @Autowired private RuntimeSettingsService runtimeSettingsService;
+
+    @Autowired private io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService reprocessingPlans;
+    @Autowired private io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingRecoveryService reprocessingRecovery;
+    @Autowired @org.springframework.beans.factory.annotation.Qualifier("transactionManager")
+    private org.springframework.transaction.PlatformTransactionManager relationalTransactions;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -1140,6 +1151,180 @@ class SchemaDraftLifecycleIntegrationTest {
     }
 
     @Test
+    void resumesPersistedPublicationIntentAfterInactiveRegistration() throws Exception {
+        String draftId = createDraftWithText("resumed-publication");
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        assertThat(awaitTerminal(draftId, analysis.path("runId").asText()).path("status").asText()).isEqualTo("COMPLETED");
+        io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ProjectionResponse projection =
+            reviewService.projection(KNOWLEDGE_BASE_ID, draftId);
+        String schemaJson = jsonSupport.canonical(projection.schema());
+        String hash = jsonSupport.fingerprint(schemaJson);
+        io.github.vfedoriv.graphrag.schemas.publication.domain.SchemaDraftPublicationNode intent =
+            new io.github.vfedoriv.graphrag.schemas.publication.domain.SchemaDraftPublicationNode();
+        intent.setId("interrupted-publication");
+        intent.setDraftId(draftId);
+        intent.setKnowledgeBaseId(KNOWLEDGE_BASE_ID);
+        intent.setTargetIdentity("resumed-publication:1");
+        intent.setDraftRevision(1);
+        intent.setAggregateRevisionId(projection.aggregateRevisionId());
+        intent.setProjectionContentHash(hash);
+        intent.setStatus(io.github.vfedoriv.graphrag.schemas.publication.domain.SchemaDraftPublicationStatus.PENDING);
+        intent.setRetryable(true);
+        intent.setCreatedAt(Instant.now());
+        publicationRepository.save(intent);
+        SchemaDefinitionNode registered = schemaRegistryService.createGeneratedInactiveSchema(schemaJson, KNOWLEDGE_BASE_ID);
+        assertThat(draftRepository.findById(draftId).orElseThrow().getPublicationSchemaId()).isNull();
+
+        JsonNode resumed = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/publish",
+            "{\"revision\":1,\"projectionContentHash\":\"%s\"}".formatted(hash), KNOWLEDGE_BASE_ID, draftId));
+        assertThat(resumed.path("publicationId").asText()).isEqualTo(intent.getId());
+        assertThat(resumed.path("schemaId").asText()).isEqualTo(registered.getId());
+        assertThat(schemaRegistryService.listSchemasByKnowledgeBase(KNOWLEDGE_BASE_ID)).hasSize(1);
+        assertThat(schemaRegistryService.getSchema(registered.getId()).getStatus().name()).isEqualTo("INACTIVE");
+        assertThat(draftRepository.findById(draftId).orElseThrow().getPublicationSchemaId()).isEqualTo(registered.getId());
+        assertThat(publicationRepository.findById(intent.getId()).orElseThrow().getStatus().name()).isEqualTo("COMPLETED");
+        assertThat(jdbcTemplate.queryForObject("select count(*) from app.schema_reprocessing_plan", Integer.class)).isZero();
+        assertThat(countNodes("DocumentChunk") + countNodes("ExtractionRun")).isZero();
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void successfulAndFailedDryEvaluationPreserveDocumentGraphAndAuthoringState(CapturedOutput output) throws Exception {
+        String draftId = createDraftWithText("dry-effect-boundary");
+        JsonNode analysis = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/analysis-runs",
+            "{\"revision\":1}", KNOWLEDGE_BASE_ID, draftId));
+        assertThat(awaitTerminal(draftId, analysis.path("runId").asText()).path("status").asText()).isEqualTo("COMPLETED");
+        DocumentUploadNode successful = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "dry-success.txt", "text/plain", "PRIVATE_DRY_SUCCESS Person".getBytes()));
+        DocumentUploadNode modelFailure = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "dry-model-failure.txt", "text/plain", "FAIL_REPROCESSING PRIVATE_DRY_MODEL_SOURCE".getBytes()));
+        DocumentUploadNode preparationFailure = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "dry-prepare-failure.txt", "text/plain", "PRIVATE_DRY_PREPARATION_SOURCE".getBytes()));
+        jdbcTemplate.update("UPDATE app.document_upload SET content_uri = ? WHERE id = ?",
+            "file:///private-dry-missing-binary.txt", preparationFailure.getId());
+        neo4jClient.query("""
+            CREATE (chunk:DocumentChunk {id:'existing-dry-chunk', text:'existing chunk', embedding:[0.1,0.2,0.3]}),
+                (person:Person {personId:'existing-dry-person'}),
+                (chunk)-[:MENTIONS {confidence:0.75}]->(person)
+            """).run();
+        Map<String, Object> before = dryEvaluationEffectState(draftId);
+
+        JsonNode accepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+            "{\"revision\":1,\"documentIds\":[\"%s\"],\"advisoryEnabled\":true}".formatted(successful.getId()),
+            KNOWLEDGE_BASE_ID, draftId));
+        assertThat(awaitEvaluationTerminal(draftId, accepted.path("runId").asText()).path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(dryEvaluationEffectState(draftId)).isEqualTo(before);
+
+        FAIL_REPROCESSING.set(true);
+        JsonNode failedAccepted = json(postJson(
+            "/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts/{draftId}/evaluation-runs",
+            "{\"revision\":1,\"documentIds\":[\"%s\",\"%s\"],\"advisoryEnabled\":false}"
+                .formatted(modelFailure.getId(), preparationFailure.getId()), KNOWLEDGE_BASE_ID, draftId));
+        JsonNode failed = awaitEvaluationTerminal(draftId, failedAccepted.path("runId").asText());
+        assertThat(failed.path("status").asText()).isEqualTo("FAILED");
+        assertThat(failed.path("failedDocuments").asInt()).isEqualTo(2);
+        List<String> failures = java.util.stream.StreamSupport.stream(failed.path("outcomes").path("content").spliterator(), false)
+            .map(value -> value.path("failureCategory").asText()).toList();
+        assertThat(failures).containsExactlyInAnyOrder("ILLEGALSTATEEXCEPTION", "NOSUCHFILEEXCEPTION");
+        assertThat(dryEvaluationEffectState(draftId)).isEqualTo(before);
+        assertThat(draftRepository.findById(draftId).orElseThrow().getStatus().name()).isEqualTo("OPEN");
+        assertThat(output.getAll()).doesNotContain("PRIVATE_DRY_SUCCESS", "PRIVATE_DRY_MODEL_SOURCE",
+            "PRIVATE_DRY_PREPARATION_SOURCE", "Deterministic extraction failure");
+    }
+
+    private Map<String, Object> dryEvaluationEffectState(String draftId) {
+        return Map.of(
+            "documents", jdbcTemplate.queryForList("SELECT * FROM app.document_upload ORDER BY id"),
+            "processingRuns", jdbcTemplate.queryForList("SELECT * FROM app.document_processing_run ORDER BY id"),
+            "extractionRuns", jdbcTemplate.queryForList("SELECT * FROM app.extraction_run ORDER BY id"),
+            "draft", jdbcTemplate.queryForMap("SELECT * FROM app.schema_draft WHERE id = ?", draftId),
+            "aggregates", jdbcTemplate.queryForList("SELECT * FROM app.schema_draft_aggregate_revision WHERE draft_id = ? ORDER BY id", draftId),
+            "graphNodes", List.copyOf(neo4jClient.query(
+                "MATCH (node) RETURN elementId(node) AS id, labels(node) AS labels, properties(node) AS properties ORDER BY id")
+                .fetch().all()),
+            "graphRelationships", List.copyOf(neo4jClient.query(
+                "MATCH (source)-[relationship]->(target) RETURN elementId(relationship) AS id, elementId(source) AS source, "
+                    + "elementId(target) AS target, type(relationship) AS type, properties(relationship) AS properties ORDER BY id")
+                .fetch().all()));
+    }
+
+    @Test
+    void chunkPreparationParticipatesInCallerTransactionAndRecoveryUsesSavedTargets() throws Exception {
+        SchemaDefinitionNode schema = schemaRegistryService.createSchema("""
+            {"name":"migration","version":1,"nodes":[{"label":"Person","key":["personId"],
+            "properties":[{"name":"personId","type":"STRING","required":true}]}],"relationships":[]}
+            """, SchemaSourceType.PREDEFINED, KNOWLEDGE_BASE_ID);
+        schemaRegistryService.activateSchema(KNOWLEDGE_BASE_ID, schema.getId());
+        DocumentUploadNode document = documentUploadService.upload(KNOWLEDGE_BASE_ID,
+            new MockMultipartFile("file", "migration.txt", "text/plain", "Person P-100".getBytes()));
+        String revision = runtimeSettingsService.effectiveChunkerRevision();
+        io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest request =
+            new io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, List.of(document.getId()), Map.of(),
+                io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason.CHUNK_STRATEGY_MIGRATION,
+                io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection.DOCUMENT_IDS, revision);
+        assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID,
+            new io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, List.of(document.getId(), "foreign"), Map.of(),
+                request.reason(), request.selection(), revision)))
+            .isInstanceOf(io.github.vfedoriv.graphrag.http.contracts.NotFoundException.class);
+        assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID,
+            new io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest(
+                null, null, false, request.documentIds(), Map.of(), request.reason(), request.selection(), "stale")))
+            .isInstanceOf(ConflictException.class);
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_plan", Long.class)).isZero();
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_item", Long.class)).isZero();
+
+        org.springframework.transaction.support.TransactionTemplate transaction =
+            new org.springframework.transaction.support.TransactionTemplate(relationalTransactions);
+        transaction.executeWithoutResult(status -> {
+            jdbcTemplate.update("UPDATE app.document_upload SET processing_defaults_json = ? WHERE id = ?",
+                "{\"preserveLineBreaks\":false}", document.getId());
+            io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.StartPlanResponse queued =
+                reprocessingPlans.create(KNOWLEDGE_BASE_ID, request);
+            String snapshotJson = jdbcTemplate.queryForObject(
+                "SELECT target_snapshot_json FROM app.schema_reprocessing_plan WHERE id = ?", String.class, queued.planId());
+            io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot snapshot = jsonSupport.read(
+                snapshotJson, io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot.class);
+            assertThat(snapshot.documents().get(document.getId()).effectiveProcessingOptions())
+                .containsEntry("preserveLineBreaks", false);
+            assertThat(jdbcTemplate.queryForObject(
+                "SELECT status FROM app.schema_reprocessing_plan WHERE id = ?", String.class, queued.planId())).isEqualTo("QUEUED");
+            assertThat(countNodes("DocumentChunk")).isZero();
+            assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID, request))
+                .isInstanceOf(ConflictException.class).hasMessageContaining("Another destructive");
+            status.setRollbackOnly();
+        });
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_plan", Long.class)).isZero();
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM app.schema_reprocessing_item", Long.class)).isZero();
+        assertThat(countNodes("DocumentChunk")).isZero();
+
+        String planId = reprocessingPlans.create(KNOWLEDGE_BASE_ID, request).planId();
+        assertThat(awaitPlanTerminal(planId).path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(countNodes("DocumentChunk")).isGreaterThan(0);
+        jdbcTemplate.update("""
+            UPDATE app.schema_reprocessing_plan SET status = 'RUNNING', completed_at = NULL,
+                claimed_by = 'expired', claimed_at = now() - interval '2 hours', claim_until = now() - interval '1 hour',
+                succeeded_documents = 0, running_documents = 1 WHERE id = ?
+            """, planId);
+        jdbcTemplate.update("""
+            UPDATE app.schema_reprocessing_item SET status = 'RUNNING', completed_at = NULL,
+                started_at = now() - interval '2 hours', claimed_by = 'expired',
+                claimed_at = now() - interval '2 hours', claim_until = now() - interval '1 hour' WHERE plan_id = ?
+            """, planId);
+        reprocessingRecovery.recover();
+        JsonNode recovered = awaitPlanTerminal(planId);
+        assertThat(recovered.path("status").asText()).isEqualTo("COMPLETED");
+        assertThat(recovered.path("succeededDocuments").asInt()).isEqualTo(1);
+        assertThat(recovered.path("items").path("content").get(0).path("status").asText()).isEqualTo("SUCCEEDED");
+    }
+
+    @Test
     void discoversAuthoritativeEligibilityAndStaleEvaluationHistory() throws Exception {
         JsonNode draft = json(postJson("/api/v1/knowledge-bases/{knowledgeBaseId}/schema-drafts",
             "{\"targetName\":\"navigation\",\"targetVersion\":1,\"guidance\":{}}", KNOWLEDGE_BASE_ID));
@@ -1586,7 +1771,7 @@ class SchemaDraftLifecycleIntegrationTest {
     private void saveAggregate(String draftId, String aggregateId, long revision) {
         SchemaDraftNode draft = draftRepository.findById(draftId).orElseThrow();
         SchemaDraftAnalysisRunNode run = claimableRun(draft, "run-" + aggregateId);
-        run.setStatus(io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus.COMPLETED);
+        run.setStatus(io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus.COMPLETED);
         run.setCompletedAt(Instant.parse("2026-07-01T00:00:00Z").plusSeconds(revision));
         runRepository.save(run);
         SchemaDraftAggregateRevisionNode aggregate = new SchemaDraftAggregateRevisionNode();
@@ -1609,7 +1794,7 @@ class SchemaDraftLifecycleIntegrationTest {
         run.setId(runId);
         run.setDraftId(draft.getId());
         run.setKnowledgeBaseId(draft.getKnowledgeBaseId());
-        run.setStatus(io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus.RUNNING);
+        run.setStatus(io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus.RUNNING);
         run.setDraftRevision(draft.getRevision());
         run.setGuidanceRevision(draft.getGuidanceRevision());
         run.setGuidanceFingerprint(draft.getGuidanceFingerprint());
@@ -1766,7 +1951,7 @@ class SchemaDraftLifecycleIntegrationTest {
                 @Override
                 public <T> T extractValidated(
                     String portablePrompt,
-                    io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext context,
+                    io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext context,
                     java.util.function.Function<CandidateExtractionResult, T> validator
                 ) {
                     return validator.apply(extract(portablePrompt));
@@ -1779,8 +1964,8 @@ class SchemaDraftLifecycleIntegrationTest {
                     MAX_ACTIVE_MODEL_CALLS.accumulateAndGet(active, Math::max);
                     try {
                         if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
-                            throw new io.github.vfedoriv.graphrag.discovery.MalformedModelResponseException(
-                                io.github.vfedoriv.graphrag.discovery.ModelResponseDiagnostics.none());
+                            throw new io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException(
+                                io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics.none());
                         }
                         if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
                             throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");

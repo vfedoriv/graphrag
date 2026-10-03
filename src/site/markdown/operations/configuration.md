@@ -25,7 +25,16 @@ Effective `app.model.*` properties seed a persisted default AI profile only when
 
 `mutable=true` means the settings API accepts an update or clear; it does not mean the value is already active. Read `liveApplied`, `updateMode`, `activeValue`, and `lifecycleState` together.
 
-Update one key with `PUT /runtime-settings/{key}`, update a validated set atomically with `PUT /runtime-settings`, and clear an override with `DELETE /runtime-settings/{key}`. Feature services consume typed accessors from `RuntimeSettingsService`; ad hoc string reads are not part of the contract.
+Update one key with `PUT /runtime-settings/{key}`, update a validated set atomically with `PUT /runtime-settings`, and clear an override with `DELETE /runtime-settings/{key}`. Feature services consume immutable typed snapshots from `settings.contracts.RuntimeSettingsAccess`;
+settings management, validation, lifecycle, and persistence remain settings-owned.
+Search composes query policy from its captured snapshot. Chunk revision inspection
+uses a settings-owned port mapped to the documents-owned supplied-snapshot
+calculator; it does not re-read live settings or schedule reprocessing.
+
+Owned startup records bind AI model, Neo4j/index, storage, settings, observability,
+search, and schema-draft properties. `bootstrap` assembles them while consumers
+use owned records and non-secret facts. Existing property names, profile defaults,
+and alias precedence are unchanged.
 
 ## Current processing defaults
 

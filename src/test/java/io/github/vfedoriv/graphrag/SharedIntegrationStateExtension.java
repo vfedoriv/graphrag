@@ -10,7 +10,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
 
 final class SharedIntegrationStateExtension implements BeforeEachCallback, AfterEachCallback {
 

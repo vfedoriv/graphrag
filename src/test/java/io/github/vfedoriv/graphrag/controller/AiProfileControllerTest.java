@@ -1,14 +1,16 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.ai.profiles.api.AiProfileController;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
-import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
-import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.AiProfileResponse;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.UpdateAiProfileRequest;
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

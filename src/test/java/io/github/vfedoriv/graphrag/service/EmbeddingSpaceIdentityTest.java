@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;

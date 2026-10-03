@@ -1,8 +1,10 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchAdmission;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.vfedoriv.graphrag.config.AdvancedSearchProperties;
+import io.github.vfedoriv.graphrag.search.runs.configuration.AdvancedSearchProperties;
 import org.junit.jupiter.api.Test;
 
 class AdvancedSearchAdmissionTest {

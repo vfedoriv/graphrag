@@ -3,35 +3,35 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAggregateRevisionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftAnalysisStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftDecisionType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftReviewState;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceResultNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceResultStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceRevisionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftStorageMutationNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftStorageMutationState;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftStorageMutationType;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAggregateRevisionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftAnalysisRunRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftDecisionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceResultRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftSourceRevisionRepository;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftStorageMutationRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftDecisionNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftDecisionType;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftReviewState;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceResultNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceResultStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceRevisionNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceType;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStatus;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStorageMutationNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStorageMutationState;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStorageMutationType;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftDecisionRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceResultRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRevisionRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftStorageMutationRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +42,34 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @RelationalIntegrationTest
 class SchemaDraftRelationalRepositoryIntegrationTest {
+    @Autowired private io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink publicationLink;
+    @Autowired private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
+    @Test
+    void publicationLinkJoinsCallerRollbackAndRejectsStaleVersions() {
+        SchemaDraftNode draft = draftRepository.save(draft("draft-link", firstKnowledgeBaseId, "{}"));
+        String originalAggregate = draft.getCurrentAggregateId();
+        org.springframework.transaction.support.TransactionTemplate transaction =
+            new org.springframework.transaction.support.TransactionTemplate(transactionManager);
+        transaction.executeWithoutResult(status -> {
+            publicationLink.complete(new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                firstKnowledgeBaseId, draft.getId(), draft.getRevision(), originalAggregate,
+                draft.getPersistenceVersion(), null, "published-hash", Instant.now()));
+            assertThat(draftRepository.findById(draft.getId()).orElseThrow().getStatus()).isEqualTo(SchemaDraftStatus.PUBLISHED);
+            status.setRollbackOnly();
+        });
+        SchemaDraftNode restored = draftRepository.findById(draft.getId()).orElseThrow();
+        assertThat(restored.getStatus()).isEqualTo(SchemaDraftStatus.OPEN);
+        assertThat(restored.getPublicationContentHash()).isNull();
+        restored.setTargetName("changed");
+        draftRepository.save(restored);
+        assertThatThrownBy(() -> publicationLink.complete(
+            new io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftPublicationLink.Completion(
+                firstKnowledgeBaseId, draft.getId(), draft.getRevision(), originalAggregate,
+                draft.getPersistenceVersion(), null, "published-hash", Instant.now())))
+            .isInstanceOf(org.springframework.dao.OptimisticLockingFailureException.class);
+    }
+
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     @Autowired private KnowledgeBaseService knowledgeBaseService;
@@ -156,7 +184,7 @@ class SchemaDraftRelationalRepositoryIntegrationTest {
     }
 
     private SchemaDraftNode draft(String id, String knowledgeBaseId, String guidanceJson) {
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
         SchemaDraftNode draft = new SchemaDraftNode();
         draft.setId(id);
         draft.setKnowledgeBaseId(knowledgeBaseId);
@@ -202,7 +230,7 @@ class SchemaDraftRelationalRepositoryIntegrationTest {
     }
 
     private SchemaDraftAnalysisRunNode runningRun(SchemaDraftNode draft, String id) {
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(draft.getKnowledgeBaseId());
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = knowledgeBaseService.activeAiProfile(draft.getKnowledgeBaseId());
         SchemaDraftAnalysisRunNode run = new SchemaDraftAnalysisRunNode();
         run.setId(id);
         run.setDraftId(draft.getId());

@@ -1,0 +1,358 @@
+[
+  {
+    "className": "io.github.vfedoriv.graphrag.ai.profiles.api.model.AiProfileResponse",
+    "components": [
+      "id",
+      "name",
+      "baseUrl",
+      "chatModel",
+      "embeddingModel",
+      "tokenizerId",
+      "resolvedTokenizerId",
+      "embeddingDimensions",
+      "timeoutSeconds",
+      "maxRetries",
+      "defaultProfile",
+      "revision",
+      "apiKeyConfigured",
+      "apiKeyMask",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.http.contracts.BaseRequest",
+    "components": [
+      "page",
+      "size"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.settings.api.model.BulkUpdateRuntimeSettingsRequest",
+    "components": [
+      "updates"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest",
+    "components": [
+      "id",
+      "name",
+      "baseUrl",
+      "apiKey",
+      "chatModel",
+      "embeddingModel",
+      "tokenizerId",
+      "embeddingDimensions",
+      "timeoutSeconds",
+      "maxRetries",
+      "defaultProfile"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.knowledgebase.api.model.CreateKnowledgeBaseRequest",
+    "components": [
+      "id",
+      "name"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.CreateSchemaRequest",
+    "components": [
+      "content",
+      "sourceType",
+      "knowledgeBaseId"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaExampleRequest",
+    "components": [
+      "text",
+      "userPrompt"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaExampleResponse",
+    "components": [
+      "value"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaFromFileRequest",
+    "components": [
+      "name",
+      "version",
+      "description",
+      "example"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaRequest",
+    "components": [
+      "name",
+      "version",
+      "description",
+      "text",
+      "example"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaResponse",
+    "components": [
+      "content",
+      "warnings"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.http.contracts.IdResponse",
+    "components": [
+      "id"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.knowledgebase.api.model.KnowledgeBaseResponse",
+    "components": [
+      "id",
+      "name",
+      "activeSchemaId",
+      "activeAiProfileId",
+      "createdAt"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingResponse",
+    "components": [
+      "key",
+      "category",
+      "valueType",
+      "currentValue",
+      "defaultValue",
+      "activeValue",
+      "source",
+      "lifecycleState",
+      "mutable",
+      "liveApplied",
+      "sensitive",
+      "constraints",
+      "updateMode",
+      "reason",
+      "label",
+      "description",
+      "effectiveChunkerRevision",
+      "chunkMigrationLifecycle"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingUpdateRequest",
+    "components": [
+      "key",
+      "value"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.SchemaDetailsResponse",
+    "components": [
+      "id",
+      "name",
+      "version",
+      "sourceType",
+      "format",
+      "content",
+      "contentHash",
+      "status",
+      "createdAt"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest",
+    "components": [
+      "documentIds",
+      "textSources",
+      "additionalInstructions",
+      "guidance"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$TextSource",
+    "components": [
+      "name",
+      "text"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$DiscoveryGuidance",
+    "components": [
+      "domainDescription",
+      "intendedQuestions",
+      "requiredConcepts",
+      "preferredConcepts",
+      "excludedConcepts",
+      "namingRules",
+      "propertyRules",
+      "relationshipRules"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$ConceptRule",
+    "components": [
+      "name",
+      "description",
+      "identityKeys"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$NamingRules",
+    "components": [
+      "nodeLabels",
+      "relationshipTypes",
+      "properties"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$PropertyRule",
+    "components": [
+      "owner",
+      "name",
+      "type",
+      "identity",
+      "required"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest$RelationshipRule",
+    "components": [
+      "type",
+      "from",
+      "to",
+      "cardinality"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse",
+    "components": [
+      "status",
+      "candidates",
+      "conflicts",
+      "warnings",
+      "sourceOutcomes",
+      "schema",
+      "reproducibility"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse$Warning",
+    "components": [
+      "code",
+      "coordinate",
+      "message",
+      "supportCount"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse$SourceOutcome",
+    "components": [
+      "sourceId",
+      "sourceType",
+      "fingerprint",
+      "status",
+      "failureCategory",
+      "failureCode",
+      "retryable",
+      "chunkCount"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse$Reproducibility",
+    "components": [
+      "aiProfileId",
+      "aiProfileRevision",
+      "promptContractRevision",
+      "candidateContractRevision",
+      "limitsRevision"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.domain.SchemaGenerationResult",
+    "components": [
+      "content",
+      "warnings"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.generation.domain.SchemaGenerationWarning",
+    "components": [
+      "nodeIndex",
+      "nodeLabel",
+      "code",
+      "message",
+      "suggestions"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.SchemaResponse",
+    "components": [
+      "id",
+      "name",
+      "version",
+      "sourceType",
+      "format",
+      "contentHash",
+      "status",
+      "createdAt"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.SchemaValidationResponse",
+    "components": [
+      "valid",
+      "errors"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.ai.profiles.api.model.UpdateAiProfileRequest",
+    "components": [
+      "name",
+      "baseUrl",
+      "apiKey",
+      "clearApiKey",
+      "chatModel",
+      "embeddingModel",
+      "tokenizerId",
+      "embeddingDimensions",
+      "timeoutSeconds",
+      "maxRetries",
+      "defaultProfile"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.knowledgebase.api.model.UpdateKnowledgeBaseAiProfileRequest",
+    "components": [
+      "profileId"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.knowledgebase.api.model.UpdateKnowledgeBaseRequest",
+    "components": [
+      "name"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.settings.api.model.UpdateRuntimeSettingRequest",
+    "components": [
+      "value"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.UpdateSchemaRequest",
+    "components": [
+      "content",
+      "sourceType"
+    ]
+  },
+  {
+    "className": "io.github.vfedoriv.graphrag.schemas.registry.api.model.ValidateSchemaRequest",
+    "components": [
+      "content"
+    ]
+  }
+]

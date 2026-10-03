@@ -1,5 +1,11 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
+import io.github.vfedoriv.graphrag.schemas.discovery.application.DiscoveryExecutionPolicy;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -10,7 +16,7 @@ class DiscoveryExecutionPolicyTest {
 
     @Test
     void capturesOnlyExecutionBudgetsAndCanonicalFingerprint() {
-        RuntimeSettingsService.DiscoverySettings settings = new RuntimeSettingsService.DiscoverySettings(
+        RuntimeSettingsAccess.DiscoverySettings settings = new RuntimeSettingsAccess.DiscoverySettings(
             12, 1024, 2048, 1000, 2000, 500, 10, 3, Duration.ofSeconds(7), Duration.ofSeconds(19));
 
         DiscoveryExecutionPolicy policy = DiscoveryExecutionPolicy.from(settings, "fingerprint");

@@ -1,7 +1,5 @@
 package io.github.vfedoriv.graphrag;
 
-import io.github.vfedoriv.graphrag.IntegrationTest;
-
 import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -18,16 +16,15 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.test.context.TestPropertySource;
 
-import io.github.vfedoriv.graphrag.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.DocumentChunkNode;
+import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.documents.adapters.graph.entity.DocumentChunkEntity;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
-import io.github.vfedoriv.graphrag.repository.SchemaDefinitionRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
-import io.github.vfedoriv.graphrag.service.SchemaRegistryService;
+import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -102,7 +99,7 @@ class PersistenceRoutingIntegrationTest {
                 (:SchemaDefinition:PersistenceRoutingProbe {id: 'routing-schema', name: 'routing', version: 1})
             """).run();
 
-        assertThat(schemaDefinitionRepository.findAllByKnowledgeBaseId("routing-kb")).isEmpty();
+        assertThat(schemaDefinitionRepository.findAll()).isEmpty();
 
         knowledgeBaseService.create("routing-kb", "Routing KB");
         SchemaDefinitionNode schema = schemaRegistryService.createSchema(
@@ -120,13 +117,13 @@ class PersistenceRoutingIntegrationTest {
             SchemaSourceType.GENERATED,
             "routing-kb"
         );
-        List<SchemaDefinitionNode> schemas = schemaDefinitionRepository.findAllByKnowledgeBaseId("routing-kb");
+        List<SchemaDefinitionNode> schemas = schemaRegistryService.listSchemasByKnowledgeBase("routing-kb");
         assertThat(schemas).extracting(SchemaDefinitionNode::getId).containsExactly(schema.getId());
     }
 
     @Test
     void explicitNeo4jTemplateSupportsGraphEntityQueries() {
-        DocumentChunkNode chunk = new DocumentChunkNode();
+        DocumentChunkEntity chunk = new DocumentChunkEntity();
         chunk.setId("template-chunk");
         chunk.setKnowledgeBaseId("template-kb");
         chunk.setDocumentId("template-document");
@@ -136,9 +133,9 @@ class PersistenceRoutingIntegrationTest {
 
         neo4jTemplate.save(chunk);
 
-        assertThat(neo4jTemplate.findById("template-chunk", DocumentChunkNode.class))
+        assertThat(neo4jTemplate.findById("template-chunk", DocumentChunkEntity.class))
             .get()
-            .extracting(DocumentChunkNode::getKnowledgeBaseId)
+            .extracting(DocumentChunkEntity::getKnowledgeBaseId)
             .isEqualTo("template-kb");
     }
 

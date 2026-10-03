@@ -1,9 +1,15 @@
 package io.github.vfedoriv.graphrag.document.chunking;
 
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSlice;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenEstimator;
+import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.document.ParsedSection;
+import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedSection;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

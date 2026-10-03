@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Language:** Java 25, **Framework:** Spring Boot 4.1.0
+- **Language:** Java 25, **Framework:** Spring Boot 4.1.1
 - **Operational database:** PostgreSQL 17 (Spring Data JPA + Flyway `app` schema)
 - **Graph database:** Neo4j 5 (facts, provenance, chunks, and vector indexes only)
-- **LLM Integration:** Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
+- **LLM Integration:** Spring AI 2.1.0-M1 (OpenAI-compatible) + LangChain4j 1.21.0
 - **AI Observability:** OpenTelemetry + Micrometer, optional local Langfuse
 - **Document Parsing:** LangChain4j Apache Tika
 - **Build:** Maven (use `./mvnw`, never bare `mvn`)
@@ -70,6 +70,104 @@ REST Controllers → Services → repository ports → PostgreSQL adapters / gra
 
 All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `ProblemDetail`.
 
+Reprocessing preparation, execution, and recovery use schemas-owned ports under
+`schemas.reprocessing.ports`, mapped by `bootstrap.integration.reprocessing` to
+public document capabilities. `DocumentMigrationPreparationFacade` owns source
+selection summaries, option/parser resolution, chunk/run classification, and
+chunker/embedding target inspection. Schemas retains selection policy, schema
+checks, durable snapshot assembly, plan claims, completion, and retry policy.
+Preview and creation share read-only preparation; creation recomputes facts.
+`ArchitectureBoundaryTest` rejects document implementation dependencies across
+all reprocessing paths, with no preparation exceptions. Preserve the existing
+recovery predicate, all-owned classification scope, snapshot formats, and
+separation of relational checkpoints from external processing. Synchronous
+preparation reads participate in the caller's transactions; integration adapters
+only map immutable values and add no transactions. AI compatibility uses AI-owned
+rules and stored-observation ports; document ownership is consolidated.
+See [architecture](src/site/markdown/concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
+Knowledge-base deletion reads document counts and requests scoped cleanup through
+`knowledgebase.ports`, mapped under `bootstrap.integration.knowledgebase` to
+`KnowledgeBaseDocumentsFacade`. AI owns deterministic embedding identity/tokenizer
+compatibility under `ai.domain` and admission through `EmbeddingCompatibility`;
+`StoredEmbeddingsFacade` supplies raw observations through `ai.ports` and
+`bootstrap.integration.ai`. Profile assignment presence/IDs come from
+`AiProfileAssignmentsFacade`; AI profile persistence reads only profiles.
+Synchronous count/assignment reads join caller transactions. Cleanup failure
+prevents relational deletion but may leave earlier external effects.
+Search consolidation (roadmap step 8) is implemented under `search.query`,
+`search.retrieval`, `search.ranking`, `search.answering`, and `search.runs`. Search
+owns query and advanced-search APIs, workflows, deterministic policy, query and
+retrieval effects, model adapters, and durable run persistence. Document metadata
+is supplied through `DocumentMetadataAccess`: citation lookup is capped at 128
+IDs and metadata selection at 200 results; `SearchDocumentMetadataAdapter` maps
+it to search-owned ports. `SearchKnowledgeBaseAccess` supplies knowledge-base existence and active
+schema/profile facts, while `StoredSchemaSnapshots`, `SchemaSnapshots`, and
+`CapturedSchemaParsing` supply stored, active, and captured schema facts through
+`SearchSchemaAdapter` in `bootstrap.integration.search`. AI owns compatibility
+through `EmbeddingCompatibility` and immutable `EmbeddingTarget`; the
+`EmbeddingSpacePolicy` bridge has been removed. `ArchitectureBoundaryTest` retires
+the step-8 schema, document-metadata, and compatibility exceptions.
+
+Support consolidation (roadmap step 9) is implemented. `settings.contracts`
+provides immutable typed runtime snapshots; query policy belongs to search and
+supplied-snapshot chunk revision calculation belongs to documents. `ai.contracts`,
+`ai.models`, and `ai.execution` expose non-secret profile facts, model capabilities,
+and captured execution; AI owns tokenizer identity and provider construction.
+Knowledge-base management is under `knowledgebase`, schema generation under
+`schemas.generation`, and vector/lexical contracts and graph adapters under
+`indexes`. Search metrics are search-owned; generic observations, metadata logging,
+binary storage, HTTP bases, and store-qualified transaction annotations remain
+governed support. `bootstrap` owns assembly and persistence scans; its integration
+adapters only map public values and add no transactions. Permanent architecture
+rules enforce the feature graph and retire every step-nine frozen pair. Existing
+transaction self-call constraints are assessed by exact signatures independently
+of ownership. Document processing and migration preparation use AI-owned
+`EmbeddingCompatibility` and immutable `EmbeddingTarget` directly.
+
+Document ownership is consolidated under `documents`: API entry points and models
+in `api`, management and processing workflows in `application`, deterministic
+values/rules in `domain`, effect and persistence contracts in `ports`, and owned
+relational, graph, parsing, model, chunking, and binary integrations in `adapters`.
+`bootstrap.DocumentsProcessingConfiguration` assembles processing stages.
+Shared draft binary storage remains in `storage`. Relational checkpoints remain
+separate from external processing; there is no enclosing cross-store transaction.
+Schema registry and discovery ownership (step 5) is implemented under
+`schemas.registry` and `schemas.discovery`. Immutable `schemas.contracts` snapshots
+feed document extraction; knowledge-base associations and document source inputs
+are accessed through public capabilities and mapping-only bootstrap adapters.
+Schema draft authoring (step 6) is owned by `schemas.drafts` across API,
+application, domain, ports, and relational/binary adapters. Lifecycle, source
+revision and storage recovery, durable analysis, review, conflicts, and draft
+history use schema-owned persistence. `DraftDocumentInputs` obtains scoped
+metadata/fingerprints and content/parsing through the documents-owned
+`DocumentSourceInputs` capability. Loaded document bytes are checked against the
+captured source hash before parsing. `DraftSchemaLookup` reads immutable stored
+schema facts without parsing; review requests a parsed definition separately; `DraftKnowledgeBases` supplies managed-knowledge-base
+admission, active schema ID, and non-secret active profile ID/revision facts.
+Mapping adapters under
+`bootstrap.integration.schemas` expose no persistence records, paths, clients, or
+secrets and add no transactions; synchronous reads join the caller's transaction.
+Draft-owned bytes still use shared storage, while relational checkpoints remain
+separate from external work.
+
+Schema evaluation, publication, and reprocessing ownership (step 7) is implemented
+under `schemas.evaluation`, `schemas.publication`, and `schemas.reprocessing`.
+Each area owns its API/domain values, workflows, checkpoints, and relational
+adapters; evaluation and reprocessing also own their history/currentness summaries.
+Draft authoring exposes immutable admission, review, contributor, and publication-link
+contracts. Document-owned preparation and per-chunk dry extraction are mapped to
+evaluation ports by transaction-free bootstrap adapters; dry evaluation writes no
+document processing state or graph artifacts. Registry operations and non-secret
+knowledge-base/profile facts flow through public immutable contracts. Publication
+retains durable intent, inactive registration, and transactional draft linkage.
+Draft navigation consumes bounded batch summary ports through mapping-only bridges.
+Existing HTTP/SQL/snapshot contracts, fingerprints, race semantics, and recovery
+predicates remain unchanged. The exact step-6 and step-7 exceptions are retired;
+`ArchitectureBoundaryTest` and `FinalSupportBoundaryTest` enforce the completed
+feature/support boundaries with no roadmap exceptions.
+
+
 ### Main Controllers
 
 | Controller | Responsibility |
@@ -86,7 +184,7 @@ All REST routes are prefixed `/api/v1`. Error responses follow RFC 7807 `Problem
 
 - **`SchemaRegistryService`** — parse/validate/store schema versions; `name + version` identity is immutable; inactive schemas can be replaced or deleted under guard.
 - **`SchemaDraftEvaluationService`** — durable held-out dry extraction and deterministic draft metrics without graph writes.
-- **`SchemaDraftPublicationService`** — revision-specific readiness and atomic inactive-schema publication.
+- **`SchemaDraftPublicationService`** — revision-specific readiness and resumable inactive-schema publication.
 - **`SchemaReprocessingPlanService`** — durable bounded post-activation orchestration over overwrite processing.
 - **`DocumentUploadService`** — multipart upload with SHA-256 dedup; stores binary to filesystem via `BinaryStorageService` interface; replace/delete paths clean document-scoped artifacts.
 - **`DocumentProcessingService`** — orchestrates: parse → chunk → embed → graph-extract → persist.
@@ -153,7 +251,10 @@ Key config files:
 - `src/main/resources/schemas/*.json` — predefined bootstrap schemas (`legal-contracts-v1`, `cmms-v1`)
 - `compose.yaml` — Neo4j and optional local Langfuse stack via Docker Compose profiles
 
-All application config is bound to `AppProperties` (validated `@ConfigurationProperties` record).
+Startup properties bind through owned configuration records for AI, indexes,
+storage, settings, observability, search, and schema drafts. `bootstrap.AppProperties`
+is an assembly aggregate; feature consumers use owned records or typed runtime
+contracts. Property names and profile-resolved defaults are unchanged.
 
 ## Testing Approach
 

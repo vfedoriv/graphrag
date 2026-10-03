@@ -5,9 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictNode;
-import io.github.vfedoriv.graphrag.domain.SchemaDraftConflictType;
-import io.github.vfedoriv.graphrag.repository.SchemaDraftConflictRepository;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftConflictService;
+import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictNode;
+import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictType;
+import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftConflictRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

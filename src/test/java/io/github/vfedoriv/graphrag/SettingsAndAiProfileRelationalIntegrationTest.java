@@ -3,19 +3,19 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.RuntimeSettingOverrideNode;
-import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
-import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
-import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
-import io.github.vfedoriv.graphrag.document.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaRuntimeSettingOverrideRepository;
-import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
-import io.github.vfedoriv.graphrag.repository.RuntimeSettingOverrideRepository;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.settings.domain.RuntimeSettingOverrideNode;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.AiProfileResponse;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest;
+import io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.repository.JpaAiProfileRepository;
+import io.github.vfedoriv.graphrag.settings.adapters.relational.repository.JpaRuntimeSettingOverrideRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.ports.AiProfileRepository;
+import io.github.vfedoriv.graphrag.settings.ports.RuntimeSettingOverrideRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +64,7 @@ class SettingsAndAiProfileRelationalIntegrationTest {
 
     @BeforeEach
     void clearRelationalOperationalState() {
+        RelationalMetadataTestCleaner.clean(jdbcTemplate);
         jdbcTemplate.update("DELETE FROM app.runtime_setting_override");
         jdbcTemplate.update("DELETE FROM app.ai_profile");
     }
@@ -176,6 +177,24 @@ class SettingsAndAiProfileRelationalIntegrationTest {
     }
 
     @Test
+    void historicalProfileRowsRoundTripWithoutChangingStoredIdentityOrTokenizerStrings() {
+        new org.springframework.jdbc.datasource.init.ResourceDatabasePopulator(
+            new org.springframework.core.io.ClassPathResource("fixtures/support/historical-profile-rows.sql"))
+            .execute(jdbcTemplate.getDataSource());
+        for (String id : List.of("historical-implicit", "historical-explicit", "historical-conservative")) {
+            Map<String, Object> before = jdbcTemplate.queryForMap("SELECT * FROM app.ai_profile WHERE id = ?", id);
+            AiProfileNode restored = aiProfileRepository.findById(id).orElseThrow();
+            assertThat(restored.getTokenizerId() == null ? null : restored.getTokenizerId().value())
+                .isEqualTo(before.get("tokenizer_id"));
+            aiProfileRepository.save(restored);
+            Map<String, Object> after = jdbcTemplate.queryForMap("SELECT * FROM app.ai_profile WHERE id = ?", id);
+            before.remove("version");
+            after.remove("version");
+            assertThat(after).containsExactlyInAnyOrderEntriesOf(before);
+        }
+    }
+
+    @Test
     void concurrentDefaultSelectionCommitsOnlyOneProfile() throws Exception {
         executor = Executors.newFixedThreadPool(2);
         CountDownLatch ready = new CountDownLatch(2);
@@ -222,6 +241,36 @@ class SettingsAndAiProfileRelationalIntegrationTest {
         assertThat(second.get().getId()).isEqualTo(AiProfileService.DEFAULT_PROFILE_ID);
         assertThat(jpaAiProfileRepository.count()).isEqualTo(1);
         assertThat(jpaAiProfileRepository.findFirstByDefaultProfileTrue()).isPresent();
+    }
+
+    @Autowired
+    private io.github.vfedoriv.graphrag.knowledgebase.ports.OwnedDocumentState ownedDocuments;
+    @Autowired
+    private io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments assignments;
+
+    @Test
+    void documentCountAndProfileAssignmentsParticipateInCallerTransaction() {
+        aiProfileService.create(request("assigned", false, "secret"));
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        transaction.executeWithoutResult(status -> {
+            jdbcTemplate.update("""
+                INSERT INTO app.knowledge_base (id, name, active_ai_profile_id, created_at, updated_at)
+                VALUES ('transaction-kb', 'Transaction', 'assigned', now(), now())
+                """);
+            jdbcTemplate.update("""
+                INSERT INTO app.document_upload (id, knowledge_base_id, size_bytes, sha256, status, uploaded_at)
+                VALUES ('transaction-doc', 'transaction-kb', 3, ?, 'UPLOADED', now())
+                """, "a".repeat(64));
+            assertThat(ownedDocuments.countByKnowledgeBaseId("transaction-kb")).isEqualTo(1);
+            assertThat(assignments.exists("assigned")).isTrue();
+            assertThat(assignments.knowledgeBaseIds("assigned")).containsExactly("transaction-kb");
+            assertThatThrownBy(() -> aiProfileService.delete("assigned")).isInstanceOf(ConflictException.class);
+            status.setRollbackOnly();
+        });
+        assertThat(ownedDocuments.countByKnowledgeBaseId("transaction-kb")).isZero();
+        assertThat(assignments.exists("assigned")).isFalse();
+        assertThat(assignments.knowledgeBaseIds("assigned")).isEmpty();
+        assertThat(aiProfileRepository.findById("assigned")).isPresent();
     }
 
     private AiProfileResponse createDefaultAfterBarrier(

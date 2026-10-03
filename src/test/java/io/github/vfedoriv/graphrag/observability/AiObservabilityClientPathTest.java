@@ -1,26 +1,33 @@
 package io.github.vfedoriv.graphrag.observability;
 
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
-import io.github.vfedoriv.graphrag.config.AiObservabilityProperties;
-import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionAttemptContext;
-import io.github.vfedoriv.graphrag.discovery.CandidateExtractionModelAdapter;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
-import io.github.vfedoriv.graphrag.embedding.SpringAiEmbeddingClient;
-import io.github.vfedoriv.graphrag.graph.SpringAiGraphExtractionClient;
-import io.github.vfedoriv.graphrag.llm.SpringAiLangChain4jChatModelAdapter;
-import io.github.vfedoriv.graphrag.query.SpringAiCypherGenerationClient;
-import io.github.vfedoriv.graphrag.schema.SchemaDocument;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
-import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
-import io.github.vfedoriv.graphrag.service.LangChain4jSchemaGenerationService;
+import io.github.vfedoriv.graphrag.observability.configuration.AiObservabilityProperties;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.adapters.provider.SpringAiEmbeddingClient;
+import io.github.vfedoriv.graphrag.documents.adapters.model.SpringAiGraphExtractionClient;
+import io.github.vfedoriv.graphrag.schemas.generation.adapters.model.SpringAiLangChain4jChatModelAdapter;
+import io.github.vfedoriv.graphrag.search.query.adapters.model.SpringAiCypherGenerationClient;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+import io.github.vfedoriv.graphrag.ai.models.EmptyObjectProvider;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.schemas.generation.adapters.model.LangChain4jSchemaGenerationService;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.Observation;
@@ -286,11 +293,9 @@ class AiObservabilityClientPathTest {
             .withProperty("spring.ai.model.embedding", "openai");
         AiObservabilityProperties properties = new AiObservabilityProperties(true, false, 128, true, 512, true, true);
         AppProperties appProperties = appProperties();
-        return new AiObservationService(
-            properties,
+        return new AiObservationService(properties,
             observationRegistry,
-            new SimpleMeterRegistry(),
-            appProperties,
+            new SimpleMeterRegistry(),io.github.vfedoriv.graphrag.TestRuntimeSettings.modelMetadata(appProperties),
             environment,
             TestRuntimeSettings.from(appProperties, properties),
             new EmptyObjectProvider<>()
@@ -301,18 +306,18 @@ class AiObservabilityClientPathTest {
         KnowledgeBaseService service = org.mockito.Mockito.mock(KnowledgeBaseService.class);
         AiProfileNode profile = new AiProfileNode();
         profile.setId(AiProfileService.DEFAULT_PROFILE_ID);
-        org.mockito.Mockito.when(service.activeAiProfile(org.mockito.ArgumentMatchers.anyString())).thenReturn(profile);
+        org.mockito.Mockito.when(service.activeAiProfile(org.mockito.ArgumentMatchers.anyString())).thenReturn(profile.facts());
         return service;
     }
 
     private AppProperties appProperties() {
         return new AppProperties(
-            new AppProperties.Neo4j("neo4j"),
-            new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
-            new AppProperties.Storage(Path.of("var/documents")),
-            new AppProperties.Chunking(800, 80, 4000),
-            new AppProperties.Query(200, 15, true, List.of("CREATE")),
-            new AppProperties.Extraction(40, 80, 2)
+            new Neo4jProperties("neo4j"),
+            new ModelProperties("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
+            new StorageProperties(Path.of("var/documents")),
+            new ChunkingProperties(800, 80, 4000),
+            new QueryProperties(200, 15, true, List.of("CREATE")),
+            new ExtractionProperties(40, 80, 2)
         );
     }
 

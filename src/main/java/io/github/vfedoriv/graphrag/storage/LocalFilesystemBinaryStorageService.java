@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.storage;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LocalFilesystemBinaryStorageService implements BinaryStorageService {
 
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
 
-    public LocalFilesystemBinaryStorageService(RuntimeSettingsService runtimeSettingsService) {
+    public LocalFilesystemBinaryStorageService(RuntimeSettingsAccess runtimeSettingsService) {
         this.runtimeSettingsService = runtimeSettingsService;
     }
 
@@ -90,6 +90,6 @@ public class LocalFilesystemBinaryStorageService implements BinaryStorageService
     }
 
     private Path documentsRoot() {
-        return runtimeSettingsService.documentStorageRoot().toAbsolutePath().normalize();
+        return Path.of(runtimeSettingsService.documentStorageRootValue()).toAbsolutePath().normalize();
     }
 }

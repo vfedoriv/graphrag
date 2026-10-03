@@ -1,0 +1,140 @@
+package io.github.vfedoriv.graphrag.schemas.reprocessing.api.model;
+
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
+
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingItemStatus;
+import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
+import jakarta.validation.constraints.NotBlank;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public final class SchemaReprocessingDtos {
+    private SchemaReprocessingDtos() { }
+
+    public record CreatePlanRequest(
+        String draftId, String schemaId, Boolean allDocuments,
+        List<@NotBlank String> documentIds, Map<String, Object> processingOptions,
+        ReprocessingPlanReason reason, ChunkReprocessingSelection selection,
+        String expectedChunkerRevision
+    ) {
+        public CreatePlanRequest(
+            String draftId,
+            String schemaId,
+            boolean allDocuments,
+            List<String> documentIds,
+            Map<String, Object> processingOptions
+        ) {
+            this(
+                draftId,
+                schemaId,
+                allDocuments,
+                documentIds,
+                processingOptions,
+                ReprocessingPlanReason.SCHEMA_ACTIVATION,
+                null,
+                null
+            );
+        }
+    }
+    public record ChunkMigrationPreviewRequest(
+        @Schema(example = "OUTDATED_STRATEGY")
+        ChunkReprocessingSelection selection,
+        @Schema(example = "[]")
+        List<@NotBlank String> documentIds,
+        Map<String, Object> processingOptions
+    ) { }
+    public record ChunkMigrationBlocker(String code, String message) { }
+    public record ChunkMigrationTarget(
+        String schemaId,
+        String schemaContentHash,
+        String aiProfileId,
+        long aiProfileRevision,
+        String embeddingSpaceId,
+        String expectedChunkerRevision
+    ) { }
+    public record ChunkMigrationClassificationCounts(long noChunks, long outdated, long current) { }
+    public record ChunkMigrationDocumentPreview(
+        String id,
+        String originalFilename,
+        String sha256,
+        Instant uploadedAt,
+        String classification,
+        String effectiveChunkerRevision,
+        String parserRevision
+    ) { }
+    @Schema(name = "ChunkMigrationDocumentPreviewPage")
+    public static final class ChunkMigrationDocumentPreviewPage
+        extends PageResponse<ChunkMigrationDocumentPreview> {
+        public ChunkMigrationDocumentPreviewPage(
+            int page, int size, long totalElements, List<ChunkMigrationDocumentPreview> content
+        ) {
+            super(page, size, totalElements, content);
+        }
+    }
+    @Schema(name = "ChunkMigrationPreview")
+    public record ChunkMigrationPreviewResponse(
+        String knowledgeBaseId,
+        ChunkReprocessingSelection selection,
+        boolean ready,
+        List<ChunkMigrationBlocker> blockers,
+        ChunkMigrationTarget target,
+        ChunkMigrationClassificationCounts classificationCounts,
+        long selectedCount,
+        ChunkMigrationDocumentPreviewPage selectedDocuments
+    ) { }
+
+    public enum RetryMode {
+        RESNAPSHOT_UNRESOLVED
+    }
+
+    public record RetryPlanRequest(
+        @Schema(example = "RESNAPSHOT_UNRESOLVED")
+        RetryMode mode,
+        @Schema(deprecated = true, description = "Temporary compatibility field; use mode instead.")
+        Boolean resnapshotUnresolvedDocuments
+    ) {
+        public RetryPlanRequest(boolean resnapshotUnresolvedDocuments) {
+            this(null, resnapshotUnresolvedDocuments);
+        }
+    }
+    public record StartPlanResponse(String planId, SchemaReprocessingPlanStatus status, String statusLocation) { }
+    public record PlanItemResponse(
+        String id, String documentId, String documentSha256, SchemaReprocessingItemStatus status,
+        String failureCategory, boolean retryable, String priorItemId, Instant startedAt, Instant completedAt
+    ) { }
+    @Schema(name = "SchemaReprocessingPlanItemPage")
+    public static final class PlanItemPageResponse extends PageResponse<PlanItemResponse> {
+        public PlanItemPageResponse(int page, int size, long totalElements, List<PlanItemResponse> content) {
+            super(page, size, totalElements, content);
+        }
+    }
+    public record PlanResponse(
+        String id, ReprocessingPlanReason reason, ChunkReprocessingSelection selection,
+        String expectedChunkerRevision, SchemaReprocessingPlanStatus status,
+        String draftId, String knowledgeBaseId,
+        String schemaId, String schemaContentHash, String aiProfileId, long aiProfileRevision,
+        String retryOfPlanId, int totalDocuments, int queuedDocuments, int runningDocuments,
+        int succeededDocuments, int failedDocuments, int staleDocuments, int blockedDocuments,
+        Instant createdAt, Instant startedAt, Instant completedAt, PlanItemPageResponse items
+    ) { }
+
+    public record PlanSummaryResponse(
+        String id, ReprocessingPlanReason reason, ChunkReprocessingSelection selection,
+        String expectedChunkerRevision, SchemaReprocessingPlanStatus status, String draftId, String schemaId,
+        String schemaContentHash, String retryOfPlanId, int totalDocuments, int queuedDocuments,
+        int runningDocuments, int succeededDocuments, int failedDocuments, int staleDocuments,
+        int blockedDocuments, boolean latest, boolean targetCurrent, boolean retryable,
+        Instant createdAt, Instant startedAt, Instant completedAt, String statusLocation
+    ) { }
+
+    @Schema(name = "SchemaReprocessingPlanPage")
+    public static final class PlanPageResponse extends PageResponse<PlanSummaryResponse> {
+        public PlanPageResponse(int page, int size, long totalElements, List<PlanSummaryResponse> content) {
+            super(page, size, totalElements, content);
+        }
+    }
+}

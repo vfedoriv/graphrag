@@ -1,0 +1,18 @@
+{
+  "id": "explicit-profile",
+  "name": "Historical explicit profile",
+  "baseUrl": "https://provider.example/v1",
+  "chatModel": "chat-model",
+  "embeddingModel": "custom-model",
+  "tokenizerId": "cl100k_base",
+  "resolvedTokenizerId": "cl100k_base",
+  "embeddingDimensions": 768,
+  "timeoutSeconds": 60,
+  "maxRetries": 2,
+  "defaultProfile": false,
+  "revision": 7,
+  "apiKeyConfigured": false,
+  "apiKeyMask": null,
+  "createdAt": "2026-07-29T10:15:30Z",
+  "updatedAt": "2026-07-30T11:16:31Z"
+}

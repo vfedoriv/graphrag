@@ -4,6 +4,14 @@
 
 Advanced search creates a PostgreSQL-backed run and executes bounded retrieval/synthesis asynchronously. It is separate from one-shot `/ask` and never falls back to the retired hybrid-search API.
 
+
+Search consumes typed settings and non-secret AI facts/captured execution.
+Vector and lexical maintenance uses `indexes.contracts`, shared with document
+writes and cleanup, with graph effects in index adapters. Search outcome metrics
+are owned by `search.runs.adapters.metrics`; generic AI observations remain
+independent. Index names, partitions, readiness deadlines, run snapshots, and
+metric names/tags retain their existing contracts.
+
 ## Readiness and admission
 
 Call `GET /api/v1/knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/readiness`. The deterministic check does not contact a provider. It reports profile, corpus/index, active schema, graph-branch availability, blockers, and informational status.
@@ -74,4 +82,4 @@ The typed version-1 result contains answer/claims, ranked evidence, snapshotted 
 
 Local defaults: 10 evidence items, maximum 20, candidate limit 60, maximum candidates 200, rerank pool 20, query length 4000, and deadline 60 seconds. Runs/results are retained for 24 hours and cleaned in batches of 100. Runtime settings can change these typed bounds live for subsequent admissions; each run snapshots applied values.
 
-Implementation: `AdvancedSearchRunController`, `AdvancedSearchReadinessService`, `AdvancedSearchRunService`, `DefaultAdvancedSearchRunProcessor`, planner/branch/fusion/expansion/reranker/sufficiency/synthesis/answer-validator services, and relational run/result repositories.
+Implementation ownership is under `search.runs` (run API, admission, lifecycle, and relational run/attempt/result persistence), `search.retrieval` (readiness, planning, and retrieval effects), `search.ranking` (fusion and reranking policy), and `search.answering` (sufficiency, synthesis, and answer validation). Model calls live in search model adapters. Search maps document metadata, knowledge-base facts, and stored schemas through public capabilities under `bootstrap.integration.search`; AI retains embedding compatibility and profile/model construction.

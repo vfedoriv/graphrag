@@ -70,4 +70,46 @@ Each item is independently `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `STALE_SO
 
 List and poll plans through the reprocessing-plan routes. Retry creates a linked plan and requires `{"mode":"RESNAPSHOT_UNRESOLVED"}`; matching successes remain complete while unresolved sources are deliberately resnapshotted. Startup recovery interrupts abandoned queued/running work and keeps it auditable/retryable.
 
-Implementation: `ChunkingStateController`, `ChunkMigrationController`, `ChunkingStateService`, `ChunkingService`, `RecursiveTokenAwareChunkingStrategy`, `FixedCharacterChunkingStrategy`, `SchemaReprocessingPlanController`, and `SchemaReprocessingPlanService`.
+Implementation: `documents.api.ChunkingStateController`,
+`documents.application.management.ChunkingStateService`,
+`documents.application.processing.ChunkingService`, deterministic strategies under
+`documents.domain.chunking`, parser/tokenizer integrations under `documents.adapters`,
+and schema-owned `ChunkMigrationController`. Reprocessing API values, plan/item
+state, workflows, history/currentness, checkpoints, persistence, and recovery live
+under `schemas.reprocessing`; its plan controller is
+`schemas.reprocessing.api.SchemaReprocessingPlanController`. Document consolidation,
+registry/discovery, draft authoring, and evaluation/publication/reprocessing
+ownership (steps 4–7) are implemented. Document extraction consumes immutable
+schema snapshots. See [document ownership](../concepts/architecture.md#document-ownership).
+
+Preparation and target inspection run through schemas-owned consumer ports and
+`DocumentMigrationPreparationFacade`. Documents resolves parser/options, captures
+chunker and embedding targets, and classifies all owned sources before schemas
+applies selection and pagination. Preview creates no work; creation recomputes
+facts and rejects changed targets or blockers before saving plans/items. Existing
+canonical snapshots and historical execution inputs remain compatible. Schemas
+retains selection policy, retry lineage, destructive-plan exclusion, and scheduling
+after commit. The reprocessing boundary is fully enforced without preparation
+exceptions. AI compatibility uses AI-owned rules and stored-observation ports;
+document ownership is consolidated. See the [architecture boundary](../concepts/architecture.md#reprocessing-execution-and-recovery-boundary).
+
+Plan admission and currentness consume immutable stored schema/publication facts
+and non-secret knowledge-base/profile identity, embedding, and tokenizer facts.
+`ReprocessingCheckpointService` persists creation/repair and preserves exclusion
+of concurrent destructive plans across both activation and chunk migration.
+Registry activation invokes `SchemaActivationReprocessing` after commit; ordinary
+plan creation also schedules its worker after the creation transaction commits.
+Draft navigation obtains reprocessing history through bounded immutable batch
+summaries instead of plan repositories.
+
+Recovery repairs cardinality and counters from authoritative items and leaves
+unexpired or newer claims owned by their current worker. Its existing completed
+overwrite predicate remains source hash, required migration chunker revision, and
+processing-run start no earlier than the item start when present; activation adds
+no schema/profile/chunker match. Source checks still precede target decoding and
+preserve the existing replacement race. Canonical snapshot bytes, HTTP/SQL
+contracts, retry lineage, and separation of relational checkpoints from external
+processing remain unchanged. All roadmap exceptions, including support/assembly
+step 9, are retired. Settings revision inspection maps a supplied immutable
+snapshot to the documents-owned calculator; calculation and reported settings
+share that snapshot and do not trigger reprocessing.
