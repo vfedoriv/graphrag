@@ -19,10 +19,22 @@ class CapturedAiExecutionTest {
         ChatModel original = mock(ChatModel.class);
         ChatModel replacement = mock(ChatModel.class);
         AtomicReference<ChatModel> current = new AtomicReference<>(original);
-        DefaultAiExecution execution = new DefaultAiExecution(new AiModelAccess() {
+        AiModelAccess models = new AiModelAccess() {
+            public io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding chatBinding(String profileId) {
+                return new io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding(current.get(),
+                    current.get() == original ? io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE
+                        : io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA,
+                    profileId, current.get() == original ? 1L : 2L);
+            }
             public ChatModel chatModel(String profileId) { return current.get(); }
             public EmbeddingModel embeddingModel(String profileId) { throw new UnsupportedOperationException(); }
-        });
+        };
+        DefaultAiExecution execution = new DefaultAiExecution(models);
+        io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver resolver =
+            io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver.fromProviders(new io.github.vfedoriv.graphrag.ai.models.EmptyObjectProvider<>(),
+                new org.springframework.beans.factory.ObjectProvider<ChatModel>() { public ChatModel getIfAvailable() { return replacement; } },
+                new org.springframework.beans.factory.ObjectProvider<AiModelAccess>() { public AiModelAccess getIfAvailable() { return models; } });
+        assertThat(resolver.chatBinding().mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
         CapturedAiExecution captured = execution.captureChat("captured");
         current.set(replacement);
         CapturedAiExecution nested = execution.captureChat("nested");
@@ -31,13 +43,22 @@ class CapturedAiExecutionTest {
         String result = captured.call(() -> {
             assertThat(AiProfileContext.activeProfileId()).isEqualTo("captured");
             assertThat(AiModelContext.capturedChatModel()).isSameAs(original);
+            assertThat(resolver.chatBinding().model()).isSameAs(original);
+            assertThat(resolver.chatBinding().profileRevision()).isEqualTo(1);
+            assertThat(AiModelContext.capturedChatBinding().mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
             assertThatThrownBy(() -> nested.call(() -> {
                 assertThat(AiProfileContext.activeProfileId()).isEqualTo("nested");
                 assertThat(AiModelContext.capturedChatModel()).isSameAs(replacement);
+                assertThat(resolver.chatBinding().mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+                assertThat(resolver.chatBinding().profileId()).isEqualTo("nested");
+                assertThat(AiModelContext.capturedChatBinding().mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
                 throw new IllegalStateException("provider failure");
             })).isInstanceOf(IllegalStateException.class);
             assertThat(AiProfileContext.activeProfileId()).isEqualTo("captured");
             assertThat(AiModelContext.capturedChatModel()).isSameAs(original);
+            assertThat(resolver.chatBinding().model()).isSameAs(original);
+            assertThat(resolver.chatBinding().profileRevision()).isEqualTo(1);
+            assertThat(AiModelContext.capturedChatBinding().mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
             return "result";
         });
         assertThat(result).isEqualTo("result");

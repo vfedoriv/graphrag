@@ -18,10 +18,20 @@ class AiRuntimeModelFactoryCacheTest {
         when(profiles.getNode("profile")).thenReturn(profile);
         AiRuntimeModelFactory models = new AiRuntimeModelFactory(profiles);
         ChatModel chat = models.chatModel("profile");
+        io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding binding = models.chatBinding("profile");
+        assertThat(binding.model()).isSameAs(chat);
+        assertThat(binding.mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
+        assertThat(binding.profileId()).isEqualTo("profile");
+        assertThat(binding.profileRevision()).isEqualTo(1);
+
         EmbeddingModel embedding = models.embeddingModel("profile");
         assertThat(models.chatModel("profile")).isSameAs(chat);
         assertThat(models.embeddingModel("profile")).isSameAs(embedding);
         profile.setRevision(2);
+        profile.setStructuredOutputMode(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        assertThat(models.chatBinding("profile").mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        assertThat(models.chatBinding("profile").profileRevision()).isEqualTo(2);
+        assertThat(binding.mode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
         ChatModel revisedChat = models.chatModel("profile");
         EmbeddingModel revisedEmbedding = models.embeddingModel("profile");
         assertThat(revisedChat).isNotSameAs(chat);

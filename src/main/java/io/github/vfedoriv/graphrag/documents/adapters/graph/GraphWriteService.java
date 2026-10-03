@@ -303,7 +303,7 @@ public class GraphWriteService implements io.github.vfedoriv.graphrag.documents.
         Map<String, Object> filtered = GraphWriteSupport.filterDeclaredProperties(input, allowed);
         Set<String> dropped = GraphWriteSupport.droppedPropertyNames(input, allowed);
         if (!dropped.isEmpty()) {
-            log.warn("Dropped undeclared {} properties: {}={}", entityKind, entityName, dropped);
+            log.warn("Dropped undeclared properties: entityKind={}, count={}", entityKind, dropped.size());
         }
         return filtered;
     }

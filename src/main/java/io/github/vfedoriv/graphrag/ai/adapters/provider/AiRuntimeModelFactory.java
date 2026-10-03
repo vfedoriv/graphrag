@@ -26,9 +26,15 @@ public class AiRuntimeModelFactory implements io.github.vfedoriv.graphrag.ai.mod
     }
 
     public org.springframework.ai.chat.model.ChatModel chatModel(String profileId) {
+        return chatBinding(profileId).model();
+    }
+
+    @Override
+    public io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding chatBinding(String profileId) {
         AiProfileNode profile = aiProfileService.getNode(profileId);
         String cacheKey = cacheKey(profile, "chat");
-        return chatCache.computeIfAbsent(cacheKey, ignored -> buildChatModel(profile));
+        org.springframework.ai.chat.model.ChatModel model = chatCache.computeIfAbsent(cacheKey, ignored -> buildChatModel(profile));
+        return new io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding(model, profile.getStructuredOutputMode(), profile.getId(), profile.getRevision());
     }
 
     public EmbeddingModel embeddingModel(String profileId) {

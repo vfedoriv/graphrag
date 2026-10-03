@@ -28,6 +28,10 @@ public class AiObservationScope implements AutoCloseable {
         observation.error(throwable);
     }
 
+    public void lowCardinalityAttribute(String key, String value) {
+        if (key != null && value != null) observation.lowCardinalityKeyValue(key, value);
+    }
+
     public void highCardinalityAttribute(String key, String value) {
         if (key != null && value != null) {
             observation.highCardinalityKeyValue(key, value);

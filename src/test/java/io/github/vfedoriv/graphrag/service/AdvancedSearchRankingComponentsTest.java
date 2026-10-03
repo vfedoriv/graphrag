@@ -24,8 +24,7 @@ class AdvancedSearchRankingComponentsTest {
 
     @Test
     void invalidRerankerOutputFallsBackToExactFusedOrder() {
-        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
-        when(resolver.chatModel()).thenReturn(chatModel("{\"ranking\":[{\"candidateId\":\"unknown\",\"score\":1.0}]}"));
+        ProfileScopedAiClientResolver resolver = io.github.vfedoriv.graphrag.ai.NativeProfileTestSupport.resolver(chatModel("{\"ranking\":[{\"candidateId\":\"unknown\",\"score\":1.0}]}"));
         AdvancedSearchReranker reranker = new AdvancedSearchReranker(resolver);
         List<EvidenceCandidate> candidates = List.of(
             candidate("c-1", "doc-1", 1),
@@ -40,8 +39,7 @@ class AdvancedSearchRankingComponentsTest {
 
     @Test
     void validStructuredScoresRerankOnlyTheBoundedPool() {
-        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
-        when(resolver.chatModel()).thenReturn(chatModel("""
+        ProfileScopedAiClientResolver resolver = io.github.vfedoriv.graphrag.ai.NativeProfileTestSupport.resolver(chatModel("""
             {"ranking":[
               {"candidateId":"c-1","score":0.1},
               {"candidateId":"c-2","score":0.9}

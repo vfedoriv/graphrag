@@ -194,6 +194,20 @@ Application logging is metadata-first and separate from AI observation content c
 
 At startup the PostgreSQL-backed default AI profile is seeded from `app.model.*` when no default exists. New knowledge bases receive the default profile. Document processing, extraction, Cypher generation, `/ask`, advanced search, and KB-scoped schema generation resolve the active knowledge-base AI profile at runtime. Profile API keys are write-only and must not be returned by read APIs. Profiles may declare the supported explicit `cl100k_base` tokenizer; known OpenAI embedding models resolve to it automatically and unknown models use versioned conservative `utf8-byte-v1` counting.
 
+AI profiles expose revisioned `structuredOutputMode`: `PORTABLE` is the creation,
+migration, and startup default; omitted/null updates retain the saved mode.
+Explicit `NATIVE_JSON_SCHEMA` applies strict per-call schemas only to graph
+extraction and Cypher generation on operator-verified compatible providers.
+Captured execution retains one model/mode/profile-revision binding. Discovery,
+schema generation, planning, reranking, sufficiency, and synthesis remain portable.
+Native refusal, incomplete/empty/invalid output, or format rejection/unavailability
+fails without fallback; reasoning is never final output. Existing graph and query
+safety checks and public map shapes remain authoritative. Explicit `PORTABLE` is
+the rollback switch; mode-only edits do not rebuild embeddings. The Spring AI
+`OpenAiChatModel` logger is disabled to prevent upstream prompt/payload logging;
+application observations retain controlled diagnostics. See
+[profile modes](src/site/markdown/workflows/knowledge-bases-profiles.md#structured-output-mode).
+
 Runtime setting overrides are persisted in PostgreSQL. `mutable=true` means editable through the settings API; `liveApplied`, `updateMode`, `activeValue`, and `lifecycleState` describe whether the saved value applies immediately or after restart. Live mutable overrides cover query, advanced search, chunking, extraction, AI observability, and `logging.level.root` via Spring Boot logging. Startup idempotently migrates exact legacy hybrid equivalents (`max-candidates` and the default evidence-text flag), keeps explicit advanced overrides authoritative, and retires every legacy hybrid key. Canonical chunking keys are `strategy`, `target-tokens`, `overlap-tokens`, and `hard-character-limit`; `max-tokens` and `max-characters` remain compatibility aliases with canonical-key precedence. Chunking updates validate atomically and apply only to subsequent attempts. Processing runs and chunks snapshot strategy, settings, tokenizer/count mode, and effective chunker revisions. Supported non-secret restart-required settings such as `app.storage.documents-root` may be persisted as desired values and reported as `pending-restart` until the backend restarts with that value active. The list API also exposes read-only, restart-required, profile-managed, and sensitive-read-only entries for relevant `application.properties` groups such as application identity, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, PostgreSQL datasource/schema/pool metadata, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Profile-resolved startup properties are reported as defaults. Settings consumed before PostgreSQL-backed overrides can load remain deployment-managed unless a safe runtime reassignment path exists; PostgreSQL and Neo4j connectivity, credentials, database/schema selection, and pool metadata stay deployment-managed through environment variables, Docker Compose, or equivalent configuration. Use AI profile APIs for provider behavior changes instead of raw `app.model.*` or `spring.ai.openai.*` edits. API keys, datasource/Neo4j passwords, and OTLP authorization headers must remain masked in read responses.
 
 ## Key Files

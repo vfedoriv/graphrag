@@ -238,6 +238,20 @@ AI profiles are also resolved at runtime per knowledge base. Document processing
 | `lm_studio` | OpenAI-compatible; requires `LM_STUDIO_API_KEY=lm-studio` |
 | `langfuse` | Enables AI observability and exports OTLP traces to local Langfuse defaults |
 
+AI profiles expose revisioned `structuredOutputMode`: `PORTABLE` is the creation,
+migration, and startup default; omitted/null updates retain the saved mode.
+Explicit `NATIVE_JSON_SCHEMA` applies strict per-call schemas only to graph
+extraction and Cypher generation on operator-verified compatible providers.
+Captured execution retains one model/mode/profile-revision binding. Discovery,
+schema generation, planning, reranking, sufficiency, and synthesis remain portable.
+Native refusal, incomplete/empty/invalid output, or format rejection/unavailability
+fails without fallback; reasoning is never final output. Existing graph and query
+safety checks and public map shapes remain authoritative. Explicit `PORTABLE` is
+the rollback switch; mode-only edits do not rebuild embeddings. The Spring AI
+`OpenAiChatModel` logger is disabled to prevent upstream prompt/payload logging;
+application observations retain controlled diagnostics. See
+[profile modes](src/site/markdown/workflows/knowledge-bases-profiles.md#structured-output-mode).
+
 Startup model properties under `app.model.*` seed the PostgreSQL-backed default AI profile when no default profile exists. New knowledge bases are assigned that default profile. Runtime setting overrides are persisted in PostgreSQL and may change allowlisted query, advanced-search, chunking, extraction, AI observability, and root logging behavior without restart. Startup idempotently migrates exact legacy hybrid equivalents (`max-candidates` and the default evidence-text flag), keeps explicit advanced overrides authoritative, and retires every legacy hybrid key. Canonical chunking settings are strategy, target tokens, overlap tokens, and a hard character limit; legacy max-token/max-character aliases remain readable with canonical precedence. Updates affect subsequent processing only, while runs and chunks retain versioned strategy/settings/tokenizer provenance.
 
 Runtime settings use `mutable=true` to mean editable through the settings API; `liveApplied`, `updateMode`, `activeValue`, and `lifecycleState` describe whether the saved value applies immediately or after restart. Supported non-secret restart-required settings such as `app.storage.documents-root` may be persisted as desired values and reported as `pending-restart` until the backend restarts with that value active. The runtime settings list also exposes profile-resolved startup defaults for read-only, restart-required, profile-managed, and sensitive-read-only configuration inventory. Covered groups include application identity, Spring AI bootstrap/OpenAI aliases, Spring auto-configuration, PostgreSQL datasource/schema/pool metadata, Neo4j, storage, multipart, actuator/health, tracing, and OpenTelemetry exporter settings. Settings consumed before PostgreSQL-backed overrides can load remain deployment-managed unless a safe runtime reassignment path exists; PostgreSQL and Neo4j connectivity, credentials, database/schema selection, and pool metadata stay deployment-managed through environment variables, Docker Compose, or equivalent configuration. AI provider behavior changes go through AI profile management, not raw `app.model.*` or `spring.ai.openai.*` updates. API keys, datasource/Neo4j passwords, and OTLP authorization headers are masked in read responses.

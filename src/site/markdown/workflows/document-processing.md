@@ -45,6 +45,26 @@ Document status progresses through `UPLOADED`, `PARSING`, `EMBEDDING`, `EXTRACTI
 
 Document-specific processing option definitions/defaults are available under `/documents/{documentId}/processing-options`; saved defaults can be replaced or cleared, and per-run `options` override them after typed validation.
 
+## Graph model output
+
+The KB profile's `structuredOutputMode` defaults to `PORTABLE`, retaining the
+existing prompt and tolerant JSON parser. Explicit `NATIVE_JSON_SCHEMA` opts a
+verified provider/model into a per-call strict graph schema. Internal property and
+endpoint entry arrays decode into ordinary property/key maps, preserving nested
+values, explicit nulls, and integer precision. Unknown node/relationship envelope
+fields still produce a safe warning and are ignored. Active-schema label/triple
+filtering, endpoint repair, allowed-property persistence, and fatal limits remain
+authoritative after decoding.
+
+Native refusals, incomplete output, empty normal content, invalid envelopes or
+values, and unsupported formatting fail extraction before graph persistence for
+that rejected chunk. Reasoning metadata is never promoted to output. Existing
+processing failure/recovery behavior applies; there is no silent portable fallback
+or added repair attempt. Omitted/null mode updates retain the saved mode; explicitly
+save `PORTABLE` to roll back for subsequent resolutions. See
+[profile modes and the optional comparison recipe](knowledge-bases-profiles.md#structured-output-mode).
+Schema discovery/draft candidate analysis and schema generation remain portable.
+
 ## Inspect chunks and provenance
 
 - `GET /documents/{documentId}/chunks/page` is the bounded page route (`page`, `size`, `kind`, `parentChunkId`, `sectionIndex`).

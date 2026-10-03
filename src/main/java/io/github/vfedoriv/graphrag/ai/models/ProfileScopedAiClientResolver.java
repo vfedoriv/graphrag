@@ -7,6 +7,7 @@ import org.springframework.beans.factory.ObjectProvider;
 public interface ProfileScopedAiClientResolver extends EmbeddingClientAccess {
     EmbeddingClient embeddingClient();
     ChatModel chatModel();
+    default ResolvedChatBinding chatBinding() { return ResolvedChatBinding.portable(chatModel()); }
     static ProfileScopedAiClientResolver fromProviders(ObjectProvider<EmbeddingClient> embeddings,
         ObjectProvider<ChatModel> chats, ObjectProvider<? extends AiModelAccess> models) {
         return new io.github.vfedoriv.graphrag.ai.adapters.provider.DefaultProfileScopedAiClientResolver(

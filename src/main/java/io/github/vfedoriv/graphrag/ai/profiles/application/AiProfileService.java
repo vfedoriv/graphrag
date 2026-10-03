@@ -124,6 +124,9 @@ public class AiProfileService implements io.github.vfedoriv.graphrag.ai.contract
             maxRetries(request.maxRetries()),
             Boolean.TRUE.equals(request.defaultProfile())
         );
+        if (request.structuredOutputMode() != null) {
+            profile.setStructuredOutputMode(request.structuredOutputMode());
+        }
         profile.setRevision(1);
         profile.setUpdatedAt(now);
         if (profile.isDefaultProfile()) {
@@ -163,6 +166,9 @@ public class AiProfileService implements io.github.vfedoriv.graphrag.ai.contract
             maxRetries(request.maxRetries()),
             Boolean.TRUE.equals(request.defaultProfile())
         );
+        if (request.structuredOutputMode() != null) {
+            profile.setStructuredOutputMode(request.structuredOutputMode());
+        }
         profile.setRevision(profile.getRevision() + 1);
         profile.setUpdatedAt(Instant.now());
         if (profile.isDefaultProfile()) {
@@ -316,7 +322,8 @@ public class AiProfileService implements io.github.vfedoriv.graphrag.ai.contract
             configured,
             configured ? mask(profile.getApiKey()) : null,
             profile.getCreatedAt(),
-            profile.getUpdatedAt()
+            profile.getUpdatedAt(),
+            profile.getStructuredOutputMode()
         );
     }
 
@@ -346,7 +353,7 @@ public class AiProfileService implements io.github.vfedoriv.graphrag.ai.contract
     public io.github.vfedoriv.graphrag.ai.contracts.ProfileView inspect(String profileId) {
         AiProfileResponse view = toResponse(getNode(profileId));
         return new io.github.vfedoriv.graphrag.ai.contracts.ProfileView(
-            view.id(), view.name(), view.baseUrl(), view.chatModel(), view.embeddingModel(), view.tokenizerId(), view.resolvedTokenizerId(), view.embeddingDimensions(), view.timeoutSeconds(), view.maxRetries(), view.defaultProfile(), view.revision(), view.apiKeyConfigured(), view.apiKeyMask(), view.createdAt(), view.updatedAt());
+            view.id(), view.name(), view.baseUrl(), view.chatModel(), view.embeddingModel(), view.tokenizerId(), view.resolvedTokenizerId(), view.embeddingDimensions(), view.timeoutSeconds(), view.maxRetries(), view.defaultProfile(), view.revision(), view.apiKeyConfigured(), view.apiKeyMask(), view.createdAt(), view.updatedAt(), view.structuredOutputMode());
     }
 
 }

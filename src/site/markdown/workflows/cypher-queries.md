@@ -22,6 +22,29 @@ flowchart LR
 
 Generation requires an active schema and the KB's AI profile. Manual validation/execution still require the active schema because label, relationship, and property access is checked against it.
 
+## Model output mode
+
+Profiles default to `PORTABLE`. Explicit `NATIVE_JSON_SCHEMA` requests a strict,
+closed Cypher envelope only on a verified compatible provider/model, with the
+profile's existing model/timeout/retry options. Native parameter entries convert to
+the ordinary public map, for example `"parameters":{"id":"C-1"}`; no provider
+contract/version or entry wrapper appears in query responses. Nested values,
+explicit nulls, and exact integers are preserved, subject to existing execution
+type restrictions.
+
+Refusal, incomplete completion, empty normal assistant text (even with JSON in
+reasoning), invalid conversion, or native-format rejection/unavailability fails
+generation before execution. No portable fallback or extra repair retry occurs.
+Read-only/schema/limit/`EXPLAIN` validation below still decides whether decoded
+Cypher can execute. Advanced-search planning, reranking, sufficiency, and synthesis
+retain portable output, while reused Cypher generation follows its profile mode.
+
+An omitted/null mode on profile update retains the current choice. Explicitly save
+`PORTABLE` to roll back future resolutions; captured operations retain their prior
+model/mode pair. See [profile modes](knowledge-bases-profiles.md#structured-output-mode)
+for compatibility limits and the optional manual comparison recipe. Existing query
+response and RFC 7807 error contracts remain in place.
+
 ## Safety policy
 
 The validator rejects multiple/unsupported statements and configured mutating or procedural keywords. Local defaults block `CREATE`, `MERGE`, `SET`, `DELETE`, `DETACH`, `REMOVE`, `DROP`, `LOAD CSV`, and `CALL`. It then validates referenced labels, relationship types, and properties against the active schema and sends `EXPLAIN` to Neo4j for syntax/planner validation.

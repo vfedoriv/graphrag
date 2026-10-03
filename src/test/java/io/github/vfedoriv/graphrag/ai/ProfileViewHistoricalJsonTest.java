@@ -53,7 +53,9 @@ class ProfileViewHistoricalJsonTest {
             assertThat(fixture).isNotNull();
             JsonNode historical = mapper.readTree(fixture);
             String serialized = mapper.writeValueAsString(response);
-            assertThat(mapper.readTree(serialized)).isEqualTo(historical);
+            com.fasterxml.jackson.databind.node.ObjectNode current = (com.fasterxml.jackson.databind.node.ObjectNode) mapper.readTree(serialized);
+            assertThat(current.remove("structuredOutputMode").asText()).isEqualTo("PORTABLE");
+            assertThat(current).isEqualTo(historical);
             assertThat(mapper.treeToValue(historical, AiProfileResponse.class)).isEqualTo(response);
             assertThat(serialized).doesNotContain("sk-golden-secret-1234", "\"apiKey\":");
         }

@@ -218,9 +218,7 @@ class AdvancedSearchPlanningTest {
     }
 
     private ProfileScopedAiClientResolver resolver(String response) {
-        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
-        when(resolver.chatModel()).thenReturn(response == null ? null : chatModel(response));
-        return resolver;
+        return io.github.vfedoriv.graphrag.ai.NativeProfileTestSupport.resolver(response == null ? null : chatModel(response));
     }
 
     private ChatModel chatModel(String response) {

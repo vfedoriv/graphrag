@@ -69,5 +69,6 @@ public class AiModelCallObservation extends AiObservationScope {
             );
         }
         super.error(throwable);
+        lowCardinalityAttribute(AiObservationAttributes.FAILURE_CATEGORY, failureCategory);
     }
 }

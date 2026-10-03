@@ -40,16 +40,14 @@ public class DefaultProfileScopedAiClientResolver implements io.github.vfedoriv.
             .orElse(clients.getFirst());
     }
 
-    public ChatModel chatModel() {
-        ChatModel captured = io.github.vfedoriv.graphrag.ai.adapters.provider.AiModelContext.capturedChatModel();
-        if (captured != null) {
-            return captured;
-        }
+    public ChatModel chatModel() { return chatBinding().model(); }
+
+    public io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding chatBinding() {
+        io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding captured = AiModelContext.capturedChatBinding();
+        if (captured != null) { return captured; }
         String profileId = AiProfileContext.activeProfileId();
         AiModelAccess factory = runtimeModelFactories.getIfAvailable();
-        if (profileId != null && factory != null) {
-            return factory.chatModel(profileId);
-        }
-        return chatModels.getIfAvailable();
+        if (profileId != null && factory != null) { return factory.chatBinding(profileId); }
+        return io.github.vfedoriv.graphrag.ai.models.ResolvedChatBinding.portable(chatModels.getIfAvailable());
     }
 }

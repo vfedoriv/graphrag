@@ -58,10 +58,9 @@ class CandidateExtractionModelAdapterTest {
 
     @Test
     void convertsValidNormalAssistantJson() {
-        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
         AiObservationService observations = TestAiObservationService.noop();
         ChatModel model = mock(ChatModel.class);
-        when(resolver.chatModel()).thenReturn(model);
+        ProfileScopedAiClientResolver resolver = io.github.vfedoriv.graphrag.ai.NativeProfileTestSupport.resolver(model);
         when(model.call(any(Prompt.class))).thenReturn(response("""
             {"nodes":[{"label":"Person","description":null,"confidence":0.9,"origin":"OBSERVED"}],
              "nodeProperties":[],"nodeKeys":[],"relationships":[],"relationshipProperties":[],"aliasSuggestions":[]}

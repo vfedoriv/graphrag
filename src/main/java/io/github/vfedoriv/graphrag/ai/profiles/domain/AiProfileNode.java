@@ -1,9 +1,16 @@
 package io.github.vfedoriv.graphrag.ai.profiles.domain;
 
+import io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode;
+
 import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
 import java.time.Instant;
 
 public class AiProfileNode {
+
+    private StructuredOutputMode structuredOutputMode = StructuredOutputMode.PORTABLE;
+
+    public StructuredOutputMode getStructuredOutputMode() { return structuredOutputMode; }
+    public void setStructuredOutputMode(StructuredOutputMode mode) { structuredOutputMode = java.util.Objects.requireNonNull(mode); }
 
     private String id;
     private Long version;
@@ -147,7 +154,7 @@ public class AiProfileNode {
     }
     public io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts facts() {
         return new io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts(id, revision, baseUrl, chatModel,
-            embeddingModel, embeddingDimensions, tokenizerId, timeoutSeconds, maxRetries);
+            embeddingModel, embeddingDimensions, tokenizerId, timeoutSeconds, maxRetries, structuredOutputMode);
     }
 
 }

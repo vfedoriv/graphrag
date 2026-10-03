@@ -31,6 +31,11 @@ The local `langfuse` profile enables observation/tracing and full Input/Output c
 
 Normal logs may contain workflow/entity IDs, revisions, byte/character lengths, counts, timings, statuses, exception classes, and short non-reversible fingerprints. They must not contain document/source text, prompts, user queries, model responses, generated schemas, candidate projections, or extracted graph payloads. Raising `logging.level.root` does not enable a content diagnostic mode.
 
+`org.springframework.ai.openai.OpenAiChatModel` logging defaults to `OFF` because
+its SDK diagnostics can print prompts (for example, an empty choices response) or
+provider payloads. Keep that deployment logger disabled and use application-owned
+model-call observations for safe outcomes and controlled trace content instead.
+
 The trace capture settings affect observations, not ordinary log statements. Use correlation IDs/fingerprints to locate the opt-in trace, then apply its retention and access policy.
 
 ## Local Langfuse and Garage

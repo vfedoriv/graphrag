@@ -234,8 +234,7 @@ class AdvancedSearchAnsweringTest {
     }
 
     private AdvancedSearchAnswerSynthesizer synthesizer(ChatModel model) {
-        ProfileScopedAiClientResolver resolver = mock(ProfileScopedAiClientResolver.class);
-        when(resolver.chatModel()).thenReturn(model);
+        ProfileScopedAiClientResolver resolver = io.github.vfedoriv.graphrag.ai.NativeProfileTestSupport.resolver(model);
         AiObservationService observations = mock(AiObservationService.class);
         when(observations.startChatModelCall(any(), any(), any())).thenReturn(mock(AiModelCallObservation.class));
         return new AdvancedSearchAnswerSynthesizer(resolver, validator, objectMapper, observations, executor);

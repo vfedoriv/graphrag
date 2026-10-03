@@ -63,6 +63,7 @@ public class RelationalAiProfileRepository implements AiProfileRepository {
 
     private AiProfileEntity toEntity(AiProfileNode source) {
         AiProfileEntity target = new AiProfileEntity();
+        target.setStructuredOutputMode(source.getStructuredOutputMode());
         target.setId(source.getId());
         target.setName(source.getName());
         target.setBaseUrl(source.getBaseUrl());
@@ -83,6 +84,7 @@ public class RelationalAiProfileRepository implements AiProfileRepository {
 
     private AiProfileNode toDomain(AiProfileEntity source) {
         AiProfileNode target = new AiProfileNode();
+        target.setStructuredOutputMode(source.getStructuredOutputMode());
         target.setId(source.getId());
         target.setName(source.getName());
         target.setBaseUrl(source.getBaseUrl());

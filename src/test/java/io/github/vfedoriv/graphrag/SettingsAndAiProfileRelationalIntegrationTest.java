@@ -155,6 +155,8 @@ class SettingsAndAiProfileRelationalIntegrationTest {
         AiProfileResponse response = aiProfileService.create(request("profile-1", false, "secret-profile-key"));
         AiProfileNode winner = aiProfileRepository.findById("profile-1").orElseThrow();
         AiProfileNode stale = aiProfileRepository.findById("profile-1").orElseThrow();
+        assertThat(winner.getStructuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
+        winner.setStructuredOutputMode(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
         winner.setName("Winner");
         winner.setRevision(2);
         winner.setUpdatedAt(Instant.now());
@@ -174,6 +176,10 @@ class SettingsAndAiProfileRelationalIntegrationTest {
         assertThatThrownBy(() -> aiProfileRepository.save(stale))
             .isInstanceOf(OptimisticLockingFailureException.class);
         assertThat(aiProfileRepository.findById("profile-1").orElseThrow().getName()).isEqualTo("Winner");
+        assertThat(aiProfileService.get("profile-1").structuredOutputMode())
+            .isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        assertThat(aiProfileService.seedDefaultProfile().getStructuredOutputMode())
+            .isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
     }
 
     @Test

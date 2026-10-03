@@ -19,6 +19,12 @@ class HistoricalSupportApiContractTest {
                 Class<?> type = Class.forName(fixture.get("className").asText());
                 List<String> expected = new ObjectMapper().convertValue(fixture.get("components"),
                     new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+                if (java.util.Set.of("io.github.vfedoriv.graphrag.ai.profiles.api.model.AiProfileResponse",
+                        "io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest",
+                        "io.github.vfedoriv.graphrag.ai.profiles.api.model.UpdateAiProfileRequest").contains(type.getName())) {
+                    expected = new java.util.ArrayList<>(expected);
+                    expected.add("structuredOutputMode");
+                }
                 assertThat(Arrays.stream(type.getRecordComponents()).map(RecordComponent::getName).toList())
                     .as(type.getName()).containsExactlyElementsOf(expected);
             }

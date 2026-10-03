@@ -65,6 +65,25 @@ class AiProfileControllerTest {
         verify(service).delete("profile-1");
     }
 
+    @Test
+    void unsupportedModeUsesExistingProblemEnvelopeWithoutCallingService() throws Exception {
+        AiProfileService service = mock(AiProfileService.class);
+        org.springframework.test.web.servlet.MockMvc mvc = org.springframework.test.web.servlet.setup.MockMvcBuilders
+            .standaloneSetup(new AiProfileController(service))
+            .setControllerAdvice(new io.github.vfedoriv.graphrag.bootstrap.http.GlobalExceptionHandler()).build();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/ai-profiles")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .content("""
+                {"id":"profile","name":"Profile","baseUrl":"https://provider.invalid/v1",
+                 "chatModel":"chat","embeddingModel":"embed","embeddingDimensions":768,
+                 "structuredOutputMode":"UNKNOWN"}
+                """))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                .contentTypeCompatibleWith(org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON));
+        org.mockito.Mockito.verifyNoInteractions(service);
+    }
+
     private AiProfileResponse response(String id) {
         Instant now = Instant.parse("2026-06-18T12:00:00Z");
         return new AiProfileResponse(

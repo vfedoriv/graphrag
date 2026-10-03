@@ -132,11 +132,10 @@ public class GraphExtractionValidationService {
 
     private void logDroppedNode(String schemaName, GraphExtractionResult.ExtractedNode node, String reason) {
         log.warn(
-            "Dropped extracted node: schemaName={}, reason={}, propertyCount={}, propertyNames={}",
+            "Dropped extracted node: schemaName={}, reason={}, propertyCount={}",
             schemaName,
             reason,
-            node.properties() == null ? 0 : node.properties().size(),
-            GraphExtractionSupport.sanitizedPropertyNames(node.properties())
+            node.properties() == null ? 0 : node.properties().size()
         );
     }
 

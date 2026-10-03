@@ -61,6 +61,9 @@ class AiProfileServiceTest {
         assertThat(seeded.getEmbeddingModel()).isEqualTo("text-embedding-3-small");
         assertThat(seeded.getEmbeddingDimensions()).isEqualTo(1536);
 
+        assertThat(seeded.getStructuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
+        seeded.setStructuredOutputMode(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        assertThat(service.seedDefaultProfile().getStructuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
         seeded.setChatModel("persisted-chat");
         assertThat(service.seedDefaultProfile().getChatModel()).isEqualTo("persisted-chat");
     }
@@ -84,6 +87,7 @@ class AiProfileServiceTest {
         ));
 
         assertThat(response.id()).isEqualTo("profile-1");
+        assertThat(response.structuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
         assertThat(response.apiKeyConfigured()).isTrue();
         assertThat(response.apiKeyMask()).isEqualTo("sk-1...cdef");
         assertThat(response.toString()).doesNotContain("sk-1234567890abcdef");
@@ -281,21 +285,64 @@ class AiProfileServiceTest {
             false,
             "chat",
             "embed",
+            null,
             768,
             null,
             null,
-            true
+            true,
+            io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA
         ))).isInstanceOf(EmbeddingSpaceConflictException.class)
             .hasMessageContaining("assigned knowledge bases");
 
         assertThat(store.get("shared").getBaseUrl()).isEqualTo("https://api.openai.com/v1");
         assertThat(store.get("shared").getRevision()).isEqualTo(1);
+        assertThat(store.get("shared").getStructuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.PORTABLE);
         assertThat(store.get("shared").getName()).isEqualTo("Shared");
         assertThat(store.get("shared").isDefaultProfile()).isFalse();
         assertThat(store.get("shared").getApiKey()).isNull();
         verify(profileRepository, never()).unsetDefaultProfileForOthers("shared");
         verify(profileRepository).save(any(AiProfileNode.class));
         verify(modelFactory, never()).invalidate(anyString());
+        AiProfileResponse modeOnly = service.update("shared", new UpdateAiProfileRequest(
+            "Shared", "https://api.openai.com/v1", null, false, "chat", "embed", null, 768, null, null, false,
+            io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA));
+        assertThat(modeOnly.structuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        assertThat(modeOnly.revision()).isEqualTo(2);
+        verify(modelFactory).invalidate("shared");
+    }
+
+    @Test
+    void modeDefaultsRetainsOnOlderUpdatesAndRollsBackExplicitly() throws Exception {
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules();
+        Map<String, AiProfileNode> store = new LinkedHashMap<>();
+        AiProfileService service = service(store);
+        String createJson = """
+            {"id":"native","name":"Native","baseUrl":"https://profiles.example/v1",
+             "apiKey":"private-sentinel","chatModel":"chat","embeddingModel":"embed",
+             "embeddingDimensions":768,"structuredOutputMode":"NATIVE_JSON_SCHEMA"}
+            """;
+        AiProfileResponse created = service.create(mapper.readValue(createJson, CreateAiProfileRequest.class));
+        assertThat(mapper.valueToTree(created).get("structuredOutputMode").asText()).isEqualTo("NATIVE_JSON_SCHEMA");
+        assertThat(service.require("native").toString()).contains("NATIVE_JSON_SCHEMA").doesNotContain("private-sentinel");
+        assertThat(service.inspect("native").toString()).contains("NATIVE_JSON_SCHEMA");
+        String updateJson = """
+            {"name":"Native","baseUrl":"https://profiles.example/v1","chatModel":"chat",
+             "embeddingModel":"embed","embeddingDimensions":768}
+            """;
+        AiProfileResponse retained = service.update("native", mapper.readValue(updateJson, UpdateAiProfileRequest.class));
+        assertThat(mapper.valueToTree(retained).get("structuredOutputMode").asText()).isEqualTo("NATIVE_JSON_SCHEMA");
+        assertThat(retained.revision()).isEqualTo(2);
+        assertThat(store.get("native").getApiKey()).isEqualTo("private-sentinel");
+        AiProfileResponse nullRetained = service.update("native", mapper.readValue(
+            updateJson.replace("768}", "768,\"structuredOutputMode\":null}"), UpdateAiProfileRequest.class));
+        assertThat(nullRetained.structuredOutputMode()).isEqualTo(io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode.NATIVE_JSON_SCHEMA);
+        String rollback = updateJson.replace("768}", "768,\"structuredOutputMode\":\"PORTABLE\"}");
+        assertThat(mapper.valueToTree(service.update("native", mapper.readValue(rollback, UpdateAiProfileRequest.class)))
+            .get("structuredOutputMode").asText()).isEqualTo("PORTABLE");
+        assertThat(mapper.valueToTree(service.toResponse(service.seedDefaultProfile()))
+            .get("structuredOutputMode").asText()).isEqualTo("PORTABLE");
+        assertThatThrownBy(() -> mapper.readValue(createJson.replace("NATIVE_JSON_SCHEMA", "UNKNOWN"), CreateAiProfileRequest.class))
+            .isInstanceOf(com.fasterxml.jackson.databind.JsonMappingException.class);
     }
 
     private AiProfileService service(Map<String, AiProfileNode> store) {

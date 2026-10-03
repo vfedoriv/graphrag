@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.entity;
 
+import io.github.vfedoriv.graphrag.ai.domain.StructuredOutputMode;
+
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,6 +14,13 @@ import jakarta.persistence.Version;
 @Entity
 @Table(name = "ai_profile")
 public class AiProfileEntity {
+
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "structured_output_mode", nullable = false, length = 32)
+    private StructuredOutputMode structuredOutputMode = StructuredOutputMode.PORTABLE;
+
+    public StructuredOutputMode getStructuredOutputMode() { return structuredOutputMode; }
+    public void setStructuredOutputMode(StructuredOutputMode mode) { structuredOutputMode = mode; }
 
     @Id
     @Column(nullable = false, length = 255)

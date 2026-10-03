@@ -193,7 +193,7 @@ public class AiObservationService {
         recordTokenUsage(context, tokenUsage);
     }
 
-    static String failureCategory(Throwable throwable) {
+    public static String failureCategory(Throwable throwable) {
         if (throwable == null) {
             return AiObservationAttributes.UNKNOWN;
         }

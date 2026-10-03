@@ -79,6 +79,20 @@ The complete suite is credential-free but requires Docker for shared Testcontain
 - Cypher is validated, `EXPLAIN`ed, bounded, and executed read-only.
 - Application logs are metadata-first; opt-in AI observation content follows explicit privacy controls.
 
+AI profiles expose revisioned `structuredOutputMode`: `PORTABLE` is the creation,
+migration, and startup default; omitted/null updates retain the saved mode.
+Explicit `NATIVE_JSON_SCHEMA` applies strict per-call schemas only to graph
+extraction and Cypher generation on operator-verified compatible providers.
+Captured execution retains one model/mode/profile-revision binding. Discovery,
+schema generation, planning, reranking, sufficiency, and synthesis remain portable.
+Native refusal, incomplete/empty/invalid output, or format rejection/unavailability
+fails without fallback; reasoning is never final output. Existing graph and query
+safety checks and public map shapes remain authoritative. Explicit `PORTABLE` is
+the rollback switch; mode-only edits do not rebuild embeddings. The Spring AI
+`OpenAiChatModel` logger is disabled to prevent upstream prompt/payload logging;
+application observations retain controlled diagnostics. See
+[profile modes](src/site/markdown/workflows/knowledge-bases-profiles.md#structured-output-mode).
+
 For architecture, persistence ownership, production readiness, and contribution guidance, start at the [portal index](src/site/markdown/index.md).
 
 Reprocessing preparation, execution, and recovery use schemas-owned ports mapped
