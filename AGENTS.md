@@ -5,10 +5,10 @@ This file provides guidance to coding agents working in this repository.
 ## Stack
 
 - Java 25
-- Spring Boot 4.1.0
+- Spring Boot 4.1.1
 - PostgreSQL 17 (all operational state, Flyway-managed `app` schema)
 - Neo4j 5 (graph facts, provenance, chunks, and vector indexes only)
-- Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
+- Spring AI 2.1.0-M1 (OpenAI-compatible) + LangChain4j 1.21.0
 - OpenTelemetry + Micrometer AI observability, optional local Langfuse
 - Maven Wrapper (`./mvnw`)
 

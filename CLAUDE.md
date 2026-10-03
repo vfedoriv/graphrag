@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Language:** Java 25, **Framework:** Spring Boot 4.1.0
+- **Language:** Java 25, **Framework:** Spring Boot 4.1.1
 - **Operational database:** PostgreSQL 17 (Spring Data JPA + Flyway `app` schema)
 - **Graph database:** Neo4j 5 (facts, provenance, chunks, and vector indexes only)
-- **LLM Integration:** Spring AI 2.0.0 (OpenAI-compatible) + LangChain4j 1.16.2
+- **LLM Integration:** Spring AI 2.1.0-M1 (OpenAI-compatible) + LangChain4j 1.21.0
 - **AI Observability:** OpenTelemetry + Micrometer, optional local Langfuse
 - **Document Parsing:** LangChain4j Apache Tika
 - **Build:** Maven (use `./mvnw`, never bare `mvn`)

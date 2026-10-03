@@ -6,10 +6,10 @@ The [multipage documentation portal](src/site/markdown/index.md) is the canonica
 
 ## Stack
 
-- Java 25 and Spring Boot 4.1.0
+- Java 25 and Spring Boot 4.1.1
 - PostgreSQL 17 for all operational state (Flyway-managed `app` schema)
 - Neo4j 5 for chunks/vectors, graph facts, evidence, and provenance
-- Spring AI 2.0.0 and LangChain4j 1.16.2
+- Spring AI 2.1.0-M1 and LangChain4j 1.21.0
 - OpenTelemetry and Micrometer AI observability, with optional local Langfuse
 - Maven Wrapper (`./mvnw`)
 

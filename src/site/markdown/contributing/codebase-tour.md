@@ -1,6 +1,6 @@
 # Contributor codebase tour
 
-GraphRAG is a Java 25 / Spring Boot 4.1.0 REST API. Controllers are thin; business rules live in services; repository ports separate workflows from PostgreSQL and graph-only Neo4j adapters. Model-produced graph and query output is validated before persistence or execution.
+GraphRAG is a Java 25 / Spring Boot 4.1.1 REST API. Controllers are thin; business rules live in services; repository ports separate workflows from PostgreSQL and graph-only Neo4j adapters. Model-produced graph and query output is validated before persistence or execution.
 
 ## Package map
 

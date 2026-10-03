@@ -1,6 +1,6 @@
 # Prerequisites and local setup
 
-GraphRAG is a Java 25 / Spring Boot 4.1.0 API. PostgreSQL 17 owns operational state, Neo4j 5 owns graph-native data, and document binaries are stored on the local filesystem by default. AI-backed operations need an OpenAI-compatible profile; the default Spring profile can boot without one.
+GraphRAG is a Java 25 / Spring Boot 4.1.1 API. PostgreSQL 17 owns operational state, Neo4j 5 owns graph-native data, and document binaries are stored on the local filesystem by default. AI-backed operations need an OpenAI-compatible profile; the default Spring profile can boot without one.
 
 ## Prerequisites
 

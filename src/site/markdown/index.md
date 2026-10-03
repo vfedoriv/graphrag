@@ -4,7 +4,7 @@ This is the canonical cross-stack documentation for the GraphRAG system. The bac
 
 The sources are ordinary Markdown under `src/site/markdown`, so they remain readable on GitHub. Runtime [Swagger UI](http://localhost:8080/swagger-ui/index.html) and [`/v3/api-docs`](http://localhost:8080/v3/api-docs) remain the exhaustive endpoint and DTO reference.
 
-Implementation stack: Java 25, Spring Boot 4.1.0, PostgreSQL 17, Neo4j 5, Spring AI 2.0.0, LangChain4j 1.16.2, OpenTelemetry/Micrometer, and the Maven Wrapper.
+Implementation stack: Java 25, Spring Boot 4.1.1, PostgreSQL 17, Neo4j 5, Spring AI 2.1.0-M1, LangChain4j 1.21.0, OpenTelemetry/Micrometer, and the Maven Wrapper.
 
 ## Choose a path
 
