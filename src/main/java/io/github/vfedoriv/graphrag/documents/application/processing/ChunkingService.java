@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+
 import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedSection;
 
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSlice;
@@ -9,9 +11,9 @@ import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunk
 import io.github.vfedoriv.graphrag.documents.domain.chunking.RecursiveTokenAwareChunkingStrategy;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenEstimator;
 import io.github.vfedoriv.graphrag.documents.adapters.chunking.TokenizerPolicy;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +23,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ChunkingService {
 
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final TokenizerPolicy tokenizerPolicy;
     private final Map<String, ChunkingStrategy> strategies;
 
-    public ChunkingService(RuntimeSettingsService runtimeSettingsService) {
+    public ChunkingService(RuntimeSettingsAccess runtimeSettingsService) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.tokenizerPolicy = new TokenizerPolicy();
         ChunkingStrategy fixed = new FixedCharacterChunkingStrategy();
@@ -35,8 +37,8 @@ public class ChunkingService {
         this.strategies = Map.of(fixed.name(), fixed, recursive.name(), recursive);
     }
 
-    public ChunkingContext snapshot(AiProfileNode profile, String parserId) {
-        RuntimeSettingsService.ChunkingSettings settings = runtimeSettingsService.chunking();
+    public ChunkingContext snapshot(ProfileFacts profile, String parserId) {
+        RuntimeSettingsAccess.ChunkingSettings settings = runtimeSettingsService.chunking();
         ChunkingStrategy strategy = requireStrategy(settings.strategy());
         TokenEstimator estimator = tokenizerPolicy.resolve(profile.getTokenizerId(), profile.getEmbeddingModel());
         return ChunkingContext.create(
@@ -56,7 +58,7 @@ public class ChunkingService {
         );
     }
 
-    public String migrationTargetRevision(AiProfileNode profile) {
+    public String migrationTargetRevision(ProfileFacts profile) {
         if (profile == null) {
             throw new IllegalArgumentException("profile must not be null");
         }
@@ -67,7 +69,7 @@ public class ChunkingService {
         return runtimeSettingsService.effectiveChunkerRevision();
     }
 
-    public DocumentReprocessing.ChunkTarget snapshotTarget(AiProfileNode profile) {
+    public DocumentReprocessing.ChunkTarget snapshotTarget(ProfileFacts profile) {
         ChunkingContext context = snapshot(profile, "migration-target");
         return new DocumentReprocessing.ChunkTarget(
             context.strategyName(),
@@ -89,7 +91,7 @@ public class ChunkingService {
     }
 
     public ChunkingContext restore(
-        AiProfileNode profile,
+        ProfileFacts profile,
         DocumentReprocessing.ChunkTarget target,
         DocumentReprocessing.DocumentTarget documentTarget
     ) {
@@ -131,7 +133,7 @@ public class ChunkingService {
     }
 
     public List<String> split(String text) {
-        RuntimeSettingsService.ChunkingSettings settings = runtimeSettingsService.chunking();
+        RuntimeSettingsAccess.ChunkingSettings settings = runtimeSettingsService.chunking();
         ChunkingStrategy strategy = requireStrategy(settings.strategy());
         ChunkingContext context = ChunkingContext.create(
             strategy.name(),
@@ -187,9 +189,9 @@ public class ChunkingService {
     private final class LegacyCharacterTokenEstimator implements TokenEstimator {
 
         @Override
-        public io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId tokenizerId() {
-            return new io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId(
-                io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId.UTF8_BYTE_V1
+        public io.github.vfedoriv.graphrag.ai.domain.TokenizerId tokenizerId() {
+            return new io.github.vfedoriv.graphrag.ai.domain.TokenizerId(
+                io.github.vfedoriv.graphrag.ai.domain.TokenizerId.UTF8_BYTE_V1
             );
         }
 

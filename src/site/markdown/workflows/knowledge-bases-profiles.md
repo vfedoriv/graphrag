@@ -2,6 +2,14 @@
 
 A knowledge base is the ownership boundary for schemas, documents, retrieval, and queries. Its ID is supplied by the client. Each knowledge base has one active AI profile, and new knowledge bases inherit the persisted default profile.
 
+
+Knowledge-base API, lifecycle state, management, and relational adapters live under
+`knowledgebase`; profile API/state/persistence live under `ai.profiles`. Foreign
+workflows use immutable `AiProfileAccess` facts and knowledge-base public
+capabilities. Provider keys and clients remain AI-owned. Captured execution and
+revision-scoped caches preserve model selection and nested scope restoration;
+profile/assignment reads retain caller transaction participation.
+
 ## Knowledge-base lifecycle
 
 ```bash

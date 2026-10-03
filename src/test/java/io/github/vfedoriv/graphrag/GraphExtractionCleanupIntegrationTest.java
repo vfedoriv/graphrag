@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunStatus;

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanReason;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.schemas.evaluation.ports.SchemaDraftEvaluationOutcomeRepository;
 import io.github.vfedoriv.graphrag.schemas.evaluation.ports.SchemaDraftEvaluationRunRepository;
 import io.github.vfedoriv.graphrag.schemas.publication.ports.SchemaDraftPublicationRepository;

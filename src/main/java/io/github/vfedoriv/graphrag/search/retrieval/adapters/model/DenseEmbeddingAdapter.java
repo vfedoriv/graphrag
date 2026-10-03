@@ -1,9 +1,9 @@
 package io.github.vfedoriv.graphrag.search.retrieval.adapters.model;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchProfiles;
 import io.github.vfedoriv.graphrag.search.retrieval.ports.SearchEmbeddingModel;
 import java.util.List;

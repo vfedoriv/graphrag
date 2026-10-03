@@ -6,7 +6,7 @@ import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOp
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.error.ProcessingOptionsValidationException;
+import io.github.vfedoriv.graphrag.documents.api.error.ProcessingOptionsValidationException;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 

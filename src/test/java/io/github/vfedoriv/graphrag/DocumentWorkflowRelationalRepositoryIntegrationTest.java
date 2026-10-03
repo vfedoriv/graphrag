@@ -14,7 +14,7 @@ import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunReposito
 import io.github.vfedoriv.graphrag.documents.ports.DocumentStorageMutationRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentStorageMutationService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

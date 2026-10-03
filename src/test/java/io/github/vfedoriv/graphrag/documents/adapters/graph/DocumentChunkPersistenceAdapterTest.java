@@ -8,9 +8,9 @@ import static org.mockito.Mockito.verify;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkHashes;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -22,7 +22,7 @@ class DocumentChunkPersistenceAdapterTest {
     private final Neo4jClient neo4jClient = mock(Neo4jClient.class, Answers.RETURNS_DEEP_STUBS);
     private final DocumentChunkPersistenceAdapter adapter = new DocumentChunkPersistenceAdapter(
         repository,
-        mock(EmbeddingSpaceIndexService.class),
+        mock(VectorIndexes.class),
         mock(LexicalIndexRepository.class),
         neo4jClient
     );

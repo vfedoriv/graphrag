@@ -1,16 +1,16 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentFormatDetection;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import io.github.vfedoriv.graphrag.documents.domain.options.ImmutableDocumentProcessingInput;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.KnowledgeBaseProfiles;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
 public class DocumentReprocessingFacade implements DocumentReprocessing {
     private final DocumentUploadRepository documents;
     private final DocumentProcessingService processing;
-    private final KnowledgeBaseService profiles;
+    private final KnowledgeBaseProfiles profiles;
     private final ChunkingService chunking;
 
     public DocumentReprocessingFacade(DocumentUploadRepository documents, DocumentProcessingService processing,
-                                     KnowledgeBaseService profiles, ChunkingService chunking) {
+                                     KnowledgeBaseProfiles profiles, ChunkingService chunking) {
         this.documents = documents;
         this.processing = processing;
         this.profiles = profiles;
@@ -42,7 +42,7 @@ public class DocumentReprocessingFacade implements DocumentReprocessing {
         try {
             DocumentUploadNode processed;
             if (request.target() instanceof Migration migration) {
-                AiProfileNode profile = profiles.aiProfile(migration.aiProfileId());
+                ProfileFacts profile = profiles.aiProfile(migration.aiProfileId());
                 ChunkingContext context = chunking.restore(profile, migration.chunkTarget(), migration.documentTarget());
                 DocumentTarget target = migration.documentTarget();
                 DocumentProcessingOptionSet options = new DocumentProcessingOptionSet(

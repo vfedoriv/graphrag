@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.search.retrieval.application.validation;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
@@ -45,11 +45,11 @@ public class GraphPlanValidationService {
     private static final Pattern IDENTIFIER = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 
     private final SearchSchemas activeSchemaResolver;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
 
     public GraphPlanValidationService(
         SearchSchemas activeSchemaResolver,
-        RuntimeSettingsService runtimeSettingsService
+        RuntimeSettingsAccess runtimeSettingsService
     ) {
         this.activeSchemaResolver = activeSchemaResolver;
         this.runtimeSettingsService = runtimeSettingsService;
@@ -61,7 +61,7 @@ public class GraphPlanValidationService {
             return new ValidationResult(false, List.of("plan.required"), null);
         }
         SchemaSnapshot context;
-        RuntimeSettingsService.QuerySettings settings;
+        RuntimeSettingsAccess.QuerySettings settings;
         try {
             context = activeSchemaResolver.resolveActive(knowledgeBaseId);
             settings = runtimeSettingsService.query();

@@ -1,11 +1,9 @@
 # Feature modularization: decisions and migration roadmap
 
-Date: 2026-10-02
-Status: roadmap steps 1–8 are implemented: reprocessing execution/recovery,
-document migration preparation, knowledge-base/AI state boundaries, document
-consolidation, schema registry/discovery, draft authoring, and evaluation/publication
-with final reprocessing ownership, and search consolidation. Step 9 finalizes
-identified support boundaries and application assembly.
+Date: 2026-10-03
+Status: all nine roadmap steps are implemented, including final support ownership,
+application assembly, and permanent feature-graph enforcement. All transitional
+roadmap exceptions are retired.
 
 ## Purpose
 
@@ -23,9 +21,9 @@ OpenSpec changes govern each implementation slice.
 
 - Repository ports, model-client interfaces, explicit processing stages, typed
   runtime settings, and architecture tests already provide useful boundaries.
-- Feature implementations are distributed across broad `service`, `domain`,
-  `repository`, `controller`, and infrastructure packages, alongside narrower
-  feature-oriented packages.
+- Feature implementations are consolidated under documents, schemas, search,
+  knowledgebase, AI, and settings. Shared support and bootstrap have distinct,
+  enforced roles rather than broad legacy implementation packages.
 - `DocumentProcessingService` coordinates injected stages and handles application
   state, profile selection, and lifecycle checks; bootstrap owns stage assembly.
 - Reprocessing preparation, execution, and recovery now use schemas-owned ports;
@@ -157,7 +155,7 @@ them. Do not expose persistence entities, provider clients, or write-only keys.
 | 6 | Consolidate draft authoring | Lifecycle, sources, analysis, review, conflicts, and recovery remain schema-owned without foreign internal access | 4, 5 |
 | 7 | Isolate evaluation and publication | Held-out preparation contracts, side-effect-free dry extraction, revision-specific readiness/publication, final reprocessing organization | 6 |
 | 8 | Consolidate search | Implemented: query/ask and advanced search use public feature contracts and search-owned adapters; exact step-8 exceptions are retired | 4, 5 |
-| 9 | Finalize support boundaries and assembly | Close explicit transitional exceptions; enforce final feature graph and support ownership | 4, 7, 8 |
+| 9 | Finalize support boundaries and assembly | Implemented: typed settings, AI/profile/tokenizer/model, KB, schema generation, indexes and common support have final owners; bootstrap assembly is distinct from mapping; zero roadmap exceptions | 4, 7, 8 |
 
 Changes 4 and 5 can proceed independently after 3. Search need not wait for all
 draft workflows. Each change must leave a working application and introduce its
@@ -235,8 +233,8 @@ aggregation, and deadlines. Its document inputs are acquired through the
 file parsing, defensive copies, and no path or persistence-record exposure.
 
 `ArchitectureBoundaryTest` rejects new foreign registry/discovery dependencies.
-Search migration has retired its exact step-8 exceptions; only identified
-support/assembly (9) edges remain frozen. Draft
+Search and support migration have retired their exact step-8 and step-9
+exceptions. Draft
 authoring's step-6 document and registry/discovery exceptions and the migrated
 step-7 document, registry, and downstream persistence exceptions are retired.
 
@@ -270,9 +268,9 @@ boundary; synchronous reads join the caller's relational transaction. Provider
 client construction stays AI-owned.
 
 Draft navigation consumes evaluation and reprocessing history/currentness through
-bounded immutable summary ports. Its remaining support/assembly dependencies are
-exact step-9 seams. `ArchitectureBoundaryTest` retires the exact step-6 and step-7
-edges; after search migration it retains only named support/assembly (9) exceptions.
+bounded immutable summary ports. `ArchitectureBoundaryTest` and
+`FinalSupportBoundaryTest` enforce final ownership; all step-6 through step-9
+exceptions are retired.
 
 ## Step-7 evaluation, publication, and reprocessing boundary
 
@@ -307,8 +305,8 @@ all-owned classification before selection, creation recomputation, destructive-p
 exclusion, authoritative item counters, and its historical recovery predicate.
 HTTP contracts, SQL mappings, canonical snapshots/fingerprints, source-race
 semantics, and external-work checkpoint separation remain compatible without SQL
-or binary migration. Search consolidation (step 8) is implemented; only exact
-support and assembly seams remain for step 9.
+or binary migration. Search and support consolidation (steps 8 and 9) are
+implemented; no roadmap exceptions remain.
 
 ## Step-8 search ownership
 
@@ -341,10 +339,41 @@ and synthesis effects are placed in model adapters; search retains the prompts,
 business policy, and interpretation needed by those workflows.
 
 The exact step-8 schema, document-metadata, and compatibility exceptions are
-retired. Step 9 retains only identified support and assembly seams: runtime
-settings, AI profile/model construction, observability, metadata-first logging,
-relational transaction support, shared embedding/lexical-index maintenance, and
-configuration wiring. These shared services remain outside search until their
-planned support-ownership work; document writes and cleanup do not depend on
-search implementations. `ArchitectureBoundaryTest` freezes only the exact
-remaining step-9 pairs.
+retired along with every step-9 support/assembly pair. Document writes and cleanup
+use shared index contracts and do not depend on search implementations.
+
+## Step-9 final support and assembly boundary
+
+Settings owns management, catalog/validation/lifecycle, and persistence. Consumers
+use immutable `RuntimeSettingsAccess` snapshots. Search owns query-policy
+composition; documents exposes supplied-snapshot chunk revision calculation,
+mapped through a settings-owned port. The calculation does not re-read settings.
+
+AI owns profile API/state/persistence, tokenizer and embedding identity, provider
+construction/cache, and scoped model execution. Public profile facts contain no
+credentials or mutable records; captured execution keeps selected model semantics
+without exposing provider clients to workflows. Knowledge-base API/management is
+consolidated, and schema generation prompts/normalization/model interpretation
+are schema-owned. Shared vector/lexical contracts and graph adapters live in
+`indexes`; search-specific metrics live in search. Metadata logging, binary
+storage, common immutable HTTP bases, generic observations, and store-qualified
+transaction annotations remain governed support.
+
+Owned configuration records preserve existing property names/defaults. Bootstrap
+assembles concrete implementations, loads schema resources, seeds the default
+profile, and scans every owned persistence package. Integration adapters have
+narrower privileges: public value mapping only, without clients, repositories,
+transactions, or policy. The primary relational and named graph transaction
+managers and transaction-aware Neo4j template keep their identities.
+
+Permanent rules enforce the final source graph, foreign-state prohibition,
+domain purity, provider confinement, and assembly/mapping distinction. The
+[change inventory](../openspec/changes/archive/2026-10-03-finalize-support-boundaries-assembly/inventory.md)
+accounts for all 179 frozen baseline pairs, including search's 74 outward and 14
+inward pairs. Each has a final owner/capability and enforcing rule; no frozen
+resource or broad legacy allowance survives. Independent existing transaction
+self-calls are assessed by exact method signatures with unchanged participation.
+Historical HTTP/JSON/SQL, snapshots/fingerprints, index identities, cache behavior,
+metrics, and recovery/checkpoint contracts require no SQL or binary migration.
+See the [canonical architecture](../src/site/markdown/concepts/architecture.md#final-support-and-assembly-ownership)
+for current surfaces and the permitted source dependency graph.

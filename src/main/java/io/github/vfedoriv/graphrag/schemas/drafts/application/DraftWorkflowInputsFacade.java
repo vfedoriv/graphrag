@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftAdmissions;

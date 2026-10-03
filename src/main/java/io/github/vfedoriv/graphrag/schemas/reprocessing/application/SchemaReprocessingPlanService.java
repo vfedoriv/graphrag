@@ -24,8 +24,8 @@ import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReproces
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.StartPlanResponse;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryMode;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryPlanRequest;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;

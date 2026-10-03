@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.SearchKnowledgeBaseAccess;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
 import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Optional;

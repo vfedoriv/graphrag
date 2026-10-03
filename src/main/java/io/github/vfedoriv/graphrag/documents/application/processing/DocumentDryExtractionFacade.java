@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.documents.contracts.DocumentDryExtraction;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;

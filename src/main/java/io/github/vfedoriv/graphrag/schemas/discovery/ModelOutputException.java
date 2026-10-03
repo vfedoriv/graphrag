@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics;
+
 public abstract class ModelOutputException extends RuntimeException {
     private final SourceFailureCode failureCode;
     private final ModelResponseDiagnostics diagnostics;

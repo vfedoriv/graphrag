@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.schemas.reprocessing.application;
 
+import io.github.vfedoriv.graphrag.documents.api.error.ProcessingOptionsValidationException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
 
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
@@ -23,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
@@ -41,7 +44,7 @@ import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReproces
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewRequest;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryMode;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.RetryPlanRequest;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
@@ -192,7 +195,7 @@ class SchemaReprocessingPlanServiceTest {
             new ChunkMigrationPreviewRequest(ChunkReprocessingSelection.DOCUMENT_IDS, List.of("foreign"), Map.of()),
             0,
             20
-        )).isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
+        )).isInstanceOf(io.github.vfedoriv.graphrag.http.contracts.NotFoundException.class);
 
         io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.ChunkMigrationPreviewResponse response =
             fixture.service.preview(
@@ -452,7 +455,7 @@ class SchemaReprocessingPlanServiceTest {
             .thenReturn(List.of(fixture.document, invalid));
         assertThatThrownBy(() -> fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
             ChunkReprocessingSelection.DOCUMENT_IDS, List.of("doc-1"), Map.of()), 0, 20))
-            .isInstanceOf(io.github.vfedoriv.graphrag.error.ProcessingOptionsValidationException.class);
+            .isInstanceOf(io.github.vfedoriv.graphrag.documents.api.error.ProcessingOptionsValidationException.class);
         verify(fixture.checkpoint, never()).createPlan(any(), any());
     }
 
@@ -470,7 +473,7 @@ class SchemaReprocessingPlanServiceTest {
     @Test
     void creationRejectsTargetChangingDuringPreparation() {
         Fixture fixture = fixture();
-        when(fixture.chunking.migrationTargetRevision(any(AiProfileNode.class)))
+        when(fixture.chunking.migrationTargetRevision(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class)))
             .thenReturn("chunker-current", "changed-during-preparation");
         assertThatThrownBy(() -> fixture.service.create("kb-1", chunkRequest(ChunkReprocessingSelection.ALL, List.of())))
             .isInstanceOf(ConflictException.class).hasMessageContaining("changed-during-preparation");
@@ -482,7 +485,7 @@ class SchemaReprocessingPlanServiceTest {
         Fixture fixture = fixture();
         ReprocessingKnowledgeBases.KnowledgeBase missingSchema = new ReprocessingKnowledgeBases.KnowledgeBase("kb-1", null);
         when(fixture.knowledgeBases.find("kb-1")).thenReturn(Optional.of(missingSchema));
-        when(fixture.chunking.snapshotTarget(any(AiProfileNode.class))).thenThrow(new IllegalArgumentException("invalid target"));
+        when(fixture.chunking.snapshotTarget(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class))).thenThrow(new IllegalArgumentException("invalid target"));
         when(fixture.plans.existsActiveByKnowledgeBaseId("kb-1")).thenReturn(true);
         assertThat(fixture.service.preview("kb-1", new ChunkMigrationPreviewRequest(
             ChunkReprocessingSelection.ALL, List.of(), Map.of()), 0, 20).blockers())
@@ -524,7 +527,7 @@ class SchemaReprocessingPlanServiceTest {
         SchemaReprocessingPlanNode plan = queuedChunkPlan();
         when(fixture.plans.findPageByFilters(eq("kb-1"), isNull(), isNull(), isNull(), isNull(), any()))
             .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(plan)));
-        when(fixture.chunking.migrationTargetRevision(any(AiProfileNode.class)))
+        when(fixture.chunking.migrationTargetRevision(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class)))
             .thenThrow(new IllegalStateException("target unavailable"));
         assertThat(fixture.service.list("kb-1", null, 0, 20).getContent().getFirst().targetCurrent()).isFalse();
     }
@@ -672,15 +675,15 @@ class SchemaReprocessingPlanServiceTest {
         when(knowledgeBases.find("kb-1")).thenReturn(Optional.of(knowledgeBase));
         when(schemas.findById("schema-1")).thenReturn(Optional.of(schema));
         when(knowledgeBases.activeProfile("kb-1")).thenReturn(profileFacts(profile));
-        when(chunking.migrationTargetRevision(any(AiProfileNode.class))).thenReturn("chunker-current");
-        when(chunking.snapshotTarget(any(AiProfileNode.class))).thenReturn(
+        when(chunking.migrationTargetRevision(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class))).thenReturn("chunker-current");
+        when(chunking.snapshotTarget(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class))).thenReturn(
             new io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing.ChunkTarget(
                 chunkTarget.strategyName(), chunkTarget.strategyRevision(), chunkTarget.targetTokens(),
                 chunkTarget.overlapTokens(), chunkTarget.hardCharacterLimit(), chunkTarget.parentTargetTokens(),
                 chunkTarget.parentHardCharacterLimit(), chunkTarget.parentMaxPages(), chunkTarget.contextHeaderMaxTokens(),
                 chunkTarget.contextHeaderMaxCharacters(), chunkTarget.tokenizerId(), chunkTarget.tokenizerRevision(),
                 chunkTarget.tokenCountMode(), chunkTarget.representationRevision(), chunkTarget.settingsHash()));
-        when(chunking.snapshot(any(AiProfileNode.class), eq("text"))).thenReturn(context);
+        when(chunking.snapshot(any(io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts.class), eq("text"))).thenReturn(context);
         when(documents.findByKnowledgeBaseIdOrderByUploadedAtDesc("kb-1")).thenReturn(List.of(document));
         when(documents.findByIdAndKnowledgeBaseId("doc-1", "kb-1")).thenReturn(Optional.of(document));
         when(chunks.findByDocumentIdOrderByChunkIndexAsc("doc-1")).thenReturn(List.of());

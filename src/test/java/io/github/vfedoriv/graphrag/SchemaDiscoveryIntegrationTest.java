@@ -6,19 +6,19 @@ import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptC
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ConflictCategory;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ResponseStatus;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
-import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.repository.JpaAiProfileRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.ports.AiProfileRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 import io.github.vfedoriv.graphrag.schemas.discovery.application.SchemaDiscoveryService;

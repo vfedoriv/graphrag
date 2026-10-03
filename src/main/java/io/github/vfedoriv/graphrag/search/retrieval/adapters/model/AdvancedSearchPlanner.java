@@ -1,16 +1,14 @@
 package io.github.vfedoriv.graphrag.search.retrieval.adapters.model;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts;
 import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Plan;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator.ValidatedPlan;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.ai.chat.messages.AssistantMessage;

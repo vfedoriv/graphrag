@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.adapters.relational.entity;
 
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

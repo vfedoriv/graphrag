@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.documents.application.management;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.ai.contracts.StartupModelMetadata;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkRevisionCalculator;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSettingsHash;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.FixedCharacterChunkingStrategy;
@@ -12,7 +12,7 @@ import io.github.vfedoriv.graphrag.documents.adapters.chunking.TokenizerPolicy;
 import io.github.vfedoriv.graphrag.documents.api.model.ChunkingStateDtos.ChunkingStateResponse;
 import io.github.vfedoriv.graphrag.documents.api.model.ChunkingStateDtos.CompatibilityAlias;
 import io.github.vfedoriv.graphrag.documents.api.model.ChunkingStateDtos.ComponentRevisions;
-import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.ChunkingSettingFact;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,22 +28,20 @@ public class ChunkingStateService {
     private static final String HARD_LIMIT = "app.chunking.hard-character-limit";
     private static final String HARD_LIMIT_ALIAS = "app.chunking.max-characters";
 
-    private final RuntimeSettingsService runtimeSettingsService;
-    private final AppProperties appProperties;
+    private final RuntimeSettingsAccess runtimeSettingsService;
+    private final StartupModelMetadata appProperties;
 
-    public ChunkingStateService(RuntimeSettingsService runtimeSettingsService, AppProperties appProperties) {
+    public ChunkingStateService(RuntimeSettingsAccess runtimeSettingsService, StartupModelMetadata appProperties) {
         this.runtimeSettingsService = runtimeSettingsService;
         this.appProperties = appProperties;
     }
 
     @RelationalTransactional(readOnly = true)
     public ChunkingStateResponse get() {
-        RuntimeSettingsService.ChunkingSettings settings = runtimeSettingsService.chunking();
-        List<RuntimeSettingResponse> rows = runtimeSettingsService.list().stream()
-            .filter(row -> "chunking".equals(row.category()))
-            .toList();
-        Map<String, RuntimeSettingResponse> byKey = rows.stream()
-            .collect(java.util.stream.Collectors.toMap(RuntimeSettingResponse::key, value -> value));
+        RuntimeSettingsAccess.ChunkingSettings settings = runtimeSettingsService.chunking();
+        List<ChunkingSettingFact> rows = runtimeSettingsService.chunkingFacts();
+        Map<String, ChunkingSettingFact> byKey = rows.stream()
+            .collect(java.util.stream.Collectors.toMap(ChunkingSettingFact::key, value -> value));
 
         Map<String, Object> effectiveValues = new LinkedHashMap<>();
         effectiveValues.put("hardCharacterLimit", settings.hardCharacterLimit());
@@ -58,8 +56,9 @@ public class ChunkingStateService {
         ChunkRevisionCalculator calculator = new ChunkRevisionCalculator();
         ChunkSettingsHash settingsHash = calculator.settingsHash(effectiveValues);
         String strategyRevision = strategyRevision(settings.strategy());
-        TokenEstimator tokenizer = new TokenizerPolicy().resolve(null, appProperties.model().embeddingModel());
-        String effectiveRevision = runtimeSettingsService.effectiveChunkerRevision();
+        TokenEstimator tokenizer = new TokenizerPolicy().resolve(null, appProperties.embeddingModel());
+        String effectiveRevision = calculator.chunkerRevision(settingsHash, strategyRevision, TokenizerPolicy.REVISION,
+            PARSER_POLICY_REVISION, settings.representationRevision()).value();
 
         Map<String, String> sources = new LinkedHashMap<>();
         for (String key : List.of(
@@ -69,7 +68,7 @@ public class ChunkingStateService {
             "app.chunking.context-header-max-characters", "app.chunking.strategy",
             "app.chunking.representation-revision"
         )) {
-            RuntimeSettingResponse row = byKey.get(key);
+            ChunkingSettingFact row = byKey.get(key);
             if (row != null) {
                 sources.put(key, row.source());
             }
@@ -83,7 +82,7 @@ public class ChunkingStateService {
             sources.put(HARD_LIMIT, "compatibility-alias");
         }
         String lifecycle = rows.stream()
-            .map(RuntimeSettingResponse::chunkMigrationLifecycle)
+            .map(ChunkingSettingFact::chunkMigrationLifecycle)
             .filter(Objects::nonNull)
             .filter(value -> !value.isBlank())
             .findFirst()
@@ -107,16 +106,16 @@ public class ChunkingStateService {
         );
     }
 
-    private String source(Map<String, RuntimeSettingResponse> rows, String key) {
-        RuntimeSettingResponse row = rows.get(key);
+    private String source(Map<String, ChunkingSettingFact> rows, String key) {
+        ChunkingSettingFact row = rows.get(key);
         return row == null ? "default" : row.source();
     }
 
     private CompatibilityAlias alias(
-        Map<String, RuntimeSettingResponse> rows, String aliasKey, String canonicalKey, Object effectiveValue
+        Map<String, ChunkingSettingFact> rows, String aliasKey, String canonicalKey, Object effectiveValue
     ) {
-        RuntimeSettingResponse alias = rows.get(aliasKey);
-        RuntimeSettingResponse canonical = rows.get(canonicalKey);
+        ChunkingSettingFact alias = rows.get(aliasKey);
+        ChunkingSettingFact canonical = rows.get(canonicalKey);
         boolean canonicalOverride = canonical != null && "override".equals(canonical.source());
         boolean aliasOverride = alias != null && "override".equals(alias.source());
         return new CompatibilityAlias(

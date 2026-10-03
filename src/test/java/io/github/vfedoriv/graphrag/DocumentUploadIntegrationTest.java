@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;

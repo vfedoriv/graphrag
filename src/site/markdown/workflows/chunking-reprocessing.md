@@ -109,5 +109,7 @@ processing-run start no earlier than the item start when present; activation add
 no schema/profile/chunker match. Source checks still precede target decoding and
 preserve the existing replacement race. Canonical snapshot bytes, HTTP/SQL
 contracts, retry lineage, and separation of relational checkpoints from external
-processing remain unchanged. The exact step-7 and step-8 exceptions are retired;
-only identified support/assembly seams remain for step 9.
+processing remain unchanged. All roadmap exceptions, including support/assembly
+step 9, are retired. Settings revision inspection maps a supplied immutable
+snapshot to the documents-owned calculator; calculation and reported settings
+share that snapshot and do not trigger reprocessing.

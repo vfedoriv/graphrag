@@ -1,0 +1,18 @@
+{
+  "id": "implicit-profile",
+  "name": "Historical implicit profile",
+  "baseUrl": "https://provider.example/v1",
+  "chatModel": "chat-model",
+  "embeddingModel": "text-embedding-3-small",
+  "tokenizerId": null,
+  "resolvedTokenizerId": "cl100k_base",
+  "embeddingDimensions": 1536,
+  "timeoutSeconds": 60,
+  "maxRetries": 2,
+  "defaultProfile": true,
+  "revision": 7,
+  "apiKeyConfigured": true,
+  "apiKeyMask": "sk-g...1234",
+  "createdAt": "2026-07-29T10:15:30Z",
+  "updatedAt": "2026-07-30T11:16:31Z"
+}

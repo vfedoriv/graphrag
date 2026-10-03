@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;
 import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
@@ -10,14 +12,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.TextSource;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.DiscoveryGuidance;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.TextSource;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryDocumentInputs;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryFileParsing;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryKnowledgeBaseAdmission;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +37,7 @@ class DiscoverySourcePreparerTest {
 
     @BeforeEach
     void setUp() {
-        when(settingsService.discovery()).thenReturn(new RuntimeSettingsService.DiscoverySettings(
+        when(settingsService.discovery()).thenReturn(new RuntimeSettingsAccess.DiscoverySettings(
             3, 100, 200, 100, 200, 4, 3, 2, Duration.ofSeconds(1), Duration.ofSeconds(2)));
         preparer = new DiscoverySourcePreparer(documentInputs, fileParsing, knowledgeBaseAdmission, settingsService);
     }

@@ -1,5 +1,4 @@
 package io.github.vfedoriv.graphrag.search.runs.application;
-import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos;
 
 
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchProfiles.Profile;
@@ -7,7 +6,7 @@ import io.github.vfedoriv.graphrag.search.runs.ports.SearchKnowledgeBases.Facts;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos.ReadinessIssue;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos.ReadinessResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchReadinessConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchKnowledgeBases;
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
 import java.net.URI;

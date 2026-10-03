@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.search.runs.api.error;
 
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;

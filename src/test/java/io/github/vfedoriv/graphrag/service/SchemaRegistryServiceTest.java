@@ -11,12 +11,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaFormat;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.KnowledgeBaseAdmission;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaAssociation;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaAssociations;

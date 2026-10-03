@@ -1,11 +1,9 @@
 package io.github.vfedoriv.graphrag.search.answering.domain;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Refinement;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.SufficiencyResult;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;

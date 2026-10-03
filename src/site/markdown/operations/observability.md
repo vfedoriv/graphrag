@@ -2,6 +2,13 @@
 
 GraphRAG separates normal application logging from AI observation content. Logs are metadata-first at every level; only the central observation path may attach controlled AI inputs/outputs to traces.
 
+
+Generic workflow/model observations stay under `observability` and consume typed
+settings plus non-secret startup model metadata. Search-specific outcome and
+terminal metrics live in `search.runs.adapters.metrics.AdvancedSearchMetrics`.
+The move preserves metric names/tags/counts and content-capture behavior;
+metadata-only logging remains governed by `logging.LogMetadata`.
+
 ## Signals
 
 `AiObservationService` creates workflow spans and model-call observations for embedding, extraction, schema generation/discovery/drafts, Cypher generation, advanced search, and related AI stages. Micrometer records call count, failure, latency, model/provider metadata, and token usage when the provider reports it. OpenTelemetry exports spans when tracing and an OTLP exporter are enabled.

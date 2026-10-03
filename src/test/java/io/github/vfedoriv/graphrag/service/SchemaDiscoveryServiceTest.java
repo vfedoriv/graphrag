@@ -1,5 +1,13 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
+
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;
 import io.github.vfedoriv.graphrag.schemas.discovery.application.SchemaDiscoveryService;
 
@@ -21,10 +29,10 @@ import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
 import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
 import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureClassifier;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
-import io.github.vfedoriv.graphrag.error.SchemaDiscoveryFailedException;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.error.SchemaDiscoveryFailedException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import java.time.Duration;
 import java.util.List;
@@ -50,12 +58,12 @@ class SchemaDiscoveryServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(settings.discovery()).thenReturn(new RuntimeSettingsService.DiscoverySettings(
+        when(settings.discovery()).thenReturn(new RuntimeSettingsAccess.DiscoverySettings(
             4, 1000, 4000, 1000, 4000, 1000, 2, 2, Duration.ofSeconds(1), Duration.ofSeconds(2)));
         AiProfileNode profile = new AiProfileNode();
         profile.setId("profile-1");
         profile.setRevision(7);
-        when(knowledgeBases.activeAiProfile("kb")).thenReturn(profile);
+        when(knowledgeBases.activeAiProfile("kb")).thenReturn(profile.facts());
         service = new SchemaDiscoveryService(
             preparer, analyzer, aggregator, settings, knowledgeBases, observations, new SourceFailureClassifier());
     }
@@ -119,7 +127,7 @@ class SchemaDiscoveryServiceTest {
         PreparedDiscoverySource timeout = source("source-timeout");
         PreparedDiscoverySource overloaded = source("source-overloaded");
         SchemaDiscoveryRequest request = request();
-        when(settings.discovery()).thenReturn(new RuntimeSettingsService.DiscoverySettings(
+        when(settings.discovery()).thenReturn(new RuntimeSettingsAccess.DiscoverySettings(
             4, 1000, 4000, 1000, 4000, 1000, 2, 3, Duration.ofMillis(20), Duration.ofSeconds(1)));
         when(preparer.prepare("kb", request, List.of())).thenReturn(List.of(success, timeout, overloaded));
         when(analyzer.analyze(any(), eq(request), any())).thenAnswer(invocation -> {
@@ -186,7 +194,7 @@ class SchemaDiscoveryServiceTest {
         com.fasterxml.jackson.databind.node.ObjectNode schema = objectMapper.createObjectNode();
         schema.put("description", schemaContent);
         when(aggregator.aggregate(any(), eq(request))).thenReturn(new DiscoveryAggregator.AggregateResult(
-            List.of(), List.of(), List.of(new io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse.Warning(
+            List.of(), List.of(), List.of(new io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse.Warning(
                 "TEST", candidateContent, candidateContent, 1)), schema));
 
         service.discover("kb", request, List.of());

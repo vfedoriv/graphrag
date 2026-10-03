@@ -21,8 +21,8 @@ import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvalu
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationEligibleDocumentPageResponse;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.StartEvaluationRequest;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.StartEvaluationResponse;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;

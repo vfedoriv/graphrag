@@ -107,10 +107,22 @@ schema/profile facts, while `StoredSchemaSnapshots`, `SchemaSnapshots`, and
 `SearchSchemaAdapter` in `bootstrap.integration.search`. AI owns compatibility
 through `EmbeddingCompatibility` and immutable `EmbeddingTarget`; the
 `EmbeddingSpacePolicy` bridge has been removed. `ArchitectureBoundaryTest` retires
-the step-8 schema, document-metadata, and compatibility exceptions. Exact settings,
-AI model/profile construction, observability, logging, transaction, shared
-embedding/lexical-index, and configuration-assembly seams remain assigned to
-roadmap step 9. Document processing and migration preparation use AI-owned
+the step-8 schema, document-metadata, and compatibility exceptions.
+
+Support consolidation (roadmap step 9) is implemented. `settings.contracts`
+provides immutable typed runtime snapshots; query policy belongs to search and
+supplied-snapshot chunk revision calculation belongs to documents. `ai.contracts`,
+`ai.models`, and `ai.execution` expose non-secret profile facts, model capabilities,
+and captured execution; AI owns tokenizer identity and provider construction.
+Knowledge-base management is under `knowledgebase`, schema generation under
+`schemas.generation`, and vector/lexical contracts and graph adapters under
+`indexes`. Search metrics are search-owned; generic observations, metadata logging,
+binary storage, HTTP bases, and store-qualified transaction annotations remain
+governed support. `bootstrap` owns assembly and persistence scans; its integration
+adapters only map public values and add no transactions. Permanent architecture
+rules enforce the feature graph and retire every step-nine frozen pair. Existing
+transaction self-call constraints are assessed by exact signatures independently
+of ownership. Document processing and migration preparation use AI-owned
 `EmbeddingCompatibility` and immutable `EmbeddingTarget` directly.
 
 Document ownership is consolidated under `documents`: API entry points and models
@@ -152,8 +164,8 @@ retains durable intent, inactive registration, and transactional draft linkage.
 Draft navigation consumes bounded batch summary ports through mapping-only bridges.
 Existing HTTP/SQL/snapshot contracts, fingerprints, race semantics, and recovery
 predicates remain unchanged. The exact step-6 and step-7 exceptions are retired;
-`ArchitectureBoundaryTest` retains only exact support/assembly (step 9)
-exceptions after search consolidation.
+`ArchitectureBoundaryTest` and `FinalSupportBoundaryTest` enforce the completed
+feature/support boundaries with no roadmap exceptions.
 
 
 ### Main Controllers
@@ -239,7 +251,10 @@ Key config files:
 - `src/main/resources/schemas/*.json` — predefined bootstrap schemas (`legal-contracts-v1`, `cmms-v1`)
 - `compose.yaml` — Neo4j and optional local Langfuse stack via Docker Compose profiles
 
-All application config is bound to `AppProperties` (validated `@ConfigurationProperties` record).
+Startup properties bind through owned configuration records for AI, indexes,
+storage, settings, observability, search, and schema drafts. `bootstrap.AppProperties`
+is an assembly aggregate; feature consumers use owned records or typed runtime
+contracts. Property names and profile-resolved defaults are unchanged.
 
 ## Testing Approach
 

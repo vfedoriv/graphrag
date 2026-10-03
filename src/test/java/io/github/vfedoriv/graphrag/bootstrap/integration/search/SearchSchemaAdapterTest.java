@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.schemas.contracts.CapturedSchemaParsing;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;

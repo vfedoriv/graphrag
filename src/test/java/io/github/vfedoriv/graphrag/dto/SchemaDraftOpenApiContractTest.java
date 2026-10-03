@@ -1,5 +1,8 @@
 package io.github.vfedoriv.graphrag.dto;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
+
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +22,7 @@ import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvalu
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationIneligibilityReason;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationReadiness;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DiffResponse;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.PlanItemPageResponse;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.PlanPageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos;

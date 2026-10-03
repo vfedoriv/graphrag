@@ -1,5 +1,4 @@
 package io.github.vfedoriv.graphrag.search.answering.adapters.model;
-import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchCitationCatalog;
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerValidator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +10,7 @@ import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerC
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.ConfidenceLevel;
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.DiagnosticResult;
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchAnswerContracts.Limitation;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;

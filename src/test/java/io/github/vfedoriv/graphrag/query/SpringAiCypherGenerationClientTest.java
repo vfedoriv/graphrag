@@ -6,7 +6,7 @@ import io.github.vfedoriv.graphrag.search.query.domain.GeneratedCypher;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
-import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
+import io.github.vfedoriv.graphrag.ai.models.EmptyObjectProvider;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.List;
 import java.util.Map;

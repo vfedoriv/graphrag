@@ -1,5 +1,16 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+
+import io.github.vfedoriv.graphrag.ai.adapters.provider.AiRuntimeModelFactory;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,9 +22,9 @@ import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.ai.domain.StoredEmbeddingObservation;
 import io.github.vfedoriv.graphrag.ai.ports.StoredEmbeddingInformation;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.search.retrieval.adapters.model.DenseEmbeddingAdapter;
 import io.github.vfedoriv.graphrag.search.retrieval.application.DenseTextRetriever;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
@@ -81,7 +92,7 @@ class DenseTextRetrieverTest {
         AiProfileService profileService = mock(AiProfileService.class);
         KnowledgeBaseService knowledgeBaseService = mock(KnowledgeBaseService.class);
         AiRuntimeModelFactory runtimeModelFactory = mock(AiRuntimeModelFactory.class);
-        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile);
+        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile.facts());
         SearchProfiles profiles = new SearchProfileAdapter(profileService, knowledgeBaseService, runtimeModelFactory);
 
         EmbeddingTarget target = EmbeddingTarget.derive(
@@ -97,7 +108,7 @@ class DenseTextRetrieverTest {
         when(clientResolver.embeddingClient()).thenReturn(embeddingClient);
         SearchEmbeddingModel embeddings = new DenseEmbeddingAdapter(profiles, compatibility, clientResolver);
 
-        EmbeddingSpaceIndexService indexService = mock(EmbeddingSpaceIndexService.class);
+        VectorIndexes indexService = mock(VectorIndexes.class);
         when(indexService.indexName("kb-1", target.id())).thenReturn("vector-index");
         TextChunkRetrievalRepository repository = mock(TextChunkRetrievalRepository.class);
         DenseTextRetriever retriever = new DenseTextRetriever(embeddings, compatibility, indexService, repository);

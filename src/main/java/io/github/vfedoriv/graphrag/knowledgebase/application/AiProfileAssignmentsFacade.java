@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.knowledgebase.application;
 
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.AiProfileAssignments;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,10 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.DiscoveryGuidance;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DraftGuidance;
 import java.util.Set;
 import org.springframework.stereotype.Component;

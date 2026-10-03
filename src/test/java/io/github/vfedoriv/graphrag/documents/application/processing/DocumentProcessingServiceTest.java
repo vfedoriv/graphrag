@@ -1,10 +1,17 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
-import io.github.vfedoriv.graphrag.service.AiProfileService;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
-import io.github.vfedoriv.graphrag.service.EmptyObjectProvider;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+import io.github.vfedoriv.graphrag.indexes.adapters.graph.EmbeddingSpaceIndexService;
+import io.github.vfedoriv.graphrag.ai.models.EmptyObjectProvider;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.ManagedKnowledgeBases;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 
@@ -18,11 +25,11 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedDocument;
 import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedSection;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
@@ -30,9 +37,9 @@ import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkHierarchyResponse;
 import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkPageResponse;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.DocumentChunkPersistenceAdapter;
 import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
@@ -86,7 +93,7 @@ class DocumentProcessingServiceTest {
     @Mock
     private KnowledgeBaseService knowledgeBaseService;
     @Mock
-    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private ManagedKnowledgeBases knowledgeBaseLifecycleService;
 
     @Test
     void orchestratesParsingChunkingAndEmbedding() throws Exception {
@@ -105,7 +112,7 @@ class DocumentProcessingServiceTest {
         doc.setProcessingDefaultsJson("{\"preserveLineBreaks\":true}");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
-        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties).facts());
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parseStructured(
@@ -169,7 +176,7 @@ class DocumentProcessingServiceTest {
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
-        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile(appProperties));
+        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile(appProperties).facts());
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
         when(documentParsingService.parseStructured(
@@ -212,7 +219,7 @@ class DocumentProcessingServiceTest {
         doc.setContentUri("file:///tmp/a.txt");
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
-        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties).facts());
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("chunk-one chunk-two".getBytes());
         when(documentParsingService.parseStructured(
@@ -291,7 +298,7 @@ class DocumentProcessingServiceTest {
         );
 
         when(documentUploadRepository.findById("doc-1")).thenReturn(Optional.of(doc));
-        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties));
+        when(knowledgeBaseService.activeAiProfile(doc.getKnowledgeBaseId())).thenReturn(profile(appProperties).facts());
         when(extractionRunRepository.hasCompletedRun("doc-1")).thenReturn(false);
         when(documentUploadService.readContent(doc.getContentUri())).thenReturn("content".getBytes());
         when(documentParsingService.parseStructured(
@@ -472,18 +479,18 @@ class DocumentProcessingServiceTest {
 
     private AppProperties props() {
         return new AppProperties(
-            new AppProperties.Neo4j("neo4j"),
-            new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 3, "gpt-5-mini"),
-            new AppProperties.Storage(Path.of("var/documents")),
-            new AppProperties.Chunking(800, 2, 10),
-            new AppProperties.Query(200, 15, true, List.of("CREATE")),
-            new AppProperties.Extraction(40, 80, 2)
+            new Neo4jProperties("neo4j"),
+            new ModelProperties("https://api.openai.com/v1", "", "text-embedding-3-small", 3, "gpt-5-mini"),
+            new StorageProperties(Path.of("var/documents")),
+            new ChunkingProperties(800, 2, 10),
+            new QueryProperties(200, 15, true, List.of("CREATE")),
+            new ExtractionProperties(40, 80, 2)
         );
     }
 
     private DocumentProcessingService service(ChunkingService chunkingService) {
         ObjectMapper objectMapper = new ObjectMapper();
-        ProfileScopedAiClientResolver clientResolver = new ProfileScopedAiClientResolver(
+        ProfileScopedAiClientResolver clientResolver = ProfileScopedAiClientResolver.fromProviders(
             embeddingClientProvider,
             new EmptyObjectProvider<>(),
             new EmptyObjectProvider<>()
@@ -491,7 +498,7 @@ class DocumentProcessingServiceTest {
         DocumentChunkPersistenceAdapter persistenceAdapter = new DocumentChunkPersistenceAdapter(
             documentChunkRepository,
             new EmbeddingSpaceIndexService(neo4jClient),
-            org.mockito.Mockito.mock(io.github.vfedoriv.graphrag.repository.LexicalIndexRepository.class),
+            org.mockito.Mockito.mock(io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository.class),
             neo4jClient
         );
         DocumentProcessingOptionsRegistry registry = new DocumentProcessingOptionsRegistry();

@@ -1,11 +1,7 @@
 package io.github.vfedoriv.graphrag.search.runs.application;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRetrievalContracts;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts;
-import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchParentContextService;
-import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator;
 import io.github.vfedoriv.graphrag.search.ranking.application.AdvancedSearchRankingPipeline;
-import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchFusionService;
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchFollowUpPolicy;
 import io.github.vfedoriv.graphrag.search.answering.adapters.model.AdvancedSearchSufficiencyEvaluator;
 
@@ -17,7 +13,7 @@ import io.github.vfedoriv.graphrag.search.retrieval.application.DocumentMetadata
 import io.github.vfedoriv.graphrag.search.retrieval.application.LexicalTextRetriever;
 import io.github.vfedoriv.graphrag.search.runs.adapters.codec.AdvancedSearchResultCodec;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
@@ -36,7 +32,6 @@ import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Result;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Subquery;
-import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
 import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchFollowUpPolicy.Decision;
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchFusionService.FusionOptions;
@@ -51,7 +46,7 @@ import io.github.vfedoriv.graphrag.search.answering.domain.AdvancedSearchCitatio
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
-import io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics;
+import io.github.vfedoriv.graphrag.search.runs.adapters.metrics.AdvancedSearchMetrics;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;

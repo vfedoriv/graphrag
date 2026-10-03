@@ -1,13 +1,15 @@
 package io.github.vfedoriv.graphrag.schemas.registry.application;
 
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaRegistryCapabilities;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 import io.github.vfedoriv.graphrag.schemas.contracts.StoredSchemaSnapshots;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaValidationResult;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaFormat;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.KnowledgeBaseAdmission;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaAssociations;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
@@ -135,7 +137,7 @@ class SchemaRegistryCapabilitiesFacadeTest {
         when(definitions.existsByNameAndVersion("contracts", 1)).thenReturn(true);
 
         assertThatThrownBy(() -> capabilities.registerGeneratedInactive(VALID_SCHEMA_JSON, "kb-1"))
-            .isInstanceOf(io.github.vfedoriv.graphrag.error.ConflictException.class)
+            .isInstanceOf(io.github.vfedoriv.graphrag.http.contracts.ConflictException.class)
             .hasMessage("Schema version is immutable and already exists for name=contracts, version=1");
         verify(definitions, never()).save(any(SchemaDefinitionNode.class));
         verify(associations, never()).attach(any(), any());

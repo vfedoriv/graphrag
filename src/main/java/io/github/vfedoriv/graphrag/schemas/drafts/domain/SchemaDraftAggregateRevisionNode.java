@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.domain;
 
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 
 import java.time.Instant;
 import lombok.Getter;

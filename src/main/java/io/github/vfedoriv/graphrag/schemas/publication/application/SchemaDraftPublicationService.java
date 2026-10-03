@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.publication.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaRegistryCapabilities;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 import io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftAdmissions;
@@ -14,8 +14,8 @@ import io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPubl
 import io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPublicationDtos.PublicationResponse;
 import io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPublicationDtos.PublishDraftRequest;
 import io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPublicationDtos.ReadinessBlockingReason;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;

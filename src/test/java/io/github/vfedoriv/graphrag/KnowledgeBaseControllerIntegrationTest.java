@@ -1,5 +1,19 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.entity.KnowledgeBaseEntity;
+
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.entity.AiProfileEntity;
+
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest;
+
 import io.github.vfedoriv.graphrag.IntegrationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,13 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaAiProfileRepository;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.repository.JpaAiProfileRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseSchemaRepository;
 import io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.repository.JpaSchemaDefinitionRepository;
-import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
-import io.github.vfedoriv.graphrag.service.AiProfileService;
+import io.github.vfedoriv.graphrag.ai.profiles.ports.AiProfileRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,7 +71,7 @@ class KnowledgeBaseControllerIntegrationTest {
     @Autowired
     private AiProfileService aiProfileService;
     @Autowired
-    private io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository knowledgeBaseRepository;
+    private io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository knowledgeBaseRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -235,7 +249,7 @@ class KnowledgeBaseControllerIntegrationTest {
             .andExpect(jsonPath("$.revision").value(2))
             .andExpect(jsonPath("$.apiKeyConfigured").value(true));
 
-        io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.AiProfileEntity persisted =
+        io.github.vfedoriv.graphrag.ai.profiles.adapters.relational.entity.AiProfileEntity persisted =
             jpaAiProfileRepository.findById("legacy-profile").orElseThrow();
         assertThat(persisted.getVersion()).isGreaterThanOrEqualTo(1L);
         assertThat(persisted.getTimeoutSeconds()).isEqualTo(600);
@@ -407,13 +421,13 @@ class KnowledgeBaseControllerIntegrationTest {
         createKnowledgeBase("kb-compatible");
         createKnowledgeBase("kb-shared");
         AiProfileNode initial = aiProfileService.defaultProfile();
-        aiProfileService.create(new io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest(
+        aiProfileService.create(new io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest(
             "compatible", "Compatible", initial.getBaseUrl(), "kept-key", "chat", initial.getEmbeddingModel(),
             initial.getEmbeddingDimensions(), 60, 2, false));
-        aiProfileService.create(new io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest(
+        aiProfileService.create(new io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest(
             "incompatible", "Incompatible", "https://another.example/v1", null, "chat", initial.getEmbeddingModel(),
             initial.getEmbeddingDimensions(), 60, 2, false));
-        String space = io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity.fromProfile(initial).id();
+        String space = io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity.fromProfile(initial.facts()).id();
         for (String id : java.util.List.of("kb-compatible", "kb-shared")) {
             neo4jClient.query("""
                 CREATE (:DocumentChunk {id: $id, knowledgeBaseId: $id, embedding: [0.1],
@@ -447,7 +461,7 @@ class KnowledgeBaseControllerIntegrationTest {
     @Test
     void staleKnowledgeBaseAssignmentVersionCannotOverwriteWinner() throws Exception {
         createKnowledgeBase("kb-versioned");
-        io.github.vfedoriv.graphrag.infrastructure.persistence.relational.entity.KnowledgeBaseEntity before =
+        io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.entity.KnowledgeBaseEntity before =
             jpaKnowledgeBaseRepository.findById("kb-versioned").orElseThrow();
         jdbcTemplate.update("UPDATE app.knowledge_base SET version = version + 1 WHERE id = ?", "kb-versioned");
         assertThat(knowledgeBaseRepository.assignAiProfile("kb-versioned", before.getVersion(), "default")).isFalse();
@@ -459,7 +473,7 @@ class KnowledgeBaseControllerIntegrationTest {
     @Autowired
     private org.neo4j.driver.Driver graphDriver;
     @Autowired
-    private io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService lifecycle;
+    private io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService lifecycle;
     @Autowired
     private io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility compatibility;
     @Autowired
@@ -481,7 +495,7 @@ class KnowledgeBaseControllerIntegrationTest {
         createKnowledgeBase("failed-delete");
         createSchemaAndReturnId("failed-delete-schema", "failed-delete");
         neo4jClient.query("CREATE (:DocumentChunk {id:'partial-artifact', knowledgeBaseId:'failed-delete'})").run();
-        io.github.vfedoriv.graphrag.service.KnowledgeBaseService failing = new io.github.vfedoriv.graphrag.service.KnowledgeBaseService(
+        io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService failing = new io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService(
             knowledgeBaseRepository, aiProfileService, ownedDocuments, lifecycle, compatibility, id -> {
                 // Independently committed external effects cannot be undone by relational rollback.
                 try (org.neo4j.driver.Session session = graphDriver.session()) {

@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseExcep
 import io.github.vfedoriv.graphrag.schemas.discovery.SourceStateException;
 import io.github.vfedoriv.graphrag.schemas.discovery.EmptyModelResponseException;
 import io.github.vfedoriv.graphrag.schemas.discovery.InvalidModelCandidateException;
-import io.github.vfedoriv.graphrag.schemas.discovery.ModelResponseDiagnostics;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureClassifier;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;

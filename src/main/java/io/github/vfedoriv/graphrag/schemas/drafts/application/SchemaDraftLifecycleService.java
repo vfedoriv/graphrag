@@ -5,7 +5,6 @@ import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftSchemaLookup;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftKnowledgeBases;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceNode;
@@ -14,8 +13,8 @@ import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.Crea
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DraftResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.UpdateDraftRequest;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.UpdateGuidanceRequest;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAnalysisRunRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;

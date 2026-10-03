@@ -1,5 +1,22 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
+import io.github.vfedoriv.graphrag.ai.models.EmptyObjectProvider;
+
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+
+import io.github.vfedoriv.graphrag.ai.adapters.provider.AiRuntimeModelFactory;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,16 +27,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.dto.AiProfileResponse;
-import io.github.vfedoriv.graphrag.dto.CreateAiProfileRequest;
-import io.github.vfedoriv.graphrag.dto.UpdateAiProfileRequest;
-import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
-import io.github.vfedoriv.graphrag.repository.AiProfileRepository;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.AiProfileResponse;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.CreateAiProfileRequest;
+import io.github.vfedoriv.graphrag.ai.profiles.api.model.UpdateAiProfileRequest;
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.ai.api.error.EmbeddingSpaceConflictException;
+import io.github.vfedoriv.graphrag.ai.profiles.ports.AiProfileRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -197,7 +214,7 @@ class AiProfileServiceTest {
         AiProfileRepository repository = repository(store);
         io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments assignments = mock(io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments.class);
         when(assignments.exists("profile-1")).thenReturn(true);
-        AiProfileService service = new AiProfileService(repository, appProperties(), new EmptyObjectProvider<>(),
+        AiProfileService service = new AiProfileService(repository, appProperties().model(), new EmptyObjectProvider<>(),
             new io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility(id -> List.of()), assignments);
         service.seedDefaultProfile();
         service.create(new CreateAiProfileRequest(
@@ -233,7 +250,7 @@ class AiProfileServiceTest {
         when(modelFactories.getIfAvailable()).thenReturn(modelFactory);
         AiProfileService service = new AiProfileService(
             profileRepository,
-            appProperties(),
+            appProperties().model(),
             modelFactories,
             io.github.vfedoriv.graphrag.support.AiBoundaryTestSupport.compatibility(chunkRepository), assignments
         );
@@ -282,7 +299,7 @@ class AiProfileServiceTest {
     }
 
     private AiProfileService service(Map<String, AiProfileNode> store) {
-        return new AiProfileService(repository(store), appProperties(), new EmptyObjectProvider<>(),
+        return new AiProfileService(repository(store), appProperties().model(), new EmptyObjectProvider<>(),
             new io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility(id -> List.of()),
             mock(io.github.vfedoriv.graphrag.ai.ports.ProfileAssignments.class));
     }
@@ -316,12 +333,12 @@ class AiProfileServiceTest {
 
     private AppProperties appProperties() {
         return new AppProperties(
-            new AppProperties.Neo4j("neo4j"),
-            new AppProperties.Model("https://api.openai.com/v1", "startup-key", "text-embedding-3-small", 1536, "gpt-5-mini"),
-            new AppProperties.Storage(Path.of("var/documents")),
-            new AppProperties.Chunking(800, 80, 4000),
-            new AppProperties.Query(200, 15, true, List.of("CREATE")),
-            new AppProperties.Extraction(40, 80, 2)
+            new Neo4jProperties("neo4j"),
+            new ModelProperties("https://api.openai.com/v1", "startup-key", "text-embedding-3-small", 1536, "gpt-5-mini"),
+            new StorageProperties(Path.of("var/documents")),
+            new ChunkingProperties(800, 80, 4000),
+            new QueryProperties(200, 15, true, List.of("CREATE")),
+            new ExtractionProperties(40, 80, 2)
         );
     }
 }

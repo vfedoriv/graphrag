@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.schemas.registry.api.SchemaController;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,29 +11,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.dto.CreateSchemaRequest;
-import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleResponse;
-import io.github.vfedoriv.graphrag.dto.GenerateSchemaResponse;
-import io.github.vfedoriv.graphrag.dto.GenerateSchemaFromFileRequest;
-import io.github.vfedoriv.graphrag.dto.GenerateSchemaExampleRequest;
-import io.github.vfedoriv.graphrag.dto.GenerateSchemaRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaGenerationResult;
-import io.github.vfedoriv.graphrag.dto.SchemaGenerationWarning;
-import io.github.vfedoriv.graphrag.dto.SchemaDetailsResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
-import io.github.vfedoriv.graphrag.dto.UpdateSchemaRequest;
-import io.github.vfedoriv.graphrag.documents.contracts.DocumentSourceInputs;
+import io.github.vfedoriv.graphrag.schemas.registry.api.model.CreateSchemaRequest;
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaExampleResponse;
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaResponse;
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaFromFileRequest;
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaExampleRequest;
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaRequest;
+import io.github.vfedoriv.graphrag.schemas.generation.domain.SchemaGenerationResult;
+import io.github.vfedoriv.graphrag.schemas.generation.domain.SchemaGenerationWarning;
+import io.github.vfedoriv.graphrag.schemas.registry.api.model.SchemaDetailsResponse;
+import io.github.vfedoriv.graphrag.schemas.registry.api.model.SchemaResponse;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.schemas.registry.api.model.UpdateSchemaRequest;
+import io.github.vfedoriv.graphrag.schemas.generation.ports.SchemaGenerationParsing;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaFormat;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
-import io.github.vfedoriv.graphrag.service.SchemaGenerationService;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.generation.application.SchemaGenerationService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.schemas.discovery.application.SchemaDiscoveryService;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ResponseStatus;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +50,7 @@ class SchemaControllerTest {
     void discoverSchemaDelegatesJsonSourcesWithoutChangingGenerationContract() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         SchemaDiscoveryService discoveryService = Mockito.mock(SchemaDiscoveryService.class);
         SchemaDiscoveryRequest request = new SchemaDiscoveryRequest(List.of("document-1"),
             List.of(new SchemaDiscoveryRequest.TextSource("sample", "text")), null,
@@ -66,7 +68,7 @@ class SchemaControllerTest {
     void discoverSchemaFromFilesDelegatesMixedMetadataAndFiles() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         SchemaDiscoveryService discoveryService = Mockito.mock(SchemaDiscoveryService.class);
         SchemaDiscoveryRequest request = new SchemaDiscoveryRequest(List.of("document-1"), List.of(), null,
             SchemaDiscoveryRequest.DiscoveryGuidance.empty());
@@ -85,7 +87,7 @@ class SchemaControllerTest {
     void generateSchemaReturnsJsonContent() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         when(generationService.generate("generated-legal-schema", 1, "from text", "raw input text", "example json"))
             .thenReturn(new SchemaGenerationResult(
                 "{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
@@ -106,7 +108,7 @@ class SchemaControllerTest {
     void generateSchemaFromFileParsesAndGeneratesWithoutSaving() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "sample.txt", "text/plain", "raw bytes".getBytes());
         byte[] rawBytes = "raw bytes".getBytes();
@@ -131,7 +133,7 @@ class SchemaControllerTest {
     void generateSchemaReturnsStructuredWarningsWithoutFailure() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         when(generationService.generate("generated-legal-schema", 1, "from text", "raw input text", "example json"))
             .thenReturn(new SchemaGenerationResult(
                 "{\"name\":\"generated-legal-schema\",\"version\":1,\"nodes\":[],\"relationships\":[]}",
@@ -160,7 +162,7 @@ class SchemaControllerTest {
     void generateSchemaExampleUsesTextAndPrompt() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         when(generationService.generateExample("raw input text", "focus on contracts")).thenReturn("[{\"head\":\"Acme\"}]");
 
@@ -176,7 +178,7 @@ class SchemaControllerTest {
     void generateSchemaExampleFromFileParsesAndUsesOptionalPrompt() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "sample.txt", "text/plain", "raw bytes".getBytes());
         byte[] rawBytes = "raw bytes".getBytes();
@@ -195,7 +197,7 @@ class SchemaControllerTest {
     void getSchemaReturnsPersistedSchemaContent() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-01");
@@ -223,7 +225,7 @@ class SchemaControllerTest {
     void getSchemaNotFoundPropagatesException() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         when(registryService.getSchema("missing-schema")).thenThrow(new NotFoundException("Schema not found: missing-schema"));
 
@@ -238,7 +240,7 @@ class SchemaControllerTest {
     void updateSchemaReturnsDetailsAndDelegatesToRegistry() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         String content = "{\"name\":\"legal-contracts\",\"version\":1,\"nodes\":[],\"relationships\":[]}";
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
@@ -270,7 +272,7 @@ class SchemaControllerTest {
     void deleteSchemaReturnsNoContentAndDelegatesToRegistry() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
         ResponseEntity<Void> response = controller.deleteSchema("schema-01");
@@ -284,7 +286,7 @@ class SchemaControllerTest {
     void createAndListSchemasUseSummaryResponseWithoutContentField() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-01");
@@ -326,7 +328,7 @@ class SchemaControllerTest {
     void attachSchemaDelegatesToRegistryService() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
 
@@ -339,7 +341,7 @@ class SchemaControllerTest {
     void listSchemasByKnowledgeBaseReturnsAssociatedSchemas() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
 
         SchemaDefinitionNode schema = new SchemaDefinitionNode();
         schema.setId("schema-01");
@@ -364,7 +366,7 @@ class SchemaControllerTest {
     void listSchemasByKnowledgeBaseReturnsEmptyList() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         when(registryService.listSchemasByKnowledgeBase("kb-empty")).thenReturn(List.of());
 
         SchemaController controller = new SchemaController(registryService, generationService, parsingService);
@@ -378,7 +380,7 @@ class SchemaControllerTest {
     void listSchemasByKnowledgeBaseUnknownKnowledgeBasePropagatesNotFound() {
         SchemaRegistryService registryService = Mockito.mock(SchemaRegistryService.class);
         SchemaGenerationService generationService = Mockito.mock(SchemaGenerationService.class);
-        DocumentSourceInputs parsingService = Mockito.mock(DocumentSourceInputs.class);
+        SchemaGenerationParsing parsingService = Mockito.mock(SchemaGenerationParsing.class);
         when(registryService.listSchemasByKnowledgeBase("missing-kb"))
             .thenThrow(new NotFoundException("Knowledge base not found: missing-kb"));
 

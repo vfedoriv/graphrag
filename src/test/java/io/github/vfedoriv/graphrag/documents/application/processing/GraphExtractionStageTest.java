@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.documents.application.processing;
 
 import static org.mockito.Mockito.verify;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import java.util.List;
@@ -25,7 +25,7 @@ class GraphExtractionStageTest {
         AiProfileNode profile = new AiProfileNode();
         profile.setId("profile-1");
 
-        new GraphExtractionStage(graphExtractionService).execute(document, List.of(chunk), profile, true);
+        new GraphExtractionStage(graphExtractionService).execute(document, List.of(chunk), profile.facts(), true);
 
         verify(graphExtractionService).extract(document, List.of(chunk), true);
     }
@@ -44,7 +44,7 @@ class GraphExtractionStageTest {
         new GraphExtractionStage(graphExtractionService).execute(
             document,
             List.of(parent, child),
-            profile,
+            profile.facts(),
             false
         );
 

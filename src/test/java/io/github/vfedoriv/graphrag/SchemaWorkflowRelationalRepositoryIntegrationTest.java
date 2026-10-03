@@ -1,10 +1,12 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
@@ -34,11 +36,11 @@ import io.github.vfedoriv.graphrag.schemas.publication.ports.SchemaDraftPublicat
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingRecoveryService;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.graph.GraphSchemaInitializer;
+import io.github.vfedoriv.graphrag.bootstrap.GraphSchemaInitializer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -71,7 +73,7 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
     private String knowledgeBaseId;
     private SchemaDraftNode draft;
     private SchemaDraftAggregateRevisionNode aggregate;
-    private AiProfileNode profile;
+    private io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile;
 
     @BeforeEach
     void prepare() {
@@ -199,7 +201,7 @@ class SchemaWorkflowRelationalRepositoryIntegrationTest {
             .isEqualTo(SchemaDraftPublicationStatus.PENDING);
         assertThat(draftRepository.findById(draft.getId()).orElseThrow().getStatus()).isEqualTo(SchemaDraftStatus.OPEN);
         assertThat(schemaRegistryService.getSchema(schema.getId()).getStatus())
-            .isEqualTo(io.github.vfedoriv.graphrag.domain.SchemaStatus.INACTIVE);
+            .isEqualTo(io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus.INACTIVE);
         assertThat(knowledgeBaseService.get(knowledgeBaseId).getActiveSchemaId()).isNull();
         assertThat(jdbcTemplate.queryForObject("select count(*) from app.schema_reprocessing_plan", Integer.class)).isZero();
     }

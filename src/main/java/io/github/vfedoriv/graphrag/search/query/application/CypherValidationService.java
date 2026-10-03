@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.search.query.ports.QueryExecutor;
 import io.github.vfedoriv.graphrag.search.query.domain.CypherLimitScanner;
 import io.github.vfedoriv.graphrag.search.query.domain.CypherParsingSupport;
 import io.github.vfedoriv.graphrag.search.query.domain.CypherSchemaSupport;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
@@ -31,12 +31,12 @@ public class CypherValidationService {
         "KnowledgeBase", "SchemaDefinition", "DocumentUpload", "DocumentChunk", "ExtractionRun", "DocumentProcessingRun",
         "ExtractedEntity", "ExtractedRelation"
     );
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final SearchSchemas activeSchemaResolver;
     private final QueryExecutor queryNeo4jExecutor;
 
     public CypherValidationService(
-        RuntimeSettingsService runtimeSettingsService,
+        RuntimeSettingsAccess runtimeSettingsService,
         SearchSchemas activeSchemaResolver,
         QueryExecutor queryNeo4jExecutor
     ) {
@@ -46,7 +46,7 @@ public class CypherValidationService {
     }
 
     public QueryValidationResult validate(String knowledgeBaseId, String cypher, Map<String, Object> parameters) {
-        return validate(knowledgeBaseId, cypher, parameters, runtimeSettingsService.queryPolicy());
+        return validate(knowledgeBaseId, cypher, parameters, io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy.from(runtimeSettingsService.query()));
     }
 
     public QueryValidationResult validate(
@@ -73,7 +73,7 @@ public class CypherValidationService {
     }
 
     public QueryValidationResult validate(SchemaDocument schema, String cypher, Map<String, Object> parameters) {
-        return validate(schema, cypher, parameters, runtimeSettingsService.queryPolicy());
+        return validate(schema, cypher, parameters, io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy.from(runtimeSettingsService.query()));
     }
 
     public QueryValidationResult validate(SchemaDocument schema, String cypher, Map<String, Object> parameters, QueryPolicy policy) {

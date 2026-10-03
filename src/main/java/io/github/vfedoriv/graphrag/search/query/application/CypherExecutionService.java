@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.search.query.application;
 
 import io.github.vfedoriv.graphrag.search.query.ports.QueryExecutor;
 import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.query.api.model.QueryExecutionResponse;
 import io.github.vfedoriv.graphrag.search.query.api.model.QueryValidationResponse;
@@ -12,7 +12,6 @@ import io.github.vfedoriv.graphrag.search.query.domain.QueryValidationResult;
 import io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy;
 import io.github.vfedoriv.graphrag.search.query.api.model.QueryPolicyResponse;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +22,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherExecutionService {
 
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final CypherValidationService cypherValidationService;
     private final QueryExecutor queryNeo4jExecutor;
 
     public CypherExecutionService(
-        RuntimeSettingsService runtimeSettingsService,
+        RuntimeSettingsAccess runtimeSettingsService,
         CypherValidationService cypherValidationService,
         QueryExecutor queryNeo4jExecutor
     ) {
@@ -38,7 +37,7 @@ public class CypherExecutionService {
     }
 
     public QueryExecutionResponse execute(String knowledgeBaseId, String cypher, Map<String, Object> parameters) {
-        return execute(knowledgeBaseId, cypher, parameters, runtimeSettingsService.queryPolicy());
+        return execute(knowledgeBaseId, cypher, parameters, io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy.from(runtimeSettingsService.query()));
     }
 
     public QueryExecutionResponse execute(

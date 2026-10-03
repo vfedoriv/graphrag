@@ -1,11 +1,13 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
+import io.github.vfedoriv.graphrag.bootstrap.LegacyJacksonConfiguration;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.*;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.*;
 import io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPublicationDtos.*;
@@ -23,7 +25,7 @@ class DraftWorkflowInputsFacadeTest {
     private final SchemaDraftConflictRepository conflicts = mock(SchemaDraftConflictRepository.class);
     private final SchemaDraftDecisionRepository decisions = mock(SchemaDraftDecisionRepository.class);
     private final SchemaDraftSourceResultRepository results = mock(SchemaDraftSourceResultRepository.class);
-    private final SchemaDraftJsonSupport json = new SchemaDraftJsonSupport(new io.github.vfedoriv.graphrag.config.LegacyJacksonConfiguration().legacyObjectMapper());
+    private final SchemaDraftJsonSupport json = new SchemaDraftJsonSupport(new io.github.vfedoriv.graphrag.bootstrap.LegacyJacksonConfiguration().legacyObjectMapper());
     private final DraftWorkflowInputsFacade facade = new DraftWorkflowInputsFacade(lifecycle, review, aggregates, conflicts, decisions, results, json, new SchemaDraftGuidanceMapper(json, new ObjectMapper()));
 
     @Test void admissionReturnsDetachedFactsAndPreservesScopeAndRevision() {

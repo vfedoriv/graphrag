@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.ChunkMigrationSnapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.documents.application.processing.ChunkingService;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
@@ -26,7 +30,7 @@ class ChunkMigrationContractsTest {
         when(runtimeSettings.chunking()).thenReturn(settings());
         when(runtimeSettings.effectiveChunkerRevision()).thenReturn("chunker_" + "a".repeat(64));
         ChunkingService chunkingService = new ChunkingService(runtimeSettings);
-        AiProfileNode profile = profile();
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = profile().facts();
         ChunkingContext documentContext = chunkingService.snapshot(profile, "text");
         ChunkMigrationSnapshot.ChunkTarget chunkTarget = new ObjectMapper().convertValue(chunkingService.snapshotTarget(profile), ChunkMigrationSnapshot.ChunkTarget.class);
         Map<String, ChunkMigrationSnapshot.DocumentTarget> documents = new LinkedHashMap<>();
@@ -63,7 +67,7 @@ class ChunkMigrationContractsTest {
         RuntimeSettingsService runtimeSettings = mock(RuntimeSettingsService.class);
         when(runtimeSettings.chunking()).thenReturn(settings());
         ChunkingService chunkingService = new ChunkingService(runtimeSettings);
-        AiProfileNode profile = profile();
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = profile().facts();
         ChunkingContext documentContext = chunkingService.snapshot(profile, "text");
         ChunkMigrationSnapshot.ChunkTarget current = new ObjectMapper().convertValue(chunkingService.snapshotTarget(profile), ChunkMigrationSnapshot.ChunkTarget.class);
         ChunkMigrationSnapshot.ChunkTarget changed = new ChunkMigrationSnapshot.ChunkTarget(
@@ -107,8 +111,8 @@ class ChunkMigrationContractsTest {
         );
     }
 
-    private RuntimeSettingsService.ChunkingSettings settings() {
-        return new RuntimeSettingsService.ChunkingSettings(
+    private RuntimeSettingsAccess.ChunkingSettings settings() {
+        return new RuntimeSettingsAccess.ChunkingSettings(
             "recursive",
             800,
             80,

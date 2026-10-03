@@ -1,13 +1,11 @@
 package io.github.vfedoriv.graphrag.search.runs.application;
-import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos;
-import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor;
 
 import io.github.vfedoriv.graphrag.search.runs.adapters.codec.AdvancedSearchResultCodec;
 import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchAdmission;
 import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchReadinessService;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunLifecycle;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,10 +21,10 @@ import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.R
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.RunDetailResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.RunSummaryResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos.ReadinessResponse;
-import io.github.vfedoriv.graphrag.dto.PageResponse;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchCapacityException;
 import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchResultUnavailableException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchAttemptRepository;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchResultRepository;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunRepository;
@@ -36,8 +34,8 @@ import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor.
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor.Context;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunProcessor.ProcessingResult;
 import io.github.vfedoriv.graphrag.search.runs.application.DefaultAdvancedSearchRunProcessor.AdvancedSearchStoppedException;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
-import io.github.vfedoriv.graphrag.observability.AdvancedSearchMetrics;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.search.runs.adapters.metrics.AdvancedSearchMetrics;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -58,7 +56,7 @@ public class AdvancedSearchRunService {
     private final AdvancedSearchResultRepository resultRepository;
     private final SearchKnowledgeBases knowledgeBaseRepository;
     private final SearchSchemas schemaDefinitionRepository;
-    private final RuntimeSettingsService settingsService;
+    private final RuntimeSettingsAccess settingsService;
     private final AdvancedSearchRunProcessor processor;
     private final AdvancedSearchRunLifecycle lifecycle;
     private final AdvancedSearchResultCodec resultCodec;
@@ -78,7 +76,7 @@ public class AdvancedSearchRunService {
         AdvancedSearchResultRepository resultRepository,
         SearchKnowledgeBases knowledgeBaseRepository,
         SearchSchemas schemaDefinitionRepository,
-        RuntimeSettingsService settingsService,
+        RuntimeSettingsAccess settingsService,
         AdvancedSearchRunProcessor processor,
         AdvancedSearchRunLifecycle lifecycle,
         AdvancedSearchResultCodec resultCodec,

@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.ai.application;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingCompatibilityRule;
 import io.github.vfedoriv.graphrag.ai.ports.StoredEmbeddingInformation;
-import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
+import io.github.vfedoriv.graphrag.ai.api.error.EmbeddingSpaceConflictException;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;

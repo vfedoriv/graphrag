@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.controller;
 
+import io.github.vfedoriv.graphrag.settings.api.RuntimeSettingsController;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -8,10 +10,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.vfedoriv.graphrag.dto.RuntimeSettingResponse;
-import io.github.vfedoriv.graphrag.dto.RuntimeSettingUpdateRequest;
-import io.github.vfedoriv.graphrag.error.GlobalExceptionHandler;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingResponse;
+import io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingUpdateRequest;
+import io.github.vfedoriv.graphrag.bootstrap.http.GlobalExceptionHandler;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;

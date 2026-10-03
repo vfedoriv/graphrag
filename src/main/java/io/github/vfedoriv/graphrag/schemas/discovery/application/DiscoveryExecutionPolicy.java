@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.discovery.application;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public record DiscoveryExecutionPolicy(
     }
 
     public static DiscoveryExecutionPolicy from(
-        RuntimeSettingsService.DiscoverySettings settings, String settingsFingerprint
+        RuntimeSettingsAccess.DiscoverySettings settings, String settingsFingerprint
     ) {
         Objects.requireNonNull(settings, "settings");
         return new DiscoveryExecutionPolicy(

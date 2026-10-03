@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.search.ranking.adapters.model;
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts;
 
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;

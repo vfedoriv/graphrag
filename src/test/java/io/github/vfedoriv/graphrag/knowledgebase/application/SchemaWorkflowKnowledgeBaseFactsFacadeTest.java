@@ -3,12 +3,12 @@ package io.github.vfedoriv.graphrag.knowledgebase.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.SchemaWorkflowKnowledgeBaseFacts;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class SchemaWorkflowKnowledgeBaseFactsFacadeTest {
         AiProfileNode profile = new AiProfileNode();
         profile.setId("profile"); profile.setRevision(9); profile.setApiKey("secret-must-not-leak");
         profile.setBaseUrl("https://provider/v1"); profile.setEmbeddingModel("embedding"); profile.setEmbeddingDimensions(1536);
-        when(service.activeAiProfile("kb")).thenReturn(profile);
+        when(service.activeAiProfile("kb")).thenReturn(profile.facts());
         SchemaWorkflowKnowledgeBaseFacts.Profile facts = facade.activeProfile("kb");
         profile.setRevision(10); profile.setEmbeddingModel("changed");
         assertThat(facts.id()).isEqualTo("profile"); assertThat(facts.revision()).isEqualTo(9);

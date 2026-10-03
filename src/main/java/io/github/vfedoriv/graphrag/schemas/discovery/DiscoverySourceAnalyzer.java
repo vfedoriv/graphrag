@@ -1,12 +1,14 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult.AliasSuggestion;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Candidate;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.CandidateKind;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Evidence;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ReviewState;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

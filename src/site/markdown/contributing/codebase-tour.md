@@ -6,37 +6,26 @@ GraphRAG is a Java 25 / Spring Boot 4.1.0 REST API. Controllers are thin; busine
 
 ```text
 src/main/java/io/github/vfedoriv/graphrag/
-  ai/domain, application, ports  embedding rules, admission, and stored-state ports
-  bootstrap/integration/ai, knowledgebase  document/assignment capability mapping
-  bootstrap/integration/search  document, knowledge-base, and schema fact mapping
-  bootstrap/integration/reprocessing  schema/document contract mapping
-  config                   validated startup/runtime configuration
-  controller               REST endpoints and OpenAPI annotations
-  documents/contracts      public preparation, execution, outcome, and stored-state capabilities
-  documents/application/inspection, lifecycle  embedding observations, counts, cleanup
-  documents/api            document/chunking HTTP endpoints and API models
-  documents/application/management  upload, cleanup, storage journals, chunking state
-  documents/application/processing  stages, extraction, lifecycles, recovery, facades
-  documents/domain         deterministic rules and internal values
-  documents/ports          owned persistence, binary, graph, and model effects
-  documents/adapters       relational, graph, binary, parsing, chunking, model effects
-  bootstrap/DocumentsProcessingConfiguration  document stage assembly
-  domain                   operational and graph domain types
-  dto                      API request/response contracts
-  embedding                embedding clients
-  error                    RFC 7807 exception mapping
-  graph                    schema-generation transformer support
-  infrastructure           PostgreSQL, Neo4j, storage, and AI adapters
-  knowledgebase/ports, contracts, application  lifecycle ports and assignment lookup
-  observability            AI workflow/model observations and metrics
-  repository               persistence ports
-  schema                   schema JSON model/parser/validator
-  search/query             query API, application workflows, graph/model adapters
-  search/retrieval, ranking, answering  retrieval, ranking, and answer policy/effects
-  search/runs               durable advanced-search API, workflow, and SQL adapters
-  schemas/reprocessing     consumer-owned ports and port-only item execution
-  service                  lifecycle and orchestration services
-  storage                  binary storage contract
+  ai/contracts, domain, models, execution  immutable facts, identity, scoped execution
+  ai/profiles              profile API, state, management, ports, relational adapters
+  ai/adapters/provider     provider construction, resolver mechanics, revision caches
+  bootstrap                configuration factories, startup loading, persistence scans
+  bootstrap/integration    public-capability to consumer-port value mapping
+  documents                owned API, workflows, rules, ports, and adapters
+  documents/contracts      public source/preparation/execution/state/revision capabilities
+  schemas/registry, discovery, generation  schema API, registry, analysis, model work
+  schemas/drafts, evaluation, publication, reprocessing  durable schema workflows
+  schemas/contracts        immutable schema snapshots and public capabilities
+  knowledgebase            owned API, management, state, ports, relational adapters
+  settings                 API, catalog, lifecycle, ports, relational adapters
+  settings/contracts       typed immutable runtime access snapshots
+  search/query, retrieval, ranking, answering, runs  query and durable search ownership
+  indexes/contracts, domain, adapters/graph  shared vector/lexical maintenance
+  observability            generic AI workflow/model observations
+  logging                  metadata-only logging helpers
+  http/contracts           common immutable pagination/request/error bases
+  storage                  shared binary primitives
+  persistence/transaction  store-qualified transaction annotations
 ```
 
 ## Guided tour
@@ -82,8 +71,11 @@ APIs, workflows, policy, effects, and durable state in `search.query`,
 `SearchSchemaAdapter` map public capabilities from `bootstrap.integration.search`;
 document metadata selection is capped at 200 results and citation batches at 128
 IDs. `EmbeddingSpacePolicy` has been removed and the exact step-8 boundary-test
-exceptions are retired. Only the named support and assembly edges for step 9
-remain frozen in `ArchitectureBoundaryTest`.
+exceptions and all step-nine support/assembly pairs are retired.
+`ArchitectureBoundaryTest` and `FinalSupportBoundaryTest` enforce permanent rules.
+Follow `RuntimeSettingsAccess`, AI profile/execution capabilities, and shared index
+contracts for support consumers; bootstrap factories can wire implementations,
+while integration adapters only map public contract values.
 
 ## High-risk invariants
 

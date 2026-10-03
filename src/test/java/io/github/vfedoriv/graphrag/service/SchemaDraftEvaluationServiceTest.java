@@ -8,7 +8,7 @@ import io.github.vfedoriv.graphrag.schemas.evaluation.ports.*;
 import io.github.vfedoriv.graphrag.schemas.drafts.contracts.*;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaRegistryCapabilities;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.*;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

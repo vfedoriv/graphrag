@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
 import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
 import io.github.vfedoriv.graphrag.search.query.application.CypherGenerationService;
 import io.github.vfedoriv.graphrag.search.query.application.QueryAskService;
@@ -147,7 +149,8 @@ class QueryAskServiceTest {
 
     private RuntimeSettingsService runtimeSettingsService() {
         RuntimeSettingsService runtimeSettingsService = Mockito.mock(RuntimeSettingsService.class);
-        when(runtimeSettingsService.queryPolicy()).thenReturn(new QueryPolicy(200, Duration.ofSeconds(15), true, List.of("CREATE")));
+        when(runtimeSettingsService.query()).thenReturn(new io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.QuerySettings(
+            200, 15, true, List.of("CREATE"), true, 4096, 8, 20, 2, 1));
         return runtimeSettingsService;
     }
 }

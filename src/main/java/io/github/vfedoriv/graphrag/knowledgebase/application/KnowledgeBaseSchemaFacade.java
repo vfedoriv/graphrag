@@ -1,10 +1,10 @@
 package io.github.vfedoriv.graphrag.knowledgebase.application;
 
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.KnowledgeBaseSchemaAccess;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.KnowledgeBaseSchemaFacts;
 import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseSchemaRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
 import org.springframework.stereotype.Service;
 
 @Service

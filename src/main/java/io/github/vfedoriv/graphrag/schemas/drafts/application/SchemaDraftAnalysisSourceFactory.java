@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.DraftSourceFingerprint;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftDocumentInputs;
 
@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 public class SchemaDraftAnalysisSourceFactory {
     private final DraftDocumentInputs documentRepository;
     private final DraftBinaryStorage storageService;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
 
     public SchemaDraftAnalysisSourceFactory(
         DraftDocumentInputs documentRepository,
         DraftBinaryStorage storageService,
-        RuntimeSettingsService runtimeSettingsService
+        RuntimeSettingsAccess runtimeSettingsService
     ) {
         this.documentRepository = documentRepository;
         this.storageService = storageService;
@@ -45,7 +45,7 @@ public class SchemaDraftAnalysisSourceFactory {
         if (text.isBlank()) {
             throw new IllegalArgumentException("Draft source has no parseable content");
         }
-        RuntimeSettingsService.DiscoverySettings settings = runtimeSettingsService.discovery();
+        RuntimeSettingsAccess.DiscoverySettings settings = runtimeSettingsService.discovery();
         if (text.length() > settings.maxSourceCharacters()) {
             throw new IllegalArgumentException("Draft source exceeds parsed character limit");
         }

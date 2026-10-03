@@ -1,5 +1,12 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
 import io.github.vfedoriv.graphrag.documents.domain.processing.PreparedChunk;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,16 +17,16 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkSlice;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.RecursiveTokenAwareChunkingStrategy;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.DocumentChunkPersistenceAdapter;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
@@ -63,7 +70,7 @@ class EmbeddingPersistenceStageTest {
 
         assertThatThrownBy(() -> stage.execute(
             document,
-            profile,
+            profile.facts(),
             List.of(new PreparedChunk("one", Map.of()), new PreparedChunk("two", Map.of()))
         ))
             .isInstanceOf(IllegalStateException.class)
@@ -135,7 +142,7 @@ class EmbeddingPersistenceStageTest {
             Map.of("representationRevision", "context-header-v1")
         );
 
-        stage.execute(document, profile, List.of(prepared));
+        stage.execute(document, profile.facts(), List.of(prepared));
 
         assertThat(embeddedTexts.get()).containsExactly(prepared.embeddingText());
         @SuppressWarnings("unchecked")
@@ -203,7 +210,7 @@ class EmbeddingPersistenceStageTest {
             Map.of("processingRunId", "run-1", "representationRevision", "context-header-v1")
         );
 
-        stage.execute(document, profile, List.of(parent, child));
+        stage.execute(document, profile.facts(), List.of(parent, child));
 
         assertThat(embeddedTexts.get()).containsExactly("context child text");
         @SuppressWarnings("unchecked")
@@ -256,12 +263,12 @@ class EmbeddingPersistenceStageTest {
 
     private AppProperties properties() {
         return new AppProperties(
-            new AppProperties.Neo4j("neo4j"),
-            new AppProperties.Model("https://api.openai.com/v1", "", "embedding", 3, "chat"),
-            new AppProperties.Storage(Path.of("var/documents")),
-            new AppProperties.Chunking(800, 2, 10),
-            new AppProperties.Query(200, 15, true, List.of("CREATE")),
-            new AppProperties.Extraction(40, 80, 2)
+            new Neo4jProperties("neo4j"),
+            new ModelProperties("https://api.openai.com/v1", "", "embedding", 3, "chat"),
+            new StorageProperties(Path.of("var/documents")),
+            new ChunkingProperties(800, 2, 10),
+            new QueryProperties(200, 15, true, List.of("CREATE")),
+            new ExtractionProperties(40, 80, 2)
         );
     }
 }

@@ -15,7 +15,7 @@ import io.github.vfedoriv.graphrag.documents.application.processing.ProcessingOp
 import io.github.vfedoriv.graphrag.documents.application.processing.SourceParsingStage;
 import io.github.vfedoriv.graphrag.documents.domain.processing.ChunkMetadataFactory;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkEffects;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.registry.application;
 
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshots;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;

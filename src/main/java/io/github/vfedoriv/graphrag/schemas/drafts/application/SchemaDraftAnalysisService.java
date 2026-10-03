@@ -1,14 +1,11 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
-import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.ai.execution.AiExecution;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.schemas.discovery.application.DiscoveryExecutionPolicy;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult.AliasSuggestion;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryAggregator;
@@ -32,15 +29,14 @@ import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceResultNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceResultStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.AnalysisRunPageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.SourceOutcomeResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.SourceOutcomePageResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.StartAnalysisResponse;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.logging.LogMetadata;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiWorkflowContext;
@@ -69,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.model.ChatModel;
+import io.github.vfedoriv.graphrag.ai.execution.CapturedAiExecution;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -93,9 +89,9 @@ public class SchemaDraftAnalysisService {
     private final SchemaDraftJsonSupport jsonSupport;
     private final SchemaDraftGuidanceMapper guidanceMapper;
     private final ObjectMapper objectMapper;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final DraftKnowledgeBases knowledgeBaseService;
-    private final AiRuntimeModelFactory modelFactory;
+    private final AiExecution modelFactory;
     private final AiObservationService observationService;
     private final SchemaDraftReviewService reviewService;
     private final ThreadPoolTaskExecutor executor;
@@ -118,9 +114,9 @@ public class SchemaDraftAnalysisService {
         SchemaDraftJsonSupport jsonSupport,
         SchemaDraftGuidanceMapper guidanceMapper,
         ObjectMapper objectMapper,
-        RuntimeSettingsService runtimeSettingsService,
+        RuntimeSettingsAccess runtimeSettingsService,
         DraftKnowledgeBases knowledgeBaseService,
-        AiRuntimeModelFactory modelFactory,
+        AiExecution modelFactory,
         AiObservationService observationService,
         SchemaDraftReviewService reviewService,
         SchemaDraftWorkflowNavigationService workflowNavigationService,
@@ -165,10 +161,10 @@ public class SchemaDraftAnalysisService {
             throw new IllegalArgumentException("At least one active draft source is required");
         }
         DraftKnowledgeBases.Profile profile = knowledgeBaseService.activeProfile(knowledgeBaseId);
-        ChatModel capturedModel = modelFactory.chatModel(profile.id());
+        CapturedAiExecution capturedModel = modelFactory.captureChat(profile.id());
         SchemaDiscoveryRequest request = discoveryRequest(draft);
         String membership = membershipFingerprint(sources);
-        RuntimeSettingsService.DiscoverySettings discoverySettings = runtimeSettingsService.discovery();
+        RuntimeSettingsAccess.DiscoverySettings discoverySettings = runtimeSettingsService.discovery();
         String settings = settingsFingerprint(discoverySettings);
         DiscoveryExecutionPolicy policy = DiscoveryExecutionPolicy.from(discoverySettings, settings);
         String snapshot = jsonSupport.fingerprint(String.join("|", Long.toString(draft.getRevision()),
@@ -275,7 +271,7 @@ public class SchemaDraftAnalysisService {
     }
 
     private void process(
-        String runId, SchemaDiscoveryRequest request, ChatModel capturedModel, DiscoveryExecutionPolicy policy
+        String runId, SchemaDiscoveryRequest request, CapturedAiExecution capturedModel, DiscoveryExecutionPolicy policy
     ) {
         Instant claimedAt = Instant.now();
         if (!Long.valueOf(1).equals(runRepository.claim(runId, workerId, claimedAt))) {
@@ -303,7 +299,7 @@ public class SchemaDraftAnalysisService {
     }
 
     private List<DiscoverySourceAnalyzer.SourceAnalysis> analyzeSources(
-        SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request, ChatModel capturedModel,
+        SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request, CapturedAiExecution capturedModel,
         DiscoveryExecutionPolicy policy, long requestStartNanos
     ) {
         List<SourceSnapshot> snapshots = readSnapshots(run.getSourceSnapshotJson());
@@ -344,7 +340,7 @@ public class SchemaDraftAnalysisService {
 
     private SourceTaskResult executeSourceTask(
         SourceTaskControl control, SchemaDraftAnalysisRunNode run, SchemaDiscoveryRequest request,
-        ChatModel capturedModel, DiscoveryExecutionPolicy policy, long requestDeadlineNanos,
+        CapturedAiExecution capturedModel, DiscoveryExecutionPolicy policy, long requestDeadlineNanos,
         SchedulingDiagnostics diagnostics
     ) {
         long startedNanos = System.nanoTime();
@@ -381,8 +377,7 @@ public class SchemaDraftAnalysisService {
                 run.getAiProfileId(), run.getAiProfileRevision(), null,
                 run.getConfiguredTimeoutSeconds(), run.getConfiguredSdkMaxRetries(),
                 control.sourceDeadlineNanos(), requestDeadlineNanos);
-            DiscoverySourceAnalyzer.SourceAnalysis analysis = AiProfileContext.withCapturedChatModel(
-                run.getAiProfileId(), capturedModel,
+            DiscoverySourceAnalyzer.SourceAnalysis analysis = capturedModel.call(
                 () -> sourceAnalyzer.analyze(preparedForAnalysis, request, attemptContext));
             return SourceTaskResult.success(snapshot, source, reuseKey, analysis, false, System.nanoTime());
         } catch (RuntimeException exception) {
@@ -777,7 +772,7 @@ public class SchemaDraftAnalysisService {
         return jsonSupport.fingerprint(value);
     }
 
-    private String settingsFingerprint(RuntimeSettingsService.DiscoverySettings settings) {
+    private String settingsFingerprint(RuntimeSettingsAccess.DiscoverySettings settings) {
         String value = String.join("|",
             Integer.toString(settings.maxSources()),
             Integer.toString(settings.maxSourceBytes()),

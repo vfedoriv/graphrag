@@ -1,7 +1,6 @@
 package io.github.vfedoriv.graphrag.search.retrieval.application;
 import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
@@ -19,7 +18,6 @@ import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchGraphRe
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphFilter;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphProjection;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.GraphRequest;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.LiteralType;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.LiteralValue;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.MetadataConstraint;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Plan;
@@ -28,7 +26,7 @@ import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlannin
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.MetadataConstraints;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Subquery;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.GraphPlanValidation.ValidationResult;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

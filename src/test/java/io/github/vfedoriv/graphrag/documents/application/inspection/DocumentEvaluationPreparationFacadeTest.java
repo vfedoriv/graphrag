@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.application.inspection;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,7 +20,7 @@ import io.github.vfedoriv.graphrag.documents.application.management.DocumentUplo
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentEvaluationPreparation;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -122,7 +124,7 @@ class DocumentEvaluationPreparationFacadeTest {
         when(repository.findByIdAndKnowledgeBaseId("document", "kb")).thenReturn(Optional.of(original));
         when(binaries.readContent("original-storage-uri")).thenReturn(originalBytes);
         when(parser.parse(eq("original.pdf"), eq("application/pdf"), any(byte[].class))).thenReturn("heldout");
-        when(runtimeSettings.chunking()).thenReturn(new RuntimeSettingsService.ChunkingSettings(
+        when(runtimeSettings.chunking()).thenReturn(new RuntimeSettingsAccess.ChunkingSettings(
             "fixed-character", 100, 0, 4, 100, 100, 2, 100, 100, "evaluation-preparation-test-v1"));
 
         DocumentEvaluationPreparation.Source captured = facade.captureOwned("kb", "document").orElseThrow();
@@ -164,7 +166,7 @@ class DocumentEvaluationPreparationFacadeTest {
         when(repository.findByIdAndKnowledgeBaseId("document", "kb")).thenReturn(Optional.of(owned));
         when(binaries.readContent("private-storage-uri")).thenReturn(bytes);
         when(parser.parse(eq("source.txt"), eq("text/plain"), any(byte[].class))).thenReturn("  abcdef  ");
-        when(runtimeSettings.chunking()).thenReturn(new RuntimeSettingsService.ChunkingSettings(
+        when(runtimeSettings.chunking()).thenReturn(new RuntimeSettingsAccess.ChunkingSettings(
             "fixed-character", 100, 0, 3, 100, 100, 2, 100, 100, "evaluation-preparation-test-v1"));
 
         DocumentEvaluationPreparation.PreparedDocument prepared = facade.prepareOwned("kb", "document");

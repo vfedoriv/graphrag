@@ -33,7 +33,7 @@ import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingCo
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceSource;
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.ParentContext;
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.SourceBounds;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.search.answering.domain.AnswerSynthesis.Outcome;

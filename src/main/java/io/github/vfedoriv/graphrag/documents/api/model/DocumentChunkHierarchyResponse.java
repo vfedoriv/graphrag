@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.documents.api.model;
 
-import io.github.vfedoriv.graphrag.dto.PageResponse;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

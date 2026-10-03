@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.registry.adapters.relational;
 
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
 import io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.entity.SchemaDefinitionEntity;
 import io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.repository.JpaSchemaDefinitionRepository;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.config;
 
+import io.github.vfedoriv.graphrag.bootstrap.LegacyJacksonConfiguration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;

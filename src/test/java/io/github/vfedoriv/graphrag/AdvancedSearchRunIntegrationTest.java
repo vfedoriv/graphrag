@@ -16,7 +16,7 @@ import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunNode;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Branch;
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.search.runs.ports.AdvancedSearchRunRepository;
 import io.github.vfedoriv.graphrag.search.runs.adapters.codec.AdvancedSearchResultCodec;
 import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchRunMaintenance;

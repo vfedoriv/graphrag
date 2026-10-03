@@ -17,7 +17,7 @@ import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ReprocessingPlanR
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanStatus;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.StartPlanResponse;
-import io.github.vfedoriv.graphrag.error.GlobalExceptionHandler;
+import io.github.vfedoriv.graphrag.bootstrap.http.GlobalExceptionHandler;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
-import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourceAnalyzer;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionPromptFactory;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult;
@@ -17,8 +17,8 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.AssistantMessage;

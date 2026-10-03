@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.search.query.ports.CypherGenerationClient;

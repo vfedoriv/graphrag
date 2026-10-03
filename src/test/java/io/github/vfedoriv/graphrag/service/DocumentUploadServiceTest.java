@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.ManagedKnowledgeBases;
+
 import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
 
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentStorageMutationService;
@@ -16,7 +18,7 @@ import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentRunHistoryLifecycle;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentBinaryStorage;
 import java.io.IOException;
@@ -41,7 +43,7 @@ class DocumentUploadServiceTest {
     @Mock
     private GraphArtifactCleanupService graphArtifactCleanupService;
     @Mock
-    private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private ManagedKnowledgeBases knowledgeBaseLifecycleService;
     @Mock
     private DocumentStorageMutationService storageMutationService;
     @Mock

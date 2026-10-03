@@ -1,5 +1,12 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
 import io.github.vfedoriv.graphrag.search.query.adapters.graph.QueryNeo4jExecutor;
 import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
 
@@ -10,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.search.query.domain.QueryValidationResult;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
@@ -258,12 +265,12 @@ class CypherValidationServiceTest {
     private CypherValidationService service(SearchSchemas activeSchemaResolver) {
         return new CypherValidationService(
             io.github.vfedoriv.graphrag.TestRuntimeSettings.from(new AppProperties(
-                new AppProperties.Neo4j("neo4j"),
-                new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
-                new AppProperties.Storage(Path.of("var/documents")),
-                new AppProperties.Chunking(800, 80, 4000),
-                new AppProperties.Query(200, 15, true, List.of("CREATE", "MERGE", "DELETE")),
-                new AppProperties.Extraction(40, 80, 2)
+                new Neo4jProperties("neo4j"),
+                new ModelProperties("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
+                new StorageProperties(Path.of("var/documents")),
+                new ChunkingProperties(800, 80, 4000),
+                new QueryProperties(200, 15, true, List.of("CREATE", "MERGE", "DELETE")),
+                new ExtractionProperties(40, 80, 2)
             )),
             activeSchemaResolver,
             queryNeo4jExecutor

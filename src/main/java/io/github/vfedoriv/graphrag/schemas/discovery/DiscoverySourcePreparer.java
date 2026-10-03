@@ -1,15 +1,15 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.SourceType;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.ConceptRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.PropertyRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.RelationshipRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.ConceptRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.DiscoveryGuidance;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.PropertyRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.RelationshipRule;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryDocumentInputs;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryFileParsing;
 import io.github.vfedoriv.graphrag.schemas.discovery.ports.DiscoveryKnowledgeBaseAdmission;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -30,13 +30,13 @@ public class DiscoverySourcePreparer {
     private final DiscoveryDocumentInputs documentInputs;
     private final DiscoveryFileParsing fileParsing;
     private final DiscoveryKnowledgeBaseAdmission knowledgeBaseAdmission;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
 
     public DiscoverySourcePreparer(
         DiscoveryDocumentInputs documentInputs,
         DiscoveryFileParsing fileParsing,
         DiscoveryKnowledgeBaseAdmission knowledgeBaseAdmission,
-        RuntimeSettingsService runtimeSettingsService
+        RuntimeSettingsAccess runtimeSettingsService
     ) {
         this.documentInputs = documentInputs;
         this.fileParsing = fileParsing;
@@ -51,7 +51,7 @@ public class DiscoverySourcePreparer {
         validateGuidance(request.guidance());
         List<MultipartFile> safeFiles = files == null ? List.of() : files;
         int sourceCount = request.documentIds().size() + request.textSources().size() + safeFiles.size();
-        RuntimeSettingsService.DiscoverySettings limits = runtimeSettingsService.discovery();
+        RuntimeSettingsAccess.DiscoverySettings limits = runtimeSettingsService.discovery();
         if (sourceCount < 1) {
             throw new IllegalArgumentException("At least one discovery source is required");
         }
@@ -88,7 +88,7 @@ public class DiscoverySourcePreparer {
         return rawSources.stream().map(source -> prepareSource(source, limits)).toList();
     }
 
-    private PreparedDiscoverySource prepareSource(RawSource source, RuntimeSettingsService.DiscoverySettings limits) {
+    private PreparedDiscoverySource prepareSource(RawSource source, RuntimeSettingsAccess.DiscoverySettings limits) {
         String text = source.text() == null ? "" : source.text().trim();
         if (text.isEmpty()) {
             throw new IllegalArgumentException("Discovery source " + source.ordinal() + " has no parseable content");
@@ -125,7 +125,7 @@ public class DiscoverySourcePreparer {
         }
     }
 
-    private long addBytes(long total, int sourceBytes, RuntimeSettingsService.DiscoverySettings limits) {
+    private long addBytes(long total, int sourceBytes, RuntimeSettingsAccess.DiscoverySettings limits) {
         if (sourceBytes > limits.maxSourceBytes()) {
             throw new IllegalArgumentException("Discovery source exceeds byte limit " + limits.maxSourceBytes());
         }

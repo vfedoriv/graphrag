@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.search.runs.application;
 
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunLifecycle;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunNode;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
@@ -17,11 +17,11 @@ import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransaction
 public class AdvancedSearchRunMaintenance implements ApplicationRunner {
     private final AdvancedSearchRunRepository repository;
     private final AdvancedSearchRunLifecycle lifecycle;
-    private final RuntimeSettingsService settingsService;
+    private final RuntimeSettingsAccess settingsService;
     public AdvancedSearchRunMaintenance(
         AdvancedSearchRunRepository repository,
         AdvancedSearchRunLifecycle lifecycle,
-        RuntimeSettingsService settingsService
+        RuntimeSettingsAccess settingsService
     ) { this.repository = repository; this.lifecycle = lifecycle; this.settingsService = settingsService; }
 
     @Override

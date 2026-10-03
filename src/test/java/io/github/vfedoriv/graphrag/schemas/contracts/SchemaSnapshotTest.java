@@ -3,9 +3,9 @@ package io.github.vfedoriv.graphrag.schemas.contracts;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.SchemaFormat;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;

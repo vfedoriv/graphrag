@@ -1,5 +1,13 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+
+import io.github.vfedoriv.graphrag.ai.adapters.provider.AiRuntimeModelFactory;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -12,10 +20,10 @@ import io.github.vfedoriv.graphrag.ai.domain.StoredEmbeddingObservation;
 import io.github.vfedoriv.graphrag.ai.ports.StoredEmbeddingInformation;
 import io.github.vfedoriv.graphrag.bootstrap.integration.search.SearchKnowledgeBaseAdapter;
 import io.github.vfedoriv.graphrag.bootstrap.integration.search.SearchSchemaAdapter;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.knowledgebase.application.SearchKnowledgeBaseFacade;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.schemas.contracts.CapturedSchemaParsing;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshots;
 import io.github.vfedoriv.graphrag.schemas.contracts.StoredSchemaSnapshots;
@@ -70,7 +78,7 @@ class AdvancedSearchReadinessServiceTest {
         profile.setEmbeddingModel("embedding-model");
         profile.setEmbeddingDimensions(3);
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
-        when(aiProfileService.getNode("profile-1")).thenReturn(profile);
+        when(aiProfileService.require("profile-1")).thenReturn(profile.facts());
         when(storedSchemas.findById("schema-1")).thenReturn(Optional.empty());
         when(storedEmbeddings.observations("kb-1")).thenReturn(List.of());
         when(runtimeModelFactory.chatModel("profile-1")).thenReturn(chatModel);

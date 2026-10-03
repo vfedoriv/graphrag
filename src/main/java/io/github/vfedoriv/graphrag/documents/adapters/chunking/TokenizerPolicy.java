@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.adapters.chunking;
 
 import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenEstimator;
-import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.Utf8ByteTokenEstimator;
 
 public final class TokenizerPolicy {

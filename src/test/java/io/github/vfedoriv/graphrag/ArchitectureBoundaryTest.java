@@ -1,5 +1,18 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.schemas.registry.api.SchemaController;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.bootstrap.SchemaBootstrapService;
+import io.github.vfedoriv.graphrag.documents.api.error.ProcessingOptionsValidationException;
+import io.github.vfedoriv.graphrag.documents.api.error.GraphExtractionValidationException;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
+import io.github.vfedoriv.graphrag.bootstrap.PersistenceConfiguration;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.api.model.RuntimeSettingResponse;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
 
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
@@ -59,38 +72,40 @@ class ArchitectureBoundaryTest {
             BASE_PACKAGE + ".documents.adapters.graph.repository.Neo4jDocumentChunkRepository"
     );
 
-    private static final Set<String> FROZEN_LEGACY_NEO4J_CLIENT_EXCEPTIONS = Set.of(
-            BASE_PACKAGE + ".config.PersistenceConfiguration",
-            BASE_PACKAGE + ".service.EmbeddingSpaceIndexService"
-    );
-    private static final Set<String> FROZEN_LEGACY_TRANSACTIONAL_SELF_INVOCATION_EXCEPTIONS = Set.of(
-            BASE_PACKAGE + ".service.AiProfileService",
-            BASE_PACKAGE + ".service.KnowledgeBaseService",
-            BASE_PACKAGE + ".service.RuntimeSettingsService",
-            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftLifecycleService",
-            BASE_PACKAGE + ".schemas.publication.application.SchemaDraftPublicationService",
-            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftReviewService",
-            BASE_PACKAGE + ".schemas.drafts.application.SchemaDraftSourceService",
-            BASE_PACKAGE + ".schemas.registry.application.SchemaRegistryService"
-    );
 
     // Exact direct dependencies retained until roadmap steps 8–9. New callers fail this check.
-    private static final java.util.Map<Integer, Set<String>> FROZEN_SCHEMA_BRIDGE_EDGES = java.util.Map.of(
-        9, Set.of(
-            edge("config.PersistenceConfiguration", "schemas.registry.adapters.relational.entity.SchemaDefinitionEntity"),
-            edge("config.PersistenceConfiguration", "schemas.registry.adapters.relational.repository.JpaSchemaDefinitionRepository"),
-            edge("controller.SchemaController", "schemas.discovery.application.SchemaDiscoveryService"),
-            edge("controller.SchemaController", "schemas.registry.application.SchemaRegistryService"),
-            edge("controller.SchemaController", "schemas.registry.domain.SchemaDefinitionNode"),
-            edge("dto.SchemaDiscoveryResponse", "schemas.discovery.DiscoveryContracts$Candidate"),
-            edge("dto.SchemaDiscoveryResponse", "schemas.discovery.DiscoveryContracts$Conflict"),
-            edge("dto.SchemaDiscoveryResponse", "schemas.discovery.DiscoveryContracts$ResponseStatus"),
-            edge("dto.SchemaDiscoveryResponse$SourceOutcome", "schemas.discovery.DiscoveryContracts$FailureCategory"),
-            edge("dto.SchemaDiscoveryResponse$SourceOutcome", "schemas.discovery.DiscoveryContracts$SourceStatus"),
-            edge("dto.SchemaDiscoveryResponse$SourceOutcome", "schemas.discovery.DiscoveryContracts$SourceType"),
-            edge("dto.SchemaDiscoveryResponse$SourceOutcome", "schemas.discovery.SourceFailureCode"),
-            edge("service.SchemaBootstrapService", "schemas.registry.application.SchemaRegistryService")
-        )
+
+
+    // Existing REQUIRED self-call semantics, audited per signature in compatibility-audit.md.
+    // These permit no foreign ownership access and cannot authorize a new method or overload.
+    private static final Set<String> EXISTING_TRANSACTION_SELF_CALLS = Set.of(
+        "io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.delete(java.lang.String) -> io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.getNode(java.lang.String)",
+        "io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.get(java.lang.String) -> io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.getNode(java.lang.String)",
+        "io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.inspect(java.lang.String) -> io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.getNode(java.lang.String)",
+        "io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.require(java.lang.String) -> io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.getNode(java.lang.String)",
+        "io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.update(java.lang.String, io.github.vfedoriv.graphrag.ai.profiles.api.model.UpdateAiProfileRequest) -> io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.getNode(java.lang.String)",
+        "io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.activeAiProfile(java.lang.String) -> io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.get(java.lang.String)",
+        "io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.getActiveAiProfile(java.lang.String) -> io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.activeAiProfile(java.lang.String)",
+        "io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.update(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.get(java.lang.String)",
+        "io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.updateActiveAiProfile(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.get(java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.delete(java.lang.String, java.lang.String, long) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireMutable(java.lang.String, java.lang.String, long)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.get(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireOwned(java.lang.String, java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireMutable(java.lang.String, java.lang.String, long) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireOwned(java.lang.String, java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.update(java.lang.String, java.lang.String, io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos$UpdateDraftRequest) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireMutable(java.lang.String, java.lang.String, long)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.updateGuidance(java.lang.String, java.lang.String, io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos$UpdateGuidanceRequest) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftLifecycleService.requireMutable(java.lang.String, java.lang.String, long)",
+        "io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService.diff(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService.projection(java.lang.String, java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.publication.application.SchemaDraftPublicationService.publishObserved(java.lang.String, java.lang.String, io.github.vfedoriv.graphrag.schemas.publication.api.model.SchemaDraftPublicationDtos$PublishDraftRequest) -> io.github.vfedoriv.graphrag.schemas.publication.application.SchemaDraftPublicationService.readiness(java.lang.String, java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.activateSchema(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.getSchema(java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.attachSchema(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.getSchema(java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.createGeneratedInactiveSchema(java.lang.String, java.lang.String) -> io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.createSchema(java.lang.String, io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType, java.lang.String)",
+        "io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.createSchema(java.lang.String, io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType) -> io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService.createSchema(java.lang.String, io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType, java.lang.String)",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.chunkingFacts() -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.list()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.clear(java.lang.String) -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.effectiveChunkerRevision()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.documentStorageRootValue() -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.documentStorageRoot()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.effectiveChunkerRevision() -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.chunking()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.list() -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.effectiveChunkerRevision()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.update(java.lang.String, java.lang.Object) -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.effectiveChunkerRevision()",
+        "io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.update(java.util.List) -> io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService.effectiveChunkerRevision()"
     );
 
     private static final JavaClasses PRODUCTION_CLASSES = new ClassFileImporter()
@@ -99,86 +114,7 @@ class ArchitectureBoundaryTest {
 
     // Exact transitional edges, grouped by their retirement roadmap step.
     // 7 evaluation; 8 search; 9 support/assembly.
-    private static final java.util.Map<Integer, Set<String>> FROZEN_DOCUMENT_EDGES = java.util.Map.of(
-        9, Set.of(
-            edge("documents.application.inspection.DocumentSourceInputsFacade", "error.NotFoundException"),
-            edge("documents.application.inspection.DocumentEvaluationPreparationFacade", "error.NotFoundException"),
-            edge("documents.application.processing.DocumentDryExtractionFacade", "service.AiProfileContext"),
-            edge("config.PersistenceConfiguration", "documents.adapters.graph.repository.Neo4jDocumentChunkRepository"),
-            edge("config.PersistenceConfiguration", "documents.adapters.relational.entity.DocumentUploadEntity"),
-            edge("config.PersistenceConfiguration", "documents.adapters.relational.repository.JpaDocumentUploadRepository"),
-            edge("documents.adapters.binary.DocumentBinaryStorageAdapter", "storage.BinaryStorageService"),
-            edge("documents.adapters.graph.DocumentChunkPersistenceAdapter", "persistence.transaction.GraphTransactional"),
-            edge("documents.adapters.graph.DocumentChunkPersistenceAdapter", "repository.LexicalIndexRepository"),
-            edge("documents.adapters.graph.DocumentChunkPersistenceAdapter", "service.EmbeddingSpaceIndexService"),
-            edge("documents.adapters.graph.GraphArtifactCleanupService", "repository.LexicalIndexRepository"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "logging.LogMetadata"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "observability.AiModelCallObservation"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "observability.AiObservationService"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "observability.AiTokenUsage"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "service.AiProfileContext"),
-            edge("documents.adapters.model.SpringAiGraphExtractionClient", "service.AiRuntimeModelFactory"),
-            edge("documents.adapters.relational.RelationalDocumentProcessingRunRepository", "persistence.transaction.RelationalTransactional"),
-            edge("documents.adapters.relational.RelationalDocumentStorageMutationRepository", "persistence.transaction.RelationalTransactional"),
-            edge("documents.api.model.DocumentChunkHierarchyResponse", "dto.PageResponse"),
-            edge("documents.api.model.DocumentChunkPageResponse", "dto.PageResponse"),
-            edge("documents.application.management.ChunkingStateService", "config.AppProperties"),
-            edge("documents.application.management.ChunkingStateService", "config.AppProperties$Model"),
-            edge("documents.application.management.ChunkingStateService", "dto.RuntimeSettingResponse"),
-            edge("documents.application.management.ChunkingStateService", "persistence.transaction.RelationalTransactional"),
-            edge("documents.application.management.ChunkingStateService", "service.RuntimeSettingsService"),
-            edge("documents.application.management.ChunkingStateService", "service.RuntimeSettingsService$ChunkingSettings"),
-            edge("documents.application.management.DocumentStorageMutationService", "persistence.transaction.RelationalTransactional"),
-            edge("documents.application.management.DocumentUploadService", "error.ConflictException"),
-            edge("documents.application.management.DocumentUploadService", "error.NotFoundException"),
-            edge("documents.application.management.DocumentUploadService", "logging.LogMetadata"),
-            edge("documents.application.management.DocumentUploadService", "service.KnowledgeBaseLifecycleService"),
-            edge("documents.application.processing.ChunkingService", "domain.AiProfileNode"),
-            edge("documents.application.processing.ChunkingService", "service.RuntimeSettingsService"),
-            edge("documents.application.processing.ChunkingService", "service.RuntimeSettingsService$ChunkingSettings"),
-            edge("documents.application.processing.DocumentMigrationPreparationFacade", "domain.AiProfileNode"),
-            edge("documents.application.processing.DocumentMigrationPreparationFacade", "error.EmbeddingSpaceConflictException"),
-            edge("documents.application.processing.DocumentMigrationPreparationFacade", "error.NotFoundException"),
-            edge("documents.application.processing.DocumentProcessingOptionsRegistry", "error.ProcessingOptionsValidationException"),
-            edge("documents.application.processing.DocumentProcessingService", "domain.AiProfileNode"),
-            edge("documents.application.processing.DocumentProcessingService", "error.ConflictException"),
-            edge("documents.application.processing.DocumentProcessingService", "error.NotFoundException"),
-            edge("documents.application.processing.DocumentProcessingService", "logging.LogMetadata"),
-            edge("documents.application.processing.DocumentProcessingService", "observability.AiObservationScope"),
-            edge("documents.application.processing.DocumentProcessingService", "observability.AiObservationService"),
-            edge("documents.application.processing.DocumentProcessingService", "observability.AiWorkflowContext"),
-            edge("documents.application.processing.DocumentProcessingService", "service.AiProfileContext"),
-            edge("documents.application.processing.DocumentProcessingService", "service.KnowledgeBaseLifecycleService"),
-            edge("documents.application.processing.DocumentProcessingService", "service.KnowledgeBaseService"),
-            edge("documents.application.processing.DocumentReprocessingFacade", "service.AiProfileContext"),
-            edge("documents.application.processing.DocumentReprocessingFacade", "service.KnowledgeBaseService"),
-            edge("documents.application.processing.DocumentRunHistoryLifecycle", "persistence.transaction.RelationalTransactional"),
-            edge("documents.application.processing.EmbeddingPersistenceStage", "domain.AiProfileNode"),
-            edge("documents.application.processing.EmbeddingPersistenceStage", "embedding.EmbeddingClient"),
-            edge("documents.application.processing.EmbeddingPersistenceStage", "infrastructure.ai.ProfileScopedAiClientResolver"),
-            edge("documents.application.processing.EmbeddingPersistenceStage", "service.AiProfileContext"),
-            edge("documents.application.processing.ExtractionRunLifecycle", "persistence.transaction.RelationalTransactional"),
-            edge("documents.application.processing.GraphExtractionService", "logging.LogMetadata"),
-            edge("documents.application.processing.GraphExtractionService", "observability.AiObservationScope"),
-            edge("documents.application.processing.GraphExtractionService", "observability.AiObservationService"),
-            edge("documents.application.processing.GraphExtractionService", "observability.AiWorkflowContext"),
-            edge("documents.application.processing.GraphExtractionStage", "domain.AiProfileNode"),
-            edge("documents.application.processing.GraphExtractionStage", "service.AiProfileContext"),
-            edge("documents.application.processing.GraphExtractionValidationService", "error.GraphExtractionValidationException"),
-            edge("documents.application.processing.GraphExtractionValidationService", "logging.LogMetadata"),
-            edge("documents.application.processing.GraphExtractionValidationService", "service.RuntimeSettingsService"),
-            edge("documents.application.processing.GraphExtractionValidationService", "service.RuntimeSettingsService$ExtractionSettings"),
-            edge("documents.application.processing.ProcessingRunLifecycle", "persistence.transaction.RelationalTransactional"),
-            edge("domain.AiProfileNode", "documents.domain.chunking.TokenizerId"),
-            edge("infrastructure.persistence.relational.RelationalAiProfileRepository", "documents.domain.chunking.TokenizerId"),
-            edge("service.AiProfileService", "documents.domain.chunking.TokenizerId"),
-            edge("service.EmbeddingSpaceIdentity", "documents.domain.chunking.TokenizerId"),
-            edge("service.KnowledgeBaseService", "documents.domain.chunking.TokenizerId"),
-            edge("service.RuntimeSettingsService", "documents.domain.chunking.ChunkRevisionCalculator"),
-            edge("service.RuntimeSettingsService", "documents.domain.chunking.ChunkerRevision"),
-            edge("service.RuntimeSettingsService", "documents.domain.chunking.FixedCharacterChunkingStrategy")
-        )
-    );
+
 
     private static String edge(String origin, String target) {
         return BASE_PACKAGE + "." + origin + " -> " + BASE_PACKAGE + "." + target;
@@ -191,30 +127,13 @@ class ArchitectureBoundaryTest {
     }
 
     private static boolean documentTransitionalEdge(JavaClass origin, JavaClass target) {
-        boolean ownedOrigin = isInPackage(origin, BASE_PACKAGE + ".documents");
-        boolean ownedTarget = isInPackage(target, BASE_PACKAGE + ".documents");
-        return !ownedOrigin && !isInPackage(origin, BASE_PACKAGE + ".bootstrap") && ownedTarget
+        return !isInPackage(origin, BASE_PACKAGE + ".documents")
+                && !isInPackage(origin, BASE_PACKAGE + ".bootstrap")
+                && isInPackage(target, BASE_PACKAGE + ".documents")
                 && !isInPackage(target, BASE_PACKAGE + ".documents.contracts")
-            || ownedOrigin && isInPackage(target, BASE_PACKAGE) && !ownedTarget
-                && !isInPackage(target, BASE_PACKAGE + ".ai.domain")
-                && !target.getName().equals(BASE_PACKAGE + ".ai.application.EmbeddingCompatibility")
-                && !isInPackage(target, BASE_PACKAGE + ".schemas.contracts");
+            || FinalSupportBoundaryTest.foreignImplementation(origin, target);
     }
 
-    @Test
-    void document_transitional_edges_are_exact_and_have_retirement_steps() {
-        Set<String> expected = FROZEN_DOCUMENT_EDGES.values().stream().flatMap(Set::stream)
-            .collect(java.util.stream.Collectors.toCollection(TreeSet::new));
-        Set<String> actual = documentTransitionalEdges(PRODUCTION_CLASSES);
-        Set<String> added = new TreeSet<>(actual);
-        added.removeAll(expected);
-        Set<String> stale = new TreeSet<>(expected);
-        stale.removeAll(actual);
-        assertTrue(added.isEmpty() && stale.isEmpty(),
-            "Unlisted document dependencies:\n" + String.join("\n", added)
-                + "\nStale document exceptions (remove them):\n" + String.join("\n", stale));
-        assertTrue(FROZEN_DOCUMENT_EDGES.keySet().equals(Set.of(9)));
-    }
 
     @Test
     void schema_downstream_workflows_use_owner_contracts() {
@@ -225,7 +144,7 @@ class ArchitectureBoundaryTest {
                 || isInAnyPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.drafts.application", BASE_PACKAGE + ".schemas.drafts.domain",
                     BASE_PACKAGE + ".schemas.drafts.adapters", BASE_PACKAGE + ".schemas.drafts.ports", BASE_PACKAGE + ".schemas.registry.application",
                     BASE_PACKAGE + ".schemas.registry.domain", BASE_PACKAGE + ".schemas.registry.adapters", BASE_PACKAGE + ".schemas.registry.ports")
-                || Set.of(SERVICE_PACKAGE + ".KnowledgeBaseService", SERVICE_PACKAGE + ".KnowledgeBaseLifecycleService", DOMAIN_PACKAGE + ".AiProfileNode")
+                || Set.of(BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseService", BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseLifecycleService", BASE_PACKAGE + ".ai.profiles.domain.AiProfileNode")
                     .contains(d.getTargetClass().getName()))
             .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertNoViolations(violations);
@@ -333,41 +252,6 @@ class ArchitectureBoundaryTest {
         assertTrue(fixture.getMethods().stream().anyMatch(ArchitectureBoundaryTest::isStoreTransactional));
     }
 
-    @Test
-    void remaining_schema_bridge_edges_are_exact() {
-        Set<String> actual = PRODUCTION_CLASSES.stream()
-            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
-            .filter(d -> isInPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.registry")
-                || isInPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.discovery"))
-            .filter(d -> !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".schemas")
-                && !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".bootstrap"))
-            .map(ArchitectureBoundaryTest::format)
-            .collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
-        Set<String> expected = FROZEN_SCHEMA_BRIDGE_EDGES.values().stream()
-            .flatMap(Set::stream).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
-        assertTrue(actual.equals(expected), "Schema bridge edges changed; expected " + expected
-            + " but found " + actual);
-        assertTrue(FROZEN_SCHEMA_BRIDGE_EDGES.keySet().equals(Set.of(9)));
-    }
-
-    // Exact assembly dependencies pending roadmap step 9.
-    private static final Set<String> FROZEN_DRAFT_LATER_EDGES = Set.of(
-        edge("config.PersistenceConfiguration", "schemas.drafts.adapters.relational.entity.SchemaDraftEntity"),
-        edge("config.PersistenceConfiguration", "schemas.drafts.adapters.relational.repository.JpaSchemaDraftRepository")
-    );
-
-    @Test
-    void draft_internal_callers_are_exact_later_slice_dependencies() {
-        Set<String> actual = PRODUCTION_CLASSES.stream()
-            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
-            .filter(d -> isInAnyPackage(d.getTargetClass(), BASE_PACKAGE + ".schemas.drafts.application",
-                BASE_PACKAGE + ".schemas.drafts.domain", BASE_PACKAGE + ".schemas.drafts.ports",
-                BASE_PACKAGE + ".schemas.drafts.adapters"))
-            .filter(d -> !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".schemas.drafts")
-                && !isInPackage(d.getOriginClass(), BASE_PACKAGE + ".bootstrap.integration.schemas"))
-            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
-        assertTrue(actual.equals(FROZEN_DRAFT_LATER_EDGES), "Draft later edges changed: " + actual);
-    }
 
     @Test
     void draft_navigation_consumes_downstream_summary_contracts() {
@@ -395,8 +279,8 @@ class ArchitectureBoundaryTest {
     private static boolean draftForeignImplementation(JavaClass target) {
         return schemaOwnershipDependencyForbidden(target)
             || isInPackage(target, BASE_PACKAGE + ".schemas.registry")
-            || Set.of(SERVICE_PACKAGE + ".KnowledgeBaseService", SERVICE_PACKAGE + ".KnowledgeBaseLifecycleService",
-                DOMAIN_PACKAGE + ".AiProfileNode").contains(target.getName());
+            || Set.of(BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseService", BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseLifecycleService",
+                BASE_PACKAGE + ".ai.profiles.domain.AiProfileNode").contains(target.getName());
     }
 
     @Test
@@ -437,9 +321,9 @@ class ArchitectureBoundaryTest {
     private static class ForbiddenDraftBoundaryFixture {
         io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository drafts;
         io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository schemas;
-        io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository knowledgeBases;
+        io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository knowledgeBases;
         io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository documents;
-        io.github.vfedoriv.graphrag.domain.AiProfileNode mutableProfile;
+        io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode mutableProfile;
         ChatModel model;
 
         @RelationalTransactional
@@ -457,18 +341,19 @@ class ArchitectureBoundaryTest {
         return isInAnyPackage(target,
                 BASE_PACKAGE + ".knowledgebase.application",
                 BASE_PACKAGE + ".knowledgebase.adapters",
+                BASE_PACKAGE + ".knowledgebase.domain", BASE_PACKAGE + ".knowledgebase.ports",
                 BASE_PACKAGE + ".documents.application",
                 BASE_PACKAGE + ".documents.adapters",
                 BASE_PACKAGE + ".documents.ports",
                 BASE_PACKAGE + ".documents.domain",
                 BASE_PACKAGE + ".bootstrap")
-            || target.getName().equals(REPOSITORY_PACKAGE + ".KnowledgeBaseRepository")
-            || target.getName().equals(DOMAIN_PACKAGE + ".KnowledgeBaseNode")
+            || target.getName().equals(BASE_PACKAGE + ".knowledgebase.ports.KnowledgeBaseRepository")
+            || target.getName().equals(BASE_PACKAGE + ".knowledgebase.domain.KnowledgeBaseNode")
             || target.getSimpleName().equals("JpaKnowledgeBaseSchemaRepository");
     }
 
     private static class ForbiddenSchemaBoundaryFixture {
-        io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository knowledgeBases;
+        io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository knowledgeBases;
         io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository documents;
         io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseSchemaRepository associations;
         io.github.vfedoriv.graphrag.schemas.registry.adapters.relational.entity.SchemaDefinitionEntity persistenceValue;
@@ -513,29 +398,12 @@ class ArchitectureBoundaryTest {
         assertNoViolations(violations);
     }
 
-    @Test
-    void compatibility_bridge_exception_sets_reject_stale_callers() {
-        assertExactCallers(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity", FROZEN_IDENTITY_CALLERS);
-        assertExactCallers(SERVICE_PACKAGE + ".EmbeddingSpace", FROZEN_SPACE_CALLERS);
-    }
-
-    private static void assertExactCallers(String target, Set<String> expected) {
-        Set<String> actual = PRODUCTION_CLASSES.stream().flatMap(c -> c.getDirectDependenciesFromSelf().stream())
-            .filter(d -> d.getTargetClass().getName().equals(target))
-            .map(d -> d.getOriginClass().getName()).collect(java.util.stream.Collectors.toSet());
-        Set<String> externalExpected = expected.stream().filter(name -> !name.equals(target))
-            .collect(java.util.stream.Collectors.toSet());
-        assertTrue(actual.equals(externalExpected), "Expected exact callers of " + target + ": "
-            + externalExpected + "; observed: " + actual);
-    }
 
     @Test
     void document_guards_reject_new_foreign_callers_and_pure_rule_effects() {
         JavaClasses fixture = new ClassFileImporter().importClasses(ForbiddenDocumentFixture.class);
         Set<String> edges = documentTransitionalEdges(fixture);
-        Set<String> frozen = FROZEN_DOCUMENT_EDGES.values().stream().flatMap(Set::stream)
-            .collect(java.util.stream.Collectors.toSet());
-        assertTrue(edges.stream().anyMatch(e -> e.endsWith("documents.ports.DocumentUploadRepository") && !frozen.contains(e)));
+        assertTrue(edges.stream().anyMatch(e -> e.endsWith("documents.ports.DocumentUploadRepository")));
         Set<String> forbidden = fixture.stream().flatMap(c -> c.getDirectDependenciesFromSelf().stream())
             .filter(d -> pureDocumentRuleDependencyForbidden(d.getTargetClass()))
             .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
@@ -695,10 +563,9 @@ class ArchitectureBoundaryTest {
     }
 
     @Test
-    void direct_neo4j_client_usage_stays_in_persistence_adapters_or_frozen_legacy_exceptions() {
+    void direct_neo4j_client_usage_stays_in_graph_adapters_or_assembly() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
-                .filter(javaClass -> !isInAnyPackage(javaClass, INFRASTRUCTURE_PERSISTENCE_PACKAGE, BASE_PACKAGE + ".documents.adapters", BASE_PACKAGE + ".search.retrieval.adapters.graph"))
-                .filter(javaClass -> !FROZEN_LEGACY_NEO4J_CLIENT_EXCEPTIONS.contains(javaClass.getName()))
+                .filter(javaClass -> !isInAnyPackage(javaClass, BASE_PACKAGE + ".documents.adapters.graph", BASE_PACKAGE + ".search.retrieval.adapters.graph", BASE_PACKAGE + ".indexes.adapters.graph", BASE_PACKAGE + ".bootstrap"))
                 .flatMap(javaClass -> javaClass.getDirectDependenciesFromSelf().stream())
                 .filter(dependency -> dependency.getTargetClass().isAssignableTo(Neo4jClient.class))
                 .map(ArchitectureBoundaryTest::format)
@@ -738,7 +605,7 @@ class ArchitectureBoundaryTest {
         Set<String> violations = new TreeSet<>();
         PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAssignableTo(JpaRepository.class))
-                .filter(javaClass -> !isInAnyPackage(javaClass, RELATIONAL_REPOSITORY_PACKAGE, BASE_PACKAGE + ".documents.adapters.relational.repository",
+                .filter(javaClass -> !isInAnyPackage(javaClass, BASE_PACKAGE + ".ai.profiles.adapters.relational.repository", BASE_PACKAGE + ".settings.adapters.relational.repository", BASE_PACKAGE + ".documents.adapters.relational.repository",
                     BASE_PACKAGE + ".knowledgebase.adapters.relational.repository",
                     BASE_PACKAGE + ".schemas.registry.adapters.relational.repository",
                     BASE_PACKAGE + ".schemas.drafts.adapters.relational.repository",
@@ -755,7 +622,7 @@ class ArchitectureBoundaryTest {
                 .forEach(violations::add);
         PRODUCTION_CLASSES.stream()
                 .filter(javaClass -> javaClass.isAnnotatedWith(Entity.class))
-                .filter(javaClass -> !isInAnyPackage(javaClass, RELATIONAL_ENTITY_PACKAGE, BASE_PACKAGE + ".documents.adapters.relational.entity",
+                .filter(javaClass -> !isInAnyPackage(javaClass, BASE_PACKAGE + ".ai.profiles.adapters.relational.entity", BASE_PACKAGE + ".settings.adapters.relational.entity", BASE_PACKAGE + ".documents.adapters.relational.entity",
                     BASE_PACKAGE + ".knowledgebase.adapters.relational.entity",
                     BASE_PACKAGE + ".schemas.registry.adapters.relational.entity",
                     BASE_PACKAGE + ".schemas.drafts.adapters.relational.entity",
@@ -794,21 +661,27 @@ class ArchitectureBoundaryTest {
     @Test
     void transactional_methods_are_not_called_through_self_invocation() {
         Set<String> violations = new TreeSet<>();
+        Set<String> observed = new TreeSet<>();
         for (JavaClass javaClass : PRODUCTION_CLASSES) {
-            if (FROZEN_LEGACY_TRANSACTIONAL_SELF_INVOCATION_EXCEPTIONS.contains(javaClass.getName())) {
-                continue;
-            }
             for (JavaMethodCall methodCall : javaClass.getMethodCallsFromSelf()) {
                 if (!methodCall.getOriginOwner().equals(methodCall.getTargetOwner())) {
                     continue;
                 }
                 Optional<JavaMethod> targetMethod = methodCall.getTarget().resolveMember();
                 if (targetMethod.isPresent() && isStoreTransactional(targetMethod.get())) {
+                    observed.add(methodCall.getOrigin().getFullName() + " -> " + methodCall.getTarget().getFullName());
+                }
+                if (targetMethod.isPresent() && isStoreTransactional(targetMethod.get())
+                        && !EXISTING_TRANSACTION_SELF_CALLS.contains(methodCall.getOrigin().getFullName()
+                            + " -> " + methodCall.getTarget().getFullName())) {
                     violations.add(methodCall.getDescription());
                 }
             }
         }
 
+        Set<String> stale = new TreeSet<>(EXISTING_TRANSACTION_SELF_CALLS);
+        stale.removeAll(observed);
+        violations.addAll(stale);
         assertNoViolations(violations);
     }
 
@@ -957,7 +830,7 @@ class ArchitectureBoundaryTest {
     @Test
     void migrated_knowledge_base_and_ai_paths_cannot_access_foreign_state() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
-            .filter(c -> Set.of(SERVICE_PACKAGE + ".KnowledgeBaseService", SERVICE_PACKAGE + ".AiProfileService",
+            .filter(c -> Set.of(BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseService", BASE_PACKAGE + ".ai.profiles.application.AiProfileService",
                 SERVICE_PACKAGE + ".EmbeddingSpacePolicy").contains(c.getName())
                 || isInPackage(c, BASE_PACKAGE + ".ai"))
             .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
@@ -973,11 +846,11 @@ class ArchitectureBoundaryTest {
     }
 
     private static boolean migratedDependencyForbidden(String origin, JavaClass target) {
-        boolean tokenizerValueBridge = Set.of(SERVICE_PACKAGE + ".AiProfileService", SERVICE_PACKAGE + ".KnowledgeBaseService")
-            .contains(origin) && target.getName().equals(BASE_PACKAGE + ".documents.domain.chunking.TokenizerId");
+        boolean tokenizerValueBridge = Set.of(BASE_PACKAGE + ".ai.profiles.application.AiProfileService", BASE_PACKAGE + ".knowledgebase.application.KnowledgeBaseService")
+            .contains(origin) && target.getName().equals(BASE_PACKAGE + ".ai.domain.TokenizerId");
         return isDocumentImplementation(target) && !tokenizerValueBridge
             || target.getName().equals(SERVICE_PACKAGE + ".GraphArtifactCleanupService")
-            || (origin.equals(SERVICE_PACKAGE + ".AiProfileService") || origin.startsWith(BASE_PACKAGE + ".ai."))
+            || (origin.equals(BASE_PACKAGE + ".ai.profiles.application.AiProfileService") || origin.startsWith(BASE_PACKAGE + ".ai."))
                 && (isInPackage(target, BASE_PACKAGE + ".knowledgebase")
                     || target.getSimpleName().contains("KnowledgeBase"));
     }
@@ -987,7 +860,7 @@ class ArchitectureBoundaryTest {
     void ai_rules_ports_and_provider_contracts_are_pure_immutable_values() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
             .filter(c -> isInAnyPackage(c, BASE_PACKAGE + ".ai.domain", BASE_PACKAGE + ".ai.ports",
-                BASE_PACKAGE + ".knowledgebase.ports", BASE_PACKAGE + ".knowledgebase.contracts"))
+                BASE_PACKAGE + ".knowledgebase.contracts"))
             .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
             .filter(d -> !boundaryValueDependencyAllowed(d.getOriginClass(), d.getTargetClass()))
             .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
@@ -1003,6 +876,7 @@ class ArchitectureBoundaryTest {
     private static boolean boundaryValueDependencyAllowed(JavaClass origin, JavaClass target) {
         return !isInfrastructureClient(target) && !isInAnyPackage(target, "java.sql", "java.net.http")
             && (target.getName().startsWith("java.") || target.getPackageName().equals(origin.getPackageName())
+                || isInPackage(target, BASE_PACKAGE + ".ai.contracts")
                 || isInPackage(origin, BASE_PACKAGE + ".knowledgebase.ports")
                     && isInPackage(target, BASE_PACKAGE + ".knowledgebase.contracts")
                 || origin.getPackageName().equals(BASE_PACKAGE + ".ai.ports") && isAiBoundaryValue(target));
@@ -1018,7 +892,7 @@ class ArchitectureBoundaryTest {
         PRODUCTION_CLASSES.stream()
             .filter(c -> isMigratedAdapter(c) || isInAnyPackage(c,
                 BASE_PACKAGE + ".documents.application.inspection", BASE_PACKAGE + ".documents.application.lifecycle",
-                BASE_PACKAGE + ".knowledgebase.application"))
+                BASE_PACKAGE + ".knowledgebase.application") && !Set.of("KnowledgeBaseService", "KnowledgeBaseLifecycleService").contains(c.getSimpleName()))
             .filter(c -> c.isAnnotatedWith(RelationalTransactional.class) || c.isAnnotatedWith(GraphTransactional.class)
                 || c.getMethods().stream().anyMatch(ArchitectureBoundaryTest::isStoreTransactional))
             .map(JavaClass::getName).forEach(violations::add);
@@ -1036,10 +910,11 @@ class ArchitectureBoundaryTest {
             || target.getName().equals("java.io.IOException")
             || target.getName().startsWith(BASE_PACKAGE + ".schemas.evaluation.domain.EvaluationObservations$")
             || isAiBoundaryValue(target)
+            || isInPackage(target, BASE_PACKAGE + ".http.contracts")
             || isDraftFactPort(target)
             || isInAnyPackage(target, BASE_PACKAGE + ".ai.ports",
                 BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".schemas.registry.ports",
-                BASE_PACKAGE + ".schemas.discovery.ports", BASE_PACKAGE + ".schemas.evaluation.ports",
+                BASE_PACKAGE + ".schemas.discovery.ports", BASE_PACKAGE + ".schemas.generation.ports", BASE_PACKAGE + ".schemas.evaluation.ports",
                 BASE_PACKAGE + ".schemas.evaluation.contracts", BASE_PACKAGE + ".schemas.publication.contracts",
                 BASE_PACKAGE + ".schemas.reprocessing.contracts", BASE_PACKAGE + ".schemas.drafts.contracts",
                 BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".knowledgebase.ports",
@@ -1058,7 +933,7 @@ class ArchitectureBoundaryTest {
     }
 
     @Test
-    void features_never_depend_on_bootstrap_and_bridge_callers_are_frozen() {
+    void features_never_depend_on_bootstrap_or_removed_compatibility_bridge() {
         Set<String> violations = PRODUCTION_CLASSES.stream()
             .filter(c -> !isInPackage(c, BASE_PACKAGE + ".bootstrap"))
             .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
@@ -1072,34 +947,11 @@ class ArchitectureBoundaryTest {
         return !target.getName().equals(SERVICE_PACKAGE + ".EmbeddingSpacePolicy");
     }
 
-    private static final Set<String> FROZEN_IDENTITY_CALLERS = Set.of(
-        SERVICE_PACKAGE + ".EmbeddingSpaceIdentity",
-        SERVICE_PACKAGE + ".EmbeddingSpaceIndexService",
-        SERVICE_PACKAGE + ".LexicalIndexIdentity");
-    private static final Set<String> FROZEN_SPACE_CALLERS = Set.of(
-        SERVICE_PACKAGE + ".EmbeddingSpace", SERVICE_PACKAGE + ".EmbeddingSpaceIdentity",
-        SERVICE_PACKAGE + ".EmbeddingSpaceIndexService");
-
-    @Test
-    void legacy_identity_and_value_bridges_cannot_gain_callers_or_state_access() {
-        Set<String> violations = PRODUCTION_CLASSES.stream()
-            .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
-            .filter(d -> d.getTargetClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity")
-                    && !FROZEN_IDENTITY_CALLERS.contains(d.getOriginClass().getName())
-                || d.getTargetClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpace")
-                    && !FROZEN_SPACE_CALLERS.contains(d.getOriginClass().getName())
-                || d.getOriginClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpaceIdentity")
-                    && !identityDependencyAllowed(d.getTargetClass())
-                || d.getOriginClass().getName().equals(SERVICE_PACKAGE + ".EmbeddingSpace")
-                    && !isInAnyPackage(d.getTargetClass(), "java.lang", "java.lang.invoke", "java.lang.runtime"))
-            .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
-        assertNoViolations(violations);
-    }
 
     private static boolean identityDependencyAllowed(JavaClass target) {
         return isInAnyPackage(target, "java.lang", "java.util", "java.security", "java.nio.charset")
-            || Set.of(SERVICE_PACKAGE + ".EmbeddingSpace", DOMAIN_PACKAGE + ".AiProfileNode",
-                BASE_PACKAGE + ".ai.domain.EmbeddingTarget", BASE_PACKAGE + ".documents.domain.chunking.TokenizerId").contains(target.getName());
+            || Set.of(BASE_PACKAGE + ".ai.domain.EmbeddingSpace", BASE_PACKAGE + ".ai.contracts.ProfileFacts",
+                BASE_PACKAGE + ".ai.domain.EmbeddingTarget", BASE_PACKAGE + ".ai.domain.TokenizerId").contains(target.getName());
     }
 
     @Test
@@ -1107,7 +959,7 @@ class ArchitectureBoundaryTest {
         JavaClass forbidden = new ClassFileImporter().importClasses(ForbiddenAiStateFixture.class)
             .get(ForbiddenAiStateFixture.class);
         Set<String> foreign = forbidden.getDirectDependenciesFromSelf().stream()
-            .filter(d -> migratedDependencyForbidden(SERVICE_PACKAGE + ".AiProfileService", d.getTargetClass()))
+            .filter(d -> migratedDependencyForbidden(BASE_PACKAGE + ".ai.profiles.application.AiProfileService", d.getTargetClass()))
             .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertTrue(foreign.stream().anyMatch(v -> v.contains("DocumentChunkRepository")));
         assertTrue(forbidden.getDirectDependenciesFromSelf().stream().anyMatch(d -> isInfrastructureClient(d.getTargetClass())));
@@ -1128,7 +980,7 @@ class ArchitectureBoundaryTest {
     void migrated_guards_reject_ai_assignment_bypasses_and_relational_adapter_clients() {
         JavaClass fixture = new ClassFileImporter().importClasses(ForbiddenAiStateFixture.class).get(ForbiddenAiStateFixture.class);
         Set<String> forbidden = fixture.getDirectDependenciesFromSelf().stream()
-            .filter(d -> migratedDependencyForbidden(SERVICE_PACKAGE + ".AiProfileService", d.getTargetClass()))
+            .filter(d -> migratedDependencyForbidden(BASE_PACKAGE + ".ai.profiles.application.AiProfileService", d.getTargetClass()))
             .map(d -> d.getTargetClass().getSimpleName()).collect(java.util.stream.Collectors.toSet());
         assertTrue(forbidden.containsAll(Set.of("KnowledgeBaseRepository", "KnowledgeBaseNode", "AiProfileAssignments")));
         Set<String> adapterForbidden = fixture.getDirectDependenciesFromSelf().stream()
@@ -1140,9 +992,9 @@ class ArchitectureBoundaryTest {
 
     private static class ForbiddenAiStateFixture {
         io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository chunks;
-        io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository assignments;
-        io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode knowledgeBase;
-        io.github.vfedoriv.graphrag.domain.AiProfileNode profile;
+        io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository assignments;
+        io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode knowledgeBase;
+        io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode profile;
         io.github.vfedoriv.graphrag.documents.contracts.StoredEmbeddings provider;
         io.github.vfedoriv.graphrag.bootstrap.integration.ai.StoredEmbeddingInformationAdapter adapter;
         io.github.vfedoriv.graphrag.search.runs.ports.SearchProfiles newSearchProfileCaller;
@@ -1250,21 +1102,19 @@ class ArchitectureBoundaryTest {
                 || d.getOriginClass().getPackageName().contains(".ports")
                     && (isInfrastructureClient(d.getTargetClass()) || d.getTargetClass().getPackageName().contains(".adapters"))
                 || !d.getOriginClass().getPackageName().contains(".adapters.model")
-                    && d.getTargetClass().getName().equals(DOMAIN_PACKAGE + ".AiProfileNode"))
+                    && d.getTargetClass().getName().equals(BASE_PACKAGE + ".ai.profiles.domain.AiProfileNode"))
             .map(ArchitectureBoundaryTest::format).collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
         assertNoViolations(violations);
     }
 
     @Test
     void foreign_features_do_not_depend_on_search_implementations() throws java.io.IOException {
-        Set<String> expected = new TreeSet<>(java.nio.file.Files.readAllLines(
-            java.nio.file.Path.of("src/test/resources/architecture/search-external-step9-edges.txt")));
         Set<String> actual = PRODUCTION_CLASSES.stream()
             .filter(c -> !isInPackage(c, SEARCH_PACKAGE) && !isInPackage(c, BASE_PACKAGE + ".bootstrap"))
             .flatMap(c -> c.getDirectDependenciesFromSelf().stream())
             .filter(d -> isInPackage(d.getTargetClass(), SEARCH_PACKAGE))
             .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toCollection(TreeSet::new));
-        assertTrue(actual.equals(expected), "Exact external step-9 search seams differ:\n" + String.join("\n", actual));
+        assertNoViolations(actual);
         assertNoViolations(dependenciesFromClassesIn(BASE_PACKAGE + ".documents").stream()
             .filter(d -> isInPackage(d.getTargetClass(), SEARCH_PACKAGE))
             .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toSet()));
@@ -1276,7 +1126,7 @@ class ArchitectureBoundaryTest {
             && (!isInPackage(target, BASE_PACKAGE)
             || isInAnyPackage(target, BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".schemas.contracts",
                 BASE_PACKAGE + ".knowledgebase.contracts", BASE_PACKAGE + ".bootstrap.integration.search")
-            || target.getName().equals(BASE_PACKAGE + ".error.NotFoundException")
+            || target.getName().equals(BASE_PACKAGE + ".http.contracts.NotFoundException")
             || isInPackage(target, SEARCH_PACKAGE) && target.getPackageName().contains(".ports"));
     }
 
@@ -1295,17 +1145,6 @@ class ArchitectureBoundaryTest {
         }
     }
 
-    @Test
-    void search_step_nine_support_seams_are_exact() throws java.io.IOException {
-        Set<String> expected = new TreeSet<>(java.nio.file.Files.readAllLines(
-            java.nio.file.Path.of("src/test/resources/architecture/search-step9-edges.txt")));
-        Set<String> actual = dependenciesFromClassesIn(SEARCH_PACKAGE).stream()
-            .filter(d -> isInPackage(d.getTargetClass(), BASE_PACKAGE)
-                && !isInAnyPackage(d.getTargetClass(), SEARCH_PACKAGE, BASE_PACKAGE + ".schemas.contracts", BASE_PACKAGE + ".documents.contracts", BASE_PACKAGE + ".knowledgebase.contracts", BASE_PACKAGE + ".ai.domain")
-                && !d.getTargetClass().getName().equals(BASE_PACKAGE + ".ai.application.EmbeddingCompatibility"))
-            .map(ArchitectureBoundaryTest::format).collect(java.util.stream.Collectors.toCollection(TreeSet::new));
-        assertTrue(actual.equals(expected), "Exact step-9 search support seams differ:\n" + String.join("\n", actual));
-    }
 
     @Test
     void search_negative_fixtures_reject_foreign_state_effects_and_new_support_seams() {

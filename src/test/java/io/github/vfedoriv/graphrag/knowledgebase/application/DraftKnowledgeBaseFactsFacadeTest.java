@@ -7,13 +7,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.DraftKnowledgeBaseFacts;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +62,7 @@ class DraftKnowledgeBaseFactsFacadeTest {
         profile.setApiKey("private-api-key");
         profile.setChatModel("private-chat-model");
         profile.setEmbeddingModel("private-embedding-model");
-        when(knowledgeBases.activeAiProfile("kb-1")).thenReturn(profile);
+        when(knowledgeBases.activeAiProfile("kb-1")).thenReturn(profile.facts());
 
         DraftKnowledgeBaseFacts.Profile facts = facade.activeProfile("kb-1");
 

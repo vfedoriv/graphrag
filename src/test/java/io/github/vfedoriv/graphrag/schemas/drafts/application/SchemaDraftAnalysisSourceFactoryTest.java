@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +21,7 @@ import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceType;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftBinaryStorage;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftDocumentInputs;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -246,10 +248,10 @@ class SchemaDraftAnalysisSourceFactoryTest {
         return source;
     }
 
-    private RuntimeSettingsService.DiscoverySettings discoverySettings(
+    private RuntimeSettingsAccess.DiscoverySettings discoverySettings(
         int maxSourceCharacters, int chunkCharacters, int maxChunksPerSource
     ) {
-        return new RuntimeSettingsService.DiscoverySettings(
+        return new RuntimeSettingsAccess.DiscoverySettings(
             10, 1024, 4096, maxSourceCharacters, 8192, chunkCharacters, maxChunksPerSource, 2,
             Duration.ofSeconds(5), Duration.ofSeconds(30));
     }

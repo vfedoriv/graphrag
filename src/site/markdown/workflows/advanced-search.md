@@ -4,6 +4,14 @@
 
 Advanced search creates a PostgreSQL-backed run and executes bounded retrieval/synthesis asynchronously. It is separate from one-shot `/ask` and never falls back to the retired hybrid-search API.
 
+
+Search consumes typed settings and non-secret AI facts/captured execution.
+Vector and lexical maintenance uses `indexes.contracts`, shared with document
+writes and cleanup, with graph effects in index adapters. Search outcome metrics
+are owned by `search.runs.adapters.metrics`; generic AI observations remain
+independent. Index names, partitions, readiness deadlines, run snapshots, and
+metric names/tags retain their existing contracts.
+
 ## Readiness and admission
 
 Call `GET /api/v1/knowledge-bases/{knowledgeBaseId}/queries/advanced-search-runs/readiness`. The deterministic check does not contact a provider. It reports profile, corpus/index, active schema, graph-branch availability, blockers, and informational status.

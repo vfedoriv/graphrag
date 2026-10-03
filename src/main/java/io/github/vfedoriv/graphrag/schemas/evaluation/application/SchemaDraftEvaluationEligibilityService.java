@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvalu
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationEligibleDocumentResponse;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationIneligibilityReason;
 import io.github.vfedoriv.graphrag.schemas.evaluation.api.model.SchemaDraftEvaluationDtos.EvaluationReadiness;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import java.util.Set;
 import io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftAdmissions;
 import io.github.vfedoriv.graphrag.schemas.drafts.contracts.DraftContributors;

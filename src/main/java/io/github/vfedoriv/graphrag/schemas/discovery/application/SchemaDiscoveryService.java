@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.schemas.discovery.application;
 
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.KnowledgeBaseProfiles;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryAggregator;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
@@ -14,12 +14,12 @@ import io.github.vfedoriv.graphrag.schemas.discovery.DiscoverySourcePreparer;
 import io.github.vfedoriv.graphrag.schemas.discovery.PreparedDiscoverySource;
 import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureClassifier;
 import io.github.vfedoriv.graphrag.schemas.discovery.SourceFailureDecision;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse.Reproducibility;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse.SourceOutcome;
-import io.github.vfedoriv.graphrag.error.SchemaDiscoveryFailedException;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse.Reproducibility;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse.SourceOutcome;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.error.SchemaDiscoveryFailedException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiObservationScope;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
@@ -45,8 +45,8 @@ public class SchemaDiscoveryService {
     private final DiscoverySourcePreparer sourcePreparer;
     private final DiscoverySourceAnalyzer sourceAnalyzer;
     private final DiscoveryAggregator aggregator;
-    private final RuntimeSettingsService runtimeSettingsService;
-    private final KnowledgeBaseService knowledgeBaseService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
+    private final KnowledgeBaseProfiles knowledgeBaseService;
     private final AiObservationService observationService;
     private final SourceFailureClassifier failureClassifier;
 
@@ -54,8 +54,8 @@ public class SchemaDiscoveryService {
         DiscoverySourcePreparer sourcePreparer,
         DiscoverySourceAnalyzer sourceAnalyzer,
         DiscoveryAggregator aggregator,
-        RuntimeSettingsService runtimeSettingsService,
-        KnowledgeBaseService knowledgeBaseService,
+        RuntimeSettingsAccess runtimeSettingsService,
+        KnowledgeBaseProfiles knowledgeBaseService,
         AiObservationService observationService,
         SourceFailureClassifier failureClassifier
     ) {
@@ -73,8 +73,8 @@ public class SchemaDiscoveryService {
     ) {
         long startNanos = System.nanoTime();
         List<PreparedDiscoverySource> sources = sourcePreparer.prepare(knowledgeBaseId, request, files);
-        RuntimeSettingsService.DiscoverySettings limits = runtimeSettingsService.discovery();
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        RuntimeSettingsAccess.DiscoverySettings limits = runtimeSettingsService.discovery();
+        ProfileFacts profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
         Map<String, String> workflowAttributes = Map.of(
             "ai.discovery.knowledge_base_id", knowledgeBaseId,
             "ai.discovery.source_count", Integer.toString(sources.size()),
@@ -123,8 +123,8 @@ public class SchemaDiscoveryService {
     private AnalysisBatch analyze(
         List<PreparedDiscoverySource> sources,
         SchemaDiscoveryRequest request,
-        AiProfileNode profile,
-        RuntimeSettingsService.DiscoverySettings limits
+        ProfileFacts profile,
+        RuntimeSettingsAccess.DiscoverySettings limits
     ) {
         ExecutorService executor = Executors.newFixedThreadPool(Math.min(limits.maxConcurrency(), sources.size()),
             Thread.ofPlatform().name("schema-discovery-", 0).factory());

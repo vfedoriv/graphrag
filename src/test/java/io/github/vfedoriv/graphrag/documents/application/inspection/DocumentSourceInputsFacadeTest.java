@@ -11,7 +11,7 @@ import io.github.vfedoriv.graphrag.documents.application.processing.DocumentPars
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentSourceInputs;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 

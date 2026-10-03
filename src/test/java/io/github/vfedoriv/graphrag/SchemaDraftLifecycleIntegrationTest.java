@@ -1,7 +1,9 @@
 package io.github.vfedoriv.graphrag;
 
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+
 import io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException;
-import io.github.vfedoriv.graphrag.schemas.discovery.ModelResponseDiagnostics;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionAttemptContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,21 +18,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionModelAdapter;
+import io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.CandidateExtractionModelAdapter;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationRunNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
@@ -45,7 +47,7 @@ import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistrySe
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftReviewService;
 import io.github.vfedoriv.graphrag.schemas.drafts.application.SchemaDraftJsonSupport;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -1270,7 +1272,7 @@ class SchemaDraftLifecycleIntegrationTest {
             new io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest(
                 null, null, false, List.of(document.getId(), "foreign"), Map.of(),
                 request.reason(), request.selection(), revision)))
-            .isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
+            .isInstanceOf(io.github.vfedoriv.graphrag.http.contracts.NotFoundException.class);
         assertThatThrownBy(() -> reprocessingPlans.create(KNOWLEDGE_BASE_ID,
             new io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest(
                 null, null, false, request.documentIds(), Map.of(), request.reason(), request.selection(), "stale")))
@@ -1963,7 +1965,7 @@ class SchemaDraftLifecycleIntegrationTest {
                     try {
                         if (portablePrompt.contains("RETRYABLE_MODEL_FAILURE") && FAIL_RETRYABLE_MODEL.get()) {
                             throw new io.github.vfedoriv.graphrag.schemas.discovery.MalformedModelResponseException(
-                                io.github.vfedoriv.graphrag.schemas.discovery.ModelResponseDiagnostics.none());
+                                io.github.vfedoriv.graphrag.schemas.discovery.adapters.model.ModelResponseDiagnostics.none());
                         }
                         if (portablePrompt.contains("FAIL_CANDIDATE_PRIVATE_SOURCE")) {
                             throw new IllegalArgumentException("Candidate conversion failed: PRIVATE_CANDIDATE_RESPONSE");

@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.search.query.application;
 
 import io.github.vfedoriv.graphrag.search.query.application.CypherExecutionService;
 import io.github.vfedoriv.graphrag.search.query.application.CypherGenerationService;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.query.api.model.GeneratedQueryResponse;
 import io.github.vfedoriv.graphrag.search.query.api.model.QueryAskResponse;
@@ -25,13 +25,13 @@ public class QueryAskService {
     private final CypherGenerationService cypherGenerationService;
     private final CypherExecutionService cypherExecutionService;
     private final AiObservationService aiObservationService;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
 
     public QueryAskService(
         CypherGenerationService cypherGenerationService,
         CypherExecutionService cypherExecutionService,
         AiObservationService aiObservationService,
-        RuntimeSettingsService runtimeSettingsService
+        RuntimeSettingsAccess runtimeSettingsService
     ) {
         this.cypherGenerationService = cypherGenerationService;
         this.cypherExecutionService = cypherExecutionService;
@@ -40,7 +40,7 @@ public class QueryAskService {
     }
 
     public QueryAskResponse ask(String knowledgeBaseId, String prompt) {
-        QueryPolicy policy = runtimeSettingsService.queryPolicy();
+        QueryPolicy policy = io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy.from(runtimeSettingsService.query());
         Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("knowledge_base.id", knowledgeBaseId);
         attributes.put("query.prompt.length", String.valueOf(LogMetadata.length(prompt)));

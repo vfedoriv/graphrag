@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.DraftSourceFingerprint;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftDocumentInputs;
 
@@ -14,8 +14,8 @@ import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStorageMutationNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStorageMutationType;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.SourceResponse;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRevisionRepository;
@@ -42,7 +42,7 @@ public class SchemaDraftSourceService {
     private final DraftDocumentInputs documentRepository;
     private final DraftBinaryStorage storageService;
     private final SchemaDraftStorageMutationService mutationService;
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final TransactionTemplate transactionTemplate;
 
     public SchemaDraftSourceService(
@@ -53,7 +53,7 @@ public class SchemaDraftSourceService {
         DraftDocumentInputs documentRepository,
         DraftBinaryStorage storageService,
         SchemaDraftStorageMutationService mutationService,
-        RuntimeSettingsService runtimeSettingsService,
+        RuntimeSettingsAccess runtimeSettingsService,
         TransactionTemplate transactionTemplate
     ) {
         this.lifecycleService = lifecycleService;
@@ -308,7 +308,7 @@ public class SchemaDraftSourceService {
     }
 
     private void validateBytes(byte[] bytes, int characters) {
-        RuntimeSettingsService.DiscoverySettings limits = runtimeSettingsService.discovery();
+        RuntimeSettingsAccess.DiscoverySettings limits = runtimeSettingsService.discovery();
         if (bytes.length > limits.maxSourceBytes()) {
             throw new IllegalArgumentException("Draft source exceeds byte limit " + limits.maxSourceBytes());
         }

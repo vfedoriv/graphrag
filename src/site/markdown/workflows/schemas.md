@@ -13,6 +13,13 @@ stateDiagram-v2
     ACTIVE --> ACTIVE: immutable
 ```
 
+
+Registry HTTP mapping lives under `schemas.registry.api`; discovery models belong
+to `schemas.discovery`, and generation/example prompts, normalization, and model
+adapters to `schemas.generation`. Generation parsing uses a schema-owned port
+mapped to document inputs by bootstrap. AI-owned capabilities select models;
+bootstrap retains schema resource loading. Routes and serialized values are unchanged.
+
 ## Validate and create
 
 Validate without persistence:

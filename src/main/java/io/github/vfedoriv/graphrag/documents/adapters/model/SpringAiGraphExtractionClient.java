@@ -11,8 +11,8 @@ import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.observability.AiModelCallObservation;
 import io.github.vfedoriv.graphrag.observability.AiObservationService;
 import io.github.vfedoriv.graphrag.observability.AiTokenUsage;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
-import io.github.vfedoriv.graphrag.service.AiRuntimeModelFactory;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.models.AiModelAccess;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
         Set.of("type", "fromLabel", "fromKey", "toLabel", "toKey", "properties", "confidence");
     private final ObjectProvider<ChatModel> chatModelProvider;
     private final AiObservationService aiObservationService;
-    private final ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider;
+    private final ObjectProvider<? extends AiModelAccess> runtimeModelFactoryProvider;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectMapper tolerantObjectMapper =
         new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -41,7 +41,7 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
     public SpringAiGraphExtractionClient(
         ObjectProvider<ChatModel> chatModelProvider,
         AiObservationService aiObservationService,
-        ObjectProvider<AiRuntimeModelFactory> runtimeModelFactoryProvider
+        ObjectProvider<? extends AiModelAccess> runtimeModelFactoryProvider
     ) {
         this.chatModelProvider = chatModelProvider;
         this.aiObservationService = aiObservationService;
@@ -136,7 +136,7 @@ public class SpringAiGraphExtractionClient implements GraphExtractionClient {
 
     private ChatModel resolveChatModel() {
         String profileId = AiProfileContext.activeProfileId();
-        AiRuntimeModelFactory factory = runtimeModelFactoryProvider.getIfAvailable();
+        AiModelAccess factory = runtimeModelFactoryProvider.getIfAvailable();
         if (profileId != null && factory != null) {
             return factory.chatModel(profileId);
         }

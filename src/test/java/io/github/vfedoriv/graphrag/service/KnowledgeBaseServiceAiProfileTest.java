@@ -1,5 +1,17 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,15 +20,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
-import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.KnowledgeBaseNotEmptyException;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.knowledgebase.api.error.KnowledgeBaseNotEmptyException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -29,7 +41,7 @@ class KnowledgeBaseServiceAiProfileTest {
         AiProfileService aiProfileService = mock(AiProfileService.class);
         DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
         AiProfileNode defaultProfile = profile("default", "embed-default", 1536);
-        when(aiProfileService.defaultProfile()).thenReturn(defaultProfile);
+        when(aiProfileService.defaultFacts()).thenReturn(defaultProfile.facts());
         when(knowledgeBaseRepository.save(any(KnowledgeBaseNode.class))).thenAnswer(invocation -> invocation.getArgument(0));
         KnowledgeBaseService service = service(knowledgeBaseRepository, aiProfileService, chunkRepository);
 
@@ -46,7 +58,7 @@ class KnowledgeBaseServiceAiProfileTest {
         KnowledgeBaseNode knowledgeBase = knowledgeBase("kb-1", "profile-old");
         AiProfileNode compatible = profile("profile-new", "embed-default", 1536);
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
-        when(aiProfileService.getNode("profile-new")).thenReturn(compatible);
+        when(aiProfileService.require("profile-new")).thenReturn(compatible.facts());
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
         when(knowledgeBaseRepository.save(any(KnowledgeBaseNode.class))).thenAnswer(invocation -> invocation.getArgument(0));
         KnowledgeBaseService service = service(knowledgeBaseRepository, aiProfileService, chunkRepository);
@@ -65,7 +77,7 @@ class KnowledgeBaseServiceAiProfileTest {
         KnowledgeBaseNode knowledgeBase = knowledgeBase("kb-1", "profile-old");
         AiProfileNode incompatible = profile("profile-new", "other-embed", 768);
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
-        when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
+        when(aiProfileService.require("profile-new")).thenReturn(incompatible.facts());
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1")).thenReturn(List.of(chunk("embed-default", 1536)));
         KnowledgeBaseService service = service(knowledgeBaseRepository, aiProfileService, chunkRepository);
 
@@ -86,7 +98,7 @@ class KnowledgeBaseServiceAiProfileTest {
         AiProfileNode incompatible = profile("profile-new", "embed-default", 1536);
         incompatible.setBaseUrl("https://other-provider.example/v1");
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
-        when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
+        when(aiProfileService.require("profile-new")).thenReturn(incompatible.facts());
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1"))
             .thenReturn(List.of(chunk("embed-default", 1536)));
         KnowledgeBaseService service = service(knowledgeBaseRepository, aiProfileService, chunkRepository);
@@ -107,7 +119,7 @@ class KnowledgeBaseServiceAiProfileTest {
         AiProfileNode incompatible = profile("profile-new", "embedding-alias", 768);
         incompatible.setTokenizerId(new TokenizerId(TokenizerId.CL100K_BASE));
         when(knowledgeBaseRepository.findById("kb-1")).thenReturn(Optional.of(knowledgeBase));
-        when(aiProfileService.getNode("profile-new")).thenReturn(incompatible);
+        when(aiProfileService.require("profile-new")).thenReturn(incompatible.facts());
         when(chunkRepository.findEmbeddedChunksByKnowledgeBaseId("kb-1"))
             .thenReturn(List.of(chunk("embedding-alias", 768)));
         KnowledgeBaseService service = service(knowledgeBaseRepository, aiProfileService, chunkRepository);
@@ -159,7 +171,7 @@ class KnowledgeBaseServiceAiProfileTest {
         java.util.ArrayList<String> effects = new java.util.ArrayList<>();
         KnowledgeBaseService service = deletionService(repository,
             id -> { effects.add("count"); return 2; }, id -> effects.add("cleanup"));
-        assertThatThrownBy(() -> service.delete("missing")).isInstanceOf(io.github.vfedoriv.graphrag.error.NotFoundException.class);
+        assertThatThrownBy(() -> service.delete("missing")).isInstanceOf(io.github.vfedoriv.graphrag.http.contracts.NotFoundException.class);
         assertThat(effects).isEmpty();
         when(repository.existsById("kb")).thenReturn(true);
         assertThatThrownBy(() -> service.delete("kb")).isInstanceOf(KnowledgeBaseNotEmptyException.class);
@@ -184,7 +196,7 @@ class KnowledgeBaseServiceAiProfileTest {
         KnowledgeBaseNode knowledgeBase = knowledgeBase("kb", "previous");
         knowledgeBase.setVersion(7L);
         when(repository.findById("kb")).thenReturn(Optional.of(knowledgeBase));
-        when(profiles.getNode("next")).thenReturn(profile("next", "model", 768));
+        when(profiles.require("next")).thenReturn(profile("next", "model", 768).facts());
         KnowledgeBaseService service = service(repository, profiles, mock(DocumentChunkRepository.class));
         assertThatThrownBy(() -> service.updateActiveAiProfile("kb", "next")).isInstanceOf(ConflictException.class);
         assertThat(knowledgeBase.getActiveAiProfileId()).isEqualTo("previous");

@@ -4,8 +4,8 @@ import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionRe
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
-import io.github.vfedoriv.graphrag.error.GraphExtractionValidationException;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+import io.github.vfedoriv.graphrag.documents.api.error.GraphExtractionValidationException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.schemas.contracts.NodeKeySupport;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GraphExtractionValidationService {
 
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public GraphExtractionValidationService(RuntimeSettingsService runtimeSettingsService) {
+    public GraphExtractionValidationService(RuntimeSettingsAccess runtimeSettingsService) {
         this.runtimeSettingsService = runtimeSettingsService;
     }
 
@@ -72,7 +72,7 @@ public class GraphExtractionValidationService {
     }
 
     private void enforcePayloadLimits(GraphExtractionResult result) {
-        RuntimeSettingsService.ExtractionSettings settings = runtimeSettingsService.extraction();
+        RuntimeSettingsAccess.ExtractionSettings settings = runtimeSettingsService.extraction();
         if (result.nodes().size() > settings.maxEntitiesPerChunk()) {
             throw new GraphExtractionValidationException("Too many extracted entities for chunk");
         }

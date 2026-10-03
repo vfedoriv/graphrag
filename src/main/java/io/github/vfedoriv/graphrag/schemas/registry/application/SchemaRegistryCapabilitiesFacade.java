@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.registry.application;
 
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaRegistryCapabilities;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;

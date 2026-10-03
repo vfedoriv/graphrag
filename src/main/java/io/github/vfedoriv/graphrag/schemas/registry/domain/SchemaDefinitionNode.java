@@ -1,8 +1,8 @@
 package io.github.vfedoriv.graphrag.schemas.registry.domain;
 
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.domain.SchemaStatus;
-import io.github.vfedoriv.graphrag.domain.SchemaFormat;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaStatus;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaFormat;
 
 import java.time.Instant;
 

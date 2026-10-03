@@ -1,9 +1,9 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,7 @@ public final class GraphExtractionStage {
     public void execute(
         DocumentUploadNode document,
         List<DocumentChunkNode> persistedChunks,
-        AiProfileNode activeProfile,
+        ProfileFacts activeProfile,
         boolean allowOverwrite
     ) {
         List<DocumentChunkNode> parents = persistedChunks.stream()
@@ -39,7 +39,7 @@ public final class GraphExtractionStage {
     public void execute(
         DocumentUploadNode document,
         List<DocumentChunkNode> persistedChunks,
-        AiProfileNode activeProfile,
+        ProfileFacts activeProfile,
         boolean allowOverwrite,
         String schemaId,
         String schemaContentHash

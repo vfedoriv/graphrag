@@ -1,5 +1,18 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
+import io.github.vfedoriv.graphrag.ai.configuration.ModelProperties;
+import io.github.vfedoriv.graphrag.storage.configuration.StorageProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ChunkingProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.QueryProperties;
+import io.github.vfedoriv.graphrag.settings.configuration.ExtractionProperties;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.adapters.provider.AiRuntimeModelFactory;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import io.github.vfedoriv.graphrag.search.query.application.CypherGenerationService;
 import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
 
@@ -11,8 +24,8 @@ import static org.mockito.Mockito.when;
 
 import io.github.vfedoriv.graphrag.TestAiObservationService;
 import io.github.vfedoriv.graphrag.TestRuntimeSettings;
-import io.github.vfedoriv.graphrag.config.AppProperties;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.bootstrap.AppProperties;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
 import io.github.vfedoriv.graphrag.search.runs.adapters.model.SearchProfileAdapter;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
 import io.github.vfedoriv.graphrag.search.query.api.model.GeneratedQueryResponse;
@@ -91,7 +104,7 @@ class CypherGenerationServiceTest {
             """);
         when(activeSchemaResolver.resolveActive("kb-1")).thenReturn(new SchemaSnapshot("kb-1", "schema-1", schema.name(), schema.version(), null, null, null, null, null, null, null, schema));
         KnowledgeBaseService knowledgeBaseService = org.mockito.Mockito.mock(KnowledgeBaseService.class);
-        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile());
+        when(knowledgeBaseService.activeAiProfile("kb-1")).thenReturn(profile().facts());
         when(validationService.validate(
             Mockito.any(io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument.class),
             Mockito.anyString(),
@@ -122,12 +135,12 @@ class CypherGenerationServiceTest {
 
     private AppProperties props() {
         return new AppProperties(
-            new AppProperties.Neo4j("neo4j"),
-            new AppProperties.Model("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
-            new AppProperties.Storage(Path.of("var/documents")),
-            new AppProperties.Chunking(800, 80, 4000),
-            new AppProperties.Query(200, 15, true, List.of("CREATE")),
-            new AppProperties.Extraction(40, 80, 2)
+            new Neo4jProperties("neo4j"),
+            new ModelProperties("https://api.openai.com/v1", "", "text-embedding-3-small", 1536, "gpt-5-mini"),
+            new StorageProperties(Path.of("var/documents")),
+            new ChunkingProperties(800, 80, 4000),
+            new QueryProperties(200, 15, true, List.of("CREATE")),
+            new ExtractionProperties(40, 80, 2)
         );
     }
 

@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.error;
 
+import io.github.vfedoriv.graphrag.bootstrap.http.GlobalExceptionHandler;
+
 import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.search.query.api.error.QueryRejectedException;
 import io.github.vfedoriv.graphrag.search.runs.api.error.AdvancedSearchReadinessConflictException;

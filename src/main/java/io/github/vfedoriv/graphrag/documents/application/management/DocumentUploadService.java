@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.application.management;
 
 import io.github.vfedoriv.graphrag.documents.ports.DocumentArtifactCleanup;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.ManagedKnowledgeBases;
 
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentRunHistoryLifecycle;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
@@ -9,8 +9,8 @@ import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStorageMutationType;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentBinaryStorage;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class DocumentUploadService {
     private final DocumentBinaryStorage binaryStorageService;
     private final DocumentUploadRepository documentUploadRepository;
     private final DocumentArtifactCleanup graphArtifactCleanupService;
-    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final ManagedKnowledgeBases knowledgeBaseLifecycleService;
     private final DocumentStorageMutationService storageMutationService;
     private final DocumentRunHistoryLifecycle runHistoryLifecycle;
 
@@ -42,7 +42,7 @@ public class DocumentUploadService {
         DocumentBinaryStorage binaryStorageService,
         DocumentUploadRepository documentUploadRepository,
         DocumentArtifactCleanup graphArtifactCleanupService,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        ManagedKnowledgeBases knowledgeBaseLifecycleService,
         DocumentStorageMutationService storageMutationService,
         DocumentRunHistoryLifecycle runHistoryLifecycle
     ) {

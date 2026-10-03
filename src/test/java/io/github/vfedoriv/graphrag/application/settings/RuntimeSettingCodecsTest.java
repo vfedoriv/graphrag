@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.application.settings;
 
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingCodecs;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

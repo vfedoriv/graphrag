@@ -18,12 +18,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.entity.DocumentChunkEntity;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 
 import static org.assertj.core.api.Assertions.assertThat;

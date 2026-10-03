@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.evaluation.api.model;
 
-import io.github.vfedoriv.graphrag.dto.PageResponse;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
 
 import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationStatus;
 import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationOutcomeStatus;

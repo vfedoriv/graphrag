@@ -1,5 +1,11 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
+
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+
 import io.github.vfedoriv.graphrag.documents.domain.options.ImmutableDocumentProcessingInput;
 
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
@@ -81,8 +87,8 @@ class DocumentReprocessingFacadeTest {
         DocumentReprocessing facade = facade();
         source("hash");
         assertThat(facade.sourceMatches(new DocumentReprocessing.Source("kb", "doc", "hash"))).isTrue();
-        io.github.vfedoriv.graphrag.domain.AiProfileNode profile = new io.github.vfedoriv.graphrag.domain.AiProfileNode();
-        when(profiles.aiProfile("captured-profile")).thenReturn(profile);
+        io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode profile = new io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode();
+        when(profiles.aiProfile("captured-profile")).thenReturn(profile.facts());
         io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext context =
             io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext.create(
                 "recursive", "recursive-v1", 800, 80, 4000,
@@ -92,7 +98,7 @@ class DocumentReprocessingFacadeTest {
             "utf8-byte-v1", "tokenizer-v1", "CONSERVATIVE", "representation-v1", "settings");
         DocumentReprocessing.DocumentTarget document = new DocumentReprocessing.DocumentTarget(
             "hash", "text", "parser-v1", "TXT", "effective", Map.of("saved", 12));
-        when(chunking.restore(profile, target, document)).thenReturn(context);
+        when(chunking.restore(profile.facts(), target, document)).thenReturn(context);
         DocumentReprocessing.Request request = new DocumentReprocessing.Request("kb", "doc", "hash", "scope",
             new DocumentReprocessing.Migration("captured-profile", 17, "space", "schema", "schema-hash", target, document));
         DocumentUploadNode completed = new DocumentUploadNode();

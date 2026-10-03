@@ -1,5 +1,4 @@
 package io.github.vfedoriv.graphrag.search.retrieval.application;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts;
 
 import io.github.vfedoriv.graphrag.search.retrieval.domain.LuceneQueryCompiler;
 
@@ -11,7 +10,7 @@ import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRet
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Status;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Subquery;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.search.retrieval.ports.TextChunkRetrievalRepository;
 import io.github.vfedoriv.graphrag.search.retrieval.ports.TextChunkRetrievalRepository.RawCandidate;
 import java.util.ArrayList;

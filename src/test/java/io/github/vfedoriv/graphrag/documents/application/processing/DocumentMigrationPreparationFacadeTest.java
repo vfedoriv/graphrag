@@ -1,4 +1,10 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
+
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.ChunkReprocessingSelection;
 
@@ -17,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import io.github.vfedoriv.graphrag.bootstrap.integration.reprocessing.ReprocessingDocumentPreparationAdapter;
 import io.github.vfedoriv.graphrag.domain.*;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
@@ -45,7 +51,7 @@ class DocumentMigrationPreparationFacadeTest {
         "profile", 7, "https://example.test/v1", "unknown-local-model", 3, null);
 
     DocumentMigrationPreparationFacadeTest() {
-        when(runtime.chunking()).thenReturn(new RuntimeSettingsService.ChunkingSettings(
+        when(runtime.chunking()).thenReturn(new RuntimeSettingsAccess.ChunkingSettings(
             "recursive", 800, 80, 4000, 1600, 8000, 2, 64, 256, "representation-v1"));
         when(runtime.effectiveChunkerRevision()).thenReturn("target-revision");
     }
@@ -76,7 +82,7 @@ class DocumentMigrationPreparationFacadeTest {
         assertThat(adapter.prepare(selected, captured, Map.of()).getFirst().classification())
             .isEqualTo(ReprocessingDocumentPreparation.Classification.NO_CHUNKS);
         when(chunks.findByDocumentIdOrderByChunkIndexAsc("a")).thenReturn(List.of(new DocumentChunkNode()));
-        String revision = chunking.snapshot(profile(), "text").effectiveRevision().value();
+        String revision = chunking.snapshot(profile().facts(), "text").effectiveRevision().value();
         for (int condition = 0; condition < 5; condition++) {
             DocumentProcessingRunNode run = new DocumentProcessingRunNode();
             run.setActiveCompleted(condition != 1);
@@ -105,19 +111,19 @@ class DocumentMigrationPreparationFacadeTest {
         DocumentProcessingOptionSet legacyOptions = new io.github.vfedoriv.graphrag.documents.application.processing.ProcessingOptionResolver(
             new DocumentProcessingOptionsRegistry(), new io.github.vfedoriv.graphrag.documents.application.processing.ProcessingJsonCodec(mapper))
             .resolve(source, Map.of("preserveLineBreaks", true));
-        io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext legacy = chunking.snapshot(profile(), "text");
+        io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext legacy = chunking.snapshot(profile().facts(), "text");
         ChunkMigrationSnapshot.DocumentTarget expected = new ChunkMigrationSnapshot.DocumentTarget(
             "hash-a", "text", legacy.parserRevision(), "TXT", legacy.effectiveRevision().value(), legacyOptions.effectiveOptions());
         ChunkMigrationSnapshot before = new ChunkMigrationSnapshot("target-revision", ChunkReprocessingSelection.ALL,
-            mapper.convertValue(chunking.snapshotTarget(profile()), ChunkMigrationSnapshot.ChunkTarget.class), "profile", 7, io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
+            mapper.convertValue(chunking.snapshotTarget(profile().facts()), ChunkMigrationSnapshot.ChunkTarget.class), "profile", 7, io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget.derive(profile().getBaseUrl(), profile().getEmbeddingModel(),
             profile().getEmbeddingDimensions(), profile().getTokenizerId() == null ? null : profile().getTokenizerId().value()).id(), "schema", "schema-hash", Map.of("a", expected));
         ChunkMigrationSnapshot after = new ChunkMigrationSnapshot(inspection.targetRevision(), ChunkReprocessingSelection.ALL,
             chunk, captured.id(), captured.revision(), inspection.embeddingSpaceId(), "schema", "schema-hash", Map.of("a", target));
         assertThat(json.canonical(after)).isEqualTo(json.canonical(before));
         assertThat(json.fingerprint(json.canonical(after))).isEqualTo(json.fingerprint(json.canonical(before)));
-        assertThat(chunking.restore(profile(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class))).usingRecursiveComparison()
+        assertThat(chunking.restore(profile().facts(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class))).usingRecursiveComparison()
             .ignoringFields("tokenEstimator").isEqualTo(legacy);
-        assertThat(chunking.restore(profile(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class)).tokenEstimator().revision())
+        assertThat(chunking.restore(profile().facts(), mapper.convertValue(chunk, DocumentReprocessing.ChunkTarget.class), mapper.convertValue(target, DocumentReprocessing.DocumentTarget.class)).tokenEstimator().revision())
             .isEqualTo(legacy.tokenEstimator().revision());
         assertThat(target.effectiveProcessingOptions()).containsEntry("preserveLineBreaks", true);
     }

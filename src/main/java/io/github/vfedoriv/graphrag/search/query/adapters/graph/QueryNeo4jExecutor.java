@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.search.query.adapters.graph;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
 import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy;
 import java.util.LinkedHashMap;
@@ -26,9 +26,9 @@ import org.springframework.stereotype.Component;
 public class QueryNeo4jExecutor implements QueryExecutor {
 
     private final Driver driver;
-    private final AppProperties appProperties;
+    private final Neo4jProperties appProperties;
 
-    public QueryNeo4jExecutor(Driver driver, AppProperties appProperties) {
+    public QueryNeo4jExecutor(Driver driver, Neo4jProperties appProperties) {
         this.driver = driver;
         this.appProperties = appProperties;
     }
@@ -39,7 +39,7 @@ public class QueryNeo4jExecutor implements QueryExecutor {
 
     public List<Map<String, Object>> execute(String cypher, Map<String, Object> parameters, QueryPolicy policy) {
         SessionConfig sessionConfig = SessionConfig.builder()
-            .withDatabase(appProperties.neo4j().database())
+            .withDatabase(appProperties.database())
             .withDefaultAccessMode(AccessMode.READ)
             .build();
         TransactionConfig transactionConfig = TransactionConfig.builder()

@@ -2,7 +2,7 @@ package io.github.vfedoriv.graphrag.schemas.discovery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
 import org.springframework.stereotype.Component;
 
 @Component

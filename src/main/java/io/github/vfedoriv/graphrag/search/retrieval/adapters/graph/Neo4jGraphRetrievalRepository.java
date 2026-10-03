@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.search.retrieval.adapters.graph;
 
-import io.github.vfedoriv.graphrag.config.AppProperties;
+import io.github.vfedoriv.graphrag.indexes.configuration.Neo4jProperties;
 import io.github.vfedoriv.graphrag.search.query.api.error.QueryDeadlineExceededException;
 import io.github.vfedoriv.graphrag.search.retrieval.ports.GraphRetrievalRepository;
 import java.time.Duration;
@@ -22,9 +22,9 @@ import org.springframework.stereotype.Repository;
 public class Neo4jGraphRetrievalRepository implements GraphRetrievalRepository {
 
     private final Driver driver;
-    private final AppProperties appProperties;
+    private final Neo4jProperties appProperties;
 
-    public Neo4jGraphRetrievalRepository(Driver driver, AppProperties appProperties) {
+    public Neo4jGraphRetrievalRepository(Driver driver, Neo4jProperties appProperties) {
         this.driver = driver;
         this.appProperties = appProperties;
     }
@@ -32,7 +32,7 @@ public class Neo4jGraphRetrievalRepository implements GraphRetrievalRepository {
     @Override
     public List<Map<String, Object>> execute(GraphQuery query, Duration timeout) {
         SessionConfig sessionConfig = SessionConfig.builder()
-            .withDatabase(appProperties.neo4j().database())
+            .withDatabase(appProperties.database())
             .withDefaultAccessMode(AccessMode.READ)
             .build();
         TransactionConfig transactionConfig = TransactionConfig.builder().withTimeout(timeout).build();

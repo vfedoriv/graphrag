@@ -15,9 +15,9 @@ import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessin
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.api.model.SchemaReprocessingDtos.CreatePlanRequest;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.domain.SchemaSourceType;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSourceType;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.documents.ports.GraphExtractionClient;
 import io.github.vfedoriv.graphrag.documents.domain.extraction.GraphExtractionResult;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
@@ -25,10 +25,10 @@ import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunReposito
 import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
 import io.github.vfedoriv.graphrag.documents.application.processing.DocumentProcessingService;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.documents.application.management.DocumentUploadService;
 import io.github.vfedoriv.graphrag.schemas.registry.application.SchemaRegistryService;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.application.SchemaReprocessingPlanService;
@@ -68,7 +68,7 @@ class DocumentProcessingIntegrationTest {
     @Autowired
     private SchemaRegistryService schemaRegistryService;
     @Autowired
-    private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private VectorIndexes embeddingSpaceIndexService;
     @Autowired
     private LexicalIndexRepository lexicalIndexRepository;
     @Autowired

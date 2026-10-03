@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.dto;
 
+import io.github.vfedoriv.graphrag.schemas.generation.api.model.GenerateSchemaFromFileRequest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.ConstraintViolation;

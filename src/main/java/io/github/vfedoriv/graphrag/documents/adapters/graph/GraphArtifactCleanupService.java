@@ -3,7 +3,7 @@ package io.github.vfedoriv.graphrag.documents.adapters.graph;
 import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunNode;
 import io.github.vfedoriv.graphrag.documents.domain.ExtractionRunStatus;
 import io.github.vfedoriv.graphrag.documents.ports.ExtractionRunRepository;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import java.util.ArrayList;
 import java.util.List;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentArtifactCleanup;

@@ -2,13 +2,13 @@ package io.github.vfedoriv.graphrag.documents.application.processing;
 
 import io.github.vfedoriv.graphrag.documents.domain.processing.PreparedChunk;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClientAccess;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkEffects;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
 import java.util.List;
@@ -19,14 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class EmbeddingPersistenceStage {
 
-    private final ProfileScopedAiClientResolver aiClientResolver;
+    private final EmbeddingClientAccess aiClientResolver;
     private final EmbeddingCompatibility embeddingCompatibility;
     private final DocumentChunkEffects persistenceAdapter;
     private final ChunkingService chunkingService;
     private final ProcessingJsonCodec jsonCodec;
 
     public EmbeddingPersistenceStage(
-        ProfileScopedAiClientResolver aiClientResolver,
+        EmbeddingClientAccess aiClientResolver,
         EmbeddingCompatibility embeddingCompatibility,
         DocumentChunkEffects persistenceAdapter,
         ChunkingService chunkingService,
@@ -41,7 +41,7 @@ public final class EmbeddingPersistenceStage {
 
     public List<DocumentChunkNode> execute(
         DocumentUploadNode document,
-        AiProfileNode activeProfile,
+        ProfileFacts activeProfile,
         List<PreparedChunk> preparedChunks
     ) {
         EmbeddingTarget embeddingSpace = EmbeddingTarget.derive(activeProfile.getBaseUrl(), activeProfile.getEmbeddingModel(),
@@ -77,7 +77,7 @@ public final class EmbeddingPersistenceStage {
 
     private DocumentChunkNode toNode(
         DocumentUploadNode document,
-        AiProfileNode profile,
+        ProfileFacts profile,
         EmbeddingTarget embeddingSpace,
         PreparedChunk preparedChunk,
         List<Double> embedding,

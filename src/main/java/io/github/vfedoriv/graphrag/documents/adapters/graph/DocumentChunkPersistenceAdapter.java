@@ -8,9 +8,9 @@ import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkKind;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
 import io.github.vfedoriv.graphrag.persistence.transaction.GraphTransactional;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,14 +25,14 @@ import org.springframework.stereotype.Component;
 public class DocumentChunkPersistenceAdapter implements io.github.vfedoriv.graphrag.documents.ports.DocumentChunkEffects {
 
     private final DocumentChunkRepository repository;
-    private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private final VectorIndexes embeddingSpaceIndexService;
     private final LexicalIndexRepository lexicalIndexRepository;
     private final Neo4jClient neo4jClient;
     private final DocumentChunkTopologyClassifier topologyClassifier;
 
     public DocumentChunkPersistenceAdapter(
         DocumentChunkRepository repository,
-        EmbeddingSpaceIndexService embeddingSpaceIndexService,
+        VectorIndexes embeddingSpaceIndexService,
         LexicalIndexRepository lexicalIndexRepository,
         Neo4jClient neo4jClient
     ) {

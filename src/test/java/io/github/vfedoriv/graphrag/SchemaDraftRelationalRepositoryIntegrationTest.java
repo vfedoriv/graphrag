@@ -3,8 +3,8 @@ package io.github.vfedoriv.graphrag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.ai.profiles.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisRunNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStatus;
@@ -30,8 +30,8 @@ import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceReposit
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceResultRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftSourceRevisionRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftStorageMutationRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,7 +184,7 @@ class SchemaDraftRelationalRepositoryIntegrationTest {
     }
 
     private SchemaDraftNode draft(String id, String knowledgeBaseId, String guidanceJson) {
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
         SchemaDraftNode draft = new SchemaDraftNode();
         draft.setId(id);
         draft.setKnowledgeBaseId(knowledgeBaseId);
@@ -230,7 +230,7 @@ class SchemaDraftRelationalRepositoryIntegrationTest {
     }
 
     private SchemaDraftAnalysisRunNode runningRun(SchemaDraftNode draft, String id) {
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(draft.getKnowledgeBaseId());
+        io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts profile = knowledgeBaseService.activeAiProfile(draft.getKnowledgeBaseId());
         SchemaDraftAnalysisRunNode run = new SchemaDraftAnalysisRunNode();
         run.setId(id);
         run.setDraftId(draft.getId());

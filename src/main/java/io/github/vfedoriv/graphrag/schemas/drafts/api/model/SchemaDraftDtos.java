@@ -1,7 +1,7 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.api.model;
 
-import io.github.vfedoriv.graphrag.dto.PageResponse;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,14 +18,13 @@ import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAnalysisStat
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftCompatibility;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftDecisionType;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftReviewState;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceResultStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceStatus;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftSourceType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftStatus;
 import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationStatus;
-import io.github.vfedoriv.graphrag.schemas.evaluation.domain.SchemaDraftEvaluationOutcomeStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.knowledgebase.adapters.relational;
 
-import io.github.vfedoriv.graphrag.infrastructure.persistence.relational.repository.JpaKnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseRepository;
 import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.entity.KnowledgeBaseSchemaEntity;
 import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.entity.KnowledgeBaseSchemaId;
 import io.github.vfedoriv.graphrag.knowledgebase.adapters.relational.repository.JpaKnowledgeBaseSchemaRepository;

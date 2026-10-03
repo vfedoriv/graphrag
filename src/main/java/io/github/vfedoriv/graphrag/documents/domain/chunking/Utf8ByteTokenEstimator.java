@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.domain.chunking;
 
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+
 import java.nio.charset.StandardCharsets;
 
 public final class Utf8ByteTokenEstimator implements TokenEstimator {

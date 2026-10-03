@@ -14,9 +14,9 @@ import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Conflict
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Evidence;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ReviewState;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.ConceptRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.DiscoveryGuidance;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.ConceptRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.DiscoveryGuidance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

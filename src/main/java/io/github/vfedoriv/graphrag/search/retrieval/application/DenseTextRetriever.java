@@ -1,7 +1,6 @@
 package io.github.vfedoriv.graphrag.search.retrieval.application;
-import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts;
 
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
 
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Branch;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Candidate;
@@ -25,11 +24,11 @@ public class DenseTextRetriever {
 
     private final SearchEmbeddingModel embeddings;
     private final EmbeddingCompatibility embeddingSpacePolicy;
-    private final EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    private final VectorIndexes embeddingSpaceIndexService;
     private final TextChunkRetrievalRepository retrievalRepository;
 
     public DenseTextRetriever(SearchEmbeddingModel embeddings, EmbeddingCompatibility compatibility,
-        EmbeddingSpaceIndexService embeddingSpaceIndexService, TextChunkRetrievalRepository retrievalRepository) {
+        VectorIndexes embeddingSpaceIndexService, TextChunkRetrievalRepository retrievalRepository) {
         this.embeddings = embeddings; this.embeddingSpacePolicy = compatibility;
         this.embeddingSpaceIndexService = embeddingSpaceIndexService; this.retrievalRepository = retrievalRepository;
     }

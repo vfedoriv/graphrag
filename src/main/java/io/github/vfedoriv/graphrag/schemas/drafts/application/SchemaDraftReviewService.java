@@ -1,7 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.drafts.application;
 
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftSchemaLookup;
-import io.github.vfedoriv.graphrag.schemas.drafts.ports.DraftKnowledgeBases;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +12,7 @@ import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Candidat
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.CandidateKind;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictType;
-import io.github.vfedoriv.graphrag.domain.DiffBaselineType;
+import io.github.vfedoriv.graphrag.schemas.contracts.DiffBaselineType;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftAggregateRevisionNode;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftCompatibility;
 import io.github.vfedoriv.graphrag.schemas.drafts.domain.SchemaDraftConflictNode;
@@ -32,8 +31,8 @@ import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.Diff
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.DiffResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ProjectionResponse;
 import io.github.vfedoriv.graphrag.schemas.drafts.api.model.SchemaDraftDtos.ResolveConflictRequest;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftAggregateRevisionRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftConflictRepository;
 import io.github.vfedoriv.graphrag.schemas.drafts.ports.SchemaDraftDecisionRepository;

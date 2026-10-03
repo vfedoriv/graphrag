@@ -1,5 +1,7 @@
 package io.github.vfedoriv.graphrag.documents.domain.chunking;
 
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
+
 import java.util.Map;
 import java.util.List;
 

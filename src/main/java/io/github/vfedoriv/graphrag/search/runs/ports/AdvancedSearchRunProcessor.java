@@ -1,10 +1,9 @@
 package io.github.vfedoriv.graphrag.search.runs.ports;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStage;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
 import java.time.Instant;
 import java.util.List;
 import java.util.function.BooleanSupplier;

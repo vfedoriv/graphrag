@@ -9,16 +9,16 @@ import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRet
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts.Subquery;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentStatus;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
-import io.github.vfedoriv.graphrag.embedding.EmbeddingClient;
+import io.github.vfedoriv.graphrag.ai.models.EmbeddingClient;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
-import io.github.vfedoriv.graphrag.repository.LexicalIndexRepository;
+import io.github.vfedoriv.graphrag.indexes.contracts.LexicalIndexRepository;
 import io.github.vfedoriv.graphrag.search.retrieval.application.DenseTextRetriever;
 import io.github.vfedoriv.graphrag.search.retrieval.application.DocumentMetadataTextRetriever;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpace;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIdentity;
-import io.github.vfedoriv.graphrag.service.EmbeddingSpaceIndexService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpace;
+import io.github.vfedoriv.graphrag.ai.domain.EmbeddingSpaceIdentity;
+import io.github.vfedoriv.graphrag.indexes.contracts.VectorIndexes;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import io.github.vfedoriv.graphrag.search.retrieval.application.LexicalTextRetriever;
 import java.time.Instant;
 import java.util.List;
@@ -45,7 +45,7 @@ class AdvancedSearchTextRetrievalIntegrationTest {
     @Autowired private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     @Autowired private KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
     @Autowired private KnowledgeBaseService knowledgeBaseService;
-    @Autowired private EmbeddingSpaceIndexService embeddingSpaceIndexService;
+    @Autowired private VectorIndexes embeddingSpaceIndexService;
     @Autowired private LexicalIndexRepository lexicalIndexRepository;
     @Autowired private DocumentUploadRepository documentUploadRepository;
 

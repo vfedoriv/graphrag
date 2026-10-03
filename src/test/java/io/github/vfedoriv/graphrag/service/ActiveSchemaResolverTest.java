@@ -7,9 +7,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.schemas.registry.domain.SchemaDefinitionNode;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.KnowledgeBaseAdmission;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaKnowledgeBase;
 import io.github.vfedoriv.graphrag.schemas.registry.ports.SchemaDefinitionRepository;

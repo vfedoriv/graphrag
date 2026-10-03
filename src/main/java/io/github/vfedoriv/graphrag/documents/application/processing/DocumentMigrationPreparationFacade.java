@@ -3,19 +3,19 @@ package io.github.vfedoriv.graphrag.documents.application.processing;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentMigrationPreparation;
 import io.github.vfedoriv.graphrag.documents.contracts.DocumentReprocessing;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentUploadNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunNode;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentProcessingRunStatus;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
-import io.github.vfedoriv.graphrag.documents.domain.chunking.TokenizerId;
+import io.github.vfedoriv.graphrag.ai.domain.TokenizerId;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentProcessingRunRepository;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 import io.github.vfedoriv.graphrag.ai.application.EmbeddingCompatibility;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
-import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
+import io.github.vfedoriv.graphrag.ai.api.error.EmbeddingSpaceConflictException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +64,14 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
 
     @Override
     public Identity identity(Profile captured) {
-        AiProfileNode profile = profile(captured);
+        ProfileFacts profile = profile(captured);
         return new Identity(EmbeddingTarget.derive(profile.getBaseUrl(), profile.getEmbeddingModel(),
             profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value()).id(), chunking.migrationTargetRevision(profile));
     }
 
     @Override
     public Inspection inspect(String knowledgeBaseId, Profile captured) {
-        AiProfileNode profile = profile(captured);
+        ProfileFacts profile = profile(captured);
         String revision = null;
         String space = null;
         DocumentReprocessing.ChunkTarget target = null;
@@ -93,7 +93,7 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
 
     @Override
     public List<Prepared> prepare(List<Summary> sources, Profile captured, Map<String, Object> requested) {
-        AiProfileNode profile = profile(captured);
+        ProfileFacts profile = profile(captured);
         List<Prepared> prepared = new ArrayList<>();
         for (Summary source : sources) {
             // Adapt captured source metadata for the legacy resolver without new repository reads.
@@ -129,14 +129,9 @@ public class DocumentMigrationPreparationFacade implements DocumentMigrationPrep
             source.getStatus() == null ? null : source.getStatus().name(), source.getContentType(), source.getProcessingDefaultsJson());
     }
 
-    private AiProfileNode profile(Profile captured) {
-        AiProfileNode profile = new AiProfileNode();
-        profile.setId(captured.id());
-        profile.setRevision(captured.revision());
-        profile.setBaseUrl(captured.baseUrl());
-        profile.setEmbeddingModel(captured.embeddingModel());
-        profile.setEmbeddingDimensions(captured.embeddingDimensions());
-        profile.setTokenizerId(captured.tokenizerId() == null ? null : new TokenizerId(captured.tokenizerId()));
-        return profile;
+    private ProfileFacts profile(Profile captured) {
+        return new ProfileFacts(captured.id(), captured.revision(), captured.baseUrl(), null,
+            captured.embeddingModel(), captured.embeddingDimensions(),
+            captured.tokenizerId() == null ? null : new TokenizerId(captured.tokenizerId()), 0, 0);
     }
 }

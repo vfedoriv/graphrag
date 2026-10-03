@@ -5,7 +5,7 @@ import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOp
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionDefinition;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionValueType;
 
-import io.github.vfedoriv.graphrag.error.ProcessingOptionsValidationException;
+import io.github.vfedoriv.graphrag.documents.api.error.ProcessingOptionsValidationException;
 import io.github.vfedoriv.graphrag.documents.adapters.parsing.TikaProcessingOptions;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

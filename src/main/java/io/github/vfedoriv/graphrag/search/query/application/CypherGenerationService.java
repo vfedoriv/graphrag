@@ -1,9 +1,9 @@
 package io.github.vfedoriv.graphrag.search.query.application;
 
 import io.github.vfedoriv.graphrag.search.query.application.CypherValidationService;
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchProfiles;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
 
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaSnapshot;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CypherGenerationService {
 
-    private final RuntimeSettingsService runtimeSettingsService;
+    private final RuntimeSettingsAccess runtimeSettingsService;
     private final SearchSchemas activeSchemaResolver;
     private final ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider;
     private final CypherValidationService cypherValidationService;
@@ -39,7 +39,7 @@ public class CypherGenerationService {
     private final SearchProfiles knowledgeBaseService;
 
     public CypherGenerationService(
-        RuntimeSettingsService runtimeSettingsService,
+        RuntimeSettingsAccess runtimeSettingsService,
         SearchSchemas activeSchemaResolver,
         ObjectProvider<CypherGenerationClient> cypherGenerationClientProvider,
         CypherValidationService cypherValidationService,
@@ -55,7 +55,7 @@ public class CypherGenerationService {
     }
 
     public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt) {
-        return generate(knowledgeBaseId, prompt, runtimeSettingsService.queryPolicy());
+        return generate(knowledgeBaseId, prompt, io.github.vfedoriv.graphrag.search.query.domain.QueryPolicy.from(runtimeSettingsService.query()));
     }
 
     public GeneratedQueryResponse generate(String knowledgeBaseId, String prompt, QueryPolicy policy) {

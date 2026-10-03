@@ -1,5 +1,6 @@
 package io.github.vfedoriv.graphrag.schemas.discovery;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vfedoriv.graphrag.schemas.discovery.CandidateExtractionResult.AliasSuggestion;
@@ -10,21 +11,17 @@ import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Conflict
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.Evidence;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.EvidenceOrigin;
 import io.github.vfedoriv.graphrag.schemas.discovery.DiscoveryContracts.ReviewState;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.ConceptRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.PropertyRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryRequest.RelationshipRule;
-import io.github.vfedoriv.graphrag.dto.SchemaDiscoveryResponse.Warning;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.ConceptRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.PropertyRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryRequest.RelationshipRule;
+import io.github.vfedoriv.graphrag.schemas.discovery.api.model.SchemaDiscoveryResponse.Warning;
 import io.github.vfedoriv.graphrag.schemas.contracts.SchemaDocument;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;

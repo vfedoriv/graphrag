@@ -1,6 +1,6 @@
 package io.github.vfedoriv.graphrag.search.runs.application;
 
-import io.github.vfedoriv.graphrag.config.AdvancedSearchProperties;
+import io.github.vfedoriv.graphrag.search.runs.configuration.AdvancedSearchProperties;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;

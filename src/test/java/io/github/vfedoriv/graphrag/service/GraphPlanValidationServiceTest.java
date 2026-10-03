@@ -1,5 +1,9 @@
 package io.github.vfedoriv.graphrag.service;
 
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess;
+
+import io.github.vfedoriv.graphrag.settings.application.RuntimeSettingsService;
+
 import io.github.vfedoriv.graphrag.search.retrieval.application.validation.GraphPlanValidationService;
 
 import io.github.vfedoriv.graphrag.search.runs.ports.SearchSchemas;
@@ -38,7 +42,7 @@ class GraphPlanValidationServiceTest {
     void setUp() {
         activeSchemaResolver = mock(SearchSchemas.class);
         runtimeSettingsService = mock(RuntimeSettingsService.class);
-        RuntimeSettingsService.QuerySettings querySettings = new RuntimeSettingsService.QuerySettings(
+        RuntimeSettingsAccess.QuerySettings querySettings = new RuntimeSettingsAccess.QuerySettings(
             10, 5, true, List.of("CREATE"), true, 4096, 8, 20, 2, 1
         );
         when(runtimeSettingsService.query()).thenReturn(querySettings);

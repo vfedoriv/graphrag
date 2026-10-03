@@ -1,5 +1,13 @@
 package io.github.vfedoriv.graphrag.ai;
 
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
+
+import io.github.vfedoriv.graphrag.ai.profiles.ports.AiProfileRepository;
+
+import io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService;
+
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkRepository;
 
 import io.github.vfedoriv.graphrag.documents.ports.DocumentUploadRepository;
@@ -15,9 +23,8 @@ import io.github.vfedoriv.graphrag.documents.application.inspection.StoredEmbedd
 import io.github.vfedoriv.graphrag.documents.application.lifecycle.KnowledgeBaseDocumentsFacade;
 import io.github.vfedoriv.graphrag.documents.contracts.*;
 import io.github.vfedoriv.graphrag.documents.domain.DocumentChunkNode;
-import io.github.vfedoriv.graphrag.error.EmbeddingSpaceConflictException;
+import io.github.vfedoriv.graphrag.ai.api.error.EmbeddingSpaceConflictException;
 import io.github.vfedoriv.graphrag.knowledgebase.application.AiProfileAssignmentsFacade;
-import io.github.vfedoriv.graphrag.repository.*;
 import io.github.vfedoriv.graphrag.documents.adapters.graph.GraphArtifactCleanupService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -117,9 +124,9 @@ class AiStateBoundariesTest {
     @Test
     void requiredCapabilitiesCannotBeNullOrBypassedThroughConvenienceConstructors() {
         assertThatThrownBy(() -> new EmbeddingCompatibility(null)).isInstanceOf(NullPointerException.class);
-        assertThat(io.github.vfedoriv.graphrag.service.KnowledgeBaseService.class.getConstructors()).hasSize(1);
-        assertThat(io.github.vfedoriv.graphrag.service.AiProfileService.class.getConstructors()).hasSize(1);
-        assertThatThrownBy(() -> new io.github.vfedoriv.graphrag.service.AiProfileService(
+        assertThat(io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService.class.getConstructors()).hasSize(1);
+        assertThat(io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService.class.getConstructors()).hasSize(1);
+        assertThatThrownBy(() -> new io.github.vfedoriv.graphrag.ai.profiles.application.AiProfileService(
             mock(AiProfileRepository.class), null, null, new EmbeddingCompatibility(id -> List.of()), null))
             .isInstanceOf(NullPointerException.class);
     }

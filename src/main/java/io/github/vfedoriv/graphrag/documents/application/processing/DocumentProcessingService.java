@@ -1,16 +1,16 @@
 package io.github.vfedoriv.graphrag.documents.application.processing;
 
-import io.github.vfedoriv.graphrag.service.AiProfileContext;
+import io.github.vfedoriv.graphrag.ai.execution.AiProfileContext;
 import io.github.vfedoriv.graphrag.ai.domain.EmbeddingTarget;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.ManagedKnowledgeBases;
+import io.github.vfedoriv.graphrag.knowledgebase.contracts.KnowledgeBaseProfiles;
 
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentFormatDetection;
 import io.github.vfedoriv.graphrag.documents.domain.options.DocumentProcessingOptionSet;
 import io.github.vfedoriv.graphrag.documents.domain.options.ImmutableDocumentProcessingInput;
 
 import io.github.vfedoriv.graphrag.documents.domain.processing.PreparedChunk;
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
 import io.github.vfedoriv.graphrag.documents.domain.parsing.ParsedDocument;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkKind;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.ChunkingContext;
@@ -25,8 +25,8 @@ import io.github.vfedoriv.graphrag.documents.api.model.DocumentChunkSummaryRespo
 import io.github.vfedoriv.graphrag.documents.api.model.DocumentProcessingOptionConstraintResponse;
 import io.github.vfedoriv.graphrag.documents.api.model.DocumentProcessingOptionResponse;
 import io.github.vfedoriv.graphrag.documents.api.model.DocumentProcessingOptionsResponse;
-import io.github.vfedoriv.graphrag.error.ConflictException;
-import io.github.vfedoriv.graphrag.error.NotFoundException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.NotFoundException;
 import io.github.vfedoriv.graphrag.logging.LogMetadata;
 import io.github.vfedoriv.graphrag.documents.ports.DocumentChunkEffects;
 import io.github.vfedoriv.graphrag.documents.domain.chunking.DocumentChunkTopology;
@@ -56,8 +56,8 @@ public class DocumentProcessingService {
     private final ChunkingService chunkingService;
     private final DocumentProcessingOptionsRegistry processingOptionsRegistry;
     private final AiObservationService aiObservationService;
-    private final KnowledgeBaseService knowledgeBaseService;
-    private final KnowledgeBaseLifecycleService knowledgeBaseLifecycleService;
+    private final KnowledgeBaseProfiles knowledgeBaseService;
+    private final ManagedKnowledgeBases knowledgeBaseLifecycleService;
     private final ProcessingJsonCodec processingJsonCodec;
     private final ProcessingOptionResolver processingOptionResolver;
     private final SourceParsingStage sourceParsingStage;
@@ -74,8 +74,8 @@ public class DocumentProcessingService {
         ChunkingService chunkingService,
         DocumentProcessingOptionsRegistry processingOptionsRegistry,
         AiObservationService aiObservationService,
-        KnowledgeBaseService knowledgeBaseService,
-        KnowledgeBaseLifecycleService knowledgeBaseLifecycleService,
+        KnowledgeBaseProfiles knowledgeBaseService,
+        ManagedKnowledgeBases knowledgeBaseLifecycleService,
         ProcessingJsonCodec processingJsonCodec,
         ProcessingOptionResolver processingOptionResolver,
         SourceParsingStage sourceParsingStage,
@@ -162,7 +162,7 @@ public class DocumentProcessingService {
             null,
             workflowAttributes
         ))) {
-            AiProfileNode activeProfile = immutableInput == null
+            ProfileFacts activeProfile = immutableInput == null
                 ? activeProfile(document.getKnowledgeBaseId())
                 : requireImmutableProfile(document.getKnowledgeBaseId(), immutableInput);
             ChunkingContext chunkingContext = immutableInput == null
@@ -491,7 +491,7 @@ public class DocumentProcessingService {
         return documentUploadRepository.save(document);
     }
 
-    private AiProfileNode activeProfile(String knowledgeBaseId) {
+    private ProfileFacts activeProfile(String knowledgeBaseId) {
         String capturedProfileId = AiProfileContext.activeProfileId();
         if (capturedProfileId != null) {
             return knowledgeBaseService.aiProfile(capturedProfileId);
@@ -499,11 +499,11 @@ public class DocumentProcessingService {
         return knowledgeBaseService.activeAiProfile(knowledgeBaseId);
     }
 
-    private AiProfileNode requireImmutableProfile(
+    private ProfileFacts requireImmutableProfile(
         String knowledgeBaseId,
         ImmutableDocumentProcessingInput input
     ) {
-        AiProfileNode profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
+        ProfileFacts profile = knowledgeBaseService.activeAiProfile(knowledgeBaseId);
         EmbeddingTarget embeddingSpace = EmbeddingTarget.derive(profile.getBaseUrl(), profile.getEmbeddingModel(),
             profile.getEmbeddingDimensions(), profile.getTokenizerId() == null ? null : profile.getTokenizerId().value());
         if (!profile.getId().equals(input.aiProfileId())

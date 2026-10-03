@@ -4,7 +4,7 @@ import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessin
 import io.github.vfedoriv.graphrag.schemas.reprocessing.domain.SchemaReprocessingPlanNode;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingItemRepository;
 import io.github.vfedoriv.graphrag.schemas.reprocessing.ports.SchemaReprocessingPlanRepository;
-import io.github.vfedoriv.graphrag.error.ConflictException;
+import io.github.vfedoriv.graphrag.http.contracts.ConflictException;
 import io.github.vfedoriv.graphrag.persistence.transaction.RelationalTransactional;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;

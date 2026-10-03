@@ -1,10 +1,7 @@
 package io.github.vfedoriv.graphrag.search.answering.adapters.model;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchTextRetrievalContracts;
-import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts;
-import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator;
 
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService;
 
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Contradiction;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.Coverage;
@@ -14,9 +11,9 @@ import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlannin
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.SufficiencyResult;
 import io.github.vfedoriv.graphrag.search.retrieval.domain.AdvancedSearchPlanningContracts.SufficiencySummary;
 import io.github.vfedoriv.graphrag.search.ranking.domain.AdvancedSearchRankingContracts.EvidenceCandidate;
-import io.github.vfedoriv.graphrag.infrastructure.ai.ProfileScopedAiClientResolver;
+import io.github.vfedoriv.graphrag.ai.models.ProfileScopedAiClientResolver;
 import io.github.vfedoriv.graphrag.search.retrieval.application.AdvancedSearchPlanValidator.ValidatedPlan;
-import io.github.vfedoriv.graphrag.service.RuntimeSettingsService.AdvancedSearchSettings;
+import io.github.vfedoriv.graphrag.settings.contracts.RuntimeSettingsAccess.AdvancedSearchSettings;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,6 +1,4 @@
 package io.github.vfedoriv.graphrag.search.runs.api;
-import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos;
-import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos;
 
 import io.github.vfedoriv.graphrag.search.runs.domain.AdvancedSearchRunStatus;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.CreateRequest;
@@ -8,7 +6,7 @@ import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.R
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.RunDetailResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchRunDtos.RunSummaryResponse;
 import io.github.vfedoriv.graphrag.search.runs.api.model.AdvancedSearchReadinessDtos.ReadinessResponse;
-import io.github.vfedoriv.graphrag.dto.PageResponse;
+import io.github.vfedoriv.graphrag.http.contracts.PageResponse;
 import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchReadinessService;
 import io.github.vfedoriv.graphrag.search.runs.application.AdvancedSearchRunService;
 import io.swagger.v3.oas.annotations.Operation;

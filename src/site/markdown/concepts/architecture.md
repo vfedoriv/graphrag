@@ -31,6 +31,8 @@ The default profile can boot without model beans. AI-backed services resolve the
 
 Cross-store operations are explicit workflows rather than distributed transactions. Services record durable state, perform bounded work, and apply cleanup/recovery rules when later steps fail.
 
+<a id="document-ownership"></a>
+
 ## Document ownership
 
 Document consolidation (roadmap step 4) is implemented. `documents.api` owns
@@ -58,11 +60,13 @@ Relational checkpoints remain separate from model, filesystem, and graph effects
 scoped cleanup, persisted snapshots, stale-run recovery, and the absence of an
 enclosing cross-store transaction are unchanged.
 
-`ArchitectureBoundaryTest` freezes only identified support and assembly edges
-for roadmap step 9. Search's exact step-8 document, schema, and compatibility
-exceptions are retired, as are the step-6 draft-authoring and step-7
-evaluation/publication/reprocessing edges. The remaining allowances are exact
-class-to-class pairs and prohibit additional foreign callers.
+`ArchitectureBoundaryTest` and `FinalSupportBoundaryTest` enforce permanent
+feature, domain, model, support, and assembly boundaries. All roadmap exceptions,
+including the step-nine support/assembly pairs, are retired. Existing transaction
+self-calls are governed separately by exact method signatures, with no class-wide
+or package-wide transaction exemption.
+
+<a id="reprocessing-execution-and-recovery-boundary"></a>
 
 ## Reprocessing execution and recovery boundary
 
@@ -145,14 +149,13 @@ integration adapters under `bootstrap.integration.ai` and
 
 Search readiness and dense retrieval use AI-owned `EmbeddingCompatibility` and
 immutable non-secret `EmbeddingTarget` values. The obsolete
-`EmbeddingSpacePolicy` bridge has been removed. Shared embedding identity/index
-and lexical-index maintenance remain step-9 support because document writes and
-cleanup also use those services. The immutable `TokenizerId` value in
-`documents.domain.chunking` remains a frozen dependency of legacy profile and
-knowledge-base services until support consolidation in step 9. No allowance
-permits foreign state reads. Architecture tests enforce pure rules/contracts,
-public-capability mapping, feature-to-bootstrap isolation, and exact remaining
-support edges alongside all predecessor reprocessing guards.
+`EmbeddingSpacePolicy` bridge has been removed. AI owns the immutable `TokenizerId`, embedding-space values, and deterministic
+endpoint/model/dimension identity rules under `ai.domain`. Shared vector and
+lexical index maintenance is exposed by `indexes.contracts`, with Neo4j effects
+confined to `indexes.adapters.graph`. Document writes/cleanup and search retrieval
+use these public contracts. No foreign mutable profile state or provider key is
+exposed. Architecture tests enforce pure rules/contracts, public-capability
+mapping, feature-to-bootstrap isolation, and shared-index adapter boundaries.
 Document consolidation (step 4), schema registry/discovery boundaries (step 5),
 and draft authoring ownership (step 6) are implemented. Registry definitions,
 parser, validator, persistence adapter, and active resolver live under
@@ -207,8 +210,10 @@ Draft navigation consumes `DraftEvaluationSummaries` and
 and reprocessing own the immutable batch summaries, including latest/current
 resource references; list mapping does not read downstream repositories or issue
 one detail request per draft. Stable ordering, filtering before totals, and
-pagination remain compatible. Search's exact step-8 exceptions are retired; only
-identified support/assembly (step 9) dependencies remain frozen.
+pagination remain compatible. All roadmap exceptions are retired; permanent
+rules reject foreign state and implementation dependencies.
+
+<a id="schema-evaluation-and-publication-boundary"></a>
 
 ## Schema evaluation and publication boundary
 
@@ -254,8 +259,8 @@ add no transactions; synchronous fact reads join the caller's transaction.
 Existing HTTP/SQL mappings, historical JSON, and canonical fingerprint bytes
 remain compatible without SQL or binary migration. Architecture tests reject
 foreign implementation/persistence access and retire the exact step-7 exceptions;
-search consolidation also retires its exact step-8 edges, leaving only named
-support/assembly (step 9) dependencies frozen.
+search and support consolidation retire the remaining exact step-8 and step-9
+edges. Independent transaction self-calls retain their historical participation.
 
 ## Search ownership
 
@@ -289,12 +294,62 @@ application workflows. Model-dependent planning, dense embedding, reranking,
 sufficiency, and answer synthesis use search model adapters, keeping client
 construction and profile support AI-owned.
 
-Step 9 retains the named support and assembly seams for runtime settings, AI
-profile/model construction, observability, metadata-first logging, transaction
-wrappers, shared embedding/lexical-index maintenance, and configuration wiring.
-Document persistence and cleanup do not depend on search. The architecture test
-freezes only exact step-9 pairs; search's step-8 schema/document/compatibility
-exceptions have been retired.
+Search composes `QueryPolicy` from a captured typed query snapshot. Search model
+adapters use AI-owned model capabilities; workflows use SDK-free execution and
+profile facts. `search.runs.adapters.metrics.AdvancedSearchMetrics` interprets
+search outcomes; generic AI observations remain independent of search. Document
+persistence and cleanup use shared index contracts and do not depend on search.
+
+<a id="final-support-and-assembly-ownership"></a>
+
+## Final support and assembly ownership
+
+Roadmap step 9 is implemented. `settings` owns its API, catalog, codecs,
+validation, lifecycle, override ports, and relational adapters. Foreign workflows
+consume `RuntimeSettingsAccess` and immutable typed snapshots. Settings delegates
+chunk revision inspection through its own `ChunkRevisionInspection` port, mapped
+by `bootstrap.integration.settings` to `DocumentChunkRevisions`. The document
+calculator uses only the supplied snapshot; reporting and hashing use the same
+captured values, without live-setting re-reads or automatic reprocessing.
+
+`ai.profiles` owns profile API, mutable state, management, and relational
+persistence. `AiProfileAccess` exposes immutable non-secret facts and masked views.
+`ai.adapters.provider` owns revision-scoped caches and provider construction;
+`ai.models` exposes model-resolution capabilities. Provider SDK handles stay in
+model adapters, AI resolution, and bootstrap. `ai.execution` supplies profile scope
+and opaque captured execution so durable work retains its selected model and
+nested scopes restore correctly after success or failure.
+
+Startup properties are bound in their owned configuration areas: AI model,
+indexes/Neo4j, storage, settings query/chunking/extraction, observability, search,
+and schema drafts. `bootstrap.AppProperties` is an assembly aggregate;
+`SettingsStartupDefaults` and `StartupModelMetadata` expose only the facts needed
+by their consumers. Provider credentials remain confined to AI and assembly.
+
+`bootstrap` owns factories, provider registration, schema startup loading,
+default-profile seeding, executors, schedulers, and explicit persistence scans.
+The primary `transactionManager`, `neo4jTransactionManager`, and transaction-aware
+`neo4jTemplate` retain their names and routing. Assembly can wire concrete owned
+implementations. `bootstrap.integration` has narrower privileges: it maps public
+capabilities to consumer-owned ports without repositories, SDK/filesystem clients,
+transactions, or business policy. Synchronous reads retain caller participation.
+
+Shared support is limited to metadata-only `logging`, binary `storage`, immutable
+`http.contracts` pagination/common errors, generic `observability`,
+`persistence.transaction` annotations, and `indexes` contracts/graph adapters.
+Global problem adaptation lives in `bootstrap.http`; feature API values and
+errors remain with their owners. Schema generation prompts, normalization, and
+model interpretation live under `schemas.generation`.
+
+The permanent source graph permits search → documents/schemas/knowledge bases/AI,
+documents → schemas/knowledge bases/AI, schemas → knowledge bases/AI, and knowledge
+bases → AI through public contracts. Schemas obtains document effects through its
+own ports and bootstrap mappings. All features can consume typed settings;
+settings can consume immutable AI identity values. Domains cannot reach live
+accessors, workflows, or effect adapters. No roadmap-frozen pairs remain.
+HTTP/JSON/SQL identities, property keys/defaults, fingerprints, index names,
+cache semantics, metrics, and checkpoint boundaries remain compatible; no SQL or
+binary migration is required.
 
 ## Major flows
 
@@ -307,9 +362,9 @@ exceptions have been retired.
 
 | Area | Entry points | Core implementation |
 |---|---|---|
-| Schema registry and discovery | `controller/SchemaController.java` | `schemas/registry/application/SchemaRegistryService.java`, `schemas/discovery/application/SchemaDiscoveryService.java`, `schemas/registry/application/SchemaParser.java`, `schemas/registry/application/SchemaValidator.java` |
+| Schema registry and discovery | `schemas/registry/api/SchemaController.java` | `schemas/registry/application/SchemaRegistryService.java`, `schemas/discovery/application/SchemaDiscoveryService.java`, `schemas/registry/application/SchemaParser.java`, `schemas/registry/application/SchemaValidator.java` |
 | Schema draft authoring | `schemas/drafts/api/SchemaDraftController.java` | `schemas/drafts/application`, `schemas/drafts/domain`, `schemas/drafts/ports`, `schemas/drafts/adapters` |
-| Knowledge bases and profiles | `controller/KnowledgeBaseController.java`, `controller/AiProfileController.java` | `service/AiProfileService.java`, `service/AiRuntimeModelFactory.java` |
+| Knowledge bases and profiles | `knowledgebase/api/KnowledgeBaseController.java`, `ai/profiles/api/AiProfileController.java` | `knowledgebase/application/KnowledgeBaseService.java`, `ai/profiles/application/AiProfileService.java`, `ai/adapters/provider/AiRuntimeModelFactory.java` |
 | Documents and chunks | `documents/api/DocumentController.java`, `documents/api/ChunkingStateController.java` | `documents/application/management/DocumentUploadService.java`, `documents/application/processing/DocumentProcessingService.java`, `documents/application/processing/ChunkingService.java` |
 | Schema evaluation | `schemas/evaluation/api/SchemaDraftEvaluationController.java` | `schemas/evaluation/application`, `schemas/evaluation/domain`, `schemas/evaluation/ports`, `schemas/evaluation/adapters`, `bootstrap/integration/schemas` |
 | Schema publication | `schemas/publication/api/SchemaDraftPublicationController.java` | `schemas/publication/application`, `schemas/publication/domain`, `schemas/publication/ports`, `schemas/publication/adapters`, `schemas/contracts` |
@@ -317,7 +372,7 @@ exceptions have been retired.
 | Graph extraction | document processing endpoint | `documents/application/processing/GraphExtractionService.java`, `documents/adapters/graph/GraphWriteService.java` |
 | Search API | `search/query/api/QueryController.java`, `search/runs/api/AdvancedSearchRunController.java` | `search/query/application`, `search/retrieval`, `search/ranking`, `search/answering`, `search/runs` |
 | Search integration | `bootstrap/integration/search` | `SearchDocumentMetadataAdapter`, `SearchKnowledgeBaseAdapter`, `SearchSchemaAdapter` |
-| Runtime settings | `controller/RuntimeSettingsController.java` | `service/RuntimeSettingsService.java` |
+| Runtime settings | `settings/api/RuntimeSettingsController.java` | `settings/application/RuntimeSettingsService.java`, `settings/contracts/RuntimeSettingsAccess.java` |
 | Observability | all AI workflows | `observability/AiObservationService.java` |
 
 All paths above are relative to `src/main/java/io/github/vfedoriv/graphrag/`. For exhaustive routes and DTOs, use [Swagger/OpenAPI](../reference/api.md).

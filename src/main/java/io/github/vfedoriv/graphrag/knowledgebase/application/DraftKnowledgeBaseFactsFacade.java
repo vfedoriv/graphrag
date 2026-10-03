@@ -1,11 +1,11 @@
 package io.github.vfedoriv.graphrag.knowledgebase.application;
 
-import io.github.vfedoriv.graphrag.domain.AiProfileNode;
-import io.github.vfedoriv.graphrag.domain.KnowledgeBaseNode;
+import io.github.vfedoriv.graphrag.ai.contracts.ProfileFacts;
+import io.github.vfedoriv.graphrag.knowledgebase.domain.KnowledgeBaseNode;
 import io.github.vfedoriv.graphrag.knowledgebase.contracts.DraftKnowledgeBaseFacts;
-import io.github.vfedoriv.graphrag.repository.KnowledgeBaseRepository;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseLifecycleService;
-import io.github.vfedoriv.graphrag.service.KnowledgeBaseService;
+import io.github.vfedoriv.graphrag.knowledgebase.ports.KnowledgeBaseRepository;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseLifecycleService;
+import io.github.vfedoriv.graphrag.knowledgebase.application.KnowledgeBaseService;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class DraftKnowledgeBaseFactsFacade implements DraftKnowledgeBaseFacts {
 
     @Override
     public Profile activeProfile(String knowledgeBaseId) {
-        AiProfileNode profile = knowledgeBases.activeAiProfile(knowledgeBaseId);
+        ProfileFacts profile = knowledgeBases.activeAiProfile(knowledgeBaseId);
         return new Profile(profile.getId(), profile.getRevision(), profile.getTimeoutSeconds(), profile.getMaxRetries());
     }
 }
